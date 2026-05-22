@@ -127,38 +127,6 @@ export default function RoomsPage() {
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-2">
-        <div>
-          <h1 className="text-xl font-bold text-ink flex items-center gap-2">
-            <Building className="text-primary" />
-            <span>Sơ Đồ Quản Lý Không Gian 2D</span>
-          </h1>
-          <p className="text-xs text-ink-muted">Xem trực quan và vận hành danh sách phòng trọ theo thời gian thực</p>
-        </div>
-        <div className="flex gap-2">
-          {selectedRoomId && (
-            <button
-              onClick={() => setSelectedRoomId(null)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors shadow-sm apple-press"
-            >
-              <ArrowLeft size={14} />
-              <span>Quay Lại Sơ Đồ</span>
-            </button>
-          )}
-          <button
-            onClick={() => {
-              setSelectedRoomId(null);
-              setIsEditing(false);
-              setStatusFilter('all');
-              setFloorFilter('all');
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white hover:bg-gray-50 text-ink rounded-lg border border-line transition-colors apple-press"
-          >
-            <RotateCcw size={14} />
-            <span>Đặt Lại</span>
-          </button>
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
         <div
@@ -248,6 +216,28 @@ export default function RoomsPage() {
           <div className="flex justify-between items-center border-b border-line pb-4">
             <h3 className="text-sm font-bold text-ink uppercase tracking-wider">Sơ Đồ Phòng Theo Tầng</h3>
             <div className="flex gap-2">
+              {selectedRoomId && (
+                <button
+                  onClick={() => setSelectedRoomId(null)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors shadow-sm apple-press animate-apple-pop"
+                >
+                  <ArrowLeft size={14} />
+                  <span>Quay Lại Sơ Đồ</span>
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setSelectedRoomId(null);
+                  setIsEditing(false);
+                  setStatusFilter('all');
+                  setFloorFilter('all');
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white hover:bg-gray-50 text-ink rounded-lg border border-line transition-colors apple-press"
+              >
+                <RotateCcw size={14} />
+                <span>Đặt Lại</span>
+              </button>
+
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
