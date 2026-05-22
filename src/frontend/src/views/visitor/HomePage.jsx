@@ -12,16 +12,23 @@ export default function HomePage() {
   const [district, setDistrict] = useState('');
   const [priceRange, setPriceRange] = useState('');
   const [districts, setDistricts] = useState([]);
+  const [properties, setProperties] = useState([]);
 
   useEffect(() => {
     roomService.list().then(res => {
       setFeatured(res.filter(r => r.photos.length > 0).slice(0, 3));
     });
     propertyService.list().then(res => {
+      setProperties(res);
       const uniqueDistricts = [...new Set(res.map(p => p.district).filter(Boolean))].sort();
       setDistricts(uniqueDistricts);
     }).catch(err => console.error("Error loading properties:", err));
   }, []);
+
+  const getPropertyName = (propertyId) => {
+    const p = properties.find(prop => prop.id === propertyId);
+    return p ? p.name : 'Chi nhánh nhà trọ';
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -138,7 +145,7 @@ export default function HomePage() {
                     <span className="text-sm text-ink-muted font-medium">{r.area} m²</span>
                   </div>
                   <h3 className="font-bold text-lg text-ink mt-3 line-clamp-1 group-hover:text-primary transition-colors">
-                    Cơ sở An Phú Quận 1
+                    {getPropertyName(r.propertyId)}
                   </h3>
                   <p className="text-sm text-ink-muted mt-1.5 line-clamp-2">
                     {r.description || 'Đầy đủ tiện nghi cao cấp, giờ giấc tự do, an ninh đảm bảo 24/7.'}
