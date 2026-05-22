@@ -31,10 +31,39 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const newUser = await authService.register(fullName, email, phone, password, role);
-      return newUser;
+      const data = await authService.register(fullName, email, phone, password, role);
+      return data;
     } catch (err) {
-      setError(err.message || 'Đăng ký thất bại');
+      setError(err.response?.data?.message || err.message || 'Đăng ký thất bại');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyOtp = async (email, otp) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { user } = await authService.verifyOtp(email, otp);
+      setUser(user);
+      return user;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Xác thực OTP thất bại');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resendOtp = async (email) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.resendOtp(email);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Gửi lại mã OTP thất bại');
       throw err;
     } finally {
       setLoading(false);
@@ -47,7 +76,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, error, login, logout, register }}>
+    <AuthContext.Provider value={{ user, setUser, loading, error, login, logout, register, verifyOtp, resendOtp }}>
       {children}
     </AuthContext.Provider>
   );

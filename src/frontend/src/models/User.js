@@ -3,17 +3,18 @@
  * Roles: 'admin' | 'manager' | 'tenant' | 'visitor'
  */
 export class User {
-  constructor({
-    id,
-    fullName,
-    email,
-    phone,
-    role,
-    avatar = null,
-    status = 'active', // 'active' | 'locked' | 'pending'
-    propertyIds = [], // chỉ áp dụng cho manager
-    createdAt,
-  }) {
+  constructor(data) {
+    const {
+      id,
+      fullName,
+      email,
+      phone,
+      role,
+      avatar = null,
+      status = 'active',
+      propertyIds = [],
+      createdAt,
+    } = data || {};
     this.id = id;
     this.fullName = fullName;
     this.email = email;

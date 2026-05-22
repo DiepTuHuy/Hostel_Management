@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Wallet, DoorOpen, AlertTriangle, Wrench, Plus, Calendar, X, Mail, Phone, MapPin } from 'lucide-react';
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
@@ -176,6 +177,7 @@ function AddPropertyModal({ onClose, onSave }) {
 }
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const { data: properties = [], loading } = useProperties();
   const { data: invoices = [] } = useInvoices();
 
@@ -254,6 +256,16 @@ export default function DashboardPage() {
   const occRate = totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
   const debts = invoices.filter((i) => i.status === 'overdue' || i.status === 'pending_cash').reduce((s, i) => s + i.total, 0) * multiplier;
 
+  // Dynamic mapping of original revenue to the real database properties
+  const mappedRevenue = localRevenue.map(item => {
+    const newItem = { month: item.month };
+    localProperties.forEach((prop, idx) => {
+      const mockKey = `p-00${(idx % 4) + 1}`;
+      newItem[prop.id] = item[mockKey] || 0;
+    });
+    return newItem;
+  });
+
   return (
     <>
       <PageHeader
@@ -306,18 +318,18 @@ export default function DashboardPage() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-gutter">
-        <StatCard label="Doanh thu tháng" value={formatCurrency(revenueValue, { compact: true })} delta={multiplier >= 1 ? 12.5 : multiplier === 0.92 ? 8.2 : -3.1} icon={Wallet} accent="primary" />
-        <StatCard label="Tỉ lệ lấp đầy" value={`${occRate}%`} icon={DoorOpen} accent="info"
+        <StatCard label="Doanh thu tháng" value={formatCurrency(revenueValue, { compact: true })} delta={multiplier >= 1 ? 12.5 : multiplier === 0.92 ? 8.2 : -3.1} icon={Wallet} accent="primary" onClick={() => navigate('/admin/reports')} />
+        <StatCard label="Tỉ lệ lấp đầy" value={`${occRate}%`} icon={DoorOpen} accent="info" onClick={() => navigate('/admin/branches')}
           extra={
             <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden mt-2">
               <div className="bg-primary h-full transition-all duration-500" style={{ width: `${occRate}%` }} />
             </div>
           }
         />
-        <StatCard label="Công nợ chưa thu" value={formatCurrency(debts, { compact: true })} icon={AlertTriangle} accent="danger"
+        <StatCard label="Công nợ chưa thu" value={formatCurrency(debts, { compact: true })} icon={AlertTriangle} accent="danger" onClick={() => navigate('/admin/debts')}
           extra={<div className="text-xs text-danger">Từ {invoices.filter((i) => i.status === 'overdue').length} khách hàng</div>}
         />
-        <StatCard label="Chi phí vận hành" value={formatCurrency(85000000 * multiplier, { compact: true })} icon={Wrench} accent="warning"
+        <StatCard label="Chi phí vận hành" value={formatCurrency(85000000 * multiplier, { compact: true })} icon={Wrench} accent="warning" onClick={() => navigate('/admin/services')}
           extra={<div className="text-xs text-ink-muted">Đã thanh toán 80%</div>}
         />
       </div>
@@ -327,16 +339,35 @@ export default function DashboardPage() {
           <CardHeader title="Biểu đồ Doanh thu 12 tháng" subtitle="Theo từng cơ sở" />
           <div className="h-80">
             <ResponsiveContainer>
-              <LineChart data={localRevenue}>
+              <LineChart data={mappedRevenue}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F1F2F6" />
                 <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
                 <YAxis tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}M`} stroke="#6B7280" fontSize={12} />
                 <Tooltip formatter={(v) => formatCurrency(v)} />
                 <Legend />
-                <Line type="monotone" dataKey="p-001" name="An Phú Q1"   stroke="#3A5BC7" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="p-002" name="Hoa Sữa Q3"  stroke="#16A34A" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="p-003" name="Bình An TĐ"  stroke="#F59E0B" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="p-004" name="Hạnh Phúc GV" stroke="#DC2626" strokeWidth={2} dot={false} />
+                {localProperties.map((prop, idx) => {
+                  const colors = [
+                    '#3A5BC7', // primary / blue
+                    '#16A34A', // green
+                    '#F59E0B', // amber / yellow
+                    '#DC2626', // red
+                    '#06B6D4', // cyan
+                    '#8B5CF6', // purple
+                    '#EC4899', // pink
+                  ];
+                  const color = colors[idx % colors.length];
+                  return (
+                    <Line
+                      key={prop.id}
+                      type="monotone"
+                      dataKey={prop.id}
+                      name={prop.name}
+                      stroke={color}
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  );
+                })}
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -369,7 +400,13 @@ export default function DashboardPage() {
             { key: 'address', header: 'Địa chỉ',       render: (r) => <span className="text-ink-muted">{r.district}</span> },
             { key: 'occ',     header: 'Lấp đầy',       render: (r) => `${r.occupancyRate || 0}%` },
             { key: 'revenue', header: 'Doanh thu',     className: 'text-right font-semibold',
-              render: (r) => formatCurrency((revenue.at(-1)?.[r.id] || 0) * multiplier, { compact: true }) },
+              render: (r) => {
+                const propIndex = localProperties.findIndex(p => p.id === r.id);
+                const mockKey = `p-00${((propIndex >= 0 ? propIndex : 0) % 4) + 1}`;
+                const val = (revenue.at(-1)?.[mockKey] || 0) * multiplier;
+                return formatCurrency(val, { compact: true });
+              }
+            },
             { key: 'status',  header: 'Trạng thái',
               render: () => <Badge color="success">Hoạt động</Badge> },
           ]}

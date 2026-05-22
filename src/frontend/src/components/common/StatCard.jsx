@@ -1,7 +1,7 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '../../utils/cn.js';
 
-export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', extra }) {
+export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', extra, onClick }) {
   const accentBg = {
     primary: 'bg-primary-soft text-primary',
     success: 'bg-green-50 text-success',
@@ -13,7 +13,13 @@ export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', 
   const positive = delta != null && delta >= 0;
 
   return (
-    <div className="card-padded flex flex-col gap-4">
+    <div
+      onClick={onClick}
+      className={cn(
+        "card-padded flex flex-col gap-4",
+        onClick && "cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+      )}
+    >
       <div className="flex justify-between items-start">
         <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{label}</span>
         {Icon && <span className={cn('p-2 rounded-lg', accentBg)}><Icon size={18} /></span>}

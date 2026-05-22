@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, DoorOpen, Users, Zap, Banknote, Bell, LogOut, Search, ChevronDown, Menu, X,
+  FileText, Receipt, AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../controllers/useAuth.jsx';
 import { Avatar } from '../components/common/Avatar.jsx';
@@ -20,6 +21,70 @@ export default function ManagerLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  const loadNotifications = () => {
+    const saved = localStorage.getItem('bhpro_notifications_manager');
+    if (saved) {
+      try {
+        setNotifications(JSON.parse(saved));
+      } catch (e) {
+        setNotifications([]);
+      }
+    } else {
+      const MOCK_MANAGER_NOTIFICATIONS = [
+        { id: '1', type: 'contract', title: 'Hợp đồng HD2025-002 cần ký gia hạn', body: 'Khách: Hoàng Thuỳ Linh — phòng 201', createdAt: '2026-05-22T07:30:00Z', read: false, important: true },
+        { id: '2', type: 'invoice', title: '39/40 hoá đơn tháng 05 đã phát hành', body: 'Còn 1 hoá đơn chưa hoàn tất chỉ số nước', createdAt: '2026-05-21T22:00:00Z', read: false, important: false },
+        { id: '3', type: 'visitor', title: 'Khách vãng lai đặt cọc phòng 103', body: 'Hồ Văn Khang đã đặt cọc 500.000đ — chờ ký hợp đồng', createdAt: '2026-05-21T15:00:00Z', read: false, important: true },
+        { id: '4', type: 'debt', title: 'Hoá đơn HD-202603-001 quá hạn 48 ngày', body: 'Khách: Hoàng Thuỳ Linh — cần gửi nhắc nợ', createdAt: '2026-05-20T09:00:00Z', read: true, important: true },
+        { id: '5', type: 'invoice', title: 'Thanh toán thành công hoá đơn HD-202604-001', body: 'Phạm Minh Đức — 5.136.000đ qua VNPay', createdAt: '2026-05-02T10:14:00Z', read: true, important: false },
+      ];
+      setNotifications(MOCK_MANAGER_NOTIFICATIONS);
+      localStorage.setItem('bhpro_notifications_manager', JSON.stringify(MOCK_MANAGER_NOTIFICATIONS));
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+    const handleStorage = () => loadNotifications();
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('notifications-update', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('notifications-update', handleStorage);
+    };
+  }, []);
+
+  const saveNotifications = (newItems) => {
+    setNotifications(newItems);
+    localStorage.setItem('bhpro_notifications_manager', JSON.stringify(newItems));
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('notifications-update'));
+  };
+
+  const handleMarkAsRead = (id) => {
+    const newItems = notifications.map(n => n.id === id ? { ...n, read: true } : n);
+    saveNotifications(newItems);
+  };
+
+  const handleMarkAllAsRead = (e) => {
+    e.stopPropagation();
+    const newItems = notifications.map(n => ({ ...n, read: true }));
+    saveNotifications(newItems);
+  };
+
+  const getIcon = (type) => {
+    switch (type) {
+      case 'contract': return <FileText size={16} />;
+      case 'invoice': return <Receipt size={16} />;
+      case 'visitor': return <Users size={16} />;
+      case 'debt': return <AlertCircle size={16} />;
+      default: return <Bell size={16} />;
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleLogout = async () => {
     setIsDrawerOpen(false);
@@ -111,9 +176,90 @@ export default function ManagerLayout() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-2 rounded-md hover:bg-gray-100 text-ink-muted">
-            <Bell size={18} />
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setIsNotifOpen(!isNotifOpen)}
+              className={cn(
+                "p-2 rounded-md hover:bg-gray-100 text-ink-muted relative transition-colors apple-press",
+                isNotifOpen && "bg-gray-100 text-primary"
+              )}
+            >
+              <Bell size={18} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 h-2 w-2 bg-danger rounded-full ring-2 ring-surface animate-pulse" />
+              )}
+            </button>
+
+            {isNotifOpen && (
+              <>
+                <div className="fixed inset-0 z-40 cursor-default" onClick={() => setIsNotifOpen(false)} />
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-surface border border-line rounded-2xl shadow-xl z-50 py-3 overflow-hidden animate-[fadeInScale_0.2s_ease-out] text-ink">
+                  <div className="px-4 pb-2.5 border-b border-line flex justify-between items-center">
+                    <span className="font-bold text-sm">Thông báo mới ({unreadCount})</span>
+                    {unreadCount > 0 && (
+                      <button 
+                        onClick={handleMarkAllAsRead}
+                        className="text-xs text-primary font-bold hover:underline"
+                      >
+                        Đọc tất cả
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="max-h-72 overflow-y-auto divide-y divide-line">
+                    {notifications.slice(0, 5).map((n) => (
+                      <div 
+                        key={n.id} 
+                        onClick={() => {
+                          handleMarkAsRead(n.id);
+                          setIsNotifOpen(false);
+                          navigate('/manager/notifications');
+                        }}
+                        className={cn(
+                          "px-4 py-3 flex gap-3 hover:bg-gray-50/80 cursor-pointer transition-colors items-start",
+                          !n.read && "bg-primary-soft/5"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5",
+                          n.type === 'contract' && "bg-amber-50 text-warning",
+                          n.type === 'invoice' && "bg-sky-50 text-info",
+                          n.type === 'visitor' && "bg-green-50 text-success",
+                          n.type === 'debt' && "bg-red-50 text-danger"
+                        )}>
+                          {getIcon(n.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn("text-xs leading-normal", !n.read ? "font-bold text-ink" : "text-ink-muted")}>
+                            {n.title}
+                          </p>
+                          <p className="text-[10px] text-ink-muted mt-0.5 truncate">{n.body}</p>
+                        </div>
+                        {!n.read && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 self-center" />
+                        )}
+                      </div>
+                    ))}
+                    {notifications.length === 0 && (
+                      <div className="py-8 text-center text-xs text-ink-muted">Không có thông báo nào</div>
+                    )}
+                  </div>
+                  
+                  <div className="px-4 pt-2.5 border-t border-line text-center">
+                    <button 
+                      onClick={() => {
+                        setIsNotifOpen(false);
+                        navigate('/manager/notifications');
+                      }}
+                      className="text-xs text-primary font-bold hover:underline w-full block py-1"
+                    >
+                      Xem tất cả thông báo
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           <div className="flex items-center gap-2.5 pl-3 ml-2 border-l border-line cursor-pointer hover:opacity-80 transition-opacity">
             <Avatar name={user?.fullName || 'Manager'} size="sm" />
             <div className="hidden md:block text-sm text-right">

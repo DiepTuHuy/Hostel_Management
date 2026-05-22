@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Send, FileDown, Filter, X, Check, Loader2, CreditCard, Bell, Eye, CheckCircle2 } from 'lucide-react';
 import { Button, PageHeader, Card, Tabs, Table, Badge, Toast, Loading } from '../../components/common';
 import { useInvoices } from '../../controllers/useInvoices.js';
+import { useProperties } from '../../controllers/useProperties.js';
 import { INVOICE_STATUS_META } from '../../models/Invoice.js';
 import { formatCurrency, formatDate, formatPeriod } from '../../utils/format.js';
 
@@ -126,6 +127,7 @@ function ViewReceiptModal({ invoice, onClose }) {
 
 export default function InvoicesPage() {
   const { data: initialInvoices = [], loading } = useInvoices();
+  const { data: properties = [] } = useProperties();
   const [localInvoices, setLocalInvoices] = useState([]);
   
   const [tab, setTab] = useState('all');
@@ -283,9 +285,11 @@ export default function InvoicesPage() {
             className="w-full sm:w-44 h-10 px-3 bg-white border border-line rounded-xl text-sm focus:outline-none focus:border-primary transition-colors"
           >
             <option value="all">Cơ sở: Tất cả</option>
-            <option value="p-001">An Phú Q1</option>
-            <option value="p-002">Hoa Sữa Q3</option>
-            <option value="p-003">Bình An TĐ</option>
+            {properties.map((prop) => (
+              <option key={prop.id} value={prop.id}>
+                {prop.name}
+              </option>
+            ))}
           </select>
 
           <Button 

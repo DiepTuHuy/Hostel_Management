@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Plus, Eye, FileDown, X, Check, ArrowRight, ArrowLeft, ShieldAlert, Sparkles, Download, FileText } from 'lucide-react';
 import { Button, PageHeader, Card, Tabs, Table, Badge, Input, Toast, Loading } from '../../components/common';
 import { useContracts } from '../../controllers/useContracts.js';
+import { useProperties } from '../../controllers/useProperties.js';
 import { CONTRACT_STATUS_META, Contract } from '../../models/Contract.js';
 import { formatDate, formatCurrency } from '../../utils/format.js';
 
 // Multi-step Create Contract Wizard component
 function CreateContractModal({ onClose, onSave }) {
+  const { data: properties = [] } = useProperties();
   const [step, setStep] = useState(1);
   const [validationError, setValidationError] = useState('');
   const [formData, setFormData] = useState({
@@ -20,6 +22,12 @@ function CreateContractModal({ onClose, onSave }) {
     endDate: '2027-06-01',
     propertyId: 'p-001',
   });
+
+  useEffect(() => {
+    if (properties.length > 0 && formData.propertyId === 'p-001') {
+      setFormData(prev => ({ ...prev, propertyId: properties[0].id }));
+    }
+  }, [properties]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -94,6 +102,19 @@ function CreateContractModal({ onClose, onSave }) {
           )}
           {step === 1 && (
             <div className="space-y-4 animate-[fadeIn_0.3s_ease-out]">
+              <div>
+                <label className="block text-sm font-semibold text-ink mb-1">Cơ sở chi nhánh <span className="text-danger">*</span></label>
+                <select
+                  value={formData.propertyId}
+                  onChange={(e) => handleChange('propertyId', e.target.value)}
+                  className="w-full h-10 px-3 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                >
+                  {properties.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1">Chọn phòng <span className="text-danger">*</span></label>
                 <select
@@ -203,6 +224,12 @@ function CreateContractModal({ onClose, onSave }) {
               </div>
 
               <div className="bg-gray-50 rounded-2xl p-4 text-sm divide-y divide-line">
+                <div className="flex justify-between py-2.5">
+                  <span className="text-ink-muted">Cơ sở chi nhánh</span>
+                  <span className="font-semibold text-ink">
+                    {properties.find(p => p.id === formData.propertyId)?.name || formData.propertyId}
+                  </span>
+                </div>
                 <div className="flex justify-between py-2.5">
                   <span className="text-ink-muted">Mã phòng thuê</span>
                   <span className="font-bold text-ink">{formData.roomCode}</span>

@@ -21,7 +21,20 @@ export const authService = {
       password,
       role
     });
-    return new User(res.data.user);
+    return res.data;
+  },
+
+  async verifyOtp(email, otp) {
+    const res = await api.post('/auth/verify-otp', { email, otp });
+    const { token, user } = res.data;
+    localStorage.setItem('bhpro_token', token);
+    localStorage.setItem('bhpro_user', JSON.stringify(user));
+    return { token, user: new User(user) };
+  },
+
+  async resendOtp(email) {
+    const res = await api.post('/auth/resend-otp', { email });
+    return res.data;
   },
 
   async logout() {

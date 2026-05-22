@@ -4,10 +4,12 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from 'recharts';
 import { Button, PageHeader, Card, CardHeader, Tabs, Toast } from '../../components/common';
+import { useProperties } from '../../controllers/useProperties.js';
 import revenue from '../../mocks/revenue.json';
 import { formatCurrency } from '../../utils/format.js';
 
 export default function ReportsPage() {
+  const { data: properties = [], loading: propertiesLoading } = useProperties();
   const [tab, setTab] = useState('revenue');
   const [period, setPeriod] = useState('12 tháng gần nhất');
   const [branch, setBranch] = useState('all');
@@ -21,34 +23,24 @@ export default function ReportsPage() {
   const [exportingPdf, setExportingPdf] = useState(false);
 
   const getDisplayData = () => {
-    if (tab === 'occupancy') {
-      return localRevenue.map(item => ({
-        month: item.month,
-        'p-001': Math.min(100, Math.round(82 + (item['p-001'] ? item['p-001'] % 15 : 5))),
-        'p-002': Math.min(100, Math.round(87 + (item['p-002'] ? item['p-002'] % 12 : 6))),
-        'p-003': Math.min(100, Math.round(75 + (item['p-003'] ? item['p-003'] % 18 : 7))),
-        'p-004': Math.min(100, Math.round(80 + (item['p-004'] ? item['p-004'] % 16 : 4))),
-      }));
-    }
-    if (tab === 'debt') {
-      return localRevenue.map(item => ({
-        month: item.month,
-        'p-001': Math.round((item['p-001'] || 0) * 0.08),
-        'p-002': Math.round((item['p-002'] || 0) * 0.05),
-        'p-003': Math.round((item['p-003'] || 0) * 0.12),
-        'p-004': Math.round((item['p-004'] || 0) * 0.06),
-      }));
-    }
-    if (tab === 'cost') {
-      return localRevenue.map(item => ({
-        month: item.month,
-        'p-001': Math.round((item['p-001'] || 0) * 0.40),
-        'p-002': Math.round((item['p-002'] || 0) * 0.38),
-        'p-003': Math.round((item['p-003'] || 0) * 0.45),
-        'p-004': Math.round((item['p-004'] || 0) * 0.42),
-      }));
-    }
-    return localRevenue;
+    return localRevenue.map(item => {
+      const newItem = { month: item.month };
+      properties.forEach((prop, idx) => {
+        const mockKey = `p-00${(idx % 4) + 1}`;
+        const rawVal = item[mockKey] || 0;
+        
+        if (tab === 'occupancy') {
+          newItem[prop.id] = Math.min(100, Math.round(82 + (rawVal ? rawVal % 15 : 5)));
+        } else if (tab === 'debt') {
+          newItem[prop.id] = Math.round(rawVal * 0.08);
+        } else if (tab === 'cost') {
+          newItem[prop.id] = Math.round(rawVal * 0.40);
+        } else {
+          newItem[prop.id] = rawVal;
+        }
+      });
+      return newItem;
+    });
   };
 
   const chartData = getDisplayData();
@@ -61,7 +53,10 @@ export default function ReportsPage() {
       setChartLoading(false);
       
       // Mutate chart bars depending on chosen filters
-      const scale = branch === 'p-001' ? 1.4 : branch === 'p-002' ? 0.9 : 1.1;
+      const propIndex = properties.findIndex(p => p.id === branch);
+      const mockKeyForScale = propIndex >= 0 ? `p-00${(propIndex % 4) + 1}` : 'all';
+      const scale = mockKeyForScale === 'p-001' ? 1.4 : mockKeyForScale === 'p-002' ? 0.9 : 1.1;
+      
       const updatedRevenue = revenue.map(item => {
         const newItem = { ...item };
         Object.keys(newItem).forEach(key => {
@@ -154,8 +149,9 @@ export default function ReportsPage() {
                 className="w-full h-10 px-3 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
               >
                 <option value="all">Tất cả chi nhánh</option>
-                <option value="p-001">An Phú Q1</option>
-                <option value="p-002">Hoa Sữa Q3</option>
+                {properties.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
               </select>
             </div>
             
@@ -220,10 +216,29 @@ export default function ReportsPage() {
                     />
                     <Tooltip formatter={tab === 'occupancy' ? (v) => `${v}%` : (v) => formatCurrency(v)} />
                     <Legend />
-                    <Bar dataKey="p-001" name="An Phú Q1"    fill="#3A5BC7" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="p-002" name="Hoa Sữa Q3"   fill="#16A34A" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="p-003" name="Bình An TĐ"   fill="#F59E0B" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="p-004" name="Hạnh Phúc GV" fill="#DC2626" radius={[4, 4, 0, 0]} />
+                    {properties
+                      .filter(prop => branch === 'all' || prop.id === branch)
+                      .map((prop, idx) => {
+                        const colors = [
+                          '#3A5BC7', // primary / blue
+                          '#16A34A', // green
+                          '#F59E0B', // amber / yellow
+                          '#DC2626', // red
+                          '#06B6D4', // cyan
+                          '#8B5CF6', // purple
+                          '#EC4899', // pink
+                        ];
+                        const color = colors[idx % colors.length];
+                        return (
+                          <Bar
+                            key={prop.id}
+                            dataKey={prop.id}
+                            name={prop.name}
+                            fill={color}
+                            radius={[4, 4, 0, 0]}
+                          />
+                        );
+                      })}
                   </BarChart>
                 </ResponsiveContainer>
               </div>

@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   phone: { type: String, required: true },
   role: { type: String, enum: ['admin', 'manager', 'tenant'], default: 'tenant' },
-  status: { type: String, enum: ['active', 'inactive', 'locked'], default: 'active' },
+  status: { type: String, enum: ['active', 'inactive', 'locked', 'pending'], default: 'pending' },
   propertyIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }],
   tenantProfile: {
     cccd: { type: String },

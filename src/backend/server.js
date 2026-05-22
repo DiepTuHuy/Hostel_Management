@@ -17,6 +17,7 @@ import { Invoice } from './models/Invoice.js';
 import { Payment } from './models/Payment.js';
 import { Notification } from './models/Notification.js';
 import { RoomType } from './models/RoomType.js';
+import { emailService } from './services/emailService.js';
 
 dotenv.config();
 
@@ -90,14 +91,15 @@ function mapContract(contractDoc) {
   if (!contractDoc) return null;
   const contract = contractDoc.toObject ? contractDoc.toObject() : contractDoc;
   const room = contract.roomId || {};
+  const tenant = contract.tenantIds?.[0] || {};
   
   return {
     id: contract._id.toString(),
     code: contract.code || `HD-${contract._id.toString().substring(18).toUpperCase()}`,
-    propertyId: room.propertyId ? room.propertyId.toString() : undefined,
-    roomId: room._id ? room._id.toString() : (contract.roomId ? contract.roomId.toString() : undefined),
-    tenantId: contract.tenantIds?.[0] ? contract.tenantIds[0].toString() : undefined,
-    tenantIds: contract.tenantIds ? contract.tenantIds.map(t => t.toString()) : [],
+    propertyId: room.propertyId ? (room.propertyId._id?.toString() || room.propertyId.toString()) : undefined,
+    roomId: room.roomNumber || room.code || (room._id ? room._id.toString() : (contract.roomId ? contract.roomId.toString() : undefined)),
+    tenantId: tenant.fullName || (tenant._id ? tenant._id.toString() : (contract.tenantIds?.[0] ? contract.tenantIds[0].toString() : undefined)),
+    tenantIds: contract.tenantIds ? contract.tenantIds.map(t => t._id?.toString() || t.toString()) : [],
     startDate: contract.startDate,
     endDate: contract.endDate,
     deposit: contract.deposit,
@@ -118,14 +120,15 @@ function mapInvoice(invoiceDoc) {
   const invoice = invoiceDoc.toObject ? invoiceDoc.toObject() : invoiceDoc;
   const room = invoice.roomId || {};
   const contract = invoice.contractId || {};
+  const tenant = contract.tenantIds?.[0] || {};
   
   return {
     id: invoice._id.toString(),
     code: invoice.code || `HD-${invoice._id.toString().substring(18).toUpperCase()}`,
     contractId: invoice.contractId?._id ? invoice.contractId._id.toString() : (invoice.contractId ? invoice.contractId.toString() : undefined),
-    propertyId: room.propertyId ? room.propertyId.toString() : undefined,
-    roomId: room._id ? room._id.toString() : (invoice.roomId ? invoice.roomId.toString() : undefined),
-    tenantId: contract.tenantIds?.[0] ? contract.tenantIds[0].toString() : undefined,
+    propertyId: room.propertyId ? (room.propertyId._id?.toString() || room.propertyId.toString()) : undefined,
+    roomId: room.roomNumber || room.code || (room._id ? room._id.toString() : (invoice.roomId ? invoice.roomId.toString() : undefined)),
+    tenantId: tenant.fullName || (tenant._id ? tenant._id.toString() : (contract.tenantIds?.[0] ? contract.tenantIds[0].toString() : undefined)),
     period: invoice.period,
     dueDate: invoice.deadline || invoice.dueDate,
     deadline: invoice.deadline,
@@ -191,35 +194,172 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ message: "Vui lòng nhập đầy đủ các thông tin bắt buộc (họ tên, email, mật khẩu, số điện thoại)." });
     }
 
+    const emailLower = email.toLowerCase();
+
     // Kiểm tra xem email đã được đăng ký chưa
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ email: emailLower });
+    
     if (existingUser) {
-      return res.status(400).json({ message: "Email này đã tồn tại trong hệ thống." });
+      if (existingUser.status === 'active') {
+        return res.status(400).json({ message: "Email này đã tồn tại và đã được kích hoạt trong hệ thống." });
+      }
+      
+      // Nếu tài khoản đang ở trạng thái pending (chưa xác thực), chúng ta sẽ cho phép gửi lại mã OTP mới và cập nhật thông tin
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      
+      // Sinh mã OTP 6 chữ số ngẫu nhiên
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // hết hạn trong 5 phút
+
+      existingUser.fullName = fullName;
+      existingUser.password = hashedPassword;
+      existingUser.phone = phone;
+      existingUser.role = role || 'tenant';
+      existingUser.tenantProfile = role === 'tenant' ? tenantProfile : undefined;
+      existingUser.otp = { code: otpCode, expiresAt: otpExpires };
+      
+      await existingUser.save();
+
+      console.log(`[Database] Gửi lại mã OTP đăng ký mới cho tài khoản pending: ${emailLower} - OTP: ${otpCode}`);
+      await emailService.sendOtpEmail(emailLower, fullName, otpCode);
+
+      return res.status(200).json({
+        message: "Mã OTP mới đã được gửi tới email của bạn. Vui lòng xác thực tài khoản.",
+        status: "pending",
+        email: emailLower
+      });
     }
 
     // Mã hoá mật khẩu bảo mật bằng bcryptjs
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Tạo user mới trực tiếp lưu vào DB
+    // Sinh mã OTP 6 chữ số ngẫu nhiên
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // hết hạn trong 5 phút
+
+    // Tạo user mới với trạng thái pending
     const newUser = await User.create({
       fullName,
-      email: email.toLowerCase(),
+      email: emailLower,
       password: hashedPassword,
       phone,
       role: role || 'tenant',
-      status: 'active',
-      tenantProfile: role === 'tenant' ? tenantProfile : undefined
+      status: 'pending',
+      tenantProfile: role === 'tenant' ? tenantProfile : undefined,
+      otp: { code: otpCode, expiresAt: otpExpires }
     });
 
-    console.log(`[Database] Đăng ký thành công người dùng mới trực tiếp vào MongoDB: ${email}`);
+    console.log(`[Database] Đăng ký tài khoản pending mới thành công: ${emailLower} - OTP: ${otpCode}`);
+    
+    // Gửi email thật
+    await emailService.sendOtpEmail(emailLower, fullName, otpCode);
+
     res.status(201).json({
-      message: "Đăng ký tài khoản thành công!",
-      user: mapUser(newUser)
+      message: "Mã OTP xác thực đã được gửi tới email của bạn. Vui lòng kiểm tra hộp thư!",
+      status: "pending",
+      email: emailLower
     });
   } catch (error) {
     console.error("Lỗi đăng ký:", error.message);
     res.status(500).json({ message: "Lỗi hệ thống khi đăng ký tài khoản." });
+  }
+});
+
+// 1.1. Xác thực OTP đăng ký tài khoản
+app.post('/api/auth/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Vui lòng nhập đầy đủ email và mã OTP." });
+    }
+
+    const emailLower = email.toLowerCase();
+    const user = await User.findOne({ email: emailLower });
+
+    if (!user) {
+      return res.status(404).json({ message: "Tài khoản không tồn tại." });
+    }
+
+    if (user.status === 'active') {
+      return res.status(400).json({ message: "Tài khoản đã được kích hoạt từ trước." });
+    }
+
+    if (!user.otp || !user.otp.code) {
+      return res.status(400).json({ message: "Không tìm thấy mã OTP nào đang chờ xác thực." });
+    }
+
+    // Kiểm tra hết hạn OTP
+    if (new Date() > new Date(user.otp.expiresAt)) {
+      return res.status(400).json({ message: "Mã OTP đã hết hạn (hiệu lực trong 5 phút). Vui lòng yêu cầu gửi lại mã mới." });
+    }
+
+    // Kiểm tra mã OTP khớp
+    if (user.otp.code !== otp.trim()) {
+      return res.status(400).json({ message: "Mã OTP nhập vào không chính xác. Vui lòng kiểm tra lại." });
+    }
+
+    // Kích hoạt tài khoản thành công
+    user.status = 'active';
+    user.otp = { code: undefined, expiresAt: undefined };
+    await user.save();
+
+    console.log(`[Database] Xác thực OTP thành công, kích hoạt tài khoản: ${emailLower}`);
+
+    // Tạo token giả lập phiên làm việc giống login
+    const token = `jwt.${user._id}.${Date.now()}`;
+
+    res.status(200).json({
+      message: "Kích hoạt tài khoản thành công!",
+      token,
+      user: mapUser(user)
+    });
+  } catch (error) {
+    console.error("Lỗi xác thực OTP:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi xác thực OTP." });
+  }
+});
+
+// 1.2. Gửi lại mã OTP
+app.post('/api/auth/resend-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Vui lòng cung cấp địa chỉ email." });
+    }
+
+    const emailLower = email.toLowerCase();
+    const user = await User.findOne({ email: emailLower });
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy tài khoản nào đang chờ xác thực." });
+    }
+
+    if (user.status === 'active') {
+      return res.status(400).json({ message: "Tài khoản này đã được kích hoạt rồi." });
+    }
+
+    // Sinh mã OTP mới
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
+
+    user.otp = { code: otpCode, expiresAt: otpExpires };
+    await user.save();
+
+    console.log(`[Database] Đã gửi lại mã OTP mới cho tài khoản: ${emailLower} - OTP mới: ${otpCode}`);
+
+    // Gửi email thật
+    await emailService.sendOtpEmail(emailLower, user.fullName, otpCode);
+
+    res.status(200).json({
+      message: "Gửi lại mã OTP thành công! Vui lòng kiểm tra hòm thư email của bạn."
+    });
+  } catch (error) {
+    console.error("Lỗi gửi lại OTP:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi gửi lại OTP." });
   }
 });
 
@@ -405,7 +545,7 @@ app.get('/api/contracts', async (req, res) => {
     }
     if (status) filter.status = status;
 
-    const contracts = await Contract.find(filter).populate('roomId');
+        const contracts = await Contract.find(filter).populate('roomId').populate('tenantIds');
     
     let results = contracts;
     if (propertyId) {
@@ -428,7 +568,7 @@ app.get('/api/contracts/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
     }
-    const contract = await Contract.findById(req.params.id).populate('roomId');
+    const contract = await Contract.findById(req.params.id).populate('roomId').populate('tenantIds');
     if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
     res.json(mapContract(contract));
   } catch (error) {
@@ -456,12 +596,12 @@ app.get('/api/invoices', async (req, res) => {
     const invoices = await Invoice.find(filter)
       .populate({
         path: 'contractId',
-        select: 'tenantIds'
+        populate: {
+          path: 'tenantIds',
+          select: 'fullName'
+        }
       })
-      .populate({
-        path: 'roomId',
-        select: 'propertyId price currentPrice'
-      });
+      .populate('roomId');
 
     let results = invoices;
     if (propertyId) {
@@ -487,12 +627,12 @@ app.get('/api/invoices/:id', async (req, res) => {
     const invoice = await Invoice.findById(req.params.id)
       .populate({
         path: 'contractId',
-        select: 'tenantIds'
+        populate: {
+          path: 'tenantIds',
+          select: 'fullName'
+        }
       })
-      .populate({
-        path: 'roomId',
-        select: 'propertyId price currentPrice'
-      });
+      .populate('roomId');
     if (!invoice) return res.status(404).json({ message: "Không tìm thấy hoá đơn." });
     res.json(mapInvoice(invoice));
   } catch (error) {

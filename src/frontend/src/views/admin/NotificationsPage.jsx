@@ -1,33 +1,33 @@
 import { useState, useEffect } from 'react';
-import { Bell, FileText, Receipt, Users, AlertCircle, CheckCheck, Inbox } from 'lucide-react';
+import { Bell, FileText, Receipt, Shield, AlertCircle, CheckCheck, Inbox } from 'lucide-react';
 import { PageHeader, Card, Tabs, Badge, Toast, Button } from '../../components/common';
 import { formatRelative } from '../../utils/format.js';
 
-const INITIAL_ITEMS = [
-  { id: '1', type: 'contract', title: 'Hợp đồng HD2025-002 cần ký gia hạn', body: 'Khách: Hoàng Thuỳ Linh — phòng 201', createdAt: '2026-05-22T07:30:00Z', read: false, important: true },
-  { id: '2', type: 'invoice', title: '39/40 hoá đơn tháng 05 đã phát hành', body: 'Còn 1 hoá đơn chưa hoàn tất chỉ số nước', createdAt: '2026-05-21T22:00:00Z', read: false, important: false },
-  { id: '3', type: 'visitor', title: 'Khách vãng lai đặt cọc phòng 103', body: 'Hồ Văn Khang đã đặt cọc 500.000đ — chờ ký hợp đồng', createdAt: '2026-05-21T15:00:00Z', read: false, important: true },
-  { id: '4', type: 'debt', title: 'Hoá đơn HD-202603-001 quá hạn 48 ngày', body: 'Khách: Hoàng Thuỳ Linh — cần gửi nhắc nợ', createdAt: '2026-05-20T09:00:00Z', read: true, important: true },
-  { id: '5', type: 'invoice', title: 'Thanh toán thành công hoá đơn HD-202604-001', body: 'Phạm Minh Đức — 5.136.000đ qua VNPay', createdAt: '2026-05-02T10:14:00Z', read: true, important: false },
+const INITIAL_ADMIN_NOTIFICATIONS = [
+  { id: '1', type: 'system', title: 'Hệ thống phát hiện truy cập bất thường', body: 'IP: 192.168.1.105 đăng nhập tài khoản Manager thất bại 5 lần', createdAt: '2026-05-22T08:15:00Z', read: false, important: true },
+  { id: '2', type: 'invoice', title: 'Doanh thu tháng 05 đạt mốc 380Mđ', body: 'Tăng trưởng 12.5% so với tháng trước', createdAt: '2026-05-22T00:00:00Z', read: false, important: false },
+  { id: '3', type: 'contract', title: 'Cảnh báo 12 hợp đồng sắp hết hạn trong 30 ngày', body: 'Yêu cầu các Manager kiểm tra và gửi yêu cầu ký gia hạn', createdAt: '2026-05-21T10:00:00Z', read: false, important: true },
+  { id: '4', type: 'debt', title: 'Tổng công nợ quá hạn vượt ngưỡng 5Mđ', body: 'Cơ sở Quận 1 và Bình Thạnh có tỷ lệ trễ hạn cao nhất', createdAt: '2026-05-20T14:30:00Z', read: true, important: true },
+  { id: '5', type: 'system', title: 'Bản sao lưu dữ liệu tự động hoàn tất', body: 'Dung lượng 145MB sao lưu thành công lên Cloud Storage', createdAt: '2026-05-19T23:00:00Z', read: true, important: false },
 ];
 
-export default function ManagerNotificationsPage() {
+export default function AdminNotificationsPage() {
   const [items, setItems] = useState([]);
   const [tab, setTab] = useState('all');
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const load = () => {
-      const saved = localStorage.getItem('bhpro_notifications_manager');
+      const saved = localStorage.getItem('bhpro_notifications_admin');
       if (saved) {
         try {
           setItems(JSON.parse(saved));
         } catch (e) {
-          setItems(INITIAL_ITEMS);
+          setItems(INITIAL_ADMIN_NOTIFICATIONS);
         }
       } else {
-        setItems(INITIAL_ITEMS);
-        localStorage.setItem('bhpro_notifications_manager', JSON.stringify(INITIAL_ITEMS));
+        setItems(INITIAL_ADMIN_NOTIFICATIONS);
+        localStorage.setItem('bhpro_notifications_admin', JSON.stringify(INITIAL_ADMIN_NOTIFICATIONS));
       }
     };
 
@@ -42,7 +42,7 @@ export default function ManagerNotificationsPage() {
 
   const saveNotifications = (newItems) => {
     setItems(newItems);
-    localStorage.setItem('bhpro_notifications_manager', JSON.stringify(newItems));
+    localStorage.setItem('bhpro_notifications_admin', JSON.stringify(newItems));
     window.dispatchEvent(new Event('storage'));
     window.dispatchEvent(new Event('notifications-update'));
   };
@@ -76,9 +76,9 @@ export default function ManagerNotificationsPage() {
 
   const getIcon = (type) => {
     switch (type) {
+      case 'system': return <Shield size={20} />;
       case 'contract': return <FileText size={20} />;
       case 'invoice': return <Receipt size={20} />;
-      case 'visitor': return <Users size={20} />;
       case 'debt': return <AlertCircle size={20} />;
       default: return <Bell size={20} />;
     }
@@ -88,7 +88,7 @@ export default function ManagerNotificationsPage() {
     <>
       <PageHeader 
         title="Trung tâm thông báo" 
-        subtitle="Hợp đồng, hoá đơn, đặt cọc, công nợ và các cảnh báo"
+        subtitle="Quản trị hệ thống, hiệu suất kinh doanh, hợp đồng và công nợ"
         actions={
           <Button 
             variant="secondary" 
@@ -128,15 +128,16 @@ export default function ManagerNotificationsPage() {
               <li 
                 key={n.id} 
                 onClick={() => markAsRead(n.id)}
-                className={`p-4 flex gap-4 items-start hover:bg-gray-50/80 cursor-pointer transition-all duration-300 apple-press ${
+                className={`p-4 flex gap-4 items-start hover:bg-gray-50/85 cursor-pointer transition-all duration-200 apple-press ${
                   !n.read ? 'bg-primary-soft/10 font-semibold' : ''
                 }`}
               >
-                <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${
+                <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
+                  n.type === 'system' ? 'bg-red-50 text-danger' :
                   n.type === 'contract' ? 'bg-amber-50 text-warning' :
                   n.type === 'invoice' ? 'bg-sky-50 text-info' :
-                  n.type === 'visitor' ? 'bg-green-50 text-success' :
-                  'bg-red-50 text-danger'
+                  n.type === 'debt' ? 'bg-rose-50 text-rose-600' :
+                  'bg-primary-soft text-primary'
                 }`}>
                   {getIcon(n.type)}
                 </div>
@@ -146,8 +147,8 @@ export default function ManagerNotificationsPage() {
                     {n.important && <Badge color="warning">Quan trọng</Badge>}
                     {!n.read && <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />}
                   </div>
-                  <p className="text-sm text-ink-muted mt-0.5">{n.body}</p>
-                  <p className="text-xs text-ink-muted mt-1">{formatRelative(n.createdAt)}</p>
+                  <p className="text-xs text-ink-muted mt-0.5 leading-relaxed">{n.body}</p>
+                  <p className="text-[10px] text-ink-muted mt-1">{formatRelative(n.createdAt)}</p>
                 </div>
               </li>
             ))}

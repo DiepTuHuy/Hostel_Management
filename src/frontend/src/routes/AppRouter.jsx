@@ -14,6 +14,7 @@ const AdminDebts = lazy(() => import('../views/admin/DebtsPage.jsx'));
 const AdminServices = lazy(() => import('../views/admin/ServicesPage.jsx'));
 const AdminReports = lazy(() => import('../views/admin/ReportsPage.jsx'));
 const AdminSettings = lazy(() => import('../views/admin/SettingsPage.jsx'));
+const AdminNotifications = lazy(() => import('../views/admin/NotificationsPage.jsx'));
 
 const ManagerLayout = lazy(() => import('../layouts/ManagerLayout.jsx'));
 const ManagerDashboard = lazy(() => import('../views/manager/DashboardPage.jsx'));
@@ -73,6 +74,7 @@ export function AppRouter() {
           <Route path="services" element={<AdminServices />} />
           <Route path="reports" element={<AdminReports />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="notifications" element={<AdminNotifications />} />
         </Route>
 
         <Route
