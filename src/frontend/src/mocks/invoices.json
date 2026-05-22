@@ -1,0 +1,102 @@
+[
+  {
+    "id": "i-2026-05-001",
+    "code": "HD-202605-001",
+    "contractId": "c-001",
+    "propertyId": "p-001",
+    "roomId": "r-301",
+    "tenantId": "u-tnt-001",
+    "period": "2026-05",
+    "dueDate": "2026-06-05",
+    "items": [
+      { "name": "Tiền phòng", "qty": 1, "unit": "tháng", "unitPrice": 4000000, "total": 4000000 },
+      { "name": "Tiền điện", "qty": 285, "unit": "kWh", "unitPrice": 3000, "total": 855000 },
+      { "name": "Tiền nước", "qty": 11, "unit": "m³", "unitPrice": 20000, "total": 220000 },
+      { "name": "Internet",  "qty": 1, "unit": "tháng", "unitPrice": 150000, "total": 150000 },
+      { "name": "Rác",       "qty": 1, "unit": "tháng", "unitPrice": 30000,  "total": 30000  },
+      { "name": "Gửi xe",    "qty": 1, "unit": "tháng", "unitPrice": 165000, "total": 165000 }
+    ],
+    "subtotal": 5420000,
+    "total": 5420000,
+    "status": "pending",
+    "paidAt": null,
+    "paymentMethod": null,
+    "receiptUrl": null,
+    "meterReadings": {
+      "electricity": { "previous": 12450, "current": 12735 },
+      "water":       { "previous": 380,   "current": 391  }
+    }
+  },
+  {
+    "id": "i-2026-04-001",
+    "code": "HD-202604-001",
+    "contractId": "c-001",
+    "propertyId": "p-001",
+    "roomId": "r-301",
+    "tenantId": "u-tnt-001",
+    "period": "2026-04",
+    "dueDate": "2026-05-05",
+    "items": [
+      { "name": "Tiền phòng", "qty": 1, "unit": "tháng", "unitPrice": 4000000, "total": 4000000 },
+      { "name": "Tiền điện", "qty": 252, "unit": "kWh", "unitPrice": 3000, "total": 756000 },
+      { "name": "Tiền nước", "qty": 10, "unit": "m³", "unitPrice": 20000, "total": 200000 },
+      { "name": "Internet",  "qty": 1, "unit": "tháng", "unitPrice": 150000, "total": 150000 },
+      { "name": "Rác",       "qty": 1, "unit": "tháng", "unitPrice": 30000,  "total": 30000  }
+    ],
+    "subtotal": 5136000,
+    "total": 5136000,
+    "status": "paid",
+    "paidAt": "2026-05-02T10:14:00Z",
+    "paymentMethod": "VNPay",
+    "receiptUrl": "/receipts/202604-001.pdf",
+    "meterReadings": {
+      "electricity": { "previous": 12198, "current": 12450 },
+      "water":       { "previous": 370,   "current": 380  }
+    }
+  },
+  {
+    "id": "i-2026-05-002",
+    "code": "HD-202605-002",
+    "contractId": "c-003",
+    "propertyId": "p-001",
+    "roomId": "r-202",
+    "tenantId": "u-tnt-003",
+    "period": "2026-05",
+    "dueDate": "2026-06-05",
+    "items": [
+      { "name": "Tiền phòng", "qty": 1, "unit": "tháng", "unitPrice": 4500000, "total": 4500000 },
+      { "name": "Tiền điện", "qty": 215, "unit": "kWh", "unitPrice": 3000, "total": 645000 },
+      { "name": "Tiền nước", "qty": 9,  "unit": "m³",  "unitPrice": 20000, "total": 180000 },
+      { "name": "Internet",  "qty": 1, "unit": "tháng", "unitPrice": 150000, "total": 150000 }
+    ],
+    "subtotal": 5475000,
+    "total": 5475000,
+    "status": "pending_cash",
+    "paidAt": null,
+    "paymentMethod": "Tiền mặt",
+    "receiptUrl": null,
+    "meterReadings": null
+  },
+  {
+    "id": "i-2026-03-001",
+    "code": "HD-202603-001",
+    "contractId": "c-002",
+    "propertyId": "p-001",
+    "roomId": "r-201",
+    "tenantId": "u-tnt-002",
+    "period": "2026-03",
+    "dueDate": "2026-04-05",
+    "items": [
+      { "name": "Tiền phòng", "qty": 1, "unit": "tháng", "unitPrice": 4000000, "total": 4000000 },
+      { "name": "Tiền điện", "qty": 240, "unit": "kWh", "unitPrice": 3000, "total": 720000 },
+      { "name": "Tiền nước", "qty": 10, "unit": "m³",  "unitPrice": 20000, "total": 200000 }
+    ],
+    "subtotal": 4920000,
+    "total": 4920000,
+    "status": "overdue",
+    "paidAt": null,
+    "paymentMethod": null,
+    "receiptUrl": null,
+    "meterReadings": null
+  }
+]

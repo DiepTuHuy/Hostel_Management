@@ -1,0 +1,33 @@
+# Dependency directories
+node_modules/
+src/frontend/node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+src/frontend/dist/
+src/frontend/dist-ssr/
+
+# IDE and system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp files
+*.tmp
+~$*.docx
+~$*.xlsx
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+src/frontend/.env
+src/frontend/.env.local
+src/frontend/.env.*.local
+
+# Vite cache
+.vite/
+src/frontend/.vite/

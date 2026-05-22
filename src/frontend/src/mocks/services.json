@@ -1,0 +1,7 @@
+[
+  { "id": "s-elec",     "name": "Điện",     "unit": "kWh",   "type": "metered",  "tiers": [{"from": 0, "to": 100, "price": 2500}, {"from": 100, "to": 200, "price": 3000}, {"from": 200, "to": null, "price": 3500}], "active": true },
+  { "id": "s-water",    "name": "Nước",    "unit": "m³",    "type": "metered",  "price": 20000, "active": true },
+  { "id": "s-internet", "name": "Internet", "unit": "tháng", "type": "fixed",    "price": 150000, "active": true },
+  { "id": "s-trash",    "name": "Rác",     "unit": "tháng", "type": "fixed",    "price": 30000, "active": true },
+  { "id": "s-parking",  "name": "Gửi xe",  "unit": "tháng", "type": "fixed",    "price": 165000, "active": true }
+]

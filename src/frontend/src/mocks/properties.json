@@ -1,0 +1,58 @@
+[
+  {
+    "id": "p-001",
+    "code": "NT-Q1-01",
+    "name": "Nhà trọ An Phú — Quận 1",
+    "address": "12 Nguyễn Cư Trinh, P. Nguyễn Cư Trinh",
+    "district": "Quận 1",
+    "city": "TP. Hồ Chí Minh",
+    "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600",
+    "totalRooms": 24,
+    "occupiedRooms": 22,
+    "managerIds": ["u-mgr-001"],
+    "status": "active",
+    "createdAt": "2025-02-01T08:00:00Z"
+  },
+  {
+    "id": "p-002",
+    "code": "NT-Q3-01",
+    "name": "Nhà trọ Hoa Sữa — Quận 3",
+    "address": "78 Võ Văn Tần, P. 6",
+    "district": "Quận 3",
+    "city": "TP. Hồ Chí Minh",
+    "image": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600",
+    "totalRooms": 18,
+    "occupiedRooms": 15,
+    "managerIds": ["u-mgr-002"],
+    "status": "active",
+    "createdAt": "2025-03-15T08:00:00Z"
+  },
+  {
+    "id": "p-003",
+    "code": "NT-TD-01",
+    "name": "Nhà trọ Bình An — Thủ Đức",
+    "address": "245 Võ Văn Ngân, P. Bình Thọ",
+    "district": "TP. Thủ Đức",
+    "city": "TP. Hồ Chí Minh",
+    "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600",
+    "totalRooms": 32,
+    "occupiedRooms": 27,
+    "managerIds": ["u-mgr-002"],
+    "status": "active",
+    "createdAt": "2025-05-20T08:00:00Z"
+  },
+  {
+    "id": "p-004",
+    "code": "NT-GV-01",
+    "name": "Nhà trọ Hạnh Phúc — Gò Vấp",
+    "address": "56 Quang Trung, P. 10",
+    "district": "Gò Vấp",
+    "city": "TP. Hồ Chí Minh",
+    "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600",
+    "totalRooms": 20,
+    "occupiedRooms": 16,
+    "managerIds": [],
+    "status": "active",
+    "createdAt": "2025-09-01T08:00:00Z"
+  }
+]

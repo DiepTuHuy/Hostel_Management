@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #3a5bc7;
+  --color-primary-dark: #2a4fbd;
+  --color-primary-soft: #e8eef9;
+  --color-bg: #f5f7fb;
+  --color-surface: #ffffff;
+  --color-text: #1a1f36;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #0ea5e9;
+}
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  *:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-sm { @apply h-8 px-3 text-sm; }
+  .btn-md { @apply h-10 px-4 text-sm; }
+  .btn-lg { @apply h-12 px-6 text-base; }
+  .btn-primary { @apply bg-primary text-white hover:bg-primary-dark; }
+  .btn-secondary { @apply bg-white text-ink border border-line hover:bg-gray-50; }
+  .btn-ghost { @apply bg-transparent text-ink hover:bg-gray-100; }
+  .btn-danger { @apply bg-danger text-white hover:bg-red-700; }
+
+  .input {
+    @apply w-full h-10 px-3 rounded-lg border border-line bg-white text-ink placeholder:text-ink-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm;
+  }
+  .label {
+    @apply block text-sm font-medium text-ink mb-1.5;
+  }
+  .helper {
+    @apply text-xs text-ink-muted mt-1;
+  }
+  .error-text {
+    @apply text-xs text-danger mt-1;
+  }
+
+  .card {
+    @apply bg-surface border border-line rounded-card shadow-card;
+  }
+  .card-padded {
+    @apply card p-6;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-success { @apply bg-green-50 text-green-700; }
+  .badge-warning { @apply bg-amber-50 text-amber-700; }
+  .badge-danger  { @apply bg-red-50 text-red-700; }
+  .badge-info    { @apply bg-sky-50 text-sky-700; }
+  .badge-neutral { @apply bg-gray-100 text-gray-700; }
+  .badge-primary { @apply bg-primary-soft text-primary-700; }
+
+  .table-base {
+    @apply w-full text-sm;
+  }
+  .table-base thead th {
+    @apply text-left text-xs font-semibold uppercase tracking-wide text-ink-muted px-4 py-3 border-b border-line bg-gray-50;
+  }
+  .table-base tbody td {
+    @apply px-4 py-3 border-b border-line text-ink;
+  }
+  .table-base tbody tr:hover {
+    @apply bg-gray-50;
+  }
+}

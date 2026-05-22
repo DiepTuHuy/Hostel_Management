@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Liên hệ | PropTech Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9ff;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#d3e4fe",
+                      "primary-container": "#3a5bc7",
+                      "tertiary-container": "#8c5800",
+                      "on-error-container": "#93000a",
+                      "on-error": "#ffffff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-secondary-fixed": "#002109",
+                      "text-body": "#334155",
+                      "border-light": "#E2E8F0",
+                      "surface-soft": "#F1F5F9",
+                      "surface-variant": "#d3e4fe",
+                      "on-tertiary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed": "#6bff8f",
+                      "on-background": "#0b1c30",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary-container": "#007432",
+                      "surface-bright": "#f8f9ff",
+                      "on-surface": "#0b1c30",
+                      "error": "#ba1a1a",
+                      "secondary": "#006e2f",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#f8f9ff",
+                      "secondary-fixed-dim": "#4ae176",
+                      "on-primary-fixed-variant": "#133ca9",
+                      "on-primary-fixed": "#001550",
+                      "on-tertiary-fixed": "#2a1700",
+                      "secondary-container": "#6bff8f",
+                      "on-secondary": "#ffffff",
+                      "on-surface-variant": "#444653",
+                      "on-primary-container": "#d9dfff",
+                      "outline": "#747684",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "text-heading": "#0F172A",
+                      "outline-variant": "#c4c5d5",
+                      "primary-fixed-dim": "#b6c4ff",
+                      "on-tertiary-container": "#ffdab2",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#3456c2",
+                      "surface-dim": "#cbdbf5",
+                      "inverse-primary": "#b6c4ff",
+                      "primary-fixed": "#dce1ff",
+                      "on-secondary-fixed-variant": "#005321",
+                      "surface-container": "#e5eeff",
+                      "background": "#f8f9ff",
+                      "primary": "#1b41ae",
+                      "surface-ice": "#F8FAFC",
+                      "tertiary-fixed": "#ffddb8",
+                      "surface-container-high": "#dce9ff",
+                      "tertiary": "#6c4300",
+                      "inverse-surface": "#213145"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "base": "8px",
+                      "container-max": "1280px",
+                      "section-gap": "80px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "40px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "display-lg-mobile": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "display-lg-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "display-lg": ["48px", {"lineHeight": "60px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface shadow-sm dark:shadow-none border-b border-border-light dark:border-outline-variant docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-20">
+<div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">
+                PropTech Portal
+            </div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Tìm phòng</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Giới thiệu</a>
+<a class="text-primary dark:text-primary-fixed border-b-2 border-primary font-bold font-body-md text-body-md" href="#">Liên hệ</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden md:block text-primary dark:text-primary-fixed font-label-md text-label-md hover:text-primary-container transition-colors px-4 py-2">
+                    Dành cho Chủ nhà
+                </button>
+<div class="p-2 cursor-pointer scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-primary">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<main class="min-h-screen">
+<!-- Hero Section -->
+<section class="relative h-[400px] flex items-center overflow-hidden bg-primary-container">
+<div class="absolute inset-0 opacity-40">
+<img class="w-full h-full object-cover" data-alt="A professional and modern corporate office interior with clean lines, glass partitions, and abundant natural light. The atmosphere is sophisticated and tranquil, reflecting a high-end real estate portal brand. The color palette consists of deep blues and crisp whites, creating a sense of authoritative reliability and premium hospitality. Soft, diffused lighting enhances the minimalist aesthetic of the architectural space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBILt23Dtw2WgkBQNgOdKPNntHbLJ6x9Z7o5YUyPFBCaTSeMbt6bPQOmp8gR-S4t9h7Q1AbW8cjpPKs8c-e6MTj8Ni2U71oDnlSuVwvbCAzT1fWG700SLUOPchzvluzblFjKJhd0MnqlDhnouT_pWjhwH8ESISFldSEH7vxie9GGerOJ0iX7l8GzAlsmedmzgHj2PC5D-eAv62SiM1Q9yGqdscifP-90yNDIUOWIjnudos5pdw6jthn0zTTSALi0o5P18N3aFMEPFgl"/>
+</div>
+<div class="relative z-10 w-full px-margin-desktop max-w-container-max mx-auto text-white">
+<h1 class="font-display-lg text-display-lg mb-4">Liên hệ với chúng tôi</h1>
+<p class="font-body-lg text-body-lg max-w-2xl text-on-primary-container">Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn tìm kiếm không gian sống lý tưởng hoặc giải pháp đầu tư bất động sản tối ưu nhất.</p>
+</div>
+</section>
+<!-- Contact Content -->
+<section class="py-section-gap px-margin-desktop max-w-container-max mx-auto -mt-24 relative z-20">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Contact Form Card -->
+<div class="lg:col-span-7 bg-surface-container-lowest p-8 md:p-12 rounded-xl shadow-lg border border-border-light">
+<h2 class="font-headline-lg text-headline-lg text-text-heading mb-8">Gửi tin nhắn cho chúng tôi</h2>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Họ và tên</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-body-md" placeholder="Nguyễn Văn A" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Email</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-body-md" placeholder="example@gmail.com" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Số điện thoại</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-body-md" placeholder="0901 234 567" type="tel"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Nội dung liên hệ</label>
+<textarea class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-body-md resize-none" placeholder="Tôi muốn tìm hiểu về..." rows="4"></textarea>
+</div>
+<button class="w-full md:w-auto px-12 py-4 bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-md hover:bg-primary-container transition-all scale-100 active:scale-95" type="submit">
+                            Gửi yêu cầu
+                        </button>
+</form>
+</div>
+<!-- Contact Info Side -->
+<div class="lg:col-span-5 flex flex-col gap-8">
+<!-- Info Card -->
+<div class="bg-surface-container-low p-8 rounded-xl border border-border-light h-full">
+<h3 class="font-headline-md text-headline-md text-text-heading mb-8">Thông tin liên hệ</h3>
+<div class="space-y-8">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">location_on</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Địa chỉ văn phòng</p>
+<p class="font-body-md text-body-md text-text-body">Tầng 15, Keangnam Landmark 72, Phạm Hùng, Nam Từ Liêm, Hà Nội</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">call</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Số điện thoại</p>
+<p class="font-body-md text-body-md text-text-body">+84 (0) 24 3456 7890<br/>Hotline: 1900 8888</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">schedule</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">Giờ làm việc</p>
+<p class="font-body-md text-body-md text-text-body">Thứ 2 - Thứ 6: 08:30 - 18:00<br/>Thứ 7: 09:00 - 12:00</p>
+</div>
+</div>
+</div>
+<div class="mt-12 pt-8 border-t border-outline-variant">
+<p class="font-label-md text-label-md text-on-surface-variant mb-4">Theo dõi chúng tôi</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">social_leaderboard</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">alternate_email</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Map Section -->
+<section class="pb-section-gap px-margin-desktop max-w-container-max mx-auto">
+<div class="rounded-2xl overflow-hidden shadow-xl border border-border-light h-[500px] relative">
+<div class="absolute inset-0 bg-surface-container-high animate-pulse" id="map-placeholder"></div>
+<img class="w-full h-full object-cover grayscale brightness-90 hover:grayscale-0 transition-all duration-700" data-alt="A highly detailed, stylized digital map of Hanoi's metropolitan area with clean, minimalist design aesthetics. The map highlights key real estate landmarks and major transportation hubs with subtle glowing markers in the brand's primary blue color. The lighting is bright and modern, creating a clear and inviting visual for a high-end PropTech platform. The overall composition is professional, serene, and authoritative." data-location="Hanoi, Vietnam" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABUJHXxJcvM2w6LjpM0U9B6KuJnO46YQitMGbFrOB4VBT-Zcm7dL0CM0mSmOKhiSk_m3rUyizB299TOEn0ht6QhY1k7zISYovqjFFsDPDCVhvW876zO3dwzKWTjxG-miourCfhwaYO4U5ublTylZJbmHGxJRnCdcNH3PIbeVctgkJKvPAmEma4mzByfbgHMTf8LJh14RGGwMZGYztkyk1lnvu0GBcJSgNaaNvxVB_O-HYmS8oBqnUCC80Q_BJ5REiTn9iqjXbXD9C9"/>
+<!-- Overlay Card for Map -->
+<div class="absolute bottom-8 left-8 p-6 glass-card rounded-xl max-w-xs shadow-2xl">
+<h4 class="font-label-md text-label-md text-primary mb-2">Văn phòng chính</h4>
+<p class="font-body-md text-body-md text-on-surface mb-4">Keangnam Landmark 72, Phạm Hùng, Mễ Trì, Nam Từ Liêm, Hà Nội</p>
+<a class="inline-flex items-center gap-2 text-primary font-label-md text-label-md hover:underline" href="https://maps.google.com" target="_blank">
+<span>Chỉ đường trên Google Maps</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-soft dark:bg-on-background border-t border-border-light">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-section-gap max-w-container-max mx-auto">
+<div class="flex flex-col gap-6">
+<div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">
+                    PropTech Portal
+                </div>
+<p class="text-body-md font-body-md text-on-surface-variant">Giải pháp tìm kiếm và quản lý bất động sản hàng đầu tại Việt Nam.</p>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Hỗ trợ</h4>
+<ul class="flex flex-col gap-3">
+<li><a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">FAQ</a></li>
+<li><a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">Chính sách bảo mật</a></li>
+<li><a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">Điều khoản sử dụng</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Phổ biến</h4>
+<ul class="flex flex-col gap-3">
+<li><a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">Hà Nội Apartments</a></li>
+<li><a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors hover:underline" href="#">HCM Villas</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Liên hệ</h4>
+<p class="text-body-md font-body-md text-on-surface-variant">Email: info@proptech.vn</p>
+<p class="text-body-md font-body-md text-on-surface-variant">Phone: 1900 8888</p>
+</div>
+</div>
+<div class="border-t border-border-light/50 py-8 px-margin-desktop text-center">
+<p class="text-label-sm font-label-sm text-on-surface-variant opacity-80">© 2024 PropTech Portal. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('focus', () => {
+                el.parentElement.querySelector('label').classList.add('text-primary');
+            });
+            el.addEventListener('blur', () => {
+                el.parentElement.querySelector('label').classList.remove('text-primary');
+            });
+        });
+
+        // Form submission animation
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Đang gửi...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Đã gửi thành công';
+                btn.classList.replace('bg-primary', 'bg-secondary');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.replace('bg-secondary', 'bg-primary');
+                    btn.disabled = false;
+                    e.target.reset();
+                }, 3000);
+            }, 1500);
+        });
+    </script>
+</body></html>

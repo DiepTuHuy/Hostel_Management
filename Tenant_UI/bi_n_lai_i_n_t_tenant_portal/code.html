@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Biên lai điện tử - BoardingHouse Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#a04b00",
+                        "surface-container": "#eeedf7",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "on-secondary-container": "#4b5680",
+                        "on-secondary-fixed-variant": "#3a456e",
+                        "on-primary-container": "#d9dfff",
+                        "on-primary-fixed-variant": "#133ca9",
+                        "outline": "#747684",
+                        "on-tertiary-container": "#ffd9c4",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e2e1eb",
+                        "inverse-on-surface": "#f1f0f9",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#faf8ff",
+                        "tertiary": "#7c3800",
+                        "surface-dim": "#dad9e3",
+                        "surface-container-highest": "#e2e1eb",
+                        "on-tertiary-fixed-variant": "#743400",
+                        "inverse-surface": "#2f3037",
+                        "primary": "#1b41ae",
+                        "inverse-primary": "#b6c4ff",
+                        "on-surface": "#1a1b22",
+                        "secondary-container": "#c2cdfe",
+                        "on-primary-fixed": "#001550",
+                        "background": "#faf8ff",
+                        "secondary": "#525c87",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffdbc8",
+                        "primary-container": "#3a5bc7",
+                        "surface-tint": "#3456c2",
+                        "secondary-fixed-dim": "#bac4f5",
+                        "on-tertiary-fixed": "#321300",
+                        "on-background": "#1a1b22",
+                        "surface-container-high": "#e8e7f1",
+                        "surface": "#faf8ff",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f4f2fc",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#dce1ff",
+                        "primary-fixed": "#dce1ff",
+                        "on-secondary-fixed": "#0d1940",
+                        "on-surface-variant": "#444653",
+                        "tertiary-fixed-dim": "#ffb68b",
+                        "outline-variant": "#c4c5d5",
+                        "success": "#146c2e",
+                        "success-container": "#c4eed0",
+                        "on-success-container": "#002107"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-lg": "24px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "stack-sm": "4px",
+                        "stack-md": "12px",
+                        "gutter": "24px",
+                        "container-max": "1440px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-md-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "title-lg": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md-mobile": ["14px", {"lineHeight": "22px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-low text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<header class="bg-surface-container-lowest border-b border-outline-variant h-16 flex items-center px-margin-mobile md:px-margin-desktop sticky top-0 z-50">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant mr-4">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-title-lg text-title-lg text-on-surface">Chi tiết biên lai</h1>
+<div class="ml-auto">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant" title="Hỗ trợ">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center py-margin-desktop px-margin-mobile">
+<div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl shadow-md border border-outline-variant relative overflow-hidden flex flex-col">
+<div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none z-0">
+<span class="material-symbols-outlined text-[300px]">verified</span>
+</div>
+<div class="p-stack-lg border-b border-dashed border-outline-variant relative z-10">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined fill-icon text-headline-md">domain</span>
+</div>
+<div>
+<h2 class="font-title-lg text-title-lg text-primary">BoardingHouse Pro</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Hệ thống quản lý nhà trọ</p>
+</div>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c4eed0] text-[#002107] font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] fill-icon">check_circle</span>
+                        Thành công
+                    </div>
+</div>
+<div class="text-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">BIÊN LAI ĐIỆN TỬ</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Ngày thanh toán: 15/10/2023, 14:30</p>
+</div>
+<div class="bg-surface-container rounded-lg p-stack-md flex flex-col items-center justify-center mb-6">
+<span class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Số tiền thanh toán</span>
+<span class="font-display-lg text-display-lg text-primary tracking-tight">4,500,000 đ</span>
+</div>
+</div>
+<div class="p-stack-lg relative z-10 grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider">Thông tin giao dịch</h4>
+<div class="space-y-4">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Mã giao dịch</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">TXN-98273461</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Mã hóa đơn</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">INV-10-2023-A102</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Phương thức thanh toán</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-outline">account_balance</span>
+<p class="font-body-md text-body-md text-on-surface font-medium">Chuyển khoản ngân hàng (Vietcombank)</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider">Thông tin người nộp</h4>
+<div class="space-y-4">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Họ và tên</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">Nguyễn Văn A</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Phòng / Bất động sản</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">Phòng A102 - Tòa nhà Sunshine</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Kỳ thanh toán</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">Tháng 10/2023</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-stack-lg bg-surface-container-low border-t border-outline-variant relative z-10 flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-outline-variant text-[32px] mb-2">qr_code_2</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Biên lai này được tạo tự động và có giá trị lưu hành nội bộ.</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Cảm ơn bạn đã sử dụng dịch vụ của BoardingHouse Pro.</p>
+</div>
+</div>
+<div class="w-full max-w-2xl mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+<button class="flex-1 max-w-[200px] h-12 flex items-center justify-center gap-2 bg-primary text-on-primary rounded-full hover:bg-surface-tint transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                Tải xuống PDF
+            </button>
+<button class="flex-1 max-w-[200px] h-12 flex items-center justify-center gap-2 bg-surface-container-lowest text-primary border border-outline-variant rounded-full hover:bg-surface-container-highest transition-colors font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[20px]">print</span>
+                In biên lai
+            </button>
+<button class="flex-1 max-w-[200px] h-12 flex items-center justify-center gap-2 bg-surface-container-lowest text-primary border border-outline-variant rounded-full hover:bg-surface-container-highest transition-colors font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[20px]">share</span>
+                Chia sẻ
+            </button>
+</div>
+</main>
+</body></html>

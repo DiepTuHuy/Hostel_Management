@@ -1,0 +1,62 @@
+[
+  {
+    "id": "c-001",
+    "code": "HD2025-001",
+    "propertyId": "p-001",
+    "roomId": "r-301",
+    "tenantId": "u-tnt-001",
+    "startDate": "2025-08-15",
+    "endDate": "2026-08-14",
+    "deposit": 8000000,
+    "monthlyRent": 4000000,
+    "services": ["Điện", "Nước", "Internet", "Rác"],
+    "status": "active",
+    "pdfUrl": "/contracts/HD2025-001.pdf",
+    "createdAt": "2025-08-15T08:00:00Z"
+  },
+  {
+    "id": "c-002",
+    "code": "HD2025-002",
+    "propertyId": "p-001",
+    "roomId": "r-201",
+    "tenantId": "u-tnt-002",
+    "startDate": "2025-09-20",
+    "endDate": "2026-06-30",
+    "deposit": 8000000,
+    "monthlyRent": 4000000,
+    "services": ["Điện", "Nước", "Internet"],
+    "status": "expiring",
+    "pdfUrl": "/contracts/HD2025-002.pdf",
+    "createdAt": "2025-09-20T08:00:00Z"
+  },
+  {
+    "id": "c-003",
+    "code": "HD2026-001",
+    "propertyId": "p-001",
+    "roomId": "r-202",
+    "tenantId": "u-tnt-003",
+    "startDate": "2026-01-05",
+    "endDate": "2027-01-04",
+    "deposit": 9000000,
+    "monthlyRent": 4500000,
+    "services": ["Điện", "Nước", "Internet", "Rác"],
+    "status": "active",
+    "pdfUrl": "/contracts/HD2026-001.pdf",
+    "createdAt": "2026-01-05T08:00:00Z"
+  },
+  {
+    "id": "c-004",
+    "code": "HD2026-002",
+    "propertyId": "p-001",
+    "roomId": "r-103",
+    "tenantId": null,
+    "startDate": "2026-05-25",
+    "endDate": "2027-05-24",
+    "deposit": 7000000,
+    "monthlyRent": 3500000,
+    "services": ["Điện", "Nước", "Internet"],
+    "status": "pending_sign",
+    "pdfUrl": null,
+    "createdAt": "2026-05-22T08:00:00Z"
+  }
+]
