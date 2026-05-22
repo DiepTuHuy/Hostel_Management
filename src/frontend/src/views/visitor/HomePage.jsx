@@ -18,19 +18,25 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (location.pathname === '/about') {
-      const element = document.getElementById('about');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const handleScroll = () => {
+      if (location.pathname === '/about') {
+        const element = document.getElementById('about');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else if (location.pathname === '/contact') {
+        const element = document.getElementById('contact');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else if (location.pathname === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-    } else if (location.pathname === '/contact') {
-      const element = document.getElementById('contact');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    } else if (location.pathname === '/') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    };
+
+    // Use a small timeout to let the DOM settle, especially when mounting
+    const timer = setTimeout(handleScroll, 100);
+    return () => clearTimeout(timer);
   }, [location.pathname]);
 
   const handleSearch = (e) => {
