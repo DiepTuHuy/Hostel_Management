@@ -161,7 +161,13 @@ export default function RoomsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
-        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+        <div
+          onClick={() => setStatusFilter('all')}
+          className={cn(
+            "bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card cursor-pointer hover:scale-[1.02] hover:shadow-md transition-all duration-200 apple-press",
+            statusFilter === 'all' ? 'ring-2 ring-primary bg-primary-soft/30 scale-[1.03] border-primary/20' : ''
+          )}
+        >
           <div className="p-2 bg-primary-soft rounded-lg text-primary">
             <Building size={20} />
           </div>
@@ -171,7 +177,13 @@ export default function RoomsPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+        <div
+          onClick={() => setStatusFilter('vacant')}
+          className={cn(
+            "bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card cursor-pointer hover:scale-[1.02] hover:shadow-md transition-all duration-200 apple-press",
+            statusFilter === 'vacant' ? 'ring-2 ring-success bg-green-50/30 scale-[1.03] border-success/20' : ''
+          )}
+        >
           <div className="p-2 bg-green-50 text-success rounded-lg">
             <Activity size={20} />
           </div>
@@ -181,7 +193,13 @@ export default function RoomsPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+        <div
+          onClick={() => setStatusFilter('occupied')}
+          className={cn(
+            "bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card cursor-pointer hover:scale-[1.02] hover:shadow-md transition-all duration-200 apple-press",
+            statusFilter === 'occupied' ? 'ring-2 ring-primary bg-primary-soft/30 scale-[1.03] border-primary/20' : ''
+          )}
+        >
           <div className="p-2 bg-primary-soft text-primary rounded-lg">
             <User size={20} />
           </div>
@@ -191,7 +209,13 @@ export default function RoomsPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+        <div
+          onClick={() => setStatusFilter('deposit')}
+          className={cn(
+            "bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card cursor-pointer hover:scale-[1.02] hover:shadow-md transition-all duration-200 apple-press",
+            statusFilter === 'deposit' ? 'ring-2 ring-warning bg-amber-50/30 scale-[1.03] border-warning/20' : ''
+          )}
+        >
           <div className="p-2 bg-amber-50 text-warning rounded-lg">
             <Calendar size={20} />
           </div>
@@ -201,7 +225,13 @@ export default function RoomsPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+        <div
+          onClick={() => setStatusFilter('paused')}
+          className={cn(
+            "bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card cursor-pointer hover:scale-[1.02] hover:shadow-md transition-all duration-200 apple-press",
+            statusFilter === 'paused' ? 'ring-2 ring-gray-400 bg-gray-50 scale-[1.03] border-gray-300' : ''
+          )}
+        >
           <div className="p-2 bg-gray-100 text-ink-muted rounded-lg">
             <Settings size={20} />
           </div>
