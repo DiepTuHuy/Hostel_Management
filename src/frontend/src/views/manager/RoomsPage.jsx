@@ -1,7 +1,5 @@
-import { useState, useRef } from 'react';
-import * as THREE from 'three';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Html } from '@react-three/drei';
+import { useState } from 'react';
+import { cn } from '../../utils/cn.js';
 import {
   Plus,
   RotateCcw,
@@ -20,140 +18,23 @@ import {
 } from 'lucide-react';
 
 const initialRoomsData = [
-  { id: '101', code: 'P.101', floor: 1, area: 25, price: 3200000, status: 'vacant', tenantName: '', tenantPhone: '', checkInDate: '', x: -1.2, y: 0, z: -1.2 },
-  { id: '102', code: 'P.102', floor: 1, area: 25, price: 3200000, status: 'occupied', tenantName: 'Nguyễn Văn Hải', tenantPhone: '0987654321', checkInDate: '2026-01-10', x: 1.2, y: 0, z: -1.2 },
-  { id: '103', code: 'P.103', floor: 1, area: 30, price: 4000000, status: 'deposit', tenantName: 'Trần Thị Thu Trang', tenantPhone: '0912345678', checkInDate: '2026-02-15', x: -1.2, y: 0, z: 1.2 },
-  { id: '104', code: 'P.104', floor: 1, area: 25, price: 3200000, status: 'paused', tenantName: '', tenantPhone: '', checkInDate: '', x: 1.2, y: 0, z: 1.2 },
-  { id: '201', code: 'P.201', floor: 2, area: 25, price: 3500000, status: 'occupied', tenantName: 'Lê Minh Quốc', tenantPhone: '0934567890', checkInDate: '2026-03-01', x: -1.2, y: 1.6, z: -1.2 },
-  { id: '202', code: 'P.202', floor: 2, area: 25, price: 3500000, status: 'vacant', tenantName: '', tenantPhone: '', checkInDate: '', x: 1.2, y: 1.6, z: -1.2 },
-  { id: '203', code: 'P.203', floor: 2, area: 30, price: 4200000, status: 'occupied', tenantName: 'Phạm Hồng Thái', tenantPhone: '0945678901', checkInDate: '2026-03-20', x: -1.2, y: 1.6, z: 1.2 },
-  { id: '204', code: 'P.204', floor: 2, area: 25, price: 3500000, status: 'deposit', tenantName: 'Đặng Thùy Chi', tenantPhone: '0956789012', checkInDate: '2026-04-05', x: 1.2, y: 1.6, z: 1.2 },
-  { id: '301', code: 'P.301', floor: 3, area: 28, price: 3800000, status: 'vacant', tenantName: '', tenantPhone: '', checkInDate: '', x: -1.2, y: 3.2, z: -1.2 },
-  { id: '302', code: 'P.302', floor: 3, area: 28, price: 3800000, status: 'occupied', tenantName: 'Vũ Hữu Phước', tenantPhone: '0967890123', checkInDate: '2026-04-12', x: 1.2, y: 3.2, z: -1.2 },
-  { id: '303', code: 'P.303', floor: 3, area: 32, price: 4500000, status: 'paused', tenantName: '', tenantPhone: '', checkInDate: '', x: -1.2, y: 3.2, z: 1.2 },
-  { id: '304', code: 'P.304', floor: 3, area: 28, price: 3800000, status: 'occupied', tenantName: 'Hoàng Mỹ Linh', tenantPhone: '0978901234', checkInDate: '2026-04-18', x: 1.2, y: 3.2, z: 1.2 },
+  { id: '101', code: 'P.101', floor: 1, area: 25, price: 3200000, status: 'vacant', tenantName: '', tenantPhone: '', checkInDate: '' },
+  { id: '102', code: 'P.102', floor: 1, area: 25, price: 3200000, status: 'occupied', tenantName: 'Nguyễn Văn Hải', tenantPhone: '0987654321', checkInDate: '2026-01-10' },
+  { id: '103', code: 'P.103', floor: 1, area: 30, price: 4000000, status: 'deposit', tenantName: 'Trần Thị Thu Trang', tenantPhone: '0912345678', checkInDate: '2026-02-15' },
+  { id: '104', code: 'P.104', floor: 1, area: 25, price: 3200000, status: 'paused', tenantName: '', tenantPhone: '', checkInDate: '' },
+  { id: '201', code: 'P.201', floor: 2, area: 25, price: 3500000, status: 'occupied', tenantName: 'Lê Minh Quốc', tenantPhone: '0934567890', checkInDate: '2026-03-01' },
+  { id: '202', code: 'P.202', floor: 2, area: 25, price: 3500000, status: 'vacant', tenantName: '', tenantPhone: '', checkInDate: '' },
+  { id: '203', code: 'P.203', floor: 2, area: 30, price: 4200000, status: 'occupied', tenantName: 'Phạm Hồng Thái', tenantPhone: '0945678901', checkInDate: '2026-03-20' },
+  { id: '204', code: 'P.204', floor: 2, area: 25, price: 3500000, status: 'deposit', tenantName: 'Đặng Thùy Chi', tenantPhone: '0956789012', checkInDate: '2026-04-05' },
+  { id: '301', code: 'P.301', floor: 3, area: 28, price: 3800000, status: 'vacant', tenantName: '', tenantPhone: '', checkInDate: '' },
+  { id: '302', code: 'P.302', floor: 3, area: 28, price: 3800000, status: 'occupied', tenantName: 'Vũ Hữu Phước', tenantPhone: '0967890123', checkInDate: '2026-04-12' },
+  { id: '303', code: 'P.303', floor: 3, area: 32, price: 4500000, status: 'paused', tenantName: '', tenantPhone: '', checkInDate: '' },
+  { id: '304', code: 'P.304', floor: 3, area: 28, price: 3800000, status: 'occupied', tenantName: 'Hoàng Mỹ Linh', tenantPhone: '0978901234', checkInDate: '2026-04-18' },
 ];
-
-function CameraController({ selectedRoom }) {
-  const controlsRef = useRef();
-  const { camera } = useThree();
-
-  useFrame(() => {
-    if (!controlsRef.current) return;
-    const targetLookAt = new THREE.Vector3(0, 1.6, 0);
-    const targetCamera = new THREE.Vector3(8, 8, 8);
-
-    if (selectedRoom) {
-      targetLookAt.set(selectedRoom.x, selectedRoom.y + 0.3, selectedRoom.z);
-      targetCamera.set(selectedRoom.x + 3.2, selectedRoom.y + 3.2, selectedRoom.z + 3.2);
-    }
-
-    controlsRef.current.target.lerp(targetLookAt, 0.08);
-    camera.position.lerp(targetCamera, 0.08);
-    controlsRef.current.update();
-  });
-
-  return (
-    <OrbitControls
-      ref={controlsRef}
-      enableDamping
-      dampingFactor={0.05}
-      maxPolarAngle={Math.PI / 2.1}
-      minDistance={4}
-      maxDistance={25}
-    />
-  );
-}
-
-function RoomMesh({ room, isSelected, isHovered, onHover, onClick }) {
-  const groupRef = useRef();
-  let targetY = 0;
-  let targetScale = 1;
-  let color = '#cbd5e1';
-
-  if (room.status === 'vacant') {
-    color = '#10b981';
-  } else if (room.status === 'occupied') {
-    color = '#3b82f6';
-  } else if (room.status === 'deposit') {
-    color = '#f97316';
-  } else if (room.status === 'paused') {
-    color = '#6b7280';
-  }
-
-  if (isHovered) {
-    targetY = 0.25;
-    targetScale = 1.08;
-  } else if (isSelected) {
-    targetY = 0.12;
-    targetScale = 1.03;
-  }
-
-  useFrame(() => {
-    if (!groupRef.current) return;
-    groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.15;
-    const scaleVal = THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, 0.15);
-    groupRef.current.scale.set(scaleVal, scaleVal, scaleVal);
-  });
-
-  return (
-    <group position={[room.x, room.y, room.z]}>
-      <mesh position={[0, -0.61, 0]}>
-        <boxGeometry args={[1.82, 0.03, 1.82]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.9} />
-      </mesh>
-
-      <group ref={groupRef}>
-        <mesh
-          onPointerOver={(e) => {
-            e.stopPropagation();
-            onHover(room.id);
-          }}
-          onPointerOut={(e) => {
-            e.stopPropagation();
-            onHover(null);
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick(room);
-          }}
-        >
-          <boxGeometry args={[1.74, 1.2, 1.74]} />
-          <meshStandardMaterial
-            color={color}
-            transparent
-            opacity={isSelected ? 0.95 : isHovered ? 0.85 : 0.72}
-            emissive={isHovered ? color : '#000000'}
-            emissiveIntensity={isHovered ? 0.25 : 0}
-            roughness={0.3}
-            metalness={0.15}
-          />
-        </mesh>
-        <lineSegments>
-          <edgesGeometry args={[new THREE.BoxGeometry(1.742, 1.202, 1.742)]} />
-          <lineBasicMaterial color={isHovered ? '#60a5fa' : '#ffffff'} transparent opacity={0.3} />
-        </lineSegments>
-      </group>
-
-      <Html position={[0, 0.8, 0]} center distanceFactor={8} className="pointer-events-none select-none">
-        <div className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-all duration-200 ${
-          isSelected
-            ? 'bg-blue-600 text-white border-blue-400 shadow-md scale-110'
-            : isHovered
-            ? 'bg-slate-700 text-white border-slate-500 shadow'
-            : 'bg-slate-900/90 text-slate-200 border-slate-700/50 shadow-sm'
-        }`}>
-          {room.code}
-        </div>
-      </Html>
-    </group>
-  );
-}
 
 export default function RoomsPage() {
   const [rooms, setRooms] = useState(initialRoomsData);
   const [selectedRoomId, setSelectedRoomId] = useState(null);
-  const [hoveredRoomId, setHoveredRoomId] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [floorFilter, setFloorFilter] = useState('all');
   const [isEditing, setIsEditing] = useState(false);
@@ -173,10 +54,6 @@ export default function RoomsPage() {
 
   const formatCurrency = (val) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
-  };
-
-  const handleHoverRoom = (id) => {
-    setHoveredRoomId(id);
   };
 
   const handleClickRoom = (room) => {
@@ -230,6 +107,17 @@ export default function RoomsPage() {
   const depositCount = rooms.filter((r) => r.status === 'deposit').length;
   const pausedCount = rooms.filter((r) => r.status === 'paused').length;
 
+  // Group rooms by floor (sorted from highest floor to lowest floor)
+  const roomsByFloor = {};
+  filteredRooms.forEach(room => {
+    if (!roomsByFloor[room.floor]) {
+      roomsByFloor[room.floor] = [];
+    }
+    roomsByFloor[room.floor].push(room);
+  });
+  
+  const sortedFloors = Object.keys(roomsByFloor).sort((a, b) => b - a);
+
   return (
     <div className="flex flex-col gap-6 w-full h-[calc(100vh-100px)] min-h-[600px] text-slate-100 p-2">
       {toastMessage && (
@@ -243,18 +131,18 @@ export default function RoomsPage() {
         <div>
           <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <Building className="text-blue-500" />
-            <span>Mô Hình Quản Lý Không Gian 3D</span>
+            <span>Sơ Đồ Quản Lý Không Gian 2D</span>
           </h1>
-          <p className="text-xs text-slate-400">Xem trực quan và vận hành các phòng trọ theo thời gian thực</p>
+          <p className="text-xs text-slate-400">Xem trực quan và vận hành danh sách phòng trọ theo thời gian thực</p>
         </div>
         <div className="flex gap-2">
           {selectedRoomId && (
             <button
               onClick={() => setSelectedRoomId(null)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors shadow-lg"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors shadow-lg apple-press"
             >
               <ArrowLeft size={14} />
-              <span>Back to Overview</span>
+              <span>Quay Lại Sơ Đồ</span>
             </button>
           )}
           <button
@@ -264,7 +152,7 @@ export default function RoomsPage() {
               setStatusFilter('all');
               setFloorFilter('all');
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition-colors apple-press"
           >
             <RotateCcw size={14} />
             <span>Đặt Lại</span>
@@ -325,71 +213,135 @@ export default function RoomsPage() {
       </div>
 
       <div className="flex-1 min-h-[400px] grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
-        <div className="lg:col-span-3 bg-slate-950/80 rounded-2xl border border-slate-800 relative overflow-hidden flex flex-col">
-          <div className="absolute top-4 left-4 z-10 flex flex-wrap gap-2">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-900/90 text-slate-200 border border-slate-800 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-blue-500"
-            >
-              <option value="all">Trạng thái (Tất cả)</option>
-              <option value="vacant">Trống</option>
-              <option value="occupied">Đang thuê</option>
-              <option value="deposit">Đặt cọc</option>
-              <option value="paused">Bảo trì</option>
-            </select>
+        <div className="lg:col-span-3 bg-slate-950/85 rounded-2xl border border-slate-800 p-6 flex flex-col gap-6 overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
+          {/* Header filters */}
+          <div className="flex justify-between items-center border-b border-slate-850/50 pb-4">
+            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Sơ Đồ Phòng Theo Tầng</h3>
+            <div className="flex gap-2">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="bg-slate-900/90 text-slate-200 border border-slate-800 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+              >
+                <option value="all">Trạng thái (Tất cả)</option>
+                <option value="vacant">Trống</option>
+                <option value="occupied">Đang thuê</option>
+                <option value="deposit">Đặt cọc</option>
+                <option value="paused">Bảo trì</option>
+              </select>
 
-            <select
-              value={floorFilter}
-              onChange={(e) => setFloorFilter(e.target.value)}
-              className="bg-slate-900/90 text-slate-200 border border-slate-800 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-blue-500"
-            >
-              <option value="all">Tầng (Tất cả)</option>
-              <option value="1">Tầng 1</option>
-              <option value="2">Tầng 2</option>
-              <option value="3">Tầng 3</option>
-            </select>
+              <select
+                value={floorFilter}
+                onChange={(e) => setFloorFilter(e.target.value)}
+                className="bg-slate-900/90 text-slate-200 border border-slate-800 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+              >
+                <option value="all">Tầng (Tất cả)</option>
+                <option value="1">Tầng 1</option>
+                <option value="2">Tầng 2</option>
+                <option value="3">Tầng 3</option>
+              </select>
+            </div>
           </div>
 
-          <div className="flex-1 w-full h-full relative cursor-grab active:cursor-grabbing">
-            <Canvas camera={{ position: [8, 8, 8], fov: 40 }}>
-              <ambientLight intensity={0.6} />
-              <directionalLight position={[10, 20, 10]} intensity={1.2} castShadow />
-              <pointLight position={[-10, -10, -10]} intensity={0.4} />
+          {/* Floor lists */}
+          <div className="flex-1 flex flex-col gap-6">
+            {sortedFloors.length > 0 ? (
+              sortedFloors.map((floorNum) => (
+                <div key={floorNum} className="flex flex-col gap-3 bg-slate-900/20 border border-slate-900/30 rounded-xl p-4">
+                  <div className="flex items-center gap-2 border-b border-slate-800/40 pb-2">
+                    <Layers size={15} className="text-blue-500" />
+                    <span className="text-xs font-bold text-slate-300">Tầng {floorNum}</span>
+                    <span className="text-[10px] text-slate-500 font-medium">({roomsByFloor[floorNum].length} phòng)</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+                    {roomsByFloor[floorNum].map((room) => {
+                      let statusBg = 'bg-slate-800/40 border-slate-700/50 text-slate-300';
+                      let statusColorDot = 'bg-slate-500';
+                      let statusText = 'Bảo trì';
 
-              <group position={[0, -1.2, 0]}>
-                {filteredRooms.map((room) => (
-                  <RoomMesh
-                    key={room.id}
-                    room={room}
-                    isSelected={selectedRoomId === room.id}
-                    isHovered={hoveredRoomId === room.id}
-                    onHover={handleHoverRoom}
-                    onClick={handleClickRoom}
-                  />
-                ))}
-              </group>
+                      if (room.status === 'vacant') {
+                        statusBg = 'bg-emerald-950/20 border-emerald-900/30 text-emerald-400 hover:border-emerald-500/50';
+                        statusColorDot = 'bg-emerald-500';
+                        statusText = 'Còn trống';
+                      } else if (room.status === 'occupied') {
+                        statusBg = 'bg-blue-950/20 border-blue-900/30 text-blue-400 hover:border-blue-500/50';
+                        statusColorDot = 'bg-blue-500';
+                        statusText = 'Đang thuê';
+                      } else if (room.status === 'deposit') {
+                        statusBg = 'bg-orange-950/20 border-orange-900/30 text-orange-400 hover:border-orange-500/50';
+                        statusColorDot = 'bg-orange-500';
+                        statusText = 'Đặt cọc';
+                      } else if (room.status === 'paused') {
+                        statusBg = 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700';
+                        statusColorDot = 'bg-slate-500';
+                        statusText = 'Bảo trì';
+                      }
 
-              <CameraController selectedRoom={selectedRoom} />
-            </Canvas>
+                      const isSelected = selectedRoomId === room.id;
+
+                      return (
+                        <div
+                          key={room.id}
+                          onClick={() => handleClickRoom(room)}
+                          className={cn(
+                            "group border p-3.5 rounded-xl cursor-pointer flex flex-col gap-2.5 transition-apple-bouncy duration-300 apple-press",
+                            statusBg,
+                            isSelected 
+                              ? "ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-950 scale-[1.03] shadow-lg shadow-blue-500/10" 
+                              : "hover:scale-[1.02] hover:shadow-md"
+                          )}
+                        >
+                          <div className="flex justify-between items-start">
+                            <span className="font-extrabold text-sm text-slate-100 group-hover:text-primary transition-colors">
+                              {room.code}
+                            </span>
+                            <div className="flex items-center gap-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-950/40 border border-slate-850">
+                              <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", statusColorDot)} />
+                              <span>{statusText}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-between items-end border-t border-slate-850/50 pt-2 text-[10px] text-slate-400">
+                            <span className="font-medium">{room.area} m²</span>
+                            <span className="font-bold text-slate-200">{formatCurrency(room.price)}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center text-center gap-3 py-16 text-slate-500">
+                <div className="p-3 bg-slate-900 border border-slate-850 rounded-full">
+                  <Info size={24} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-400">Không tìm thấy phòng nào</h4>
+                  <p className="text-xs text-slate-600 mt-1 max-w-[250px]">Vui lòng điều chỉnh lại bộ lọc trạng thái hoặc tầng.</p>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="absolute bottom-4 left-4 z-10 flex gap-4 text-[10px] bg-slate-900/80 backdrop-blur px-3 py-2 border border-slate-800 rounded-lg">
+          {/* Legend */}
+          <div className="flex flex-wrap gap-4 text-[10px] bg-slate-900/60 backdrop-blur px-3 py-2.5 border border-slate-850 rounded-xl mt-auto">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded bg-emerald-500" />
-              <span>Trống</span>
+              <span className="text-slate-400">Còn trống</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded bg-blue-500" />
-              <span>Đang thuê</span>
+              <span className="text-slate-400">Đang thuê</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded bg-orange-500" />
-              <span>Đặt cọc</span>
+              <span className="text-slate-400">Đặt cọc</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded bg-gray-500" />
-              <span>Bảo trì</span>
+              <span className="text-slate-400">Bảo trì</span>
             </div>
           </div>
         </div>
