@@ -66,7 +66,7 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      <header className="fixed top-0 left-[240px] right-0 h-16 bg-surface border-b border-line z-30 flex items-center px-6 gap-4">
+      <header className="fixed top-0 left-[240px] right-0 h-16 bg-surface border-b border-line z-30 flex items-center justify-between px-6">
         <div className="relative flex-1 max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
           <input
@@ -82,9 +82,9 @@ export default function AdminLayout() {
           <button className="p-2 rounded-md hover:bg-gray-100 text-ink-muted">
             <HelpCircle size={18} />
           </button>
-          <div className="flex items-center gap-2 pl-3 ml-2 border-l border-line">
+          <div className="flex items-center gap-2.5 pl-3 ml-2 border-l border-line cursor-pointer hover:opacity-80 transition-opacity">
             <Avatar name={user?.fullName || 'Admin'} size="sm" />
-            <div className="hidden md:block text-sm">
+            <div className="hidden md:block text-sm text-right">
               <div className="font-medium text-ink leading-tight">{user?.fullName || 'Admin'}</div>
               <div className="text-xs text-ink-muted">Chủ trọ</div>
             </div>
