@@ -724,6 +724,84 @@ app.get('/api/users/:id', async (req, res) => {
   }
 });
 
+// 9. API Chatbot AI với Gemini
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message, history = [] } = req.body;
+    if (!message) {
+      return res.status(400).json({ message: "Vui lòng nhập tin nhắn." });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ message: "Chưa cấu hình API Key của Gemini." });
+    }
+
+    // Lấy một số số liệu thống kê thực tế từ DB để AI trả lời thông minh hơn
+    let statsContext = '';
+    try {
+      const propCount = await Property.countDocuments();
+      const roomCount = await Room.countDocuments();
+      const tenantCount = await User.countDocuments({ role: 'tenant' });
+      const occupiedRooms = await Room.countDocuments({ status: 'occupied' });
+      statsContext = `\n[Thông tin thực tế hệ thống hiện tại]:
+- Tổng số chi nhánh nhà trọ: ${propCount}
+- Tổng số phòng trọ: ${roomCount} (Đã cho thuê: ${occupiedRooms}, phòng trống: ${roomCount - occupiedRooms})
+- Tổng số khách thuê: ${tenantCount}
+Bạn có thể dùng các số liệu này để trả lời người dùng nếu họ hỏi về tình hình phòng hoặc quy mô hệ thống.`;
+    } catch (e) {
+      console.log("Không thể lấy context thống kê hệ thống cho AI:", e.message);
+    }
+
+    // Map history to Gemini API format
+    const contents = history.map(item => ({
+      role: item.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: item.content || item.text || '' }]
+    }));
+
+    // Add current user message
+    contents.push({
+      role: 'user',
+      parts: [{ text: message }]
+    });
+
+    const systemInstruction = {
+      parts: [{
+        text: `Bạn là BoardingHouse AI, trợ lý ảo thông minh của hệ thống quản lý chuỗi nhà trọ BoardingHouse Pro. 
+Hãy giúp đỡ Admin (chủ trọ), Manager (quản lý) hoặc Tenant (khách thuê) giải quyết các thắc mắc của họ một cách ngắn gọn, súc tích và hữu ích nhất.
+Ngôn ngữ sử dụng: Tiếng Việt, văn phong thân thiện, chuyên nghiệp, lịch sự.
+${statsContext}`
+      }]
+    };
+
+    // Gọi Gemini API sử dụng fetch native của Node.js
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents,
+        systemInstruction
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Lỗi API Gemini:", errorData);
+      throw new Error(errorData.error?.message || "Không thể gọi Gemini API");
+    }
+
+    const data = await response.json();
+    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, tôi không thể tìm thấy câu trả lời phù hợp lúc này.";
+
+    res.json({ reply: replyText });
+  } catch (error) {
+    console.error("Lỗi API Chatbot:", error.message);
+    res.status(500).json({ message: "Trợ lý AI đang gặp sự cố kết nối. Vui lòng thử lại sau." });
+  }
+});
+
 // Khởi chạy Server sau khi kết nối CSDL thành công
 connectDB().then(() => {
   app.listen(PORT, () => {

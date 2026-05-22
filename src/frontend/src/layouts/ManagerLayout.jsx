@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../controllers/useAuth.jsx';
 import { Avatar } from '../components/common/Avatar.jsx';
 import { cn } from '../utils/cn.js';
+import { AIChatbot } from '../components/common';
 
 const NAV = [
   { to: '/manager',            label: 'Dashboard',         icon: LayoutDashboard, end: true },
@@ -275,6 +276,7 @@ export default function ManagerLayout() {
           <Outlet />
         </div>
       </main>
+      <AIChatbot />
     </div>
   );
 }

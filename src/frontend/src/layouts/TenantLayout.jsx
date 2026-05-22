@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Home, FileText, Receipt, User, Bell, Menu, X, LogOut, HelpCircle, Info } from 'lucide-react';
 import { useAuth } from '../controllers/useAuth.jsx';
 import { cn } from '../utils/cn.js';
-import { Avatar } from '../components/common';
+import { Avatar, AIChatbot } from '../components/common';
 
 const BOTTOM_NAV = [
   { to: '/tenant',           label: 'Trang chủ',   icon: Home, end: true },
@@ -166,6 +166,7 @@ export default function TenantLayout() {
           ))}
         </div>
       </nav>
+      <AIChatbot />
     </div>
   );
 }

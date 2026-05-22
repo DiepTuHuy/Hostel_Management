@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '../utils/cn.js';
+import { AIChatbot } from '../components/common';
 
 const NAV = [
   { to: '/',         label: 'Trang chủ',  end: true },
@@ -182,6 +183,7 @@ export default function VisitorLayout() {
           © 2026 BoardingHouse Pro. Mọi quyền được bảo lưu.
         </div>
       </footer>
+      <AIChatbot />
     </div>
   );
 }
