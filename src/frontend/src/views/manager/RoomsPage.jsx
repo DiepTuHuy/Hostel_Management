@@ -454,7 +454,7 @@ export default function RoomsPage() {
                 <div>
                   <h3 className="text-sm font-semibold text-slate-300">Chưa Chọn Phòng</h3>
                   <p className="text-xs text-slate-500 max-w-[200px] mt-1 mx-auto">
-                    Nhấp vào một khối phòng 3D trong mô hình để xem thông tin
+                    Nhấp vào một ô phòng trong sơ đồ để xem thông tin chi tiết
                   </p>
                 </div>
               </div>
