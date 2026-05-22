@@ -12,16 +12,32 @@ class Room:
         if not room:
             return room
         # Map database status to frontend status
-        status = room.get("status")
+        status = room.get("trangThai") or room.get("status")
         if status == "empty":
             room["status"] = "vacant"
         elif status == "rented":
             room["status"] = "occupied"
         elif status == "maintenance":
             room["status"] = "paused"
+        else:
+            room["status"] = status
             
-        if "price" not in room and "currentPrice" in room:
-            room["price"] = room["currentPrice"]
+        if "price" not in room and "giaThue" in room:
+            room["price"] = room["giaThue"]
+        elif "price" not in room and "giaThueHienTai" in room:
+            room["price"] = room["giaThueHienTai"]
+
+        # Populate maLoaiPhongId if it's an ObjectId or string ID
+        ma_loai_phong_id = room.get("maLoaiPhongId")
+        if ma_loai_phong_id and not isinstance(ma_loai_phong_id, dict):
+            try:
+                db = get_db()
+                from app.models.utils import try_object_id
+                rt_doc = db["roomtypes"].find_one({"_id": try_object_id(ma_loai_phong_id)})
+                if rt_doc:
+                    room["maLoaiPhongId"] = rt_doc
+            except Exception:
+                pass
 
         # Populate tenant details if occupied
         if room.get("status") == "occupied":
@@ -38,14 +54,14 @@ class Room:
                         pass
                 
                 contract = db["contracts"].find_one({
-                    "roomId": {"$in": query_room_ids},
-                    "status": "active"
+                    "maPhongId": {"$in": query_room_ids},
+                    "trangThai": "active"
                 })
                 
                 if contract:
-                    tenant_id = contract.get("tenantId")
-                    if not tenant_id and contract.get("tenantIds"):
-                        tenant_id = contract["tenantIds"][0]
+                    tenant_id = None
+                    if contract.get("maKhachThueIds"):
+                        tenant_id = contract["maKhachThueIds"][0]
                     
                     if tenant_id:
                         tenant_query_ids = [tenant_id]
@@ -61,14 +77,16 @@ class Room:
                             "_id": {"$in": tenant_query_ids}
                         })
                         if tenant:
-                            room["tenantName"] = tenant.get("fullName", "")
-                            room["tenantPhone"] = tenant.get("phone", "")
-                            start_date = contract.get("startDate", "")
+                            room["tenantName"] = tenant.get("hoTen", "")
+                            room["tenantPhone"] = tenant.get("sdt", "")
+                            start_date = contract.get("ngayBatDau", "")
                             if start_date:
-                                if "T" in start_date:
-                                    room["checkInDate"] = start_date.split("T")[0]
+                                if hasattr(start_date, "isoformat"):
+                                    start_date = start_date.isoformat()
+                                if "T" in str(start_date):
+                                    room["checkInDate"] = str(start_date).split("T")[0]
                                 else:
-                                    room["checkInDate"] = start_date
+                                    room["checkInDate"] = str(start_date)
             except Exception:
                 pass
                 
@@ -82,9 +100,9 @@ class Room:
             from app.models.utils import resolve_property_id
             resolved = resolve_property_id(property_id)
             if resolved:
-                query["propertyId"] = {"$in": [resolved, str(resolved)]}
+                query["maNhaTroId"] = {"$in": [resolved, str(resolved)]}
             else:
-                query["propertyId"] = property_id
+                query["maNhaTroId"] = property_id
                 
         if status:
             db_status = status
@@ -94,7 +112,7 @@ class Room:
                 db_status = "rented"
             elif status == "paused":
                 db_status = "maintenance"
-            query["status"] = db_status
+            query["trangThai"] = db_status
             
         rooms = list(coll.find(query))
         return [Room._map_room_doc(r) for r in rooms]
@@ -103,8 +121,10 @@ class Room:
     def find_by_id(room_id):
         coll = Room.get_collection()
         doc = None
+        from app.models.utils import try_object_id
+        resolved_id = try_object_id(room_id)
         try:
-            doc = coll.find_one({"_id": ObjectId(room_id)})
+            doc = coll.find_one({"_id": resolved_id})
         except Exception:
             pass
         if not doc:
@@ -121,14 +141,14 @@ class Room:
         # Filter rooms by district of their parent property
         if district:
             prop_coll = Property.get_collection()
-            matching_props = prop_coll.find({"district": {"$regex": district, "$options": "i"}})
+            matching_props = prop_coll.find({"quanHuyen": {"$regex": district, "$options": "i"}})
             prop_ids = []
             for p in matching_props:
                 prop_ids.append(str(p["_id"]))
                 prop_ids.append(p["_id"])
-            query["propertyId"] = {"$in": prop_ids}
+            query["maNhaTroId"] = {"$in": prop_ids}
             
-        # Price filtering (price or currentPrice field)
+        # Price filtering (giaThue or giaThueHienTai field in DB)
         price_query = {}
         if price_min is not None:
             price_query["$gte"] = price_min
@@ -137,21 +157,24 @@ class Room:
             
         if price_query:
             query["$or"] = [
-                {"price": price_query},
-                {"currentPrice": price_query}
+                {"giaThue": price_query},
+                {"giaThueHienTai": price_query}
             ]
             
         # Amenities filtering
         if amenities:
-            query["amenities"] = {"$all": amenities}
+            db = get_db()
+            matching_rts = db["roomtypes"].find({"tienNghi": {"$all": amenities}})
+            rt_ids = [rt["_id"] for rt in matching_rts]
+            query["maLoaiPhongId"] = {"$in": rt_ids}
             
         # Keyword search
         if keyword:
             kw_regex = {"$regex": keyword, "$options": "i"}
             query["$or"] = [
-                {"code": kw_regex},
-                {"roomNumber": kw_regex},
-                {"description": kw_regex}
+                {"maPhong": kw_regex},
+                {"soPhong": kw_regex},
+                {"moTa": kw_regex}
             ]
             
         rooms = list(coll.find(query))
@@ -160,8 +183,36 @@ class Room:
     @staticmethod
     def create(room_data):
         coll = Room.get_collection()
+        from app.models.utils import try_object_id
+        
+        mapped_data = {}
+        mapped_data["maNhaTroId"] = try_object_id(room_data.get("propertyId") or room_data.get("maNhaTroId"))
+        mapped_data["maLoaiPhongId"] = try_object_id(room_data.get("roomTypeId") or room_data.get("maLoaiPhongId"))
+        mapped_data["soPhong"] = room_data.get("roomNumber") or room_data.get("soPhong") or room_data.get("code")
+        mapped_data["tang"] = room_data.get("floor") or room_data.get("tang") or 1
+        mapped_data["giaThueHienTai"] = room_data.get("price") or room_data.get("giaThueHienTai") or room_data.get("giaThue") or 0
+        mapped_data["giaThue"] = room_data.get("price") or room_data.get("giaThue") or room_data.get("giaThueHienTai") or 0
+        mapped_data["dienTich"] = room_data.get("area") or room_data.get("dienTich") or 0
+        mapped_data["maPhong"] = room_data.get("code") or room_data.get("maPhong")
+        mapped_data["trangThai"] = room_data.get("status") or room_data.get("trangThai") or "empty"
+        mapped_data["hinhAnh"] = room_data.get("photos") or room_data.get("hinhAnh") or []
+        mapped_data["moTa"] = room_data.get("description") or room_data.get("moTa")
+        
+        assets = room_data.get("assets") or room_data.get("taiSan") or []
+        mapped_assets = []
+        for asset in assets:
+            mapped_assets.append({
+                "tenTaiSan": asset.get("name") or asset.get("tenTaiSan"),
+                "giaTri": asset.get("value") or asset.get("giaTri") or 0,
+                "tinhTrang": asset.get("condition") or asset.get("tinhTrang") or "Tốt"
+            })
+        mapped_data["taiSan"] = mapped_assets
+        
         if 'id' in room_data and '_id' not in room_data:
-            room_data['_id'] = room_data['id']
-        result = coll.insert_one(room_data)
+            mapped_data['_id'] = try_object_id(room_data['id'])
+        elif '_id' in room_data:
+            mapped_data['_id'] = try_object_id(room_data['_id'])
+            
+        result = coll.insert_one(mapped_data)
         doc = coll.find_one({"_id": result.inserted_id})
         return Room._map_room_doc(doc)

@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.models.room import Room
-from app.models.utils import serialize_doc
+from app.models.utils import map_room
 
 class RoomController:
     @staticmethod
@@ -10,7 +10,7 @@ class RoomController:
             status = request.args.get("status")
             
             rooms = Room.find_all(property_id=property_id, status=status)
-            return jsonify(serialize_doc(rooms)), 200
+            return jsonify([map_room(r) for r in rooms if r]), 200
         except Exception as e:
             return jsonify({"message": f"Lỗi hệ thống: {str(e)}"}), 500
 
@@ -20,7 +20,7 @@ class RoomController:
             room = Room.find_by_id(room_id)
             if not room:
                 return jsonify({"message": "Phòng không tồn tại."}), 404
-            return jsonify(serialize_doc(room)), 200
+            return jsonify(map_room(room)), 200
         except Exception as e:
             return jsonify({"message": f"Lỗi hệ thống: {str(e)}"}), 500
 
@@ -56,6 +56,6 @@ class RoomController:
                 amenities=amenities,
                 district=district
             )
-            return jsonify(serialize_doc(rooms)), 200
+            return jsonify([map_room(r) for r in rooms if r]), 200
         except Exception as e:
             return jsonify({"message": f"Lỗi hệ thống: {str(e)}"}), 500

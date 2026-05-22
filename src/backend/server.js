@@ -54,11 +54,11 @@ function mapDocument(doc) {
 function mapRoom(roomDoc) {
   if (!roomDoc) return null;
   const room = roomDoc.toObject ? roomDoc.toObject() : roomDoc;
-  const roomType = room.roomTypeId || {};
+  const roomType = room.maLoaiPhongId || {};
   
   let type = 'private';
-  if (roomType.name) {
-    const nameLower = roomType.name.toLowerCase();
+  if (roomType.tenLoai) {
+    const nameLower = roomType.tenLoai.toLowerCase();
     if (nameLower.includes('studio') || nameLower.includes('đôi') || nameLower.includes('vip') || nameLower.includes('penthouse') || nameLower.includes('cao cấp')) {
       type = 'studio';
     } else if (nameLower.includes('ký túc xá') || nameLower.includes('shared') || nameLower.includes('ghép')) {
@@ -68,49 +68,49 @@ function mapRoom(roomDoc) {
 
   return {
     id: room._id.toString(),
-    code: room.roomNumber || room.code,
-    propertyId: room.propertyId ? room.propertyId.toString() : undefined,
-    floor: room.floor,
+    code: room.soPhong || room.maPhong,
+    propertyId: room.maNhaTroId ? room.maNhaTroId.toString() : undefined,
+    floor: room.tang,
     type: type,
-    area: room.area || roomType.area || 0,
-    price: room.price || room.currentPrice || roomType.basePrice || 0,
-    amenities: roomType.amenities || [],
-    status: room.status,
+    area: room.dienTich || roomType.dienTich || 0,
+    price: room.giaThue || room.giaThueHienTai || roomType.giaCoBan || 0,
+    amenities: roomType.tienNghi || [],
+    status: room.trangThai,
     currentTenantId: room.currentTenantId ? room.currentTenantId.toString() : null,
-    photos: room.photos || [
+    photos: room.hinhAnh || [
       'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=500',
       'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500'
     ],
-    description: room.description || `Phòng sạch sẽ, thoáng mát tại ${roomType.name || 'nhà trọ'}. Đầy đủ tiện nghi cơ bản.`,
-    roomNumber: room.roomNumber,
-    roomTypeId: room.roomTypeId?._id || room.roomTypeId
+    description: room.moTa || `Phòng sạch sẽ, thoáng mát tại ${roomType.tenLoai || 'nhà trọ'}. Đầy đủ tiện nghi cơ bản.`,
+    roomNumber: room.soPhong,
+    roomTypeId: room.maLoaiPhongId?._id || room.maLoaiPhongId
   };
 }
 
 function mapContract(contractDoc) {
   if (!contractDoc) return null;
   const contract = contractDoc.toObject ? contractDoc.toObject() : contractDoc;
-  const room = contract.roomId || {};
-  const tenant = contract.tenantIds?.[0] || {};
+  const room = contract.maPhongId || {};
+  const tenant = contract.maKhachThueIds?.[0] || {};
   
   return {
     id: contract._id.toString(),
     code: contract.code || `HD-${contract._id.toString().substring(18).toUpperCase()}`,
-    propertyId: room.propertyId ? (room.propertyId._id?.toString() || room.propertyId.toString()) : undefined,
-    roomId: room.roomNumber || room.code || (room._id ? room._id.toString() : (contract.roomId ? contract.roomId.toString() : undefined)),
-    tenantId: tenant.fullName || (tenant._id ? tenant._id.toString() : (contract.tenantIds?.[0] ? contract.tenantIds[0].toString() : undefined)),
-    tenantIds: contract.tenantIds ? contract.tenantIds.map(t => t._id?.toString() || t.toString()) : [],
-    startDate: contract.startDate,
-    endDate: contract.endDate,
-    deposit: contract.deposit,
-    monthlyRent: room.price || room.currentPrice || 3500000,
+    propertyId: room.maNhaTroId ? (room.maNhaTroId._id?.toString() || room.maNhaTroId.toString()) : undefined,
+    roomId: room.soPhong || room.maPhong || (room._id ? room._id.toString() : (contract.maPhongId ? contract.maPhongId.toString() : undefined)),
+    tenantId: tenant.hoTen || (tenant._id ? tenant._id.toString() : (contract.maKhachThueIds?.[0] ? contract.maKhachThueIds[0].toString() : undefined)),
+    tenantIds: contract.maKhachThueIds ? contract.maKhachThueIds.map(t => t._id?.toString() || t.toString()) : [],
+    startDate: contract.ngayBatDau,
+    endDate: contract.ngayKetThuc,
+    deposit: contract.tienCoc,
+    monthlyRent: room.giaThue || room.giaThueHienTai || 3500000,
     services: [
       { name: "Điện", price: 3500, unit: "kWh" },
       { name: "Nước", price: 15000, unit: "m3" },
       { name: "Internet", price: 100000, unit: "phòng" }
     ],
-    status: contract.status,
-    pdfUrl: contract.fileUrl || null,
+    status: contract.trangThai,
+    pdfUrl: contract.duongDanPdf || null,
     createdAt: contract.createdAt
   };
 }
@@ -118,32 +118,37 @@ function mapContract(contractDoc) {
 function mapInvoice(invoiceDoc) {
   if (!invoiceDoc) return null;
   const invoice = invoiceDoc.toObject ? invoiceDoc.toObject() : invoiceDoc;
-  const room = invoice.roomId || {};
-  const contract = invoice.contractId || {};
-  const tenant = contract.tenantIds?.[0] || {};
+  const room = invoice.maPhongId || {};
+  const contract = invoice.maHopDongId || {};
+  const tenant = contract.maKhachThueIds?.[0] || {};
   
   return {
     id: invoice._id.toString(),
     code: invoice.code || `HD-${invoice._id.toString().substring(18).toUpperCase()}`,
-    contractId: invoice.contractId?._id ? invoice.contractId._id.toString() : (invoice.contractId ? invoice.contractId.toString() : undefined),
-    propertyId: room.propertyId ? (room.propertyId._id?.toString() || room.propertyId.toString()) : undefined,
-    roomId: room.roomNumber || room.code || (room._id ? room._id.toString() : (invoice.roomId ? invoice.roomId.toString() : undefined)),
-    tenantId: tenant.fullName || (tenant._id ? tenant._id.toString() : (contract.tenantIds?.[0] ? contract.tenantIds[0].toString() : undefined)),
-    period: invoice.period,
-    dueDate: invoice.deadline || invoice.dueDate,
-    deadline: invoice.deadline,
-    items: (invoice.details || []).map(d => ({
-      name: d.name,
-      qty: d.quantity || 1,
-      unit: d.unit || 'phần',
-      price: d.price,
-      total: d.amount || (d.price * (d.quantity || 1))
+    contractId: invoice.maHopDongId?._id ? invoice.maHopDongId._id.toString() : (invoice.maHopDongId ? invoice.maHopDongId.toString() : undefined),
+    propertyId: room.maNhaTroId ? (room.maNhaTroId._id?.toString() || room.maNhaTroId.toString()) : undefined,
+    roomId: room.soPhong || room.maPhong || (room._id ? room._id.toString() : (invoice.maPhongId ? invoice.maPhongId.toString() : undefined)),
+    tenantId: tenant.hoTen || (tenant._id ? tenant._id.toString() : (contract.maKhachThueIds?.[0] ? contract.maKhachThueIds[0].toString() : undefined)),
+    period: invoice.kyThanhToan,
+    dueDate: invoice.hanThanhToan,
+    deadline: invoice.hanThanhToan,
+    items: (invoice.chiTiet || []).map(d => ({
+      name: d.tenDichVu,
+      qty: d.soLuong || 1,
+      unit: d.donVi || 'phần',
+      price: d.donGia,
+      total: d.thanhTien || (d.donGia * (d.soLuong || 1))
     })),
-    details: invoice.details || [],
-    subtotal: invoice.totalAmount,
-    total: invoice.totalAmount,
-    totalAmount: invoice.totalAmount,
-    status: invoice.status,
+    details: (invoice.chiTiet || []).map(d => ({
+      name: d.tenDichVu,
+      quantity: d.soLuong,
+      price: d.donGia,
+      amount: d.thanhTien
+    })),
+    subtotal: invoice.tongTien,
+    total: invoice.tongTien,
+    totalAmount: invoice.tongTien,
+    status: invoice.trangThai,
     paidAt: invoice.updatedAt,
     paymentMethod: invoice.paymentMethod || null,
     receiptUrl: invoice.receiptUrl || null,
@@ -156,13 +161,13 @@ function mapNotification(notifDoc) {
   const n = notifDoc.toObject ? notifDoc.toObject() : notifDoc;
   return {
     id: n._id.toString(),
-    userId: n.userId ? n.userId.toString() : undefined,
-    title: n.title,
-    body: n.content,
-    content: n.content,
-    channel: n.channel,
-    read: n.isRead,
-    isRead: n.isRead,
+    userId: n.maNguoiDungId ? n.maNguoiDungId.toString() : undefined,
+    title: n.tieuDe,
+    body: n.noiDung,
+    content: n.noiDung,
+    channel: n.kenh,
+    read: n.daDoc,
+    isRead: n.daDoc,
     createdAt: n.createdAt
   };
 }
@@ -172,13 +177,13 @@ function mapUser(userDoc) {
   const u = userDoc.toObject ? userDoc.toObject() : userDoc;
   return {
     id: u._id.toString(),
-    fullName: u.fullName,
+    fullName: u.hoTen,
     email: u.email,
-    phone: u.phone,
-    role: u.role,
+    phone: u.sdt,
+    role: u.vaiTro,
     avatar: u.avatar || null,
-    status: u.status,
-    propertyIds: u.propertyIds ? u.propertyIds.map(p => p.toString()) : [],
+    status: u.trangThai,
+    propertyIds: u.maNhaTroIds ? u.maNhaTroIds.map(p => p.toString()) : [],
     createdAt: u.createdAt
   };
 }
@@ -200,7 +205,7 @@ app.post('/api/auth/register', async (req, res) => {
     const existingUser = await User.findOne({ email: emailLower });
     
     if (existingUser) {
-      if (existingUser.status === 'active') {
+      if (existingUser.trangThai === 'active') {
         return res.status(400).json({ message: "Email này đã tồn tại và đã được kích hoạt trong hệ thống." });
       }
       
@@ -212,12 +217,16 @@ app.post('/api/auth/register', async (req, res) => {
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
       const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // hết hạn trong 5 phút
 
-      existingUser.fullName = fullName;
-      existingUser.password = hashedPassword;
-      existingUser.phone = phone;
-      existingUser.role = role || 'tenant';
-      existingUser.tenantProfile = role === 'tenant' ? tenantProfile : undefined;
-      existingUser.otp = { code: otpCode, expiresAt: otpExpires };
+      existingUser.hoTen = fullName;
+      existingUser.matKhau = hashedPassword;
+      existingUser.sdt = phone;
+      existingUser.vaiTro = role || 'tenant';
+      existingUser.thongTinKhachThue = role === 'tenant' ? {
+        cccd: tenantProfile?.cccd,
+        ngheNghiep: tenantProfile?.occupation,
+        diaChiThuongTru: tenantProfile?.permanentAddress
+      } : undefined;
+      existingUser.otp = { maOtp: otpCode, hanSuDung: otpExpires };
       
       await existingUser.save();
 
@@ -243,14 +252,18 @@ app.post('/api/auth/register', async (req, res) => {
 
     // Tạo user mới với trạng thái pending
     const newUser = await User.create({
-      fullName,
+      hoTen: fullName,
       email: emailLower,
-      password: hashedPassword,
-      phone,
-      role: role || 'tenant',
-      status: 'pending',
-      tenantProfile: role === 'tenant' ? tenantProfile : undefined,
-      otp: { code: otpCode, expiresAt: otpExpires }
+      matKhau: hashedPassword,
+      sdt: phone,
+      vaiTro: role || 'tenant',
+      trangThai: 'pending',
+      thongTinKhachThue: role === 'tenant' ? {
+        cccd: tenantProfile?.cccd,
+        ngheNghiep: tenantProfile?.occupation,
+        diaChiThuongTru: tenantProfile?.permanentAddress
+      } : undefined,
+      otp: { maOtp: otpCode, hanSuDung: otpExpires }
     });
 
     console.log(`[Database] Đăng ký tài khoản pending mới thành công: ${emailLower} - OTP: ${otpCode}`);
@@ -287,27 +300,27 @@ app.post('/api/auth/verify-otp', async (req, res) => {
       return res.status(404).json({ message: "Tài khoản không tồn tại." });
     }
 
-    if (user.status === 'active') {
+    if (user.trangThai === 'active') {
       return res.status(400).json({ message: "Tài khoản đã được kích hoạt từ trước." });
     }
 
-    if (!user.otp || !user.otp.code) {
+    if (!user.otp || !user.otp.maOtp) {
       return res.status(400).json({ message: "Không tìm thấy mã OTP nào đang chờ xác thực." });
     }
 
     // Kiểm tra hết hạn OTP
-    if (new Date() > new Date(user.otp.expiresAt)) {
+    if (new Date() > new Date(user.otp.hanSuDung)) {
       return res.status(400).json({ message: "Mã OTP đã hết hạn (hiệu lực trong 5 phút). Vui lòng yêu cầu gửi lại mã mới." });
     }
 
     // Kiểm tra mã OTP khớp
-    if (user.otp.code !== otp.trim()) {
+    if (user.otp.maOtp !== otp.trim()) {
       return res.status(400).json({ message: "Mã OTP nhập vào không chính xác. Vui lòng kiểm tra lại." });
     }
 
     // Kích hoạt tài khoản thành công
-    user.status = 'active';
-    user.otp = { code: undefined, expiresAt: undefined };
+    user.trangThai = 'active';
+    user.otp = { maOtp: undefined, hanSuDung: undefined };
     await user.save();
 
     console.log(`[Database] Xác thực OTP thành công, kích hoạt tài khoản: ${emailLower}`);
@@ -342,7 +355,7 @@ app.post('/api/auth/resend-otp', async (req, res) => {
       return res.status(404).json({ message: "Không tìm thấy tài khoản nào đang chờ xác thực." });
     }
 
-    if (user.status === 'active') {
+    if (user.trangThai === 'active') {
       return res.status(400).json({ message: "Tài khoản này đã được kích hoạt rồi." });
     }
 
@@ -350,13 +363,13 @@ app.post('/api/auth/resend-otp', async (req, res) => {
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
 
-    user.otp = { code: otpCode, expiresAt: otpExpires };
+    user.otp = { maOtp: otpCode, hanSuDung: otpExpires };
     await user.save();
 
     console.log(`[Database] Đã gửi lại mã OTP mới cho tài khoản: ${emailLower} - OTP mới: ${otpCode}`);
 
     // Gửi email thật
-    const emailSent = await emailService.sendOtpEmail(emailLower, user.fullName, otpCode);
+    const emailSent = await emailService.sendOtpEmail(emailLower, user.hoTen, otpCode);
 
     res.status(200).json({
       message: emailSent
@@ -383,7 +396,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // So khớp mật khẩu đã băm
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.matKhau);
     if (!isMatch) {
       return res.status(400).json({ message: "Mật khẩu không chính xác." });
     }
@@ -391,7 +404,7 @@ app.post('/api/auth/login', async (req, res) => {
     // Tạo mã token mô phỏng phiên đăng nhập
     const token = `jwt.${user._id}.${Date.now()}`;
 
-    console.log(`[Database] Người dùng đăng nhập thành công: ${email} (${user.role})`);
+    console.log(`[Database] Người dùng đăng nhập thành công: ${email} (${user.vaiTro})`);
     res.json({
       token,
       user: mapUser(user)
@@ -407,10 +420,20 @@ app.get('/api/properties', async (req, res) => {
   try {
     const properties = await Property.find().lean();
     res.json(properties.map(p => {
-      p.id = p._id ? p._id.toString() : undefined;
-      if (p.managerIds) p.managerIds = p.managerIds.map(m => m.toString());
-      if (p.ownerId) p.ownerId = p.ownerId.toString();
-      return p;
+      return {
+        id: p._id.toString(),
+        code: p.maNhaTro,
+        name: p.tenNhaTro,
+        address: p.diaChi,
+        district: p.quanHuyen,
+        city: p.thanhPho,
+        image: p.hinhAnh,
+        totalRooms: p.tongSoPhong,
+        occupiedRooms: p.soPhongDaThue,
+        managerIds: p.maQuanLyIds ? p.maQuanLyIds.map(m => m.toString()) : [],
+        ownerId: p.maChuTroId ? p.maChuTroId.toString() : undefined,
+        status: p.trangThai
+      };
     }));
   } catch (error) {
     console.error("Lỗi lấy danh sách cơ sở:", error.message);
@@ -424,12 +447,22 @@ app.get('/api/properties/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Không tìm thấy cơ sở." });
     }
-    const property = await Property.findById(req.params.id).lean();
-    if (!property) return res.status(404).json({ message: "Không tìm thấy cơ sở." });
-    property.id = property._id ? property._id.toString() : undefined;
-    if (property.managerIds) property.managerIds = property.managerIds.map(m => m.toString());
-    if (property.ownerId) property.ownerId = property.ownerId.toString();
-    res.json(property);
+    const p = await Property.findById(req.params.id).lean();
+    if (!p) return res.status(404).json({ message: "Không tìm thấy cơ sở." });
+    res.json({
+      id: p._id.toString(),
+      code: p.maNhaTro,
+      name: p.tenNhaTro,
+      address: p.diaChi,
+      district: p.quanHuyen,
+      city: p.thanhPho,
+      image: p.hinhAnh,
+      totalRooms: p.tongSoPhong,
+      occupiedRooms: p.soPhongDaThue,
+      managerIds: p.maQuanLyIds ? p.maQuanLyIds.map(m => m.toString()) : [],
+      ownerId: p.maChuTroId ? p.maChuTroId.toString() : undefined,
+      status: p.trangThai
+    });
   } catch (error) {
     console.error("Lỗi lấy chi tiết cơ sở:", error.message);
     res.status(500).json({ message: "Lỗi hệ thống." });
@@ -445,11 +478,11 @@ app.get('/api/rooms', async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(propertyId)) {
         return res.json([]);
       }
-      filter.propertyId = propertyId;
+      filter.maNhaTroId = propertyId;
     }
-    if (status) filter.status = status;
+    if (status) filter.trangThai = status;
 
-    const rooms = await Room.find(filter).populate('roomTypeId');
+    const rooms = await Room.find(filter).populate('maLoaiPhongId');
     res.json(rooms.map(mapRoom));
   } catch (error) {
     console.error("Lỗi lấy danh sách phòng:", error.message);
@@ -466,37 +499,37 @@ app.get('/api/rooms/search', async (req, res) => {
     // Filter by district if provided (fetch properties in district first)
     if (district) {
       const propertiesInDistrict = await Property.find({
-        district: new RegExp(district, 'i')
+        quanHuyen: new RegExp(district, 'i')
       });
-      filter.propertyId = { $in: propertiesInDistrict.map(p => p._id) };
+      filter.maNhaTroId = { $in: propertiesInDistrict.map(p => p._id) };
     }
 
     // Filter by price
     if (priceMin || priceMax) {
       filter.$or = [
-        { price: {} },
-        { currentPrice: {} }
+        { giaThue: {} },
+        { giaThueHienTai: {} }
       ];
       if (priceMin) {
-        filter.$or[0].price = { $gte: Number(priceMin) };
-        filter.$or[1].currentPrice = { $gte: Number(priceMin) };
+        filter.$or[0].giaThue = { $gte: Number(priceMin) };
+        filter.$or[1].giaThueHienTai = { $gte: Number(priceMin) };
       }
       if (priceMax) {
-        if (!filter.$or[0].price) filter.$or[0].price = {};
-        if (!filter.$or[1].currentPrice) filter.$or[1].currentPrice = {};
-        filter.$or[0].price.$lte = Number(priceMax);
-        filter.$or[1].currentPrice.$lte = Number(priceMax);
+        if (!filter.$or[0].giaThue) filter.$or[0].giaThue = {};
+        if (!filter.$or[1].giaThueHienTai) filter.$or[1].giaThueHienTai = {};
+        filter.$or[0].giaThue.$lte = Number(priceMax);
+        filter.$or[1].giaThueHienTai.$lte = Number(priceMax);
       }
     }
 
-    let rooms = await Room.find(filter).populate('roomTypeId');
+    let rooms = await Room.find(filter).populate('maLoaiPhongId');
 
     // Filter by amenities
     if (amenities) {
       const amList = amenities.split(',').map(a => a.trim().toLowerCase());
       rooms = rooms.filter(room => {
-        const roomType = room.roomTypeId || {};
-        const roomAmList = (roomType.amenities || []).map(a => a.toLowerCase());
+        const roomType = room.maLoaiPhongId || {};
+        const roomAmList = (roomType.tienNghi || []).map(a => a.toLowerCase());
         return amList.every(a => roomAmList.includes(a));
       });
     }
@@ -505,13 +538,13 @@ app.get('/api/rooms/search', async (req, res) => {
     if (keyword) {
       const kw = keyword.toLowerCase();
       const allProps = await Property.find();
-      const propMap = new Map(allProps.map(p => [p._id.toString(), p.name.toLowerCase()]));
+      const propMap = new Map(allProps.map(p => [p._id.toString(), p.tenNhaTro.toLowerCase()]));
 
       rooms = rooms.filter(room => {
-        const roomType = room.roomTypeId || {};
-        const propName = propMap.get(room.propertyId?.toString()) || '';
-        const roomNum = room.roomNumber || '';
-        const typeName = roomType.name || '';
+        const roomType = room.maLoaiPhongId || {};
+        const propName = propMap.get(room.maNhaTroId?.toString()) || '';
+        const roomNum = room.soPhong || '';
+        const typeName = roomType.tenLoai || '';
         return propName.includes(kw) || roomNum.includes(kw) || typeName.toLowerCase().includes(kw);
       });
     }
@@ -529,7 +562,7 @@ app.get('/api/rooms/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Không tìm thấy phòng." });
     }
-    const room = await Room.findById(req.params.id).populate('roomTypeId');
+    const room = await Room.findById(req.params.id).populate('maLoaiPhongId');
     if (!room) return res.status(404).json({ message: "Không tìm thấy phòng." });
     res.json(mapRoom(room));
   } catch (error) {
@@ -547,18 +580,18 @@ app.get('/api/contracts', async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(tenantId)) {
         return res.json([]);
       }
-      filter.tenantIds = tenantId;
+      filter.maKhachThueIds = tenantId;
     }
-    if (status) filter.status = status;
+    if (status) filter.trangThai = status;
 
-        const contracts = await Contract.find(filter).populate('roomId').populate('tenantIds');
+    const contracts = await Contract.find(filter).populate('maPhongId').populate('maKhachThueIds');
     
     let results = contracts;
     if (propertyId) {
       if (!mongoose.Types.ObjectId.isValid(propertyId)) {
         return res.json([]);
       }
-      results = contracts.filter(c => c.roomId?.propertyId?.toString() === propertyId);
+      results = contracts.filter(c => c.maPhongId?.maNhaTroId?.toString() === propertyId);
     }
 
     res.json(results.map(mapContract));
@@ -574,7 +607,7 @@ app.get('/api/contracts/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
     }
-    const contract = await Contract.findById(req.params.id).populate('roomId').populate('tenantIds');
+    const contract = await Contract.findById(req.params.id).populate('maPhongId').populate('maKhachThueIds');
     if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
     res.json(mapContract(contract));
   } catch (error) {
@@ -593,28 +626,28 @@ app.get('/api/invoices', async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(tenantId)) {
         return res.json([]);
       }
-      const tenantContracts = await Contract.find({ tenantIds: tenantId });
-      filter.contractId = { $in: tenantContracts.map(c => c._id) };
+      const tenantContracts = await Contract.find({ maKhachThueIds: tenantId });
+      filter.maHopDongId = { $in: tenantContracts.map(c => c._id) };
     }
-    if (status) filter.status = status;
-    if (period) filter.period = period;
+    if (status) filter.trangThai = status;
+    if (period) filter.kyThanhToan = period;
 
     const invoices = await Invoice.find(filter)
       .populate({
-        path: 'contractId',
+        path: 'maHopDongId',
         populate: {
-          path: 'tenantIds',
-          select: 'fullName'
+          path: 'maKhachThueIds',
+          select: 'hoTen'
         }
       })
-      .populate('roomId');
+      .populate('maPhongId');
 
     let results = invoices;
     if (propertyId) {
       if (!mongoose.Types.ObjectId.isValid(propertyId)) {
         return res.json([]);
       }
-      results = invoices.filter(inv => inv.roomId?.propertyId?.toString() === propertyId);
+      results = invoices.filter(inv => inv.maPhongId?.maNhaTroId?.toString() === propertyId);
     }
 
     res.json(results.map(mapInvoice));
@@ -632,13 +665,13 @@ app.get('/api/invoices/:id', async (req, res) => {
     }
     const invoice = await Invoice.findById(req.params.id)
       .populate({
-        path: 'contractId',
+        path: 'maHopDongId',
         populate: {
-          path: 'tenantIds',
-          select: 'fullName'
+          path: 'maKhachThueIds',
+          select: 'hoTen'
         }
       })
-      .populate('roomId');
+      .populate('maPhongId');
     if (!invoice) return res.status(404).json({ message: "Không tìm thấy hoá đơn." });
     res.json(mapInvoice(invoice));
   } catch (error) {
@@ -657,14 +690,14 @@ app.post('/api/invoices/:id/pay', async (req, res) => {
     const invoice = await Invoice.findById(req.params.id);
     if (!invoice) return res.status(404).json({ message: "Không tìm thấy hoá đơn." });
 
-    invoice.status = 'paid';
+    invoice.trangThai = 'paid';
     await invoice.save();
 
     await Payment.create({
-      invoiceId: invoice._id,
-      method: method || 'vnpay',
-      amount: invoice.totalAmount,
-      status: 'success'
+      maHoaDonId: invoice._id,
+      phuongThuc: method || 'vnpay',
+      soTien: invoice.tongTien,
+      trangThai: 'success'
     });
 
     res.json({ success: true, message: "Thanh toán hoá đơn thành công!", status: 'paid' });
@@ -683,7 +716,7 @@ app.get('/api/notifications', async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.json([]);
       }
-      filter.userId = userId;
+      filter.maNguoiDungId = userId;
     }
 
     const notifications = await Notification.find(filter).sort({ createdAt: -1 });
@@ -699,7 +732,7 @@ app.get('/api/users', async (req, res) => {
   try {
     const { role } = req.query;
     const filter = {};
-    if (role) filter.role = role;
+    if (role) filter.vaiTro = role;
 
     const users = await User.find(filter);
     res.json(users.map(mapUser));
@@ -742,8 +775,8 @@ app.post('/api/chat', async (req, res) => {
     try {
       const propCount = await Property.countDocuments();
       const roomCount = await Room.countDocuments();
-      const tenantCount = await User.countDocuments({ role: 'tenant' });
-      const occupiedRooms = await Room.countDocuments({ status: 'occupied' });
+      const tenantCount = await User.countDocuments({ vaiTro: 'tenant' });
+      const occupiedRooms = await Room.countDocuments({ trangThai: 'rented' });
       statsContext = `\n[Thông tin thực tế hệ thống hiện tại]:
 - Tổng số chi nhánh nhà trọ: ${propCount}
 - Tổng số phòng trọ: ${roomCount} (Đã cho thuê: ${occupiedRooms}, phòng trống: ${roomCount - occupiedRooms})

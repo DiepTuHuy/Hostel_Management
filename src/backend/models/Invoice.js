@@ -1,18 +1,18 @@
 import mongoose from 'mongoose';
 
 const invoiceSchema = new mongoose.Schema({
-  contractId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract', required: true },
-  roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
-  period: { type: String, required: true }, // '2026-05'
-  totalAmount: { type: Number, required: true },
-  deadline: { type: Date, required: true },
-  status: { type: String, enum: ['pending', 'paid', 'overdue', 'cancelled'], default: 'pending' },
-  details: [{
-    serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
-    name: { type: String, required: true },
-    quantity: { type: Number, required: true },
-    price: { type: Number, required: true },
-    amount: { type: Number, required: true }
+  maHopDongId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract', required: true },
+  maPhongId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
+  kyThanhToan: { type: String, required: true }, // '2026-05'
+  tongTien: { type: Number, required: true },
+  hanThanhToan: { type: Date, required: true },
+  trangThai: { type: String, enum: ['pending', 'paid', 'overdue', 'cancelled'], default: 'pending' },
+  chiTiet: [{
+    maDichVuId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
+    tenDichVu: { type: String, required: true },
+    soLuong: { type: Number, required: true },
+    donGia: { type: Number, required: true },
+    thanhTien: { type: Number, required: true }
   }]
 }, { timestamps: true });
 

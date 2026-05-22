@@ -1,7 +1,7 @@
 from flask import request, jsonify
 import datetime
 from app.models.invoice import Invoice
-from app.models.utils import serialize_doc
+from app.models.utils import map_invoice
 
 class InvoiceController:
     @staticmethod
@@ -13,7 +13,7 @@ class InvoiceController:
             period = request.args.get("period")
             
             invoices = Invoice.find_all(tenant_id=tenant_id, property_id=property_id, status=status, period=period)
-            return jsonify(serialize_doc(invoices)), 200
+            return jsonify([map_invoice(inv) for inv in invoices if inv]), 200
         except Exception as e:
             return jsonify({"message": f"Lỗi hệ thống: {str(e)}"}), 500
 
@@ -23,7 +23,7 @@ class InvoiceController:
             invoice = Invoice.find_by_id(invoice_id)
             if not invoice:
                 return jsonify({"message": "Hoá đơn không tồn tại."}), 404
-            return jsonify(serialize_doc(invoice)), 200
+            return jsonify(map_invoice(invoice)), 200
         except Exception as e:
             return jsonify({"message": f"Lỗi hệ thống: {str(e)}"}), 500
 
@@ -57,7 +57,7 @@ class InvoiceController:
                 "ok": True,
                 "transactionId": transaction_id,
                 "method": method,
-                "invoice": serialize_doc(updated_invoice)
+                "invoice": map_invoice(updated_invoice)
             }), 200
         except Exception as e:
             return jsonify({"message": f"Lỗi hệ thống khi thanh toán: {str(e)}"}), 500

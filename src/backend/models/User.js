@@ -1,21 +1,21 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  fullName: { type: String, required: true },
+  hoTen: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
-  password: { type: String, required: true },
-  phone: { type: String, required: true },
-  role: { type: String, enum: ['admin', 'manager', 'tenant'], default: 'tenant' },
-  status: { type: String, enum: ['active', 'inactive', 'locked', 'pending'], default: 'pending' },
-  propertyIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }],
-  tenantProfile: {
+  matKhau: { type: String, required: true },
+  sdt: { type: String, required: true },
+  vaiTro: { type: String, enum: ['admin', 'manager', 'tenant'], default: 'tenant' },
+  trangThai: { type: String, enum: ['active', 'inactive', 'locked', 'pending'], default: 'pending' },
+  maNhaTroIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Property' }],
+  thongTinKhachThue: {
     cccd: { type: String },
-    occupation: { type: String },
-    permanentAddress: { type: String },
+    ngheNghiep: { type: String },
+    diaChiThuongTru: { type: String },
   },
   otp: {
-    code: { type: String },
-    expiresAt: { type: Date }
+    maOtp: { type: String },
+    hanSuDung: { type: Date }
   }
 }, { timestamps: true });
 

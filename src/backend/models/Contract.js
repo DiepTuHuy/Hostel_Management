@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
 const contractSchema = new mongoose.Schema({
-  roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
-  tenantIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
-  deposit: { type: Number, required: true },
-  status: { type: String, enum: ['draft', 'active', 'expired', 'terminated'], default: 'draft' },
-  fileUrl: { type: String }
+  maPhongId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
+  maKhachThueIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
+  ngayBatDau: { type: Date, required: true },
+  ngayKetThuc: { type: Date, required: true },
+  tienCoc: { type: Number, required: true },
+  trangThai: { type: String, enum: ['draft', 'active', 'expired', 'terminated'], default: 'draft' },
+  duongDanPdf: { type: String }
 }, { timestamps: true });
 
 export const Contract = mongoose.model('Contract', contractSchema);

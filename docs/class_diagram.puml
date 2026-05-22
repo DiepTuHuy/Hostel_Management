@@ -1,0 +1,167 @@
+@startuml ClassDiagram_Vietnamese_MongoDB
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "Phân hệ Người dùng & Vai trò" #E8EEF9 {
+  class NguoiDung {
+    + _id : ObjectId
+    + hoTen : String
+    + email : String
+    + matKhau : String
+    + sdt : String
+    + vaiTro : String {admin, manager, tenant}
+    + trangThai : String {active, inactive, locked, pending}
+    + maNhaTroIds : ObjectId[]
+    + thongTinKhachThue : ThongTinKhachThue
+    + otp : Otp
+  }
+
+  class ThongTinKhachThue <<Embedded>> {
+    + cccd : String
+    + ngheNghiep : String
+    + diaChiThuongTru : String
+  }
+
+  class Otp <<Embedded>> {
+    + maOtp : String
+    + hanSuDung : Date
+  }
+
+  NguoiDung *-- ThongTinKhachThue
+  NguoiDung *-- Otp
+}
+
+package "Phân hệ Nhà trọ & Phòng" #FFF6E5 {
+  class NhaTro {
+    + _id : ObjectId
+    + maNhaTro : String
+    + tenNhaTro : String
+    + diaChi : String
+    + quanHuyen : String
+    + thanhPho : String
+    + hinhAnh : String
+    + tongSoPhong : Number
+    + soPhongDaThue : Number
+    + maQuanLyIds : ObjectId[]
+    + maChuTroId : ObjectId
+    + trangThai : String {active, inactive}
+  }
+
+  class LoaiPhong {
+    + _id : ObjectId
+    + maNhaTroId : ObjectId
+    + tenLoai : String
+    + dienTich : Number
+    + giaCoBan : Number
+    + tienNghi : String[]
+  }
+
+  class PhongTro {
+    + _id : ObjectId
+    + maNhaTroId : ObjectId
+    + maLoaiPhongId : ObjectId
+    + soPhong : String
+    + tang : Number
+    + giaThueHienTai : Number
+    + giaThue : Number
+    + dienTich : Number
+    + maPhong : String
+    + trangThai : String {empty, rented, deposit, maintenance}
+    + hinhAnh : String[]
+    + moTa : String
+    + taiSan : TaiSan[]
+  }
+
+  class TaiSan <<Embedded>> {
+    + tenTaiSan : String
+    + giaTri : Number
+    + tinhTrang : String
+  }
+
+  NhaTro "1" *-- "*" PhongTro
+  LoaiPhong "1" -- "*" PhongTro
+  PhongTro *-- TaiSan
+}
+
+package "Phân hệ Hợp đồng & Hóa đơn" #E6F5EA {
+  class HopDong {
+    + _id : ObjectId
+    + maPhongId : ObjectId
+    + maKhachThueIds : ObjectId[]
+    + ngayBatDau : Date
+    + ngayKetThuc : Date
+    + tienCoc : Number
+    + trangThai : String {draft, active, expired, terminated}
+    + duongDanPdf : String
+  }
+
+  class HoaDon {
+    + _id : ObjectId
+    + maHopDongId : ObjectId
+    + maPhongId : ObjectId
+    + kyThanhToan : String
+    + tongTien : Number
+    + hanThanhToan : Date
+    + trangThai : String {pending, paid, overdue, cancelled}
+    + chiTiet : ChiTietHoaDon[]
+  }
+
+  class ChiTietHoaDon <<Embedded>> {
+    + maDichVuId : ObjectId
+    + tenDichVu : String
+    + soLuong : Number
+    + donGia : Number
+    + thanhTien : Number
+  }
+
+  class ThanhToan {
+    + _id : ObjectId
+    + maHoaDonId : ObjectId
+    + phuongThuc : String {vnpay, momo, cash, bank_transfer}
+    + soTien : Number
+    + ngayGiaoDich : Date
+    + trangThai : String {pending, success, failed}
+  }
+
+  class ChiSoTieuThu {
+    + _id : ObjectId
+    + maPhongId : ObjectId
+    + maDichVuId : ObjectId
+    + kyThanhToan : String
+    + chiSoCu : Number
+    + chiSoMoi : Number
+    + tieuThu : Number
+  }
+
+  class DichVu {
+    + _id : ObjectId
+    + maNhaTroId : ObjectId
+    + tenDichVu : String
+    + donVi : String
+    + donGia : Number
+    + loaiTinh : String {metered, fixed}
+  }
+
+  PhongTro "1" -- "*" ChiSoTieuThu
+  ChiSoTieuThu "*" -- "1" DichVu
+  HopDong "1" -- "*" HoaDon
+  HoaDon *-- ChiTietHoaDon
+  HoaDon "1" -- "*" ThanhToan
+  DichVu "1" -- "*" ChiTietHoaDon
+}
+
+package "Phân hệ Thông báo" #E6F0FA {
+  class ThongBao {
+    + _id : ObjectId
+    + maNguoiDungId : ObjectId
+    + tieuDe : String
+    + noiDung : String
+    + kenh : String
+    + daDoc : Boolean
+  }
+
+  NguoiDung "1" -- "*" ThongBao
+}
+
+@enduml

@@ -1,7 +1,7 @@
 from flask import jsonify
 from app.models.property import Property
 from app.models.user import User
-from app.models.utils import serialize_doc
+from app.models.utils import map_property, map_user
 
 class PropertyController:
     @staticmethod
@@ -10,15 +10,14 @@ class PropertyController:
             properties = Property.find_all()
             serialized = []
             for prop in properties:
-                prop_doc = serialize_doc(prop)
-                # Populate manager details for compatibility
-                manager_ids = prop.get("managerIds", [])
+                prop_doc = map_property(prop)
+                manager_ids = prop.get("maQuanLyIds", [])
                 managers = []
                 for m_id in manager_ids:
                     m = User.find_by_id(m_id)
                     if m:
-                        m_doc = serialize_doc(m)
-                        if "password" in m_doc:
+                        m_doc = map_user(m)
+                        if m_doc and "password" in m_doc:
                             del m_doc["password"]
                         managers.append(m_doc)
                 prop_doc["managerIds"] = managers
@@ -35,14 +34,14 @@ class PropertyController:
             if not prop:
                 return jsonify({"message": "Cơ sở không tồn tại."}), 404
                 
-            prop_doc = serialize_doc(prop)
-            manager_ids = prop.get("managerIds", [])
+            prop_doc = map_property(prop)
+            manager_ids = prop.get("maQuanLyIds", [])
             managers = []
             for m_id in manager_ids:
                 m = User.find_by_id(m_id)
                 if m:
-                    m_doc = serialize_doc(m)
-                    if "password" in m_doc:
+                    m_doc = map_user(m)
+                    if m_doc and "password" in m_doc:
                         del m_doc["password"]
                     managers.append(m_doc)
             prop_doc["managerIds"] = managers

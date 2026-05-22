@@ -4,7 +4,7 @@ from flask import jsonify
 import bcrypt
 import jwt
 from app.models.user import User
-from app.models.utils import serialize_doc
+from app.models.utils import serialize_doc, map_user
 
 class AuthController:
     @staticmethod
@@ -34,8 +34,8 @@ class AuthController:
                 "tenantProfile": tenantProfile if role == 'tenant' else None
             })
 
-            response_user = serialize_doc(new_user)
-            if "password" in response_user:
+            response_user = map_user(new_user)
+            if response_user and "password" in response_user:
                 del response_user["password"]
 
             return jsonify({
@@ -57,14 +57,14 @@ class AuthController:
         if not user:
             return jsonify({"message": "Tài khoản không tồn tại."}), 404
 
-        hashed_pw = user.get("password", "")
+        hashed_pw = user.get("matKhau", "")
         is_match = False
         try:
             if bcrypt.checkpw(password.encode('utf-8'), hashed_pw.encode('utf-8')):
                 is_match = True
         except Exception:
             # Fallback for plain text password comparison or password == role
-            if password == hashed_pw or password == user.get("role"):
+            if password == hashed_pw or password == user.get("vaiTro"):
                 is_match = True
 
         if not is_match:
@@ -76,7 +76,7 @@ class AuthController:
         secret = os.getenv("JWT_SECRET", "supersecretkey")
         payload = {
             "sub": user_id,
-            "role": user.get("role"),
+            "role": user.get("vaiTro"),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(days=7),
             "iat": datetime.datetime.utcnow()
         }
@@ -85,8 +85,8 @@ class AuthController:
         if isinstance(token, bytes):
             token = token.decode('utf-8')
 
-        response_user = serialize_doc(user)
-        if "password" in response_user:
+        response_user = map_user(user)
+        if response_user and "password" in response_user:
             del response_user["password"]
 
         return jsonify({
