@@ -16,9 +16,9 @@ export default function PropertiesPage() {
       {loading ? <Loading /> : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
           {properties.map((p) => (
-            <Card key={p.id} padded={false} className="overflow-hidden">
-              <div className="h-44 bg-gray-100 relative">
-                {p.image && <img src={p.image} alt={p.name} className="h-full w-full object-cover" />}
+            <Card key={p.id} padded={false} className="group overflow-hidden transition-all duration-500 hover:-translate-y-1.5 hover:scale-[1.02] hover:shadow-xl">
+              <div className="h-44 bg-gray-100 relative overflow-hidden">
+                {p.image && <img src={p.image} alt={p.name} className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" />}
                 <Badge color="success" className="absolute top-3 left-3">Hoạt động</Badge>
                 <button className="absolute top-3 right-3 p-1.5 bg-white/90 rounded-md text-ink-muted hover:bg-white">
                   <MoreVertical size={16} />
