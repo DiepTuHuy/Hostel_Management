@@ -285,7 +285,7 @@ const seedDatabase = async () => {
       'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500',
       'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=500',
       'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500',
-      'https://images.unsplash.com/photo-1598928506311-c55ez637a02b?w=500',
+      'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=500',
       'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500',
       'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500',
     ];
