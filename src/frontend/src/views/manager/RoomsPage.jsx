@@ -119,27 +119,27 @@ export default function RoomsPage() {
   const sortedFloors = Object.keys(roomsByFloor).sort((a, b) => b - a);
 
   return (
-    <div className="flex flex-col gap-6 w-full h-[calc(100vh-100px)] min-h-[600px] text-slate-100 p-2">
+    <div className="flex flex-col gap-6 w-full h-[calc(100vh-100px)] min-h-[600px] text-ink p-2">
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-blue-600 border border-blue-400 text-white font-semibold py-3 px-6 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-primary border border-primary/20 text-white font-semibold py-3 px-6 rounded-xl shadow-modal flex items-center gap-3 animate-bounce">
           <Info size={20} />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/60 backdrop-blur border border-slate-800 p-4 rounded-2xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-line p-4 rounded-2xl shadow-card">
         <div>
-          <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <Building className="text-blue-500" />
+          <h1 className="text-xl font-bold text-ink flex items-center gap-2">
+            <Building className="text-primary" />
             <span>Sơ Đồ Quản Lý Không Gian 2D</span>
           </h1>
-          <p className="text-xs text-slate-400">Xem trực quan và vận hành danh sách phòng trọ theo thời gian thực</p>
+          <p className="text-xs text-ink-muted">Xem trực quan và vận hành danh sách phòng trọ theo thời gian thực</p>
         </div>
         <div className="flex gap-2">
           {selectedRoomId && (
             <button
               onClick={() => setSelectedRoomId(null)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors shadow-lg apple-press"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors shadow-sm apple-press"
             >
               <ArrowLeft size={14} />
               <span>Quay Lại Sơ Đồ</span>
@@ -152,7 +152,7 @@ export default function RoomsPage() {
               setStatusFilter('all');
               setFloorFilter('all');
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition-colors apple-press"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white hover:bg-gray-50 text-ink rounded-lg border border-line transition-colors apple-press"
           >
             <RotateCcw size={14} />
             <span>Đặt Lại</span>
@@ -161,67 +161,67 @@ export default function RoomsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
-        <div className="bg-slate-900/40 border border-slate-800 p-3 rounded-xl flex items-center gap-3">
-          <div className="p-2 bg-slate-800 rounded-lg text-blue-400">
+        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+          <div className="p-2 bg-primary-soft rounded-lg text-primary">
             <Building size={20} />
           </div>
           <div>
-            <div className="text-[10px] text-slate-400 font-semibold uppercase">Tổng phòng</div>
-            <div className="text-lg font-bold text-slate-200">{rooms.length} phòng</div>
+            <div className="text-[10px] text-ink-muted font-semibold uppercase">Tổng phòng</div>
+            <div className="text-lg font-bold text-ink">{rooms.length} phòng</div>
           </div>
         </div>
 
-        <div className="bg-slate-900/40 border border-slate-800 p-3 rounded-xl flex items-center gap-3">
-          <div className="p-2 bg-emerald-950 text-emerald-400 rounded-lg">
+        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+          <div className="p-2 bg-green-50 text-success rounded-lg">
             <Activity size={20} />
           </div>
           <div>
-            <div className="text-[10px] text-emerald-400 font-semibold uppercase">Còn trống</div>
-            <div className="text-lg font-bold text-emerald-300">{vacantCount} phòng</div>
+            <div className="text-[10px] text-success font-semibold uppercase">Còn trống</div>
+            <div className="text-lg font-bold text-success">{vacantCount} phòng</div>
           </div>
         </div>
 
-        <div className="bg-slate-900/40 border border-slate-800 p-3 rounded-xl flex items-center gap-3">
-          <div className="p-2 bg-blue-950 text-blue-400 rounded-lg">
+        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+          <div className="p-2 bg-primary-soft text-primary rounded-lg">
             <User size={20} />
           </div>
           <div>
-            <div className="text-[10px] text-blue-400 font-semibold uppercase">Đang thuê</div>
-            <div className="text-lg font-bold text-blue-300">{occupiedCount} phòng</div>
+            <div className="text-[10px] text-primary font-semibold uppercase">Đang thuê</div>
+            <div className="text-lg font-bold text-primary">{occupiedCount} phòng</div>
           </div>
         </div>
 
-        <div className="bg-slate-900/40 border border-slate-800 p-3 rounded-xl flex items-center gap-3">
-          <div className="p-2 bg-orange-950/80 text-orange-400 rounded-lg">
+        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+          <div className="p-2 bg-amber-50 text-warning rounded-lg">
             <Calendar size={20} />
           </div>
           <div>
-            <div className="text-[10px] text-orange-400 font-semibold uppercase">Đặt cọc</div>
-            <div className="text-lg font-bold text-orange-300">{depositCount} phòng</div>
+            <div className="text-[10px] text-warning font-semibold uppercase">Đặt cọc</div>
+            <div className="text-lg font-bold text-warning">{depositCount} phòng</div>
           </div>
         </div>
 
-        <div className="bg-slate-900/40 border border-slate-800 p-3 rounded-xl flex items-center gap-3">
-          <div className="p-2 bg-slate-800 text-slate-400 rounded-lg">
+        <div className="bg-white border border-line p-3 rounded-xl flex items-center gap-3 shadow-card">
+          <div className="p-2 bg-gray-100 text-ink-muted rounded-lg">
             <Settings size={20} />
           </div>
           <div>
-            <div className="text-[10px] text-slate-400 font-semibold uppercase">Bảo trì</div>
-            <div className="text-lg font-bold text-slate-300">{pausedCount} phòng</div>
+            <div className="text-[10px] text-ink-muted font-semibold uppercase">Bảo trì</div>
+            <div className="text-lg font-bold text-ink">{pausedCount} phòng</div>
           </div>
         </div>
       </div>
 
       <div className="flex-1 min-h-[400px] grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
-        <div className="lg:col-span-3 bg-slate-950/85 rounded-2xl border border-slate-800 p-6 flex flex-col gap-6 overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
+        <div className="lg:col-span-3 bg-white rounded-2xl border border-line p-6 flex flex-col gap-6 overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-gray-250 scrollbar-track-transparent shadow-card">
           {/* Header filters */}
-          <div className="flex justify-between items-center border-b border-slate-850/50 pb-4">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Sơ Đồ Phòng Theo Tầng</h3>
+          <div className="flex justify-between items-center border-b border-line pb-4">
+            <h3 className="text-sm font-bold text-ink uppercase tracking-wider">Sơ Đồ Phòng Theo Tầng</h3>
             <div className="flex gap-2">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-slate-900/90 text-slate-200 border border-slate-800 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                className="bg-white text-ink border border-line text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
               >
                 <option value="all">Trạng thái (Tất cả)</option>
                 <option value="vacant">Trống</option>
@@ -233,7 +233,7 @@ export default function RoomsPage() {
               <select
                 value={floorFilter}
                 onChange={(e) => setFloorFilter(e.target.value)}
-                className="bg-slate-900/90 text-slate-200 border border-slate-800 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                className="bg-white text-ink border border-line text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
               >
                 <option value="all">Tầng (Tất cả)</option>
                 <option value="1">Tầng 1</option>
@@ -247,34 +247,34 @@ export default function RoomsPage() {
           <div className="flex-1 flex flex-col gap-6">
             {sortedFloors.length > 0 ? (
               sortedFloors.map((floorNum) => (
-                <div key={floorNum} className="flex flex-col gap-3 bg-slate-900/20 border border-slate-900/30 rounded-xl p-4">
-                  <div className="flex items-center gap-2 border-b border-slate-800/40 pb-2">
-                    <Layers size={15} className="text-blue-500" />
-                    <span className="text-xs font-bold text-slate-300">Tầng {floorNum}</span>
-                    <span className="text-[10px] text-slate-500 font-medium">({roomsByFloor[floorNum].length} phòng)</span>
+                <div key={floorNum} className="flex flex-col gap-3 bg-gray-50/50 border border-line/60 rounded-xl p-4">
+                  <div className="flex items-center gap-2 border-b border-line/50 pb-2">
+                    <Layers size={15} className="text-primary" />
+                    <span className="text-xs font-bold text-ink">Tầng {floorNum}</span>
+                    <span className="text-[10px] text-ink-muted font-medium">({roomsByFloor[floorNum].length} phòng)</span>
                   </div>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
                     {roomsByFloor[floorNum].map((room) => {
-                      let statusBg = 'bg-slate-800/40 border-slate-700/50 text-slate-300';
-                      let statusColorDot = 'bg-slate-500';
+                      let statusBg = 'bg-gray-150 border-gray-250 text-gray-700 hover:border-gray-400';
+                      let statusColorDot = 'bg-gray-400';
                       let statusText = 'Bảo trì';
 
                       if (room.status === 'vacant') {
-                        statusBg = 'bg-emerald-950/20 border-emerald-900/30 text-emerald-400 hover:border-emerald-500/50';
-                        statusColorDot = 'bg-emerald-500';
+                        statusBg = 'bg-emerald-50 border-emerald-100 text-emerald-700 hover:border-emerald-400/50';
+                        statusColorDot = 'bg-success';
                         statusText = 'Còn trống';
                       } else if (room.status === 'occupied') {
-                        statusBg = 'bg-blue-950/20 border-blue-900/30 text-blue-400 hover:border-blue-500/50';
-                        statusColorDot = 'bg-blue-500';
+                        statusBg = 'bg-primary-soft border-primary/20 text-primary hover:border-primary/50';
+                        statusColorDot = 'bg-primary';
                         statusText = 'Đang thuê';
                       } else if (room.status === 'deposit') {
-                        statusBg = 'bg-orange-950/20 border-orange-900/30 text-orange-400 hover:border-orange-500/50';
-                        statusColorDot = 'bg-orange-500';
+                        statusBg = 'bg-amber-50 border-amber-100 text-amber-700 hover:border-amber-400/50';
+                        statusColorDot = 'bg-warning';
                         statusText = 'Đặt cọc';
                       } else if (room.status === 'paused') {
-                        statusBg = 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700';
-                        statusColorDot = 'bg-slate-500';
+                        statusBg = 'bg-gray-50 border-line text-ink-muted hover:border-gray-400';
+                        statusColorDot = 'bg-gray-400';
                         statusText = 'Bảo trì';
                       }
 
@@ -285,26 +285,26 @@ export default function RoomsPage() {
                           key={room.id}
                           onClick={() => handleClickRoom(room)}
                           className={cn(
-                            "group border p-3.5 rounded-xl cursor-pointer flex flex-col gap-2.5 transition-apple-bouncy duration-300 apple-press",
+                            "group border p-3.5 rounded-xl cursor-pointer flex flex-col gap-2.5 transition-apple-bouncy duration-300 apple-press bg-white shadow-sm",
                             statusBg,
                             isSelected 
-                              ? "ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-950 scale-[1.03] shadow-lg shadow-blue-500/10" 
+                              ? "ring-2 ring-primary ring-offset-2 ring-offset-white scale-[1.03] shadow-md shadow-primary/10" 
                               : "hover:scale-[1.02] hover:shadow-md"
                           )}
                         >
                           <div className="flex justify-between items-start">
-                            <span className="font-extrabold text-sm text-slate-100 group-hover:text-primary transition-colors">
+                            <span className="font-extrabold text-sm text-ink group-hover:text-primary transition-colors">
                               {room.code}
                             </span>
-                            <div className="flex items-center gap-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-950/40 border border-slate-850">
+                            <div className="flex items-center gap-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-white/80 border border-line">
                               <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", statusColorDot)} />
                               <span>{statusText}</span>
                             </div>
                           </div>
 
-                          <div className="flex justify-between items-end border-t border-slate-850/50 pt-2 text-[10px] text-slate-400">
+                          <div className="flex justify-between items-end border-t border-line/40 pt-2 text-[10px] text-ink-muted">
                             <span className="font-medium">{room.area} m²</span>
-                            <span className="font-bold text-slate-200">{formatCurrency(room.price)}</span>
+                            <span className="font-bold text-ink">{formatCurrency(room.price)}</span>
                           </div>
                         </div>
                       );
@@ -313,69 +313,69 @@ export default function RoomsPage() {
                 </div>
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center text-center gap-3 py-16 text-slate-500">
-                <div className="p-3 bg-slate-900 border border-slate-850 rounded-full">
+              <div className="flex flex-col items-center justify-center text-center gap-3 py-16 text-ink-muted">
+                <div className="p-3 bg-gray-50 border border-line rounded-full">
                   <Info size={24} />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-400">Không tìm thấy phòng nào</h4>
-                  <p className="text-xs text-slate-600 mt-1 max-w-[250px]">Vui lòng điều chỉnh lại bộ lọc trạng thái hoặc tầng.</p>
+                  <h4 className="text-sm font-semibold text-ink">Không tìm thấy phòng nào</h4>
+                  <p className="text-xs text-ink-muted mt-1 max-w-[250px]">Vui lòng điều chỉnh lại bộ lọc trạng thái hoặc tầng.</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Legend */}
-          <div className="flex flex-wrap gap-4 text-[10px] bg-slate-900/60 backdrop-blur px-3 py-2.5 border border-slate-850 rounded-xl mt-auto">
+          <div className="flex flex-wrap gap-4 text-[10px] bg-gray-50 px-3 py-2.5 border border-line rounded-xl mt-auto">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded bg-emerald-500" />
-              <span className="text-slate-400">Còn trống</span>
+              <span className="w-2.5 h-2.5 rounded bg-success" />
+              <span className="text-ink-muted">Còn trống</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded bg-blue-500" />
-              <span className="text-slate-400">Đang thuê</span>
+              <span className="w-2.5 h-2.5 rounded bg-primary" />
+              <span className="text-ink-muted">Đang thuê</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded bg-orange-500" />
-              <span className="text-slate-400">Đặt cọc</span>
+              <span className="w-2.5 h-2.5 rounded bg-warning" />
+              <span className="text-ink-muted">Đặt cọc</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded bg-gray-500" />
-              <span className="text-slate-400">Bảo trì</span>
+              <span className="w-2.5 h-2.5 rounded bg-gray-400" />
+              <span className="text-ink-muted">Bảo trì</span>
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-1 flex flex-col gap-4">
-          <div className="bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl p-5 flex flex-col gap-4 flex-1">
+          <div className="bg-white border border-line rounded-2xl p-5 flex flex-col gap-4 flex-1 shadow-card">
             {selectedRoom ? (
               <div className="flex flex-col gap-4 h-full">
-                <div className="flex justify-between items-start border-b border-slate-800 pb-3">
+                <div className="flex justify-between items-start border-b border-line pb-3">
                   <div>
-                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-blue-950 text-blue-400 border border-blue-900 rounded">
+                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-primary-soft text-primary border border-primary/20 rounded">
                       Phòng {selectedRoom.code}
                     </span>
-                    <h2 className="text-base font-bold mt-1 text-slate-100">Chi Tiết Phòng</h2>
+                    <h2 className="text-base font-bold mt-1 text-ink">Chi Tiết Phòng</h2>
                   </div>
                   <button
                     onClick={() => setSelectedRoomId(null)}
-                    className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+                    className="p-1 text-ink-muted hover:text-ink transition-colors"
                   >
                     <X size={16} />
                   </button>
                 </div>
 
                 <div className="flex flex-col gap-3.5 text-xs flex-1">
-                  <div className="flex justify-between items-center bg-slate-800/30 p-2 rounded-lg border border-slate-800">
-                    <span className="text-slate-400">Trạng thái</span>
+                  <div className="flex justify-between items-center bg-gray-50 p-2 rounded-lg border border-line">
+                    <span className="text-ink-muted">Trạng thái</span>
                     <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${
                       selectedRoom.status === 'vacant'
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        ? 'bg-green-50 text-success border border-green-200'
                         : selectedRoom.status === 'occupied'
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                        ? 'bg-primary-soft text-primary border border-primary/20'
                         : selectedRoom.status === 'deposit'
-                        ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                        : 'bg-slate-800 text-slate-400 border border-slate-700'
+                        ? 'bg-amber-50 text-warning border border-amber-200'
+                        : 'bg-gray-100 text-ink-muted border border-line'
                     }`}>
                       {selectedRoom.status === 'vacant'
                         ? 'Còn Trống'
@@ -388,49 +388,49 @@ export default function RoomsPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-slate-800/20 p-2 rounded border border-slate-800/60">
-                      <span className="text-slate-400 block text-[10px] uppercase">Diện tích</span>
-                      <span className="font-bold text-slate-200 mt-0.5 block">{selectedRoom.area} m²</span>
+                    <div className="bg-gray-50 p-2 rounded border border-line/60">
+                      <span className="text-ink-muted block text-[10px] uppercase">Diện tích</span>
+                      <span className="font-bold text-ink mt-0.5 block">{selectedRoom.area} m²</span>
                     </div>
-                    <div className="bg-slate-800/20 p-2 rounded border border-slate-800/60">
-                      <span className="text-slate-400 block text-[10px] uppercase">Giá thuê</span>
-                      <span className="font-bold text-slate-200 mt-0.5 block">{formatCurrency(selectedRoom.price)}</span>
+                    <div className="bg-gray-50 p-2 rounded border border-line/60">
+                      <span className="text-ink-muted block text-[10px] uppercase">Giá thuê</span>
+                      <span className="font-bold text-ink mt-0.5 block">{formatCurrency(selectedRoom.price)}</span>
                     </div>
                   </div>
 
                   {selectedRoom.status === 'occupied' || selectedRoom.status === 'deposit' ? (
-                    <div className="bg-blue-950/20 border border-blue-900/40 p-3 rounded-lg flex flex-col gap-2">
-                      <h3 className="font-semibold text-blue-400 flex items-center gap-1.5 border-b border-blue-950 pb-1.5">
+                    <div className="bg-primary-soft/50 border border-primary/10 p-3 rounded-lg flex flex-col gap-2">
+                      <h3 className="font-semibold text-primary flex items-center gap-1.5 border-b border-primary/10 pb-1.5">
                         <User size={14} />
                         <span>Thông Tin Khách Thuê</span>
                       </h3>
                       <div className="flex flex-col gap-1.5 text-[11px]">
                         <div className="flex justify-between">
-                          <span className="text-slate-400">Khách thuê</span>
-                          <span className="font-bold text-slate-200">{selectedRoom.tenantName || 'Chưa cập nhật'}</span>
+                          <span className="text-ink-muted">Khách thuê</span>
+                          <span className="font-bold text-ink">{selectedRoom.tenantName || 'Chưa cập nhật'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-400">Điện thoại</span>
-                          <span className="font-bold text-slate-200">{selectedRoom.tenantPhone || 'Chưa cập nhật'}</span>
+                          <span className="text-ink-muted">Điện thoại</span>
+                          <span className="font-bold text-ink">{selectedRoom.tenantPhone || 'Chưa cập nhật'}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-400">Ngày dời vào</span>
-                          <span className="font-bold text-slate-200">{selectedRoom.checkInDate || 'Chưa cập nhật'}</span>
+                          <span className="text-ink-muted">Ngày dời vào</span>
+                          <span className="font-bold text-ink">{selectedRoom.checkInDate || 'Chưa cập nhật'}</span>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-slate-800/20 border border-slate-800 p-3 rounded-lg flex items-center gap-2 text-slate-400">
-                      <Info size={14} className="text-blue-500 shrink-0" />
+                    <div className="bg-gray-50 border border-line p-3 rounded-lg flex items-center gap-2 text-ink-muted">
+                      <Info size={14} className="text-primary shrink-0" />
                       <span>Không có khách thuê hiện tại</span>
                     </div>
                   )}
                 </div>
 
-                <div className="flex gap-2 pt-4 border-t border-slate-800">
+                <div className="flex gap-2 pt-4 border-t border-line">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold bg-gray-50 hover:bg-gray-100 text-ink rounded-lg border border-line transition-colors"
                   >
                     <Edit size={14} />
                     <span>Sửa</span>
@@ -438,7 +438,7 @@ export default function RoomsPage() {
                   {selectedRoom.status === 'occupied' && (
                     <button
                       onClick={() => handleOpenInvoice(selectedRoom)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors shadow-sm"
                     >
                       <FileText size={14} />
                       <span>Lập Hoá Đơn</span>
@@ -448,12 +448,12 @@ export default function RoomsPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-center gap-3 h-full py-12">
-                <div className="p-4 bg-slate-800/40 rounded-full text-slate-500 border border-slate-800">
+                <div className="p-4 bg-gray-50 rounded-full text-ink-muted border border-line">
                   <Layers size={32} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-300">Chưa Chọn Phòng</h3>
-                  <p className="text-xs text-slate-500 max-w-[200px] mt-1 mx-auto">
+                  <h3 className="text-sm font-semibold text-ink">Chưa Chọn Phòng</h3>
+                  <p className="text-xs text-ink-muted max-w-[200px] mt-1 mx-auto">
                     Nhấp vào một ô phòng trong sơ đồ để xem thông tin chi tiết
                   </p>
                 </div>
@@ -464,16 +464,16 @@ export default function RoomsPage() {
       </div>
 
       {isEditing && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-850 rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Edit className="text-blue-500" size={18} />
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 shadow-modal animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center border-b border-line pb-3">
+              <h2 className="text-base font-bold text-ink flex items-center gap-2">
+                <Edit className="text-primary" size={18} />
                 <span>Chỉnh Sửa Phòng {editForm.code}</span>
               </h2>
               <button
                 onClick={() => setIsEditing(false)}
-                className="text-slate-400 hover:text-slate-200 transition-colors"
+                className="text-ink-muted hover:text-ink transition-colors"
               >
                 <X size={18} />
               </button>
@@ -482,21 +482,21 @@ export default function RoomsPage() {
             <form onSubmit={handleSaveEdit} className="flex flex-col gap-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-400">Mã phòng</label>
+                  <label className="text-ink-muted font-semibold">Mã phòng</label>
                   <input
                     type="text"
                     required
                     value={editForm.code}
                     onChange={(e) => setEditForm({ ...editForm, code: e.target.value })}
-                    className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500"
+                    className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-400">Trạng thái</label>
+                  <label className="text-ink-muted font-semibold">Trạng thái</label>
                   <select
                     value={editForm.status}
                     onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                    className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500"
+                    className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   >
                     <option value="vacant">Còn Trống</option>
                     <option value="occupied">Đang Thuê</option>
@@ -508,75 +508,75 @@ export default function RoomsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-400">Diện tích (m²)</label>
+                  <label className="text-ink-muted font-semibold">Diện tích (m²)</label>
                   <input
                     type="number"
                     required
                     value={editForm.area}
                     onChange={(e) => setEditForm({ ...editForm, area: parseFloat(e.target.value) || 0 })}
-                    className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500"
+                    className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-slate-400">Giá thuê (VND/tháng)</label>
+                  <label className="text-ink-muted font-semibold">Giá thuê (VND/tháng)</label>
                   <input
                     type="number"
                     required
                     value={editForm.price}
                     onChange={(e) => setEditForm({ ...editForm, price: parseInt(e.target.value) || 0 })}
-                    className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500"
+                    className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
 
               {(editForm.status === 'occupied' || editForm.status === 'deposit') && (
-                <div className="flex flex-col gap-3 border-t border-slate-800/80 pt-3">
+                <div className="flex flex-col gap-3 border-t border-line pt-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-slate-400">Tên khách thuê</label>
+                    <label className="text-ink-muted font-semibold">Tên khách thuê</label>
                     <input
                       type="text"
                       required
                       value={editForm.tenantName || ''}
                       onChange={(e) => setEditForm({ ...editForm, tenantName: e.target.value })}
-                      className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500"
+                      className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-slate-400">Điện thoại</label>
+                      <label className="text-ink-muted font-semibold">Điện thoại</label>
                       <input
                         type="text"
                         required
                         value={editForm.tenantPhone || ''}
                         onChange={(e) => setEditForm({ ...editForm, tenantPhone: e.target.value })}
-                        className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-slate-400">Ngày dời vào</label>
+                      <label className="text-ink-muted font-semibold">Ngày dời vào</label>
                       <input
                         type="date"
                         required
                         value={editForm.checkInDate || ''}
                         onChange={(e) => setEditForm({ ...editForm, checkInDate: e.target.value })}
-                        className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       />
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="flex gap-2 justify-end pt-3 border-t border-slate-800/80">
+              <div className="flex gap-2 justify-end pt-3 border-t border-line">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg transition-colors"
+                  className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-ink border border-line font-semibold rounded-lg transition-colors"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-colors shadow-sm"
                 >
                   Lưu thay đổi
                 </button>
@@ -587,105 +587,105 @@ export default function RoomsPage() {
       )}
 
       {invoiceRoomId && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-850 rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <FileText className="text-blue-500" size={18} />
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 shadow-modal animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center border-b border-line pb-3">
+              <h2 className="text-base font-bold text-ink flex items-center gap-2">
+                <FileText className="text-primary" size={18} />
                 <span>Lập Hoá Đơn Phòng {rooms.find((r) => r.id === invoiceRoomId)?.code}</span>
               </h2>
               <button
                 onClick={() => setInvoiceRoomId(null)}
-                className="text-slate-400 hover:text-slate-200 transition-colors"
+                className="text-ink-muted hover:text-ink transition-colors"
               >
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleCreateInvoice} className="flex flex-col gap-4 text-xs">
-              <div className="flex flex-col gap-2 bg-slate-950/50 p-3 rounded-lg border border-slate-850">
+              <div className="flex flex-col gap-2 bg-gray-50 p-3 rounded-lg border border-line">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Tiền phòng cơ bản:</span>
-                  <span className="font-bold text-slate-200">
+                  <span className="text-ink-muted font-medium">Tiền phòng cơ bản:</span>
+                  <span className="font-bold text-ink">
                     {formatCurrency(rooms.find((r) => r.id === invoiceRoomId)?.price || 0)}
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <h3 className="font-semibold text-slate-300 mb-1">Chỉ số Điện</h3>
+                <h3 className="font-bold text-ink mb-1">Chỉ số Điện</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1">
-                    <label className="text-slate-400 text-[10px] uppercase">Cũ</label>
+                    <label className="text-ink-muted text-[10px] uppercase font-semibold">Cũ</label>
                     <input
                       type="number"
                       required
                       value={electricityOld}
                       onChange={(e) => setElectricityOld(parseInt(e.target.value) || 0)}
-                      className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none"
+                      className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="text-slate-400 text-[10px] uppercase">Mới</label>
+                    <label className="text-ink-muted text-[10px] uppercase font-semibold">Mới</label>
                     <input
                       type="number"
                       required
                       value={electricityNew}
                       onChange={(e) => setElectricityNew(parseInt(e.target.value) || 0)}
-                      className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none"
+                      className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <h3 className="font-semibold text-slate-300 mb-1">Chỉ số Nước</h3>
+                <h3 className="font-bold text-ink mb-1">Chỉ số Nước</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1">
-                    <label className="text-slate-400 text-[10px] uppercase">Cũ</label>
+                    <label className="text-ink-muted text-[10px] uppercase font-semibold">Cũ</label>
                     <input
                       type="number"
                       required
                       value={waterOld}
                       onChange={(e) => setWaterOld(parseInt(e.target.value) || 0)}
-                      className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none"
+                      className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="text-slate-400 text-[10px] uppercase">Mới</label>
+                    <label className="text-ink-muted text-[10px] uppercase font-semibold">Mới</label>
                     <input
                       type="number"
                       required
                       value={waterNew}
                       onChange={(e) => setWaterNew(parseInt(e.target.value) || 0)}
-                      className="bg-slate-950 text-slate-200 border border-slate-850 px-3 py-2 rounded-lg focus:outline-none"
+                      className="bg-white text-ink border border-line px-3 py-2 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 border-t border-slate-800 pt-3 text-[11px] text-slate-400">
+              <div className="flex flex-col gap-2 border-t border-line pt-3 text-[11px] text-ink-muted">
                 <div className="flex justify-between">
                   <span>Tiêu thụ điện:</span>
-                  <span className="font-semibold text-slate-200">{electricityNew - electricityOld} kWh</span>
+                  <span className="font-semibold text-ink">{electricityNew - electricityOld} kWh</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tiêu thụ nước:</span>
-                  <span className="font-semibold text-slate-200">{waterNew - waterOld} m³</span>
+                  <span className="font-semibold text-ink">{waterNew - waterOld} m³</span>
                 </div>
               </div>
 
-              <div className="flex gap-2 justify-end pt-3 border-t border-slate-800/80">
+              <div className="flex gap-2 justify-end pt-3 border-t border-line">
                 <button
                   type="button"
                   onClick={() => setInvoiceRoomId(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg transition-colors"
+                  className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-ink border border-line font-semibold rounded-lg transition-colors"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors"
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-colors shadow-sm"
                 >
                   Lập hóa đơn
                 </button>
