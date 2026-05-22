@@ -10,3 +10,4 @@ export { StatCard } from './StatCard.jsx';
 export { Avatar } from './Avatar.jsx';
 export { Loading } from './Loading.jsx';
 export { Tabs } from './Tabs.jsx';
+export { Toast } from './Toast.jsx';
