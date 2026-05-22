@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Send, FileDown, Filter, X, Check, Loader2, CreditCard, Bell, Eye, CheckCircle2 } from 'lucide-react';
-import { Button, PageHeader, Card, Tabs, Table, Badge, Toast } from '../../components/common';
+import { Button, PageHeader, Card, Tabs, Table, Badge, Toast, Loading } from '../../components/common';
 import { useInvoices } from '../../controllers/useInvoices.js';
 import { INVOICE_STATUS_META } from '../../models/Invoice.js';
 import { formatCurrency, formatDate, formatPeriod } from '../../utils/format.js';
