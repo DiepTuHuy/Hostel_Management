@@ -28,6 +28,23 @@ src/frontend/.env
 src/frontend/.env.local
 src/frontend/.env.*.local
 
+# Python virtual environment
+.venv/
+src/backend/.venv/
+__pycache__/
+src/backend/__pycache__/
+src/backend/app/__pycache__/
+**/__pycache__/
+
+# Backend node_modules (seeder dùng JS)
+src/backend/node_modules/
+
 # Vite cache
 .vite/
 src/frontend/.vite/
+
+# Vite log files
+src/frontend/vite_stdout.log
+src/frontend/vite_stderr.log
+src/frontend/strip-comments.js
+src/frontend/start-vite.js

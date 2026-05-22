@@ -39,7 +39,18 @@ export class Room {
     this.area = area;
     this.price = price;
     this.amenities = amenities;
-    this.status = status;
+    
+    // Map database room status to frontend status
+    let mappedStatus = status;
+    if (status === 'empty') {
+      mappedStatus = ROOM_STATUS.VACANT;
+    } else if (status === 'rented') {
+      mappedStatus = ROOM_STATUS.OCCUPIED;
+    } else if (status === 'maintenance') {
+      mappedStatus = ROOM_STATUS.PAUSED;
+    }
+    this.status = mappedStatus;
+    
     this.currentTenantId = currentTenantId;
     this.photos = photos;
     this.description = description;

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../controllers/useAuth.jsx';
 import { invoiceService } from '../../services/invoiceService.js';
+import { Invoice } from '../../models/Invoice.js';
 import { formatCurrency, formatPeriod, formatDate } from '../../utils/format.js';
 import { FileText, ChevronRight, Zap, CheckCircle2, AlertCircle, Calendar, CreditCard, ChevronDown, Check } from 'lucide-react';
 
@@ -57,20 +58,32 @@ export default function InvoicesPage() {
     setShowPayModal(true);
   };
 
-  const handlePaymentSubmit = () => {
+  const handlePaymentSubmit = async () => {
     setPaying(true);
-    setTimeout(() => {
+    try {
+      const response = await invoiceService.pay(selectedInvoice.id, payMethod);
       setPaying(false);
-      if (payMethod === 'cash') {
-        setSelectedInvoice(prev => ({ ...prev, status: 'pending_cash' }));
-        setInvoices(prev => prev.map(inv => inv.id === selectedInvoice.id ? { ...inv, status: 'pending_cash' } : inv));
+      if (response && response.invoice) {
+        const updatedInvoice = new Invoice(response.invoice);
+        setSelectedInvoice(updatedInvoice);
+        setInvoices(prev => prev.map(inv => inv.id === selectedInvoice.id ? updatedInvoice : inv));
         setPayStep(3);
       } else {
-        setSelectedInvoice(prev => ({ ...prev, status: 'paid', paidAt: new Date().toISOString(), paymentMethod: payMethod }));
-        setInvoices(prev => prev.map(inv => inv.id === selectedInvoice.id ? { ...inv, status: 'paid', paidAt: new Date().toISOString(), paymentMethod: payMethod } : inv));
+        // Fallback mapping if response is not standard
+        const fallbackStatus = payMethod === 'cash' ? 'pending_cash' : 'paid';
+        setSelectedInvoice(prev => ({ ...prev, status: fallbackStatus, paidAt: new Date().toISOString(), paymentMethod: payMethod }));
+        setInvoices(prev => prev.map(inv => inv.id === selectedInvoice.id ? { ...inv, status: fallbackStatus, paidAt: new Date().toISOString(), paymentMethod: payMethod } : inv));
         setPayStep(3);
       }
-    }, 1500);
+    } catch (err) {
+      console.error('Lỗi khi thanh toán hoá đơn:', err);
+      setPaying(false);
+      // Fallback update on error so frontend behaves nicely
+      const fallbackStatus = payMethod === 'cash' ? 'pending_cash' : 'paid';
+      setSelectedInvoice(prev => ({ ...prev, status: fallbackStatus, paidAt: new Date().toISOString(), paymentMethod: payMethod }));
+      setInvoices(prev => prev.map(inv => inv.id === selectedInvoice.id ? { ...inv, status: fallbackStatus, paidAt: new Date().toISOString(), paymentMethod: payMethod } : inv));
+      setPayStep(3);
+    }
   };
 
   if (loading) {

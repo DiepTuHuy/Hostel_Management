@@ -27,18 +27,42 @@ export class Invoice {
     tenantId,
     period, // 'YYYY-MM'
     dueDate,
+    deadline, // DB alias
     items = [], // [{name, qty, unitPrice, total}]
+    details = [], // DB alias
     subtotal = 0,
     total = 0,
+    totalAmount, // DB alias
     status = INVOICE_STATUS.PENDING,
     paidAt = null,
     paymentMethod = null,
     receiptUrl = null,
     meterReadings = null,
   }) {
+    // Map DB fields to frontend fields
+    const resolvedTotal = total || totalAmount || 0;
+    const resolvedDueDate = dueDate || deadline;
+    
+    // Map DB details array to frontend items array
+    let resolvedItems = items;
+    if ((!items || items.length === 0) && details && details.length > 0) {
+      resolvedItems = details.map(d => ({
+        name: d.name,
+        qty: d.quantity || 1,
+        unit: d.unit || 'phần',
+        price: d.price,
+        total: d.amount || d.total || (d.price * (d.quantity || 1))
+      }));
+    }
+
     Object.assign(this, {
       id, code, contractId, propertyId, roomId, tenantId,
-      period, dueDate, items, subtotal, total, status,
+      period, 
+      dueDate: resolvedDueDate, 
+      items: resolvedItems, 
+      subtotal: subtotal || resolvedTotal, 
+      total: resolvedTotal, 
+      status,
       paidAt, paymentMethod, receiptUrl, meterReadings,
     });
   }

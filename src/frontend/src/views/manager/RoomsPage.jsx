@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '../../utils/cn.js';
 import {
   Plus,
@@ -16,6 +16,7 @@ import {
   Activity,
   ArrowLeft
 } from 'lucide-react';
+import { useRooms } from '../../controllers/useRooms.js';
 
 const initialRoomsData = [
   { id: '101', code: 'P.101', floor: 1, area: 25, price: 3200000, status: 'vacant', tenantName: '', tenantPhone: '', checkInDate: '' },
@@ -33,6 +34,7 @@ const initialRoomsData = [
 ];
 
 export default function RoomsPage() {
+  const { data: apiRooms = [], loading } = useRooms({ propertyId: 'p-001' });
   const [rooms, setRooms] = useState(initialRoomsData);
   const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -40,6 +42,12 @@ export default function RoomsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [invoiceRoomId, setInvoiceRoomId] = useState(null);
+
+  useEffect(() => {
+    if (apiRooms && apiRooms.length > 0) {
+      setRooms(apiRooms);
+    }
+  }, [apiRooms]);
 
   const [electricityOld, setElectricityOld] = useState(1200);
   const [electricityNew, setElectricityNew] = useState(1350);
