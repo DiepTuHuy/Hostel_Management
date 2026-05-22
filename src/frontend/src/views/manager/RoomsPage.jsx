@@ -127,7 +127,7 @@ export default function RoomsPage() {
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-line p-4 rounded-2xl shadow-card">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-2">
         <div>
           <h1 className="text-xl font-bold text-ink flex items-center gap-2">
             <Building className="text-primary" />
