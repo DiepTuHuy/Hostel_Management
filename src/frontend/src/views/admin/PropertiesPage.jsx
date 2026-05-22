@@ -278,14 +278,19 @@ export default function PropertiesPage() {
       {loading ? <Loading /> : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
           {properties.map((p) => (
-            <Card key={p.id} padded={false} className="group overflow-hidden transition-all duration-500 hover:-translate-y-1.5 hover:scale-[1.02] hover:shadow-xl">
+            <Card
+              key={p.id}
+              padded={false}
+              className="group overflow-hidden apple-card-hover apple-press cursor-pointer border border-line rounded-3xl"
+              onClick={() => handleViewDetail(p)}
+            >
               <div className="h-44 bg-gray-100 relative overflow-hidden">
-                {p.image && <img src={p.image} alt={p.name} className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" />}
+                {p.image && <img src={p.image} alt={p.name} className="h-full w-full object-cover transition-apple-bouncy duration-700 group-hover:scale-105" />}
                 <Badge color="success" className="absolute top-3 left-3">Hoạt động</Badge>
               </div>
               <div className="p-5">
                 <div className="flex items-baseline justify-between gap-2">
-                  <h3 className="font-semibold text-ink line-clamp-1">{p.name}</h3>
+                  <h3 className="font-semibold text-ink line-clamp-1 group-hover:text-primary transition-colors duration-200">{p.name}</h3>
                   <span className="text-xs text-ink-muted">{p.code}</span>
                 </div>
                 <p className="text-sm text-ink-muted mt-1 flex items-start gap-1.5">
@@ -306,12 +311,9 @@ export default function PropertiesPage() {
                   <span className="flex items-center gap-1">
                     <Users size={14} /> {p.managerIds.length} quản lý
                   </span>
-                  <button
-                    onClick={() => handleViewDetail(p)}
-                    className="text-primary font-medium hover:underline transition-colors"
-                  >
+                  <span className="text-primary font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform duration-300">
                     Xem chi tiết →
-                  </button>
+                  </span>
                 </div>
               </div>
             </Card>

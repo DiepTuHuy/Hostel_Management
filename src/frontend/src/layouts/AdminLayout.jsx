@@ -42,7 +42,7 @@ export default function AdminLayout() {
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 w-[240px] bg-surface border-r border-line flex flex-col z-50 lg:z-20 transition-transform duration-300 ease-out lg:transform-none lg:translate-x-0",
+          "fixed inset-y-0 left-0 w-[240px] bg-surface border-r border-line flex flex-col z-50 lg:z-20 transition-transform duration-500 [transition-timing-function:var(--ease-apple-spring)] lg:transform-none lg:translate-x-0",
           isDrawerOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -52,13 +52,13 @@ export default function AdminLayout() {
             <p className="text-xs text-ink-muted mt-0.5">Quản trị hệ thống</p>
           </div>
           <button
-            className="p-1.5 hover:bg-gray-100 rounded-lg text-ink-muted lg:hidden"
+            className="p-1.5 hover:bg-gray-100 rounded-lg text-ink-muted lg:hidden apple-press"
             onClick={() => setIsDrawerOpen(false)}
           >
             <X size={18} />
           </button>
         </div>
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
@@ -67,14 +67,14 @@ export default function AdminLayout() {
               onClick={() => setIsDrawerOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative',
+                  'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold relative apple-press transition-apple duration-200',
                   isActive
-                    ? 'bg-primary-soft text-primary before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:bg-primary before:rounded-r'
-                    : 'text-ink-muted hover:bg-gray-50 hover:text-ink'
+                    ? 'bg-primary-soft text-primary shadow-[0_4px_12px_-2px_rgba(58,91,199,0.12)] scale-[1.02]'
+                    : 'text-ink-muted hover:bg-gray-100/70 hover:text-ink hover:translate-x-1'
                 )
               }
             >
-              <item.icon size={18} />
+              <item.icon size={18} className="transition-transform duration-300 group-hover:scale-110" />
               {item.label}
             </NavLink>
           ))}
@@ -82,7 +82,7 @@ export default function AdminLayout() {
         <div className="border-t border-line p-3">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-ink-muted hover:bg-gray-50 hover:text-danger"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-ink-muted hover:bg-red-50 hover:text-danger apple-press transition-apple duration-200"
           >
             <LogOut size={18} /> Đăng xuất
           </button>

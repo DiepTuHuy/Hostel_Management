@@ -38,7 +38,7 @@ export default function ManagerLayout() {
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 w-[240px] bg-surface border-r border-line flex flex-col z-50 lg:z-20 transition-transform duration-300 ease-out lg:transform-none lg:translate-x-0",
+          "fixed inset-y-0 left-0 w-[240px] bg-surface border-r border-line flex flex-col z-50 lg:z-20 transition-transform duration-500 [transition-timing-function:var(--ease-apple-spring)] lg:transform-none lg:translate-x-0",
           isDrawerOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -48,7 +48,7 @@ export default function ManagerLayout() {
             <p className="text-xs text-ink-muted mt-0.5">Vận hành cơ sở</p>
           </div>
           <button
-            className="p-1.5 hover:bg-gray-100 rounded-lg text-ink-muted lg:hidden"
+            className="p-1.5 hover:bg-gray-100 rounded-lg text-ink-muted lg:hidden apple-press"
             onClick={() => setIsDrawerOpen(false)}
           >
             <X size={18} />
@@ -57,12 +57,12 @@ export default function ManagerLayout() {
         
         <div className="px-4 py-3 border-b border-line">
           <label className="text-xs text-ink-muted uppercase tracking-wide">Chi nhánh hiện tại</label>
-          <button className="mt-1.5 w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm">
+          <button className="mt-1.5 w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm apple-press transition-all duration-200">
             <span className="font-medium truncate">Nhà trọ An Phú</span>
             <ChevronDown size={16} className="text-ink-muted" />
           </button>
         </div>
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
@@ -71,10 +71,10 @@ export default function ManagerLayout() {
               onClick={() => setIsDrawerOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative',
+                  'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold relative apple-press transition-apple duration-200',
                   isActive
-                    ? 'bg-primary-soft text-primary before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:bg-primary before:rounded-r'
-                    : 'text-ink-muted hover:bg-gray-50 hover:text-ink'
+                    ? 'bg-primary-soft text-primary shadow-[0_4px_12px_-2px_rgba(58,91,199,0.12)] scale-[1.02]'
+                    : 'text-ink-muted hover:bg-gray-100/70 hover:text-ink hover:translate-x-1'
                 )
               }
             >
@@ -86,7 +86,7 @@ export default function ManagerLayout() {
         <div className="border-t border-line p-3">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-ink-muted hover:bg-gray-50 hover:text-danger"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-ink-muted hover:bg-red-50 hover:text-danger apple-press transition-apple duration-200"
           >
             <LogOut size={18} /> Đăng xuất
           </button>

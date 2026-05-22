@@ -47,7 +47,7 @@ export default function TenantLayout() {
 
       <div 
         className={cn(
-          "fixed top-0 bottom-0 left-0 w-64 lg:w-[240px] bg-surface border-r border-line z-50 lg:z-20 transition-transform duration-300 ease-out transform lg:transform-none lg:transition-none lg:translate-x-0",
+          "fixed top-0 bottom-0 left-0 w-64 lg:w-[240px] bg-surface border-r border-line z-50 lg:z-20 transition-transform duration-500 [transition-timing-function:var(--ease-apple-spring)] transform lg:transform-none lg:transition-none lg:translate-x-0",
           isDrawerOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -57,7 +57,7 @@ export default function TenantLayout() {
               <h2 className="text-headline-sm text-primary font-bold">BoardingHouse</h2>
               <p className="text-xs text-ink-muted mt-0.5">Cổng thông tin khách thuê</p>
             </div>
-            <button className="p-1.5 hover:bg-gray-100 rounded-lg text-ink-muted lg:hidden" onClick={() => setIsDrawerOpen(false)}>
+            <button className="p-1.5 hover:bg-gray-100 rounded-lg text-ink-muted lg:hidden apple-press" onClick={() => setIsDrawerOpen(false)}>
               <X size={18} />
             </button>
           </div>
@@ -70,7 +70,7 @@ export default function TenantLayout() {
             </div>
           </div>
 
-          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
             {SIDEBAR_NAV.map((item) => (
               <NavLink
                 key={item.to}
@@ -79,10 +79,10 @@ export default function TenantLayout() {
                 onClick={() => setIsDrawerOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors relative',
+                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold relative apple-press transition-apple duration-200',
                     isActive
-                      ? 'bg-primary-soft text-primary before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-primary before:rounded-r'
-                      : 'text-ink-muted hover:bg-gray-50 hover:text-ink'
+                      ? 'bg-primary-soft text-primary shadow-[0_4px_12px_-2px_rgba(58,91,199,0.12)] scale-[1.02]'
+                      : 'text-ink-muted hover:bg-gray-100/70 hover:text-ink hover:translate-x-1'
                   )
                 }
               >
@@ -93,14 +93,14 @@ export default function TenantLayout() {
             <div className="border-t border-line my-3" />
             <button
               onClick={() => handleNavClick('/')}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ink-muted hover:bg-gray-50 transition-colors text-left"
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-ink-muted hover:bg-gray-100/70 hover:translate-x-1 apple-press transition-apple duration-200 text-left"
             >
               <HelpCircle size={18} />
               <span>Trung tâm hỗ trợ</span>
             </button>
             <button
               onClick={() => handleNavClick('/')}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ink-muted hover:bg-gray-50 transition-colors text-left"
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-ink-muted hover:bg-gray-100/70 hover:translate-x-1 apple-press transition-apple duration-200 text-left"
             >
               <Info size={18} />
               <span>Về chúng tôi</span>
@@ -110,7 +110,7 @@ export default function TenantLayout() {
           <div className="p-3 border-t border-line">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-danger hover:bg-danger/5 transition-colors text-left"
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-danger hover:bg-danger/5 apple-press transition-apple duration-200 text-left"
             >
               <LogOut size={18} />
               <span>Đăng xuất</span>

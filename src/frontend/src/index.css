@@ -101,3 +101,64 @@
     transform: scale(1) translateY(0);
   }
 }
+
+:root {
+  --ease-apple-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-apple-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-apple-press: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@layer utilities {
+  .transition-apple {
+    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .transition-apple-bouncy {
+    transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .apple-press {
+    transition: transform 120ms cubic-bezier(0.25, 1, 0.5, 1), opacity 120ms ease;
+  }
+  .apple-press:active {
+    transform: scale(0.96) !important;
+    opacity: 0.9;
+  }
+  .apple-card-hover {
+    transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .apple-card-hover:hover {
+    transform: translateY(-6px) scale(1.025);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+}
+
+@keyframes applePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(12px);
+  }
+  70% {
+    transform: scale(1.02) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-apple-pop {
+  animation: applePop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes appleSlideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-apple-slide-in-left {
+  animation: appleSlideInLeft 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
