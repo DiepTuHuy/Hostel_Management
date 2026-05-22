@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, MapPin, Users, MoreVertical, X, Home, Percent, Phone, Mail, Calendar, Edit, Trash2, DoorOpen, TrendingUp } from 'lucide-react';
+import { Plus, MapPin, Users, X, Home, Phone, Mail, Calendar, Edit, DoorOpen, TrendingUp } from 'lucide-react';
 import { Button, PageHeader, Card, Badge, Loading } from '../../components/common';
 import { useProperties } from '../../controllers/useProperties.js';
 
@@ -256,51 +256,15 @@ function AddPropertyModal({ onClose }) {
   );
 }
 
-function PropertyContextMenu({ property, onClose, onViewDetail }) {
-  return (
-    <div className="absolute top-12 right-3 z-20 bg-surface rounded-xl shadow-lg border border-line py-1.5 min-w-[160px] animate-[fadeInScale_0.15s_ease-out]">
-      <button
-        onClick={() => { onViewDetail(property); onClose(); }}
-        className="w-full px-4 py-2 text-left text-sm text-ink hover:bg-gray-50 transition-colors flex items-center gap-2"
-      >
-        <Home size={14} /> Xem chi tiết
-      </button>
-      <button
-        onClick={onClose}
-        className="w-full px-4 py-2 text-left text-sm text-ink hover:bg-gray-50 transition-colors flex items-center gap-2"
-      >
-        <Edit size={14} /> Chỉnh sửa
-      </button>
-      <button
-        onClick={onClose}
-        className="w-full px-4 py-2 text-left text-sm text-ink hover:bg-gray-50 transition-colors flex items-center gap-2"
-      >
-        <Users size={14} /> Phân công quản lý
-      </button>
-      <div className="border-t border-line my-1" />
-      <button
-        onClick={onClose}
-        className="w-full px-4 py-2 text-left text-sm text-danger hover:bg-red-50 transition-colors flex items-center gap-2"
-      >
-        <Trash2 size={14} /> Ngừng hoạt động
-      </button>
-    </div>
-  );
-}
+
 
 export default function PropertiesPage() {
   const { data: properties = [], loading } = useProperties();
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [contextMenuId, setContextMenuId] = useState(null);
 
   const handleViewDetail = (property) => {
     setSelectedProperty(property);
-    setContextMenuId(null);
-  };
-
-  const toggleContextMenu = (id) => {
-    setContextMenuId(prev => prev === id ? null : id);
   };
 
   return (
@@ -318,25 +282,6 @@ export default function PropertiesPage() {
               <div className="h-44 bg-gray-100 relative overflow-hidden">
                 {p.image && <img src={p.image} alt={p.name} className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" />}
                 <Badge color="success" className="absolute top-3 left-3">Hoạt động</Badge>
-                <div className="relative">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); toggleContextMenu(p.id); }}
-                    className="absolute top-3 right-3 p-1.5 bg-white/90 rounded-md text-ink-muted hover:bg-white transition-colors"
-                    style={{ position: 'absolute', top: '-2.5rem', right: '0.75rem' }}
-                  >
-                    <MoreVertical size={16} />
-                  </button>
-                  {contextMenuId === p.id && (
-                    <>
-                      <div className="fixed inset-0 z-10" onClick={() => setContextMenuId(null)} />
-                      <PropertyContextMenu
-                        property={p}
-                        onClose={() => setContextMenuId(null)}
-                        onViewDetail={handleViewDetail}
-                      />
-                    </>
-                  )}
-                </div>
               </div>
               <div className="p-5">
                 <div className="flex items-baseline justify-between gap-2">
