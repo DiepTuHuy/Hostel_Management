@@ -1,0 +1,23 @@
+﻿Test Case ID,Function,Test Steps,Input Data,Expected Result
+AUTO_TEST_ADMIN_PERMISSIONS,Phân quyền vai trò người dùng,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi","Vai trò: ADMIN, Hành động: lock_user, assign_manager",Trả về True | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_CONTRACT_INVALID_PRICE,Kiểm tra hợp đồng thuê,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi",Giá âm: -10.000,Trả về lỗi 'Giá thuê phải lớn hơn 0' | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_CONTRACT_SUCCESS,Kiểm tra hợp đồng thuê,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi","Giá: 3.500.000, Cọc: 3.500.000, Hạn: 12 tháng",Trả về 'SUCCESS' | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_EVN_CALC_EXACT_100,Tính toán tiền điện EVN bậc thang,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi",Số điện: 100 kWh,Tổng tiền: 183.600 VNĐ | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_EVN_CALC_EXACT_200,Tính toán tiền điện EVN bậc thang,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi",Số điện: 200 kWh,Tổng tiền: 400.300 VNĐ | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_EVN_CALC_NEGATIVE_ERROR,Tính toán tiền điện EVN bậc thang,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi",Số điện: -10 kWh,Báo lỗi ValueError | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_EVN_CALC_UNDER_50,Tính toán tiền điện EVN bậc thang,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi",Số điện: 40 kWh,Tổng tiền: 72.240 VNĐ | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_TENANT_PERMISSIONS,Phân quyền vai trò người dùng,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi","Vai trò: TENANT, Hành động: sign_contract, crud_rooms","sign_contract: True, crud_rooms: False | Kết quả kiểm thử: ĐẠT (PASSED)"
+AUTO_TEST_USER_REG_INVALID_PHONE,Đăng ký tài khoản khách thuê,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi",SĐT không hợp lệ: 123456789,Trả về thông báo lỗi định dạng SĐT | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_USER_REG_SHORT_PASSWORD,Đăng ký tài khoản khách thuê,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi",Mật khẩu ngắn: 123,Trả về thông báo lỗi độ dài mật khẩu | Kết quả kiểm thử: ĐẠT (PASSED)
+AUTO_TEST_USER_REG_SUCCESS,Đăng ký tài khoản khách thuê,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi","Tên: Nguyễn Văn A, SĐT: 0912345678, Email: vana@gmail.com, Pass: 123456",Trả về 'SUCCESS' | Kết quả kiểm thử: ĐẠT (PASSED)
