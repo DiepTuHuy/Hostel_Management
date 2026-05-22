@@ -1,15 +1,13 @@
-import { fakeDelay } from './api.js';
-import properties from '../mocks/properties.json';
+import { api } from './api.js';
 import { Property } from '../models/Property.js';
 
 export const propertyService = {
   async list() {
-    await fakeDelay();
-    return properties.map((p) => new Property(p));
+    const res = await api.get('/properties');
+    return res.data.map((p) => new Property(p));
   },
   async get(id) {
-    await fakeDelay();
-    const p = properties.find((x) => x.id === id);
-    return p ? new Property(p) : null;
+    const res = await api.get(`/properties/${id}`);
+    return res.data ? new Property(res.data) : null;
   },
 };

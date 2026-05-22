@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Save, Upload, X, Shield, Lock, Radio, Key, Mail, Check, Loader2, Sparkles } from 'lucide-react';
-import { Button, PageHeader, Card, CardHeader, Input, Toast } from '../../components/common';
+import { Button, PageHeader, Card, CardHeader, Input, Toast, Badge } from '../../components/common';
 
 // Notification Channel Configuration Modal
 function ConfigChannelModal({ channelName, onClose, onSave }) {

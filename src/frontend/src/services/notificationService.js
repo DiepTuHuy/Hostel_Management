@@ -1,9 +1,8 @@
-import { fakeDelay } from './api.js';
-import notifications from '../mocks/notifications.json';
+import { api } from './api.js';
 
 export const notificationService = {
   async list(userId) {
-    await fakeDelay();
-    return notifications.filter((n) => !userId || n.userId === userId);
+    const res = await api.get('/notifications', { params: { userId } });
+    return res.data;
   },
 };
