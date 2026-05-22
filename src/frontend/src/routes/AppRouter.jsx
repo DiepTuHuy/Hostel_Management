@@ -111,8 +111,11 @@ export function AppRouter() {
 
         <Route path="/" element={<VisitorLayout />}>
           <Route index element={<VisitorHome />} />
+          <Route path="rooms" element={<VisitorRooms />} />
           <Route path="search" element={<VisitorRooms />} />
+          <Route path="rooms/:id" element={<VisitorRoomDetail />} />
           <Route path="room/:id" element={<VisitorRoomDetail />} />
+          <Route path="rooms/:id/deposit" element={<VisitorDeposit />} />
           <Route path="room/:id/deposit" element={<VisitorDeposit />} />
           <Route path="about" element={<VisitorHome />} />
           <Route path="contact" element={<VisitorHome />} />

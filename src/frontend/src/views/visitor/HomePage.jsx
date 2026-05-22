@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Search, Shield, Zap, CircleDollarSign, CheckCircle } from 'lucide-react';
 import { roomService } from '../../services/roomService.js';
 import { formatCurrency } from '../../utils/format.js';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [featured, setFeatured] = useState([]);
   const [district, setDistrict] = useState('');
   const [priceRange, setPriceRange] = useState('');
@@ -15,6 +16,22 @@ export default function HomePage() {
       setFeatured(res.filter(r => r.photos.length > 0).slice(0, 3));
     });
   }, []);
+
+  useEffect(() => {
+    if (location.pathname === '/about') {
+      const element = document.getElementById('about');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else if (location.pathname === '/contact') {
+      const element = document.getElementById('contact');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -139,7 +156,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 bg-white border-t border-line px-4">
+      <section id="about" className="py-20 bg-white border-t border-line px-4">
         <div className="max-w-container-max mx-auto">
           <div className="text-center max-w-xl mx-auto mb-16">
             <h2 className="text-3xl font-bold text-ink">Lợi ích vượt trội</h2>
@@ -180,7 +197,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 px-4 bg-gradient-to-r from-primary to-primary-dark text-white rounded-3xl max-w-5xl mx-auto my-12 text-center relative overflow-hidden shadow-elevated">
+      <section id="contact" className="py-16 px-4 bg-gradient-to-r from-primary to-primary-dark text-white rounded-3xl max-w-5xl mx-auto my-12 text-center relative overflow-hidden shadow-elevated">
         <div className="relative z-10 max-w-2xl mx-auto">
           <h2 className="text-3xl font-extrabold">Đăng ký tìm phòng ngay hôm nay</h2>
           <p className="mt-4 text-white/80 max-w-md mx-auto text-sm">
