@@ -211,7 +211,7 @@ export default function RoomsPage() {
       </div>
 
       <div className="flex-1 min-h-[400px] grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
-        <div className="lg:col-span-3 bg-white rounded-2xl border border-line p-6 flex flex-col gap-6 overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-gray-250 scrollbar-track-transparent shadow-card">
+        <div className="lg:col-span-3 bg-white rounded-2xl border border-line p-6 flex flex-col gap-6 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-250 scrollbar-track-transparent shadow-card">
           {/* Header filters */}
           <div className="flex justify-between items-center border-b border-line pb-4">
             <h3 className="text-sm font-bold text-ink uppercase tracking-wider">Sơ Đồ Phòng Theo Tầng</h3>
