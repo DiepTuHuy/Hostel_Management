@@ -122,9 +122,9 @@ export default function ManagerLayout() {
         </div>
         
         <div className="px-4 py-3 border-b border-line">
-          <label className="text-xs text-ink-muted uppercase tracking-wide">Chi nhánh hiện tại</label>
+          <label className="text-xs text-ink-muted uppercase tracking-wide">Khu vực hiện tại</label>
           <button className="mt-1.5 w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm apple-press transition-all duration-200">
-            <span className="font-medium truncate">Nhà trọ An Phú</span>
+            <span className="font-medium truncate">Quận 1</span>
             <ChevronDown size={16} className="text-ink-muted" />
           </button>
         </div>

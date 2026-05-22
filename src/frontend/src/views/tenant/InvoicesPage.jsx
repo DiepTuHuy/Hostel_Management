@@ -279,7 +279,7 @@ export default function InvoicesPage() {
                       <CreditCard size={18} />
                       <div>
                         <div className="text-xs font-bold">Trả tiền mặt trực tiếp</div>
-                        <div className="text-[9px] text-ink-muted">Đưa cho Quản lý chi nhánh xác nhận</div>
+                        <div className="text-[9px] text-ink-muted">Đưa cho Quản lý xác nhận</div>
                       </div>
                     </div>
                     {payMethod === 'cash' && <Check size={14} />}

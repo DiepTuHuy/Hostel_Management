@@ -35,7 +35,7 @@ export default function RoleSwitcher() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-6 right-24 z-[9999]">
       <button
         onClick={() => setOpen(!open)}
         className="h-11 w-11 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center shadow-lg transition-apple-bouncy hover:scale-110 hover:shadow-xl apple-press"
@@ -66,7 +66,7 @@ export default function RoleSwitcher() {
             onClick={() => switchRole('manager')}
             className="text-left text-xs px-3 py-2 hover:bg-primary-soft hover:text-primary rounded-xl font-semibold text-ink apple-press transition-apple duration-200"
           >
-            Quản lý chi nhánh
+            Quản lý
           </button>
           <button
             onClick={() => switchRole('admin')}

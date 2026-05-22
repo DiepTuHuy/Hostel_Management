@@ -774,22 +774,48 @@ ${statsContext}`
       }]
     };
 
-    // Gọi Gemini API sử dụng fetch native của Node.js
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents,
-        systemInstruction
-      })
-    });
+    // Gọi Gemini API sử dụng fetch native của Node.js với cơ chế tự động thử lại (Retry) để xử lý lỗi 503 UNAVAILABLE tạm thời
+    let response;
+    const attempts = 3;
+    const delay = 600; // ms
+    
+    for (let i = 0; i < attempts; i++) {
+      try {
+        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents,
+            systemInstruction
+          })
+        });
+        
+        if (response.ok) {
+          break; // Thành công
+        }
+        
+        const errorData = await response.clone().json().catch(() => ({}));
+        console.warn(`[Gemini API] Lần thử ${i + 1} thất bại (Status ${response.status}):`, errorData.error?.message || "Lỗi không xác định");
+        
+        if (i < attempts - 1) {
+          await new Promise(resolve => setTimeout(resolve, delay * (i + 1))); // Tăng dần thời gian chờ
+        }
+      } catch (err) {
+        console.warn(`[Gemini API] Lần thử ${i + 1} gặp lỗi kết nối:`, err.message);
+        if (i < attempts - 1) {
+          await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+        } else {
+          throw err;
+        }
+      }
+    }
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Lỗi API Gemini:", errorData);
-      throw new Error(errorData.error?.message || "Không thể gọi Gemini API");
+    if (!response || !response.ok) {
+      const errorData = await response?.json().catch(() => ({}));
+      console.error("Lỗi API Gemini sau tất cả các lần thử:", errorData);
+      throw new Error(errorData?.error?.message || "Không thể gọi Gemini API sau nhiều lần thử");
     }
 
     const data = await response.json();
