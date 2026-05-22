@@ -27,6 +27,9 @@ export default function DashboardPage() {
         setContract(cons[0] || null);
         setNotifications(notifs.slice(0, 3));
         setLoading(false);
+      }).catch(err => {
+        console.error('Lỗi khi tải thông tin dashboard:', err);
+        setLoading(false);
       });
     }
   }, [user]);

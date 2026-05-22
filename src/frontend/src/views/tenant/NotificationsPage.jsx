@@ -14,6 +14,9 @@ export default function NotificationsPage() {
       notificationService.list(user.id).then(res => {
         setNotifications(res);
         setLoading(false);
+      }).catch(err => {
+        console.error('Lỗi khi tải danh sách thông báo:', err);
+        setLoading(false);
       });
     }
   }, [user]);

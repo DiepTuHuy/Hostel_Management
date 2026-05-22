@@ -3,6 +3,7 @@ import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import dns from 'dns';
+import mongoose from 'mongoose';
 
 // Bắt buộc sử dụng DNS của Google để tránh lỗi phân giải DNS SRV của MongoDB Atlas trên Windows
 dns.setServers(['8.8.8.8', '8.8.4.4']);
@@ -274,6 +275,9 @@ app.get('/api/properties', async (req, res) => {
 // 3.1. Lấy chi tiết cơ sở nhà trọ
 app.get('/api/properties/:id', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy cơ sở." });
+    }
     const property = await Property.findById(req.params.id).lean();
     if (!property) return res.status(404).json({ message: "Không tìm thấy cơ sở." });
     property.id = property._id ? property._id.toString() : undefined;
@@ -291,7 +295,12 @@ app.get('/api/rooms', async (req, res) => {
   try {
     const { propertyId, status } = req.query;
     const filter = {};
-    if (propertyId) filter.propertyId = propertyId;
+    if (propertyId) {
+      if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+        return res.json([]);
+      }
+      filter.propertyId = propertyId;
+    }
     if (status) filter.status = status;
 
     const rooms = await Room.find(filter).populate('roomTypeId');
@@ -371,6 +380,9 @@ app.get('/api/rooms/search', async (req, res) => {
 // 4.2. Lấy chi tiết một phòng
 app.get('/api/rooms/:id', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy phòng." });
+    }
     const room = await Room.findById(req.params.id).populate('roomTypeId');
     if (!room) return res.status(404).json({ message: "Không tìm thấy phòng." });
     res.json(mapRoom(room));
@@ -385,13 +397,21 @@ app.get('/api/contracts', async (req, res) => {
   try {
     const { propertyId, tenantId, status } = req.query;
     const filter = {};
-    if (tenantId) filter.tenantIds = tenantId;
+    if (tenantId) {
+      if (!mongoose.Types.ObjectId.isValid(tenantId)) {
+        return res.json([]);
+      }
+      filter.tenantIds = tenantId;
+    }
     if (status) filter.status = status;
 
     const contracts = await Contract.find(filter).populate('roomId');
     
     let results = contracts;
     if (propertyId) {
+      if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+        return res.json([]);
+      }
       results = contracts.filter(c => c.roomId?.propertyId?.toString() === propertyId);
     }
 
@@ -405,6 +425,9 @@ app.get('/api/contracts', async (req, res) => {
 // 5.1. Lấy chi tiết hợp đồng
 app.get('/api/contracts/:id', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
+    }
     const contract = await Contract.findById(req.params.id).populate('roomId');
     if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
     res.json(mapContract(contract));
@@ -421,6 +444,9 @@ app.get('/api/invoices', async (req, res) => {
     const filter = {};
     
     if (tenantId) {
+      if (!mongoose.Types.ObjectId.isValid(tenantId)) {
+        return res.json([]);
+      }
       const tenantContracts = await Contract.find({ tenantIds: tenantId });
       filter.contractId = { $in: tenantContracts.map(c => c._id) };
     }
@@ -439,6 +465,9 @@ app.get('/api/invoices', async (req, res) => {
 
     let results = invoices;
     if (propertyId) {
+      if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+        return res.json([]);
+      }
       results = invoices.filter(inv => inv.roomId?.propertyId?.toString() === propertyId);
     }
 
@@ -452,6 +481,9 @@ app.get('/api/invoices', async (req, res) => {
 // 6.1. Lấy chi tiết hoá đơn
 app.get('/api/invoices/:id', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy hoá đơn." });
+    }
     const invoice = await Invoice.findById(req.params.id)
       .populate({
         path: 'contractId',
@@ -472,6 +504,9 @@ app.get('/api/invoices/:id', async (req, res) => {
 // 6.2. Thanh toán hoá đơn
 app.post('/api/invoices/:id/pay', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy hoá đơn." });
+    }
     const { method } = req.body;
     const invoice = await Invoice.findById(req.params.id);
     if (!invoice) return res.status(404).json({ message: "Không tìm thấy hoá đơn." });
@@ -498,7 +533,12 @@ app.get('/api/notifications', async (req, res) => {
   try {
     const { userId } = req.query;
     const filter = {};
-    if (userId) filter.userId = userId;
+    if (userId) {
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.json([]);
+      }
+      filter.userId = userId;
+    }
 
     const notifications = await Notification.find(filter).sort({ createdAt: -1 });
     res.json(notifications.map(mapNotification));
@@ -526,6 +566,9 @@ app.get('/api/users', async (req, res) => {
 // 8.1. Lấy chi tiết người dùng
 app.get('/api/users/:id', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng." });
+    }
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng." });
     res.json(mapUser(user));

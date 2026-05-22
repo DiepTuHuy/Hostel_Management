@@ -19,6 +19,9 @@ export default function ContractsPage() {
         setContracts(res);
         if (res.length > 0) setActiveContract(res[0]);
         setLoading(false);
+      }).catch(err => {
+        console.error('Lỗi khi tải danh sách hợp đồng:', err);
+        setLoading(false);
       });
     }
   }, [user]);

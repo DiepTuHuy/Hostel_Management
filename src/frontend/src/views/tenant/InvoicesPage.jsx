@@ -34,6 +34,9 @@ export default function InvoicesPage() {
           setSelectedInvoice(res[0]);
         }
         setLoading(false);
+      }).catch(err => {
+        console.error('Lỗi khi tải danh sách hoá đơn:', err);
+        setLoading(false);
       });
     }
   }, [user, searchParams]);
