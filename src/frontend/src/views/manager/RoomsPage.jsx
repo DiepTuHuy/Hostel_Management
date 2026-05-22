@@ -34,8 +34,21 @@ const initialRoomsData = [
 ];
 
 export default function RoomsPage() {
-  const { data: apiRooms = [], loading } = useRooms({ propertyId: 'p-001' });
-  const [rooms, setRooms] = useState(initialRoomsData);
+  const [propertyId, setPropertyId] = useState(localStorage.getItem('bhpro_selected_property_id') || '');
+  
+  useEffect(() => {
+    const handlePropertyChange = () => {
+      const activeId = localStorage.getItem('bhpro_selected_property_id') || '';
+      setPropertyId(activeId);
+    };
+    window.addEventListener('bhpro_property_changed', handlePropertyChange);
+    return () => {
+      window.removeEventListener('bhpro_property_changed', handlePropertyChange);
+    };
+  }, []);
+
+  const { data: apiRooms = [], loading } = useRooms({ propertyId });
+  const [rooms, setRooms] = useState([]);
   const [selectedRoomId, setSelectedRoomId] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [floorFilter, setFloorFilter] = useState('all');
@@ -44,10 +57,10 @@ export default function RoomsPage() {
   const [invoiceRoomId, setInvoiceRoomId] = useState(null);
 
   useEffect(() => {
-    if (apiRooms && apiRooms.length > 0) {
-      setRooms(apiRooms);
+    if (!loading) {
+      setRooms(apiRooms || []);
     }
-  }, [apiRooms]);
+  }, [apiRooms, loading]);
 
   const [electricityOld, setElectricityOld] = useState(1200);
   const [electricityNew, setElectricityNew] = useState(1350);

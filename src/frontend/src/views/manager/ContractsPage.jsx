@@ -6,9 +6,43 @@ import { useRooms } from '../../controllers/useRooms.js';
 import { CONTRACT_STATUS_META } from '../../models/Contract.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
 
+import { propertyService } from '../../services/propertyService.js';
+
 export default function ManagerContractsPage() {
-  const { data: fetchedContracts = [], loading: loadingContracts } = useContracts({ propertyId: 'p-001' });
-  const { data: rooms = [] } = useRooms({ propertyId: 'p-001' });
+  const [propertyId, setPropertyId] = useState(localStorage.getItem('bhpro_selected_property_id') || '');
+  const [propertyName, setPropertyName] = useState('Đang tải cơ sở...');
+
+  useEffect(() => {
+    const handlePropertyChange = () => {
+      const activeId = localStorage.getItem('bhpro_selected_property_id') || '';
+      setPropertyId(activeId);
+    };
+    window.addEventListener('bhpro_property_changed', handlePropertyChange);
+    return () => {
+      window.removeEventListener('bhpro_property_changed', handlePropertyChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (propertyId) {
+      propertyService.list().then(res => {
+        const found = res.find(p => p.id === propertyId);
+        if (found) {
+          setPropertyName(found.name);
+        } else {
+          setPropertyName('Cơ sở không xác định');
+        }
+      }).catch(err => {
+        console.error("Error loading property name in contracts page:", err);
+        setPropertyName('Cơ sở');
+      });
+    } else {
+      setPropertyName('Chưa chọn cơ sở');
+    }
+  }, [propertyId]);
+
+  const { data: fetchedContracts = [], loading: loadingContracts } = useContracts({ propertyId });
+  const { data: rooms = [] } = useRooms({ propertyId });
   
   const [contracts, setContracts] = useState([]);
   const [toast, setToast] = useState(null);
@@ -37,10 +71,10 @@ export default function ManagerContractsPage() {
 
   // Sync initial contracts
   useEffect(() => {
-    if (fetchedContracts.length > 0) {
-      setContracts(fetchedContracts);
+    if (!loadingContracts) {
+      setContracts(fetchedContracts || []);
     }
-  }, [fetchedContracts]);
+  }, [fetchedContracts, loadingContracts]);
 
   // Handle room selection to auto-fill rent
   useEffect(() => {
@@ -97,7 +131,7 @@ export default function ManagerContractsPage() {
     const newContractObj = {
       id: `c-new-${Date.now()}`,
       code: newCode,
-      propertyId: 'p-001',
+      propertyId: propertyId,
       roomId: room ? room.code : 'Phòng mới',
       tenantId: tenantName,
       startDate,
@@ -168,7 +202,7 @@ export default function ManagerContractsPage() {
       </Card>
 
       <Card padded={false}>
-        <CardHeader title="Hợp đồng tại cơ sở" subtitle="An Phú Q1" />
+        <CardHeader title="Hợp đồng tại cơ sở" subtitle={propertyName} />
         {loadingContracts && contracts.length === 0 ? (
           <div className="p-8 text-center text-ink-muted">Đang tải danh sách hợp đồng...</div>
         ) : (
@@ -251,7 +285,7 @@ export default function ManagerContractsPage() {
                 </h4>
                 <div className="space-y-2 text-sm text-ink-muted">
                   <div>Mã số phòng: <strong className="text-ink">{selectedContract.roomId}</strong></div>
-                  <div>Cơ sở: <strong className="text-ink">An Phú - Quận 1</strong></div>
+                  <div>Cơ sở: <strong className="text-ink">{propertyName}</strong></div>
                   <div>Giá thuê: <strong className="text-primary font-semibold">{formatCurrency(selectedContract.monthlyRent)} / tháng</strong></div>
                   <div>Tiền cọc giữ: <strong className="text-ink font-semibold">{formatCurrency(selectedContract.deposit)}</strong></div>
                 </div>
@@ -323,7 +357,7 @@ export default function ManagerContractsPage() {
         {step === 1 && (
           <div className="space-y-4">
             <h4 className="font-bold text-ink text-base mb-2">Bước 1: Chọn phòng trống</h4>
-            <p className="text-sm text-ink-muted">Chỉ hiển thị các phòng hiện đang trống tại cơ sở An Phú.</p>
+            <p className="text-sm text-ink-muted">Chỉ hiển thị các phòng hiện đang trống tại cơ sở {propertyName}.</p>
             
             {vacantRooms.length === 0 ? (
               <div className="p-8 text-center text-ink-muted border border-dashed border-line rounded-xl">

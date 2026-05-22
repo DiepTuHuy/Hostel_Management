@@ -5,7 +5,20 @@ import { useInvoices } from '../../controllers/useInvoices.js';
 import { formatCurrency, formatPeriod } from '../../utils/format.js';
 
 export default function CashReceiptsPage() {
-  const { data: fetchedInvoices = [], loading } = useInvoices({ status: 'pending_cash' });
+  const [propertyId, setPropertyId] = useState(localStorage.getItem('bhpro_selected_property_id') || '');
+
+  useEffect(() => {
+    const handlePropertyChange = () => {
+      const activeId = localStorage.getItem('bhpro_selected_property_id') || '';
+      setPropertyId(activeId);
+    };
+    window.addEventListener('bhpro_property_changed', handlePropertyChange);
+    return () => {
+      window.removeEventListener('bhpro_property_changed', handlePropertyChange);
+    };
+  }, []);
+
+  const { data: fetchedInvoices = [], loading } = useInvoices({ status: 'pending_cash', propertyId });
   const [invoices, setInvoices] = useState([]);
   
   // State for Toast alerts
@@ -23,10 +36,10 @@ export default function CashReceiptsPage() {
 
   // Sync fetched invoices to local state
   useEffect(() => {
-    if (fetchedInvoices.length > 0) {
-      setInvoices(fetchedInvoices);
+    if (!loading) {
+      setInvoices(fetchedInvoices || []);
     }
-  }, [fetchedInvoices]);
+  }, [fetchedInvoices, loading]);
 
   // Set default amount when modal opens
   useEffect(() => {

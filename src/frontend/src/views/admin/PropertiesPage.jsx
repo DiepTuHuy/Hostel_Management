@@ -425,10 +425,10 @@ export default function PropertiesPage() {
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    if (properties.length > 0 && localProperties.length === 0) {
-      setLocalProperties(properties);
+    if (!loading) {
+      setLocalProperties(properties || []);
     }
-  }, [properties, localProperties]);
+  }, [properties, loading]);
 
   const handleViewDetail = (property) => {
     setSelectedProperty(property);

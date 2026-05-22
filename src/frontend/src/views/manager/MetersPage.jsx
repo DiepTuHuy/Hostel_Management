@@ -8,7 +8,20 @@ const ELECTRIC_PRICE = 3000;
 const WATER_PRICE = 20000;
 
 export default function MetersPage() {
-  const { data: rooms = [], loading } = useRooms({ propertyId: 'p-001', status: 'occupied' });
+  const [propertyId, setPropertyId] = useState(localStorage.getItem('bhpro_selected_property_id') || '');
+
+  useEffect(() => {
+    const handlePropertyChange = () => {
+      const activeId = localStorage.getItem('bhpro_selected_property_id') || '';
+      setPropertyId(activeId);
+    };
+    window.addEventListener('bhpro_property_changed', handlePropertyChange);
+    return () => {
+      window.removeEventListener('bhpro_property_changed', handlePropertyChange);
+    };
+  }, []);
+
+  const { data: rooms = [], loading } = useRooms({ propertyId, status: 'occupied' });
   const [readings, setReadings] = useState({});
   const [toast, setToast] = useState(null);
   

@@ -416,10 +416,10 @@ export default function ContractsPage() {
 
   // Sync initial loading data
   useEffect(() => {
-    if (initialContracts.length > 0 && localContracts.length === 0) {
-      setLocalContracts(initialContracts);
+    if (!loading) {
+      setLocalContracts(initialContracts || []);
     }
-  }, [initialContracts, localContracts]);
+  }, [initialContracts, loading]);
 
   // Handle Excel download simulation
   const handleExportExcel = () => {

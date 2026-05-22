@@ -17,6 +17,7 @@ desktop.ini
 
 # Temp files
 *.tmp
+*.log
 ~$*.docx
 ~$*.xlsx
 

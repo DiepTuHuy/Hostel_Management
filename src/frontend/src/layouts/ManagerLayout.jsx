@@ -8,6 +8,7 @@ import { useAuth } from '../controllers/useAuth.jsx';
 import { Avatar } from '../components/common/Avatar.jsx';
 import { cn } from '../utils/cn.js';
 import { AIChatbot } from '../components/common';
+import { propertyService } from '../services/propertyService.js';
 
 const NAV = [
   { to: '/manager',            label: 'Dashboard',         icon: LayoutDashboard, end: true },
@@ -24,6 +25,29 @@ export default function ManagerLayout() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState('');
+
+  useEffect(() => {
+    propertyService.list().then(res => {
+      setProperties(res);
+      const saved = localStorage.getItem('bhpro_selected_property_id');
+      if (saved && res.some(p => p.id === saved)) {
+        setSelectedPropertyId(saved);
+      } else if (res.length > 0) {
+        setSelectedPropertyId(res[0].id);
+        localStorage.setItem('bhpro_selected_property_id', res[0].id);
+        window.dispatchEvent(new Event('bhpro_property_changed'));
+      }
+    }).catch(err => console.error("Error loading properties in layout:", err));
+  }, []);
+
+  const handlePropertySelect = (id) => {
+    setSelectedPropertyId(id);
+    localStorage.setItem('bhpro_selected_property_id', id);
+    window.dispatchEvent(new Event('bhpro_property_changed'));
+  };
+
 
   const loadNotifications = () => {
     const saved = localStorage.getItem('bhpro_notifications_manager');
@@ -122,11 +146,27 @@ export default function ManagerLayout() {
         </div>
         
         <div className="px-4 py-3 border-b border-line">
-          <label className="text-xs text-ink-muted uppercase tracking-wide">Khu vực hiện tại</label>
-          <button className="mt-1.5 w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm apple-press transition-all duration-200">
-            <span className="font-medium truncate">Quận 1</span>
-            <ChevronDown size={16} className="text-ink-muted" />
-          </button>
+          <label className="text-xs text-ink-muted uppercase tracking-wide">Cơ sở quản lý</label>
+          <div className="relative mt-1.5">
+            <select
+              value={selectedPropertyId}
+              onChange={(e) => handlePropertySelect(e.target.value)}
+              className="w-full appearance-none flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-medium border border-line focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200 cursor-pointer pr-10 text-ink"
+            >
+              {properties.length === 0 ? (
+                <option value="">Đang tải cơ sở...</option>
+              ) : (
+                properties.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))
+              )}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-ink-muted">
+              <ChevronDown size={16} />
+            </div>
+          </div>
         </div>
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
           {NAV.map((item) => (

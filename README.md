@@ -1,139 +1,156 @@
 # HỆ THỐNG QUẢN LÝ CHUỖI NHÀ TRỌ (BOARDING HOUSE CHAIN MANAGEMENT SYSTEM)
 
-Hệ thống quản lý chuỗi nhà trọ (Boarding House Chain Management System) là một nền tảng PropTech hỗ trợ chủ trọ quản lý tập trung nhiều cơ sở nhà trọ, tối ưu hóa quy trình vận hành từ ghi số điện nước, tính toán hóa đơn, thanh toán trực tuyến, quản lý hợp đồng cho đến phân tích báo cáo doanh thu và tích hợp trợ lý ảo thông minh (AI Chatbot).
+Hệ thống quản lý chuỗi nhà trọ (**Boarding House Chain Management System**) là một nền tảng PropTech hiện đại giúp các chủ trọ và đơn vị vận hành quản lý tập trung nhiều cơ sở nhà trọ, tối ưu hóa quy trình nghiệp vụ phức tạp từ ghi số điện nước, tính toán hóa đơn, thanh toán trực tuyến, quản lý hợp đồng thuê, đăng ký tài khoản xác thực qua OTP thực tế cho đến việc tích hợp trợ lý ảo thông minh (AI Chatbot) tự động đọc dữ liệu thực tế từ hệ thống để trả lời khách hàng.
 
 ---
 
-## 1. KIẾN TRÚC HỆ THỐNG VÀ CÔNG NGHỆ
+## 1. CÔNG NGHỆ & KIẾN TRÚC HỆ THỐNG
 
-Hệ thống được thiết kế theo mô hình đa người dùng (Multi-tenant) và kiến trúc dịch vụ API:
+Hệ thống được thiết kế theo kiến trúc hướng dịch vụ với sự phối hợp của các công nghệ sau:
 
-*   **Frontend SPA (ReactJS + Vite + TailwindCSS)**: Nằm tại thư mục `src/frontend`. Đây là ứng dụng Client-side Single Page Application hoàn chỉnh tích hợp cả 4 phân hệ người dùng (Chủ trọ/Admin, Quản lý/Manager, Khách thuê/Tenant, Khách vãng lai/Visitor) và AI Chatbot.
-*   **Backend Node.js Express (Main API)**: Nằm tại thư mục `src/backend/server.js`. Chạy chính tại cổng `5001`, chịu trách nhiệm xử lý toàn bộ các luồng nghiệp vụ:
-    *   Xác thực tài khoản (Authentication) & Đăng ký gửi mã OTP thực tế qua Gmail.
-    *   Tích hợp AI Chatbot sử dụng Gemini API.
-    *   CRUD Nhà trọ, Loại phòng, Phòng, Dịch vụ, Chỉ số tiêu thụ, Hóa đơn và Hợp đồng.
-    *   Giả lập thanh toán hóa đơn.
-*   **Backend Python Flask (Alternative API)**: Nằm tại thư mục `src/backend/app/`. Đóng vai trò làm backend thay thế/bổ trợ, xử lý và phân tích số liệu thống kê.
-*   **Database (MongoDB Atlas)**: Cơ sở dữ liệu phi quan hệ (NoSQL) lưu trữ dữ liệu tập trung thông qua Mongoose (Node.js) và PyMongo/MongoMock (Python).
-*   **UI Mockups & Tĩnh (HTML/CSS)**: Nằm tại các thư mục `Admin_UI`, `Manager_UI`, `Tenant_UI`, `Visitor_UI` ở thư mục gốc. Chứa các file `code.html` và ảnh chụp giao diện tĩnh phục vụ mục đích báo cáo đặc tả.
+*   **Frontend SPA (ReactJS + Vite)**: 
+    *   Nằm tại thư mục `src/frontend`.
+    *   Sử dụng ReactJS, Vite làm công cụ build, TailwindCSS/Vanilla CSS tối ưu hóa giao diện.
+    *   Tích hợp tất cả các cổng giao diện (Multi-dashboard) của 4 đối tượng: **Chủ trọ (Admin)**, **Quản lý (Manager)**, **Khách thuê (Tenant)**, và **Khách vãng lai (Visitor)**.
+    *   Trang bị giao diện chat trực quan tích hợp Trợ lý ảo AI thông minh.
+*   **Backend Node.js Express (Cổng API Chính - Port 5001)**:
+    *   Xử lý toàn bộ logic nghiệp vụ (Auth, CRUD Properties, Rooms, Contracts, Invoices, Services, Meters).
+    *   Tích hợp dịch vụ gửi Email OTP thực tế thông qua SMTP Google.
+    *   Tích hợp API Gemini (Google AI SDK) xử lý Chatbot thông minh.
+*   **Backend Python Flask (Cổng API Thống Kê/Thay Thế - Port 5002)**:
+    *   Nằm tại thư mục `src/backend/app/` và chạy qua `run.py`.
+    *   Đóng vai trò làm backend thay thế và xử lý dữ liệu, phục vụ các truy vấn thống kê dữ liệu.
+*   **Cơ sở dữ liệu (MongoDB Atlas)**:
+    *   Cơ sở dữ liệu phi quan hệ (NoSQL) lưu trữ dữ liệu tập trung qua MongoDB Atlas Cloud.
+    *   Dữ liệu được chuẩn hóa tiếng Việt không dấu để đảm bảo tương thích tốt nhất.
 
 ---
 
 ## 2. CẤU TRÚC THƯ MỤC CHÍNH
 
 ```text
-├── Admin_UI/               # Giao diện tĩnh & ảnh mockup của phân hệ Chủ trọ (Admin)
-├── Manager_UI/             # Giao diện tĩnh & ảnh mockup của phân hệ Quản lý (Manager)
-├── Tenant_UI/              # Giao diện tĩnh & ảnh mockup của phân hệ Khách thuê (Tenant)
-├── Visitor_UI/             # Giao diện tĩnh & ảnh mockup của phân hệ Khách vãng lai (Visitor)
+├── Admin_UI/                   # Giao diện tĩnh & ảnh mockup phân hệ Chủ trọ
+├── Manager_UI/                 # Giao diện tĩnh & ảnh mockup phân hệ Quản lý
+├── Tenant_UI/                  # Giao diện tĩnh & ảnh mockup phân hệ Khách thuê
+├── Visitor_UI/                 # Giao diện tĩnh & ảnh mockup phân hệ Khách vãng lai
+├── docs/                       # Tài liệu thiết kế hệ thống
+├── system_alignment_report.md  # Báo cáo đánh giá sự liên kết giữa code thực tế và đặc tả
 ├── src/
-│   ├── backend/            # Mã nguồn backend (Node.js Express + Python Flask)
-│   │   ├── app/            # Python Flask App (Models, Controllers, Routes)
-│   │   ├── models/         # Mongoose Schemas (Node.js)
-│   │   ├── services/       # Email service (gửi OTP) và AI service
-│   │   ├── server.js       # Main server Node.js Express
-│   │   ├── seed.js         # Script khởi tạo 220 nhà trọ mẫu cho Node.js
-│   │   └── run.py          # Entry point của Python Flask
-│   └── frontend/           # Mã nguồn frontend SPA (Vite + ReactJS + TailwindCSS)
+│   ├── backend/                # Backend Node.js Express + Python Flask
+│   │   ├── app/                # Thư mục ứng dụng Python Flask (Models, Routes, Controllers)
+│   │   ├── models/             # Định nghĩa Mongoose Schemas cho Node.js
+│   │   ├── services/           # Services hỗ trợ (AI Chatbot, SendMail OTP)
+│   │   ├── server.js           # Mã nguồn khởi chạy Express API chính (Port 5001)
+│   │   ├── run.py              # Mã nguồn khởi chạy Flask API phụ (Port 5002)
+│   │   ├── seed.js             # Script khởi tạo 220 khu trọ mẫu cho MongoDB (tiếng Việt không dấu)
+│   │   └── requirements.txt    # Các thư viện Python cần thiết
+│   └── frontend/               # Frontend ReactJS + Vite
 │       ├── src/
-│       │   ├── components/ # Các component giao diện và Chatbot AI
-│       │   ├── views/      # Giao diện Dashboard của các tác nhân
-│       │   └── services/   # Gọi API kết nối Backend
+│       │   ├── components/     # UI Components chung (Sidebar, Navbar, Chatbot AI)
+│       │   ├── services/       # Module gọi REST API kết nối Backend
+│       │   └── views/          # Màn hình Dashboard cho từng Actor (admin, manager, tenant, visitor)
 │       └── package.json
-└── README.md
+└── README.md                   # Tài liệu hướng dẫn này
 ```
 
 ---
 
 ## 3. HƯỚNG DẪN CẤU HÌNH VÀ CHẠY HỆ THỐNG
 
-### Bước 1: Cấu hình biến môi trường (.env)
+### Bước 1: Cấu hình biến môi trường (`.env`)
 
-Tạo tệp `.env` trong thư mục `src/backend/` và cấu hình các thông số sau (dựa theo `.env.example`):
+Tạo tệp `.env` tại thư mục `src/backend/` và cấu hình các giá trị sau:
 
 ```env
-# Kết nối MongoDB Atlas
+# Kết nối MongoDB Atlas (Thay chuỗi kết nối bằng tài khoản của bạn)
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/boardinghouse_db
 
-# Cổng chạy backend chính
+# Cấu hình cổng cho Node.js Express
 PORT=5001
 JWT_SECRET=supersecretkeyforboardinghousepro2026
 
-# Cấu hình SMTP Gmail gửi mã OTP thực tế
+# Cấu hình SMTP gửi mã xác thực OTP thực tế (Sử dụng mật khẩu ứng dụng Gmail)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=email_cua_ban@gmail.com
-SMTP_PASS=mat_khau_ung_dung_gmail_cua_ban
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
 
-# Gemini API Key dành cho Chatbot AI
+# API Key Gemini để chatbot AI hoạt động
 GEMINI_API_KEY=AIzaSyDBgVXlA-rS0puux3vY1LA-q799qb2IDQc
 ```
 
-### Bước 2: Cài đặt và chạy Backend chính (Node.js Express)
+### Bước 2: Khởi chạy Database Seeder
 
-1.  Truy cập thư mục backend:
+Script này sẽ tự động khởi tạo cơ sở dữ liệu mẫu bao gồm danh sách các khu vực/nhà trọ thực tế tại TP.HCM (Quận 1, Quận 3, Quận 10, Bình Thạnh...), các loại phòng trọ, phòng trọ mẫu, dịch vụ kèm theo và các tài khoản demo.
+
+1.  Mở terminal tại thư mục backend:
     ```bash
     cd src/backend
     ```
-2.  Cài đặt các gói thư viện phụ thuộc:
+2.  Cài đặt các dependency Node.js:
     ```bash
     npm install
     ```
-3.  Khởi tạo dữ liệu mẫu (Seeding Database - tự động tạo 220 chi nhánh nhà trọ ở các quận TP.HCM, các loại phòng, dịch vụ và tài khoản đăng nhập mẫu):
+3.  Chạy script seeding dữ liệu:
     ```bash
     npm run seed
     ```
-4.  Khởi chạy server Node.js:
-    ```bash
-    npm start
-    ```
-    *Server sẽ hoạt động tại địa chỉ: `http://localhost:5001`*
 
-*(Tùy chọn) Chạy Backend phụ bằng Python Flask:*
-1.  Đảm bảo bạn đã cài đặt Python 3.
-2.  Cài đặt thư viện: `pip install -r requirements.txt`.
-3.  Chạy server: `python run.py`.
+### Bước 3: Khởi chạy 3 Server (Express Backend, Flask Chatbot, Vite Frontend)
 
-### Bước 3: Cài đặt và chạy Frontend SPA (React + Vite)
+Để hệ thống hoạt động đầy đủ tính năng, bạn cần khởi chạy song song 3 dịch vụ sau:
 
-1.  Mở một cửa sổ terminal mới và truy cập thư mục frontend:
-    ```bash
-    cd src/frontend
-    ```
-2.  Cài đặt các thư viện:
-    ```bash
-    npm install
-    ```
-3.  Khởi chạy Frontend Dev Server:
-    ```bash
-    npm run dev
-    ```
-4.  Truy cập hệ thống qua trình duyệt tại địa chỉ: `http://localhost:5173`.
+#### 1. Chạy Express Backend (Main API - Port 5001)
+Mở cửa sổ Terminal thứ nhất:
+```bash
+cd src/backend
+npm start
+```
+*API chính sẽ hoạt động tại: `http://localhost:5001`*
 
----
+#### 2. Chạy Python Flask Backend (Port 5002)
+Mở cửa sổ Terminal thứ hai tại `src/backend/`:
+```bash
+cd src/backend
+# Tạo môi trường ảo python (nếu cần)
+python3 -m venv .venv
+source .venv/bin/activate
+# Cài đặt thư viện
+pip install -r requirements.txt
+# Khởi chạy Flask Server trên cổng 5002
+PORT=5002 python run.py
+```
+*API phụ sẽ hoạt động tại: `http://localhost:5002`*
 
-## 4. TÀI KHOẢN TRẢI NGHIỆM MẪU (SAU KHI SEED DATABASE)
-
-Sau khi chạy lệnh `npm run seed`, bạn có thể đăng nhập bằng các tài khoản mẫu sau tùy theo vai trò:
-
-*   **Chủ trọ / Admin**:
-    *   Email: `admin@boardinghouse.com`
-    *   Mật khẩu: `admin` (hoặc mật khẩu bất kỳ khớp với vai trò)
-*   **Quản lý (Manager)**:
-    *   Email: `manager@boardinghouse.com`
-    *   Mật khẩu: `manager`
-*   **Khách thuê (Tenant)**:
-    *   Email: `tenant@boardinghouse.com`
-    *   Mật khẩu: `tenant`
+#### 3. Chạy Vite Frontend (Port 5173)
+Mở cửa sổ Terminal thứ ba:
+```bash
+cd src/frontend
+npm install
+npm run dev
+```
+*Giao diện Web sẽ hoạt động tại: `http://localhost:5173`*
 
 ---
 
-## 5. CÁC TÍNH NĂNG CHÍNH ĐÃ PHÁT TRIỂN & HOÀN THIỆN
-*   **Dashboard Chủ Trọ**: Thống kê doanh thu thực tế, tỷ lệ lấp đầy phòng, quản lý toàn chuỗi các khu trọ, gán quyền cho Manager.
-*   **Dashboard Quản Lý**: Cập nhật trạng thái phòng, ghi chỉ số điện nước, lập hợp đồng thuê phòng và duyệt thông tin khách thuê.
-*   **Cổng Khách Thuê**: Tra cứu chi tiết hợp đồng, danh sách hóa đơn, lịch sử giao dịch và bấm thanh toán giả lập.
-*   **Trang Khách Vãng Lai**: Tìm kiếm phòng theo địa điểm, khoảng giá và tiện nghi, đi kèm đặt cọc giữ phòng trực tuyến.
-*   **Chatbot AI (Gemini 2.5 Flash)**: Tích hợp trợ lý ảo có khả năng đọc thông số thực tế của hệ thống (tổng số chi nhánh, số phòng trống, số khách) để giải đáp thắc mắc của người dùng.
-*   **Xác thực mã OTP**: Đăng ký tài khoản yêu cầu gửi OTP thực tế đến Gmail của người dùng và nhập mã xác thực để kích hoạt trạng thái hoạt động.
+## 4. TÀI KHOẢN TRẢI NGHIỆM HỆ THỐNG
+
+Sau khi seed dữ liệu thành công, bạn truy cập `http://localhost:5173` và đăng nhập bằng một trong các tài khoản demo sau:
+
+| Đối tượng (Role) | Email | Mật khẩu | Quyền hạn & Chức năng kiểm thử |
+| :--- | :--- | :--- | :--- |
+| **Chủ trọ / Admin** | `admin@boardinghouse.com` | `admin` | Quản lý toàn bộ chuỗi nhà trọ, thêm/sửa cơ sở, phân công quản lý (Manager) phụ trách từng cơ sở, xem biểu đồ doanh thu toàn hệ thống. |
+| **Quản lý / Manager** | `manager@boardinghouse.com` | `manager` | Quản lý cơ sở được phân công (chọn động từ dropdown ở sidebar). Thêm phòng, lập hợp đồng, cập nhật số điện nước, lập hóa đơn và theo dõi đóng tiền. |
+| **Khách thuê / Tenant** | `tenant@boardinghouse.com` | `tenant` | Xem phòng đang thuê, xem danh sách hóa đơn, giả lập thanh toán online, gửi phản ánh lên ban quản lý. |
+| **Khách vãng lai / Visitor** | Không cần tài khoản | *N/A* | Tìm kiếm phòng trọ trống theo khu vực địa lý thực tế (Quận 1, Bình Thạnh...), xem chi tiết phòng, gửi yêu cầu đặt cọc giữ phòng. |
+
+---
+
+## 5. TÍNH NĂNG ĐÃ ĐƯỢC ĐỒNG BỘ VÀ TỐI ƯU HÓA GẦN ĐÂY
+
+1.  **Dữ liệu động 100%**: Sửa lỗi giao diện hiển thị dữ liệu giả (mockdata) trước đó. Toàn bộ thông tin hiển thị trên Admin Dashboard và Manager Dashboard đều được đồng bộ thời gian thực từ MongoDB Atlas (kể cả khi mảng trả về rỗng).
+2.  **Dropdown Cơ sở ở Sidebar**: Quản lý (Manager) có thể chuyển đổi linh hoạt qua lại giữa các khu vực nhà trọ thực tế tồn tại trong CSDL. Tất cả các tab chức năng (Phòng, Hợp đồng, Chỉ số điện nước, Hóa đơn) đều tự động tải lại dữ liệu tương ứng với cơ sở được chọn.
+3.  **Chatbot AI Thông Minh**: Chatbot được tích hợp trực tiếp trên giao diện, hoạt động dựa trên mô hình Gemini API. Hỗ trợ đọc ngữ cảnh hệ thống (đọc tổng số phòng, số cơ sở thực tế từ CSDL) để tư vấn trực tuyến chính xác nhất.
+4.  **Xác thực mã OTP qua Gmail**: Người dùng đăng ký tài khoản mới sẽ nhận mã OTP gửi trực tiếp về email cá nhân thật và cần nhập mã để kích hoạt trạng thái tài khoản.
+5.  **Báo cáo Đánh giá Liên kết (`system_alignment_report.md`)**: Tài liệu chi tiết so sánh mã nguồn thực tế với File đặc tả `.docx` nhằm xác định các khoảng cách thiết kế và đề xuất chỉnh sửa để đồng bộ đồ án.

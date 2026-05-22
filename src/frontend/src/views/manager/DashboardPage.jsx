@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DoorOpen, Receipt, Banknote, CheckCircle2, Clock, CheckCircle } from 'lucide-react';
 import { PageHeader, StatCard, Card, CardHeader, Badge, Toast } from '../../components/common';
 import { useRooms } from '../../controllers/useRooms.js';
 import { useInvoices } from '../../controllers/useInvoices.js';
+import { propertyService } from '../../services/propertyService.js';
 
 const INITIAL_TASKS = [
   { id: 1, text: 'Ghi chỉ số điện nước phòng 101 — 305', done: false, path: '/manager/billing' },
@@ -14,10 +15,42 @@ const INITIAL_TASKS = [
 
 export default function ManagerDashboardPage() {
   const navigate = useNavigate();
-  const { data: rooms = [] } = useRooms({ propertyId: 'p-001' });
-  const { data: invoices = [] } = useInvoices({ propertyId: 'p-001' });
+  const [propertyId, setPropertyId] = useState(localStorage.getItem('bhpro_selected_property_id') || '');
+  const [propertyName, setPropertyName] = useState('Đang tải cơ sở...');
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    const handlePropertyChange = () => {
+      const activeId = localStorage.getItem('bhpro_selected_property_id') || '';
+      setPropertyId(activeId);
+    };
+    window.addEventListener('bhpro_property_changed', handlePropertyChange);
+    return () => {
+      window.removeEventListener('bhpro_property_changed', handlePropertyChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (propertyId) {
+      propertyService.list().then(res => {
+        const found = res.find(p => p.id === propertyId);
+        if (found) {
+          setPropertyName(found.name);
+        } else {
+          setPropertyName('Cơ sở không xác định');
+        }
+      }).catch(err => {
+        console.error("Error loading property name in dashboard:", err);
+        setPropertyName('Cơ sở');
+      });
+    } else {
+      setPropertyName('Chưa chọn cơ sở');
+    }
+  }, [propertyId]);
+
+  const { data: rooms = [] } = useRooms({ propertyId });
+  const { data: invoices = [] } = useInvoices({ propertyId });
 
   const vacant = rooms.filter((r) => r.status === 'vacant').length;
   const pending = invoices.filter((i) => i.status === 'pending').length;
@@ -51,7 +84,7 @@ export default function ManagerDashboardPage() {
 
   return (
     <>
-      <PageHeader title="Dashboard Quản lý" subtitle="Nhà trọ An Phú — Quận 1" />
+      <PageHeader title="Dashboard Quản lý" subtitle={propertyName} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-gutter">
         <StatCard label="Phòng đang trống" value={vacant} icon={DoorOpen} accent="success" />
