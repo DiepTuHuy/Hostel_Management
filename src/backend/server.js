@@ -57,7 +57,7 @@ function mapRoom(roomDoc) {
   let type = 'private';
   if (roomType.name) {
     const nameLower = roomType.name.toLowerCase();
-    if (nameLower.includes('studio') || nameLower.includes('đôi')) {
+    if (nameLower.includes('studio') || nameLower.includes('đôi') || nameLower.includes('vip') || nameLower.includes('penthouse') || nameLower.includes('cao cấp')) {
       type = 'studio';
     } else if (nameLower.includes('ký túc xá') || nameLower.includes('shared') || nameLower.includes('ghép')) {
       type = 'shared';

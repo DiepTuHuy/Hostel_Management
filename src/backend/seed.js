@@ -256,92 +256,141 @@ const seedDatabase = async () => {
     }
     console.log(`Successfully seeded ${seededProperties.length} facilities across HCMC.`);
 
-    // 3. Seed Services, Room Types, and Rooms for a primary property (Q1 Facility 1)
-    const primaryProp = seededProperties.find(p => p.code === 'NT-Q1-01');
-    if (primaryProp) {
-      console.log(`Setting up sample rooms and services for primary property: ${primaryProp.name}...`);
-      
-      const electricService = await Service.create({
-        propertyId: primaryProp._id,
-        name: "Điện",
-        unit: "kWh",
-        price: 3500,
-        type: "metered"
-      });
-      const waterService = await Service.create({
-        propertyId: primaryProp._id,
-        name: "Nước",
-        unit: "m3",
-        price: 15000,
-        type: "metered"
-      });
-      const internetService = await Service.create({
-        propertyId: primaryProp._id,
-        name: "Internet",
-        unit: "phòng",
-        price: 100000,
-        type: "fixed"
-      });
-      const trashService = await Service.create({
-        propertyId: primaryProp._id,
-        name: "Vệ sinh",
-        unit: "người",
-        price: 30000,
-        type: "fixed"
-      });
+    // 3. Seed RoomTypes and Rooms for the FIRST property in EACH district (22 properties)
+    // This ensures diverse data across all districts for the Room Search page
+    console.log("Seeding room types and rooms for 22 representative properties (1 per district)...");
 
-      const singleRoomType = await RoomType.create({
-        propertyId: primaryProp._id,
-        name: "Phòng đơn Standard",
-        area: 18,
-        basePrice: 3500000,
-        amenities: ["Máy lạnh", "Gác lửng", "Kệ bếp"]
-      });
+    const ROOM_TYPE_TEMPLATES = [
+      { name: "Phòng đơn Standard", area: 18, basePrice: 3500000, amenities: ["Máy lạnh", "Gác lửng", "Kệ bếp"] },
+      { name: "Phòng đôi Studio", area: 25, basePrice: 5000000, amenities: ["Máy lạnh", "Tủ lạnh", "Gác lửng", "Tủ quần áo", "Máy giặt chung"] },
+      { name: "Phòng ký túc xá", area: 12, basePrice: 1800000, amenities: ["Quạt trần", "WC chung"] },
+      { name: "Phòng VIP có ban công", area: 30, basePrice: 6500000, amenities: ["Máy lạnh", "Tủ lạnh", "Máy giặt riêng", "Ban công", "WC riêng", "Wifi"] },
+      { name: "Phòng đơn cao cấp", area: 20, basePrice: 4200000, amenities: ["Máy lạnh", "WC riêng", "Wifi", "Kệ bếp"] },
+      { name: "Phòng đôi tiết kiệm", area: 22, basePrice: 3800000, amenities: ["Quạt trần", "Gác lửng", "WC riêng"] },
+      { name: "Phòng Penthouse", area: 35, basePrice: 7500000, amenities: ["Máy lạnh", "Tủ lạnh", "Máy giặt riêng", "Ban công", "WC riêng", "Wifi", "Bếp", "Gác"] },
+    ];
 
-      const doubleRoomType = await RoomType.create({
-        propertyId: primaryProp._id,
-        name: "Phòng đôi Studio",
-        area: 25,
-        basePrice: 5000000,
-        amenities: ["Máy lạnh", "Tủ lạnh", "Gác lửng", "Tủ quần áo", "Máy giặt chung"]
-      });
+    // Price adjustment multiplier per district (simulating real market rates)
+    const DISTRICT_PRICE_MULTIPLIER = {
+      "Q1": 1.5, "Q3": 1.35, "Q4": 0.9, "Q5": 1.0, "Q6": 0.85, "Q7": 1.2,
+      "Q8": 0.8, "Q10": 1.1, "Q11": 0.9, "Q12": 0.75, "BTan": 0.7,
+      "BThanh": 1.15, "GV": 0.95, "PN": 1.25, "TB": 1.05, "TP": 0.85,
+      "TD": 1.1, "BChanh": 0.65, "CG": 0.55, "CC": 0.6, "HM": 0.7, "NB": 0.75
+    };
 
-      // Seed 20 Rooms, map specific room numbers to specific test scenario cases
-      const seededRooms = [];
-      for (let floor = 1; floor <= 4; floor++) {
-        for (let r = 1; r <= 5; r++) {
+    const ROOM_STATUSES = ['empty', 'rented', 'deposit', 'maintenance'];
+    const UNSPLASH_ROOM_PHOTOS = [
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=500',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500',
+      'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=500',
+      'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500',
+      'https://images.unsplash.com/photo-1598928506311-c55ez637a02b?w=500',
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500',
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500',
+    ];
+
+    let totalRoomsSeeded = 0;
+    const allSeededRooms = [];
+    const allSeededRoomTypes = {};
+
+    for (const dist of HCMC_DISTRICTS_DATA) {
+      // Get the first property of this district
+      const prop = seededProperties.find(p => p.code === `NT-${dist.code}-01`);
+      if (!prop) continue;
+
+      const multiplier = DISTRICT_PRICE_MULTIPLIER[dist.code] || 1.0;
+
+      // Seed services for this property
+      await Service.create({ propertyId: prop._id, name: "Điện", unit: "kWh", price: 3500, type: "metered" });
+      await Service.create({ propertyId: prop._id, name: "Nước", unit: "m3", price: 15000, type: "metered" });
+      await Service.create({ propertyId: prop._id, name: "Internet", unit: "phòng", price: 100000, type: "fixed" });
+      await Service.create({ propertyId: prop._id, name: "Vệ sinh", unit: "người", price: 30000, type: "fixed" });
+
+      // Choose 2-3 room types for this property (variety)
+      const numTypes = 2 + (dist.code.length % 2); // 2 or 3
+      const typeIndices = [];
+      for (let t = 0; t < numTypes; t++) {
+        typeIndices.push((HCMC_DISTRICTS_DATA.indexOf(dist) * 3 + t) % ROOM_TYPE_TEMPLATES.length);
+      }
+
+      const propRoomTypes = [];
+      for (const idx of typeIndices) {
+        const tmpl = ROOM_TYPE_TEMPLATES[idx];
+        const adjustedPrice = Math.round(tmpl.basePrice * multiplier / 100000) * 100000; // Round to 100K
+        const rt = await RoomType.create({
+          propertyId: prop._id,
+          name: tmpl.name,
+          area: tmpl.area,
+          basePrice: adjustedPrice,
+          amenities: tmpl.amenities
+        });
+        propRoomTypes.push(rt);
+      }
+      allSeededRoomTypes[prop._id.toString()] = propRoomTypes;
+
+      // Seed rooms (5-10 per property for variety)
+      const numRooms = 5 + (HCMC_DISTRICTS_DATA.indexOf(dist) % 6); // 5 to 10
+      let occupiedCount = 0;
+
+      for (let floor = 1; floor <= Math.min(3, Math.ceil(numRooms / 4)); floor++) {
+        const roomsOnFloor = Math.min(4, numRooms - (floor - 1) * 4);
+        for (let r = 1; r <= roomsOnFloor; r++) {
           const roomNumber = `${floor}0${r}`;
-          const isStudio = floor >= 3;
-          const roomType = isStudio ? doubleRoomType : singleRoomType;
-          
-          let status = 'empty';
-          if (roomNumber === '101') status = 'rented';     // Normal tenant 1
-          else if (roomNumber === '102') status = 'deposit'; // Deposit tenant
-          else if (roomNumber === '103') status = 'rented';  // Normal tenant 2
-          else if (roomNumber === '104') status = 'rented';  // Late payment tenant
-          else if (roomNumber === '105') status = 'maintenance'; // Repair service request
-          // Room 106 will be 'empty' since tenant Left (Terminated contract)
+          const roomType = propRoomTypes[(floor + r) % propRoomTypes.length];
+
+          // Distribute statuses realistically
+          const roomIdx = (floor - 1) * 4 + r;
+          let status;
+          if (roomIdx <= 2) status = 'rented';
+          else if (roomIdx === 3) status = 'deposit';
+          else if (roomIdx === numRooms && dist.code !== 'Q1') status = 'maintenance';
+          else status = 'empty';
+
+          if (status === 'rented') occupiedCount++;
+
+          const photoIdx = (HCMC_DISTRICTS_DATA.indexOf(dist) + floor + r) % UNSPLASH_ROOM_PHOTOS.length;
 
           const roomObj = await Room.create({
-            propertyId: primaryProp._id,
+            propertyId: prop._id,
             roomTypeId: roomType._id,
             roomNumber,
             floor,
             currentPrice: roomType.basePrice,
             price: roomType.basePrice,
             area: roomType.area,
-            code: `${primaryProp.code}-${roomNumber}`,
+            code: `${prop.code}-${roomNumber}`,
             status,
+            photos: [UNSPLASH_ROOM_PHOTOS[photoIdx], UNSPLASH_ROOM_PHOTOS[(photoIdx + 1) % UNSPLASH_ROOM_PHOTOS.length]],
             assets: [
-              { name: "Máy lạnh Daikin 1.5 HP", value: 8000000, condition: roomNumber === '105' ? "Hỏng (Không lạnh)" : "Tốt" },
-              { name: "Công tơ điện tử thông minh", value: 500000, condition: "Tốt" },
-              { name: "Bếp từ âm đôi", value: 4500000, condition: "Tốt" }
+              { name: "Máy lạnh Daikin 1.5 HP", value: 8000000, condition: status === 'maintenance' ? "Hỏng" : "Tốt" },
+              { name: "Công tơ điện tử", value: 500000, condition: "Tốt" },
             ]
           });
-          seededRooms.push(roomObj);
+          allSeededRooms.push(roomObj);
+          totalRoomsSeeded++;
         }
       }
-      console.log(`Seeded ${seededRooms.length} rooms for ${primaryProp.name}.`);
+
+      // Update property occupied room count
+      await Property.findByIdAndUpdate(prop._id, { totalRooms: numRooms, occupiedRooms: occupiedCount });
+    }
+    console.log(`Successfully seeded ${totalRoomsSeeded} rooms across 22 representative properties.`);
+
+    // 4. Set up detailed scenario data for the PRIMARY property (Q1 Facility 1)
+    const primaryProp = seededProperties.find(p => p.code === 'NT-Q1-01');
+    if (primaryProp) {
+      console.log(`Setting up scenario contracts & invoices for primary property: ${primaryProp.name}...`);
+      
+      // Look up services already created for primary property in the loop above
+      const electricService = await Service.findOne({ propertyId: primaryProp._id, name: "Điện" });
+      const waterService = await Service.findOne({ propertyId: primaryProp._id, name: "Nước" });
+      const internetService = await Service.findOne({ propertyId: primaryProp._id, name: "Internet" });
+      const trashService = await Service.findOne({ propertyId: primaryProp._id, name: "Vệ sinh" });
+
+      // Look up rooms already created for primary property in the loop above
+      const seededRooms = await Room.find({ propertyId: primaryProp._id }).sort({ roomNumber: 1 });
+      console.log(`Found ${seededRooms.length} existing rooms for ${primaryProp.name} to assign scenario data.`);
 
       // 4. Create contracts, readings, and invoices for each scenario
 

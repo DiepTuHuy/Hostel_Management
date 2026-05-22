@@ -10,6 +10,8 @@ const roomSchema = new mongoose.Schema({
   area: { type: Number },
   code: { type: String },
   status: { type: String, enum: ['empty', 'rented', 'deposit', 'maintenance'], default: 'empty' },
+  photos: [{ type: String }],
+  description: { type: String },
   assets: [{
     name: { type: String, required: true },
     value: { type: Number, default: 0 },
