@@ -48,72 +48,74 @@ export default function ContractsPage() {
         <p className="text-xs text-ink-muted mt-0.5">Theo dõi lịch sử hợp đồng và thông tin điều khoản thuê phòng.</p>
       </div>
 
-      {contracts.map(c => (
-        <div key={c.id} className={`bg-white rounded-2xl border p-5 shadow-card space-y-4 transition-all ${activeContract?.id === c.id ? 'border-primary ring-2 ring-primary/10' : 'border-line'}`}>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary-soft text-primary rounded-xl flex items-center justify-center shrink-0">
-                <FileText size={20} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {contracts.map(c => (
+          <div key={c.id} className={`bg-white rounded-2xl border p-5 shadow-card space-y-4 transition-all ${activeContract?.id === c.id ? 'border-primary ring-2 ring-primary/10' : 'border-line'}`}>
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary-soft text-primary rounded-xl flex items-center justify-center shrink-0">
+                  <FileText size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-ink">{c.code}</h3>
+                  <span className="text-[10px] text-ink-muted">Tạo ngày {formatDate(c.createdAt || c.startDate)}</span>
+                </div>
+              </div>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${c.status === 'active' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                {c.statusMeta?.label}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 py-3 border-y border-line text-xs">
+              <div>
+                <span className="text-ink-muted block">Tiền phòng hằng tháng</span>
+                <span className="font-bold text-ink">{formatCurrency(c.monthlyRent)}</span>
               </div>
               <div>
-                <h3 className="font-bold text-sm text-ink">{c.code}</h3>
-                <span className="text-[10px] text-ink-muted">Tạo ngày {formatDate(c.createdAt || c.startDate)}</span>
+                <span className="text-ink-muted block">Tiền đặt cọc</span>
+                <span className="font-bold text-ink">{formatCurrency(c.deposit)}</span>
+              </div>
+              <div>
+                <span className="text-ink-muted block">Ngày bắt đầu</span>
+                <span className="font-semibold text-ink">{formatDate(c.startDate)}</span>
+              </div>
+              <div>
+                <span className="text-ink-muted block">Ngày kết thúc</span>
+                <span className="font-semibold text-ink">{formatDate(c.endDate)}</span>
               </div>
             </div>
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${c.status === 'active' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-              {c.statusMeta?.label}
-            </span>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4 py-3 border-y border-line text-xs">
-            <div>
-              <span className="text-ink-muted block">Tiền phòng hằng tháng</span>
-              <span className="font-bold text-ink">{formatCurrency(c.monthlyRent)}</span>
+            <div className="space-y-2 text-xs">
+              <h4 className="font-bold text-ink">Dịch vụ đi kèm:</h4>
+              <div className="grid grid-cols-2 gap-1.5 text-ink-muted">
+                {c.services.map(s => (
+                  <div key={s.name} className="flex justify-between p-1.5 bg-gray-50 border border-line rounded-lg">
+                    <span>{s.name}</span>
+                    <span className="font-semibold text-ink">{formatCurrency(s.unitPrice)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div>
-              <span className="text-ink-muted block">Tiền đặt cọc</span>
-              <span className="font-bold text-ink">{formatCurrency(c.deposit)}</span>
-            </div>
-            <div>
-              <span className="text-ink-muted block">Ngày bắt đầu</span>
-              <span className="font-semibold text-ink">{formatDate(c.startDate)}</span>
-            </div>
-            <div>
-              <span className="text-ink-muted block">Ngày kết thúc</span>
-              <span className="font-semibold text-ink">{formatDate(c.endDate)}</span>
-            </div>
-          </div>
 
-          <div className="space-y-2 text-xs">
-            <h4 className="font-bold text-ink">Dịch vụ đi kèm:</h4>
-            <div className="grid grid-cols-2 gap-1.5 text-ink-muted">
-              {c.services.map(s => (
-                <div key={s.name} className="flex justify-between p-1.5 bg-gray-50 border border-line rounded-lg">
-                  <span>{s.name}</span>
-                  <span className="font-semibold text-ink">{formatCurrency(s.unitPrice)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-2">
-            <button
-              onClick={() => alert('Đang hiển thị bản preview hợp đồng PDF dưới dạng mô phỏng')}
-              className="flex-1 h-10 bg-gray-50 text-ink border border-line rounded-xl font-bold flex items-center justify-center gap-1.5 text-xs hover:bg-gray-100 transition-colors"
-            >
-              <Eye size={14} /> Xem văn bản PDF
-            </button>
-            {c.status === 'active' && (
+            <div className="flex gap-3 pt-2">
               <button
-                onClick={() => setShowExtendModal(true)}
-                className="flex-1 h-10 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-1.5 text-xs hover:bg-primary-dark transition-colors shadow-sm"
+                onClick={() => alert('Đang hiển thị bản preview hợp đồng PDF dưới dạng mô phỏng')}
+                className="flex-1 h-10 bg-gray-50 text-ink border border-line rounded-xl font-bold flex items-center justify-center gap-1.5 text-xs hover:bg-gray-100 transition-colors"
               >
-                <RefreshCcw size={14} /> Yêu cầu gia hạn
+                <Eye size={14} /> Xem văn bản PDF
               </button>
-            )}
+              {c.status === 'active' && (
+                <button
+                  onClick={() => setShowExtendModal(true)}
+                  className="flex-1 h-10 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-1.5 text-xs hover:bg-primary-dark transition-colors shadow-sm"
+                >
+                  <RefreshCcw size={14} /> Yêu cầu gia hạn
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {contracts.length === 0 && (
         <div className="bg-white rounded-2xl border border-line p-10 text-center text-xs text-ink-muted">

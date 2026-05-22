@@ -90,130 +90,140 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
-        <button
-          onClick={() => handleTabChange('unpaid')}
-          className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all ${activeTab === 'unpaid' ? 'bg-white text-primary shadow-sm' : 'text-ink-muted hover:text-ink'}`}
-        >
-          Chưa thanh toán
-        </button>
-        <button
-          onClick={() => handleTabChange('paid')}
-          className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all ${activeTab === 'paid' ? 'bg-white text-primary shadow-sm' : 'text-ink-muted hover:text-ink'}`}
-        >
-          Đã thanh toán
-        </button>
-        <button
-          onClick={() => handleTabChange('all')}
-          className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all ${activeTab === 'all' ? 'bg-white text-primary shadow-sm' : 'text-ink-muted hover:text-ink'}`}
-        >
-          Tất cả
-        </button>
-      </div>
-
-      <div className="space-y-3">
-        {filtered.map(i => (
-          <div
-            key={i.id}
-            onClick={() => handleSelectInvoice(i)}
-            className={`p-4 rounded-2xl border text-left cursor-pointer transition-all flex justify-between items-center ${selectedInvoice?.id === i.id ? 'bg-white border-primary shadow-elevated ring-1 ring-primary/5' : 'bg-white border-line hover:border-gray-300'}`}
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${i.status === 'paid' ? 'bg-green-50 text-green-600' : i.status === 'overdue' ? 'bg-red-50 text-red-600' : 'bg-primary-soft text-primary'}`}>
-                <FileText size={20} />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-ink">{formatPeriod(i.period)}</h4>
-                <p className="text-[10px] text-ink-muted mt-0.5">Hạn đóng: {formatDate(i.dueDate)}</p>
-              </div>
-            </div>
-            <div className="text-right flex items-center gap-2">
-              <div>
-                <span className="text-sm font-extrabold text-ink block">{formatCurrency(i.total)}</span>
-                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider ${i.status === 'paid' ? 'bg-green-50 text-green-700' : i.status === 'overdue' ? 'bg-red-50 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
-                  {i.statusMeta?.label}
-                </span>
-              </div>
-              <ChevronRight size={16} className="text-ink-muted" />
-            </div>
-          </div>
-        ))}
-
-        {filtered.length === 0 && (
-          <div className="p-8 bg-white border border-line rounded-2xl text-center text-xs text-ink-muted">
-            Không tìm thấy hoá đơn nào.
-          </div>
-        )}
-      </div>
-
-      {selectedInvoice && (
-        <div className="bg-white rounded-2xl border border-line p-5 shadow-card space-y-4">
-          <div className="border-b border-line pb-4 flex justify-between items-center">
-            <div>
-              <h3 className="font-bold text-sm text-ink">Chi tiết hoá đơn {selectedInvoice.code}</h3>
-              <p className="text-[10px] text-ink-muted">Kỳ thu tiền: {formatPeriod(selectedInvoice.period)}</p>
-            </div>
-            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${selectedInvoice.status === 'paid' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-              {selectedInvoice.statusMeta?.label}
-            </span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="lg:col-span-5 space-y-4">
+          <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
+            <button
+              onClick={() => handleTabChange('unpaid')}
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all ${activeTab === 'unpaid' ? 'bg-white text-primary shadow-sm' : 'text-ink-muted hover:text-ink'}`}
+            >
+              Chưa thanh toán
+            </button>
+            <button
+              onClick={() => handleTabChange('paid')}
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all ${activeTab === 'paid' ? 'bg-white text-primary shadow-sm' : 'text-ink-muted hover:text-ink'}`}
+            >
+              Đã thanh toán
+            </button>
+            <button
+              onClick={() => handleTabChange('all')}
+              className={`flex-1 py-2 text-center text-xs font-bold rounded-lg transition-all ${activeTab === 'all' ? 'bg-white text-primary shadow-sm' : 'text-ink-muted hover:text-ink'}`}
+            >
+              Tất cả
+            </button>
           </div>
 
-          <div className="space-y-2 text-xs">
-            {selectedInvoice.items.map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center py-1">
-                <span className="text-ink-muted">{item.name} {item.qty > 1 && `(x${item.qty} ${item.unit})`}</span>
-                <span className="font-semibold text-ink">{formatCurrency(item.total)}</span>
+          <div className="space-y-3">
+            {filtered.map(i => (
+              <div
+                key={i.id}
+                onClick={() => handleSelectInvoice(i)}
+                className={`p-4 rounded-2xl border text-left cursor-pointer transition-all flex justify-between items-center ${selectedInvoice?.id === i.id ? 'bg-white border-primary shadow-elevated ring-1 ring-primary/5' : 'bg-white border-line hover:border-gray-300'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${i.status === 'paid' ? 'bg-green-50 text-green-600' : i.status === 'overdue' ? 'bg-red-50 text-red-600' : 'bg-primary-soft text-primary'}`}>
+                    <FileText size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-ink">{formatPeriod(i.period)}</h4>
+                    <p className="text-[10px] text-ink-muted mt-0.5">Hạn đóng: {formatDate(i.dueDate)}</p>
+                  </div>
+                </div>
+                <div className="text-right flex items-center gap-2">
+                  <div>
+                    <span className="text-sm font-extrabold text-ink block">{formatCurrency(i.total)}</span>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider ${i.status === 'paid' ? 'bg-green-50 text-green-700' : i.status === 'overdue' ? 'bg-red-50 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {i.statusMeta?.label}
+                    </span>
+                  </div>
+                  <ChevronRight size={16} className="text-ink-muted" />
+                </div>
               </div>
             ))}
-          </div>
 
-          {selectedInvoice.meterReadings && (
-            <div className="bg-gray-50 border border-line rounded-xl p-3 space-y-2 text-[11px]">
-              <div className="font-bold text-ink flex items-center gap-1">
-                <Zap size={14} className="text-primary" /> Chỉ số điện nước tiêu thụ
+            {filtered.length === 0 && (
+              <div className="p-8 bg-white border border-line rounded-2xl text-center text-xs text-ink-muted">
+                Không tìm thấy hoá đơn nào.
               </div>
-              <div className="grid grid-cols-2 gap-4 text-ink-muted">
-                {selectedInvoice.meterReadings.electricity && (
-                  <div>
-                    <span className="block font-medium">Chỉ số điện:</span>
-                    <span>{selectedInvoice.meterReadings.electricity.previous} kWh → {selectedInvoice.meterReadings.electricity.current} kWh ({selectedInvoice.meterReadings.electricity.current - selectedInvoice.meterReadings.electricity.previous} kWh)</span>
-                  </div>
-                )}
-                {selectedInvoice.meterReadings.water && (
-                  <div>
-                    <span className="block font-medium">Chỉ số nước:</span>
-                    <span>{selectedInvoice.meterReadings.water.previous} m³ → {selectedInvoice.meterReadings.water.current} m³ ({selectedInvoice.meterReadings.water.current - selectedInvoice.meterReadings.water.previous} m³)</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="border-t border-line pt-3 flex justify-between items-center">
-            <div>
-              <span className="text-[10px] text-ink-muted block leading-none">Tổng cộng chi phí</span>
-              <span className="text-xl font-extrabold text-primary">{formatCurrency(selectedInvoice.total)}</span>
-            </div>
-
-            {selectedInvoice.status !== 'paid' && selectedInvoice.status !== 'pending_cash' ? (
-              <button
-                onClick={handleOpenPay}
-                className="btn btn-primary btn-md rounded-xl font-bold px-5 flex items-center justify-center shadow-md transition-all active:scale-98"
-              >
-                Thanh toán ngay
-              </button>
-            ) : selectedInvoice.status === 'pending_cash' ? (
-              <span className="text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 font-semibold">
-                Đang chờ xác nhận
-              </span>
-            ) : (
-              <span className="text-xs text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200 font-semibold">
-                Đã thanh toán
-              </span>
             )}
           </div>
         </div>
-      )}
+
+        <div className="lg:col-span-7">
+          {selectedInvoice ? (
+            <div className="bg-white rounded-2xl border border-line p-5 shadow-card space-y-4">
+              <div className="border-b border-line pb-4 flex justify-between items-center">
+                <div>
+                  <h3 className="font-bold text-sm text-ink">Chi tiết hoá đơn {selectedInvoice.code}</h3>
+                  <p className="text-[10px] text-ink-muted">Kỳ thu tiền: {formatPeriod(selectedInvoice.period)}</p>
+                </div>
+                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${selectedInvoice.status === 'paid' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                  {selectedInvoice.statusMeta?.label}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                {selectedInvoice.items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center py-1">
+                    <span className="text-ink-muted">{item.name} {item.qty > 1 && `(x${item.qty} ${item.unit})`}</span>
+                    <span className="font-semibold text-ink">{formatCurrency(item.total)}</span>
+                  </div>
+                ))}
+              </div>
+
+              {selectedInvoice.meterReadings && (
+                <div className="bg-gray-50 border border-line rounded-xl p-3 space-y-2 text-[11px]">
+                  <div className="font-bold text-ink flex items-center gap-1">
+                    <Zap size={14} className="text-primary" /> Chỉ số điện nước tiêu thụ
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-ink-muted">
+                    {selectedInvoice.meterReadings.electricity && (
+                      <div>
+                        <span className="block font-medium">Chỉ số điện:</span>
+                        <span>{selectedInvoice.meterReadings.electricity.previous} kWh → {selectedInvoice.meterReadings.electricity.current} kWh ({selectedInvoice.meterReadings.electricity.current - selectedInvoice.meterReadings.electricity.previous} kWh)</span>
+                      </div>
+                    )}
+                    {selectedInvoice.meterReadings.water && (
+                      <div>
+                        <span className="block font-medium">Chỉ số nước:</span>
+                        <span>{selectedInvoice.meterReadings.water.previous} m³ → {selectedInvoice.meterReadings.water.current} m³ ({selectedInvoice.meterReadings.water.current - selectedInvoice.meterReadings.water.previous} m³)</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="border-t border-line pt-3 flex justify-between items-center">
+                <div>
+                  <span className="text-[10px] text-ink-muted block leading-none">Tổng cộng chi phí</span>
+                  <span className="text-xl font-extrabold text-primary">{formatCurrency(selectedInvoice.total)}</span>
+                </div>
+
+                {selectedInvoice.status !== 'paid' && selectedInvoice.status !== 'pending_cash' ? (
+                  <button
+                    onClick={handleOpenPay}
+                    className="btn btn-primary btn-md rounded-xl font-bold px-5 flex items-center justify-center shadow-md transition-all active:scale-98"
+                  >
+                    Thanh toán ngay
+                  </button>
+                ) : selectedInvoice.status === 'pending_cash' ? (
+                  <span className="text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 font-semibold">
+                    Đang chờ xác nhận
+                  </span>
+                ) : (
+                  <span className="text-xs text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200 font-semibold">
+                    Đã thanh toán
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-line p-8 text-center text-xs text-ink-muted">
+              Chọn một hoá đơn từ danh sách để xem chi tiết.
+            </div>
+          )}
+        </div>
+      </div>
 
       {showPayModal && selectedInvoice && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
