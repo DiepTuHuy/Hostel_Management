@@ -118,8 +118,8 @@ export default function RegisterPage() {
     }
 
     try {
-      await register(fullName, email, phone, password, 'tenant');
-      setLocalSuccess('Tạo tài khoản thành công! Mã OTP kích hoạt đã được gửi.');
+      const data = await register(fullName, email, phone, password, 'tenant');
+      setLocalSuccess(data?.message || 'Tạo tài khoản thành công! Mã OTP kích hoạt đã được gửi.');
       setIsOtpStep(true);
       setCountdown(300); // 5 minutes countdown
       setOtpDigits(['', '', '', '', '', '']); // Reset digits
@@ -157,10 +157,10 @@ export default function RegisterPage() {
     setLocalSuccess('');
 
     try {
-      await resendOtp(email);
+      const data = await resendOtp(email);
       setCountdown(300); // Reset timer
       setOtpDigits(['', '', '', '', '', '']); // Reset digits
-      setLocalSuccess('Mã OTP mới đã được gửi thành công!');
+      setLocalSuccess(data?.message || 'Mã OTP mới đã được gửi thành công!');
       // Focus first input
       setTimeout(() => {
         if (inputRefs[0].current) {

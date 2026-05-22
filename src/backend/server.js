@@ -222,10 +222,12 @@ app.post('/api/auth/register', async (req, res) => {
       await existingUser.save();
 
       console.log(`[Database] Gửi lại mã OTP đăng ký mới cho tài khoản pending: ${emailLower} - OTP: ${otpCode}`);
-      await emailService.sendOtpEmail(emailLower, fullName, otpCode);
+      const emailSent = await emailService.sendOtpEmail(emailLower, fullName, otpCode);
 
       return res.status(200).json({
-        message: "Mã OTP mới đã được gửi tới email của bạn. Vui lòng xác thực tài khoản.",
+        message: emailSent
+          ? "Mã OTP mới đã được gửi tới email của bạn. Vui lòng xác thực tài khoản."
+          : `[CHẾ ĐỘ THỬ NGHIỆM] Gửi email thất bại. Mã OTP mới của bạn là: ${otpCode}`,
         status: "pending",
         email: emailLower
       });
@@ -254,10 +256,12 @@ app.post('/api/auth/register', async (req, res) => {
     console.log(`[Database] Đăng ký tài khoản pending mới thành công: ${emailLower} - OTP: ${otpCode}`);
     
     // Gửi email thật
-    await emailService.sendOtpEmail(emailLower, fullName, otpCode);
+    const emailSent = await emailService.sendOtpEmail(emailLower, fullName, otpCode);
 
     res.status(201).json({
-      message: "Mã OTP xác thực đã được gửi tới email của bạn. Vui lòng kiểm tra hộp thư!",
+      message: emailSent
+        ? "Mã OTP xác thực đã được gửi tới email của bạn. Vui lòng kiểm tra hộp thư!"
+        : `[CHẾ ĐỘ THỬ NGHIỆM] Gửi email thất bại. Mã OTP của bạn là: ${otpCode}`,
       status: "pending",
       email: emailLower
     });
@@ -352,10 +356,12 @@ app.post('/api/auth/resend-otp', async (req, res) => {
     console.log(`[Database] Đã gửi lại mã OTP mới cho tài khoản: ${emailLower} - OTP mới: ${otpCode}`);
 
     // Gửi email thật
-    await emailService.sendOtpEmail(emailLower, user.fullName, otpCode);
+    const emailSent = await emailService.sendOtpEmail(emailLower, user.fullName, otpCode);
 
     res.status(200).json({
-      message: "Gửi lại mã OTP thành công! Vui lòng kiểm tra hòm thư email của bạn."
+      message: emailSent
+        ? "Gửi lại mã OTP thành công! Vui lòng kiểm tra hòm thư email của bạn."
+        : `[CHẾ ĐỘ THỬ NGHIỆM] Gửi email thất bại. Mã OTP mới của bạn là: ${otpCode}`
     });
   } catch (error) {
     console.error("Lỗi gửi lại OTP:", error.message);

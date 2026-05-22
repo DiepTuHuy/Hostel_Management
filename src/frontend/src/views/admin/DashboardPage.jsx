@@ -336,7 +336,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-gutter">
         <Card className="lg:col-span-2">
-          <CardHeader title="Biểu đồ Doanh thu 12 tháng" subtitle="Theo từng cơ sở" />
+          <CardHeader title="Biểu đồ Doanh thu 12 tháng" subtitle="Top 5 cơ sở doanh thu cao nhất" />
           <div className="h-80">
             <ResponsiveContainer>
               <LineChart data={mappedRevenue}>
@@ -345,7 +345,7 @@ export default function DashboardPage() {
                 <YAxis tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}M`} stroke="#6B7280" fontSize={12} />
                 <Tooltip formatter={(v) => formatCurrency(v)} />
                 <Legend />
-                {localProperties.map((prop, idx) => {
+                {localProperties.slice(0, 5).map((prop, idx) => {
                   const colors = [
                     '#3A5BC7', // primary / blue
                     '#16A34A', // green

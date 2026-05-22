@@ -25,20 +25,50 @@ export default function ReportsPage() {
   const getDisplayData = () => {
     return localRevenue.map(item => {
       const newItem = { month: item.month };
-      properties.forEach((prop, idx) => {
-        const mockKey = `p-00${(idx % 4) + 1}`;
-        const rawVal = item[mockKey] || 0;
+      
+      if (branch === 'all') {
+        let totalVal = 0;
+        let count = 0;
+        properties.forEach((prop, idx) => {
+          const mockKey = `p-00${(idx % 4) + 1}`;
+          const rawVal = item[mockKey] || 0;
+          
+          let val = rawVal;
+          if (tab === 'occupancy') {
+            val = Math.min(100, Math.round(82 + (rawVal ? rawVal % 15 : 5)));
+          } else if (tab === 'debt') {
+            val = Math.round(rawVal * 0.08);
+          } else if (tab === 'cost') {
+            val = Math.round(rawVal * 0.40);
+          }
+          
+          totalVal += val;
+          count++;
+        });
         
         if (tab === 'occupancy') {
-          newItem[prop.id] = Math.min(100, Math.round(82 + (rawVal ? rawVal % 15 : 5)));
-        } else if (tab === 'debt') {
-          newItem[prop.id] = Math.round(rawVal * 0.08);
-        } else if (tab === 'cost') {
-          newItem[prop.id] = Math.round(rawVal * 0.40);
+          newItem['all'] = count ? Math.round(totalVal / count) : 0;
         } else {
-          newItem[prop.id] = rawVal;
+          newItem['all'] = totalVal;
         }
-      });
+      } else {
+        properties.forEach((prop, idx) => {
+          if (prop.id === branch) {
+            const mockKey = `p-00${(idx % 4) + 1}`;
+            const rawVal = item[mockKey] || 0;
+            
+            if (tab === 'occupancy') {
+              newItem[prop.id] = Math.min(100, Math.round(82 + (rawVal ? rawVal % 15 : 5)));
+            } else if (tab === 'debt') {
+              newItem[prop.id] = Math.round(rawVal * 0.08);
+            } else if (tab === 'cost') {
+              newItem[prop.id] = Math.round(rawVal * 0.40);
+            } else {
+              newItem[prop.id] = rawVal;
+            }
+          }
+        });
+      }
       return newItem;
     });
   };
@@ -216,29 +246,39 @@ export default function ReportsPage() {
                     />
                     <Tooltip formatter={tab === 'occupancy' ? (v) => `${v}%` : (v) => formatCurrency(v)} />
                     <Legend />
-                    {properties
-                      .filter(prop => branch === 'all' || prop.id === branch)
-                      .map((prop, idx) => {
-                        const colors = [
-                          '#3A5BC7', // primary / blue
-                          '#16A34A', // green
-                          '#F59E0B', // amber / yellow
-                          '#DC2626', // red
-                          '#06B6D4', // cyan
-                          '#8B5CF6', // purple
-                          '#EC4899', // pink
-                        ];
-                        const color = colors[idx % colors.length];
-                        return (
-                          <Bar
-                            key={prop.id}
-                            dataKey={prop.id}
-                            name={prop.name}
-                            fill={color}
-                            radius={[4, 4, 0, 0]}
-                          />
-                        );
-                      })}
+                    {branch === 'all' ? (
+                      <Bar
+                        key="all"
+                        dataKey="all"
+                        name="Toàn hệ thống"
+                        fill="#3A5BC7"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    ) : (
+                      properties
+                        .filter(prop => prop.id === branch)
+                        .map((prop, idx) => {
+                          const colors = [
+                            '#3A5BC7', // primary / blue
+                            '#16A34A', // green
+                            '#F59E0B', // amber / yellow
+                            '#DC2626', // red
+                            '#06B6D4', // cyan
+                            '#8B5CF6', // purple
+                            '#EC4899', // pink
+                          ];
+                          const color = colors[idx % colors.length];
+                          return (
+                            <Bar
+                              key={prop.id}
+                              dataKey={prop.id}
+                              name={prop.name}
+                              fill={color}
+                              radius={[4, 4, 0, 0]}
+                            />
+                          );
+                        })
+                    )}
                   </BarChart>
                 </ResponsiveContainer>
               </div>
