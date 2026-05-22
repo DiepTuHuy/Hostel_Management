@@ -58,6 +58,8 @@ export default function RoomSearchPage() {
     setSearchParams({});
   };
 
+  const uniqueDistricts = [...new Set(properties.map(p => p.district))].filter(Boolean).sort();
+
   const filteredRooms = rooms.filter(r => {
     if (district) {
       const prop = properties.find(p => p.id === r.propertyId);
@@ -123,10 +125,9 @@ export default function RoomSearchPage() {
                 className="w-full h-10 px-3 rounded-lg border border-line bg-gray-50 focus:outline-none focus:border-primary focus:bg-white text-sm text-ink"
               >
                 <option value="">Tất cả khu vực</option>
-                <option value="Quận 1">Quận 1</option>
-                <option value="Quận 3">Quận 3</option>
-                <option value="Thủ Đức">Thủ Đức</option>
-                <option value="Gò Vấp">Gò Vấp</option>
+                {uniqueDistricts.map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
               </select>
             </div>
 
