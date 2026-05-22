@@ -36,7 +36,7 @@ export default function VisitorLayout() {
           </nav>
           <div className="flex items-center gap-2">
             <Link to="/login" className="btn btn-md btn-secondary hidden sm:inline-flex">Đăng nhập</Link>
-            <Link to="/login" className="btn btn-md btn-primary">Khách thuê</Link>
+            <Link to="/register" className="btn btn-md btn-primary">Đăng ký</Link>
           </div>
         </div>
       </header>

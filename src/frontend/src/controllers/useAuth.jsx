@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { authService } from '../services/authService.js';
 
@@ -28,13 +27,27 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const register = async (fullName, email, phone, password, role = 'tenant') => {
+    setLoading(true);
+    setError(null);
+    try {
+      const newUser = await authService.register(fullName, email, phone, password, role);
+      return newUser;
+    } catch (err) {
+      setError(err.message || 'Đăng ký thất bại');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     await authService.logout();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, error, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, error, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
@@ -42,6 +55,8 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth phải dùng bên trong <AuthProvider>');
+  if (!ctx) {
+    throw new Error('useAuth phải dùng bên trong <AuthProvider>');
+  }
   return ctx;
 };

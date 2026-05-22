@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute.jsx';
 
 const LoginPage = lazy(() => import('../views/auth/LoginPage.jsx'));
+const RegisterPage = lazy(() => import('../views/auth/RegisterPage.jsx'));
 const AdminLayout = lazy(() => import('../layouts/AdminLayout.jsx'));
 const AdminDashboard = lazy(() => import('../views/admin/DashboardPage.jsx'));
 const AdminProperties = lazy(() => import('../views/admin/PropertiesPage.jsx'));
@@ -51,6 +52,7 @@ export function AppRouter() {
     <Suspense fallback={<LoadingFallback />}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         <Route
           path="/admin"
