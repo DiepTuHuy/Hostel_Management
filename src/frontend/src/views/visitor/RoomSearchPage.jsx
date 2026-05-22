@@ -33,6 +33,9 @@ export default function RoomSearchPage() {
     ]).then(([propsData, roomsData]) => {
       setProperties(propsData);
       setRooms(roomsData);
+    }).catch(err => {
+      console.error('Lỗi tải dữ liệu phòng:', err);
+    }).finally(() => {
       setLoading(false);
     });
   }, []);

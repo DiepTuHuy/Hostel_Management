@@ -258,8 +258,13 @@ app.post('/api/auth/login', async (req, res) => {
 // 3. Lấy danh sách các cơ sở nhà trọ (220 cơ sở đã seed ở TP.HCM)
 app.get('/api/properties', async (req, res) => {
   try {
-    const properties = await Property.find().populate('managerIds', 'fullName email phone');
-    res.json(properties.map(mapDocument));
+    const properties = await Property.find().lean();
+    res.json(properties.map(p => {
+      p.id = p._id ? p._id.toString() : undefined;
+      if (p.managerIds) p.managerIds = p.managerIds.map(m => m.toString());
+      if (p.ownerId) p.ownerId = p.ownerId.toString();
+      return p;
+    }));
   } catch (error) {
     console.error("Lỗi lấy danh sách cơ sở:", error.message);
     res.status(500).json({ message: "Lỗi hệ thống." });
@@ -269,9 +274,12 @@ app.get('/api/properties', async (req, res) => {
 // 3.1. Lấy chi tiết cơ sở nhà trọ
 app.get('/api/properties/:id', async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id).populate('managerIds', 'fullName email phone');
+    const property = await Property.findById(req.params.id).lean();
     if (!property) return res.status(404).json({ message: "Không tìm thấy cơ sở." });
-    res.json(mapDocument(property));
+    property.id = property._id ? property._id.toString() : undefined;
+    if (property.managerIds) property.managerIds = property.managerIds.map(m => m.toString());
+    if (property.ownerId) property.ownerId = property.ownerId.toString();
+    res.json(property);
   } catch (error) {
     console.error("Lỗi lấy chi tiết cơ sở:", error.message);
     res.status(500).json({ message: "Lỗi hệ thống." });
