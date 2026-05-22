@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Search, Shield, Zap, CircleDollarSign, CheckCircle } from 'lucide-react';
 import { roomService } from '../../services/roomService.js';
+import { propertyService } from '../../services/propertyService.js';
 import { formatCurrency } from '../../utils/format.js';
 
 export default function HomePage() {
@@ -10,11 +11,16 @@ export default function HomePage() {
   const [featured, setFeatured] = useState([]);
   const [district, setDistrict] = useState('');
   const [priceRange, setPriceRange] = useState('');
+  const [districts, setDistricts] = useState([]);
 
   useEffect(() => {
     roomService.list().then(res => {
       setFeatured(res.filter(r => r.photos.length > 0).slice(0, 3));
     });
+    propertyService.list().then(res => {
+      const uniqueDistricts = [...new Set(res.map(p => p.district).filter(Boolean))].sort();
+      setDistricts(uniqueDistricts);
+    }).catch(err => console.error("Error loading properties:", err));
   }, []);
 
   useEffect(() => {
@@ -75,10 +81,9 @@ export default function HomePage() {
                 className="w-full bg-transparent focus:outline-none text-sm text-ink font-medium"
               >
                 <option value="">Khu vực (Tất cả)</option>
-                <option value="Quận 1">Quận 1</option>
-                <option value="Quận 3">Quận 3</option>
-                <option value="Thủ Đức">Thủ Đức</option>
-                <option value="Gò Vấp">Gò Vấp</option>
+                {districts.map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
               </select>
             </div>
             <div className="flex-1 flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl border border-line">
