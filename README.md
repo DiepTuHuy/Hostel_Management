@@ -55,9 +55,7 @@ Hệ thống được thiết kế theo kiến trúc hướng dịch vụ với 
 
 ---
 
-## 3. HƯỚNG DẪN CẤU HÌNH VÀ CHẠY HỆ THỐNG
-
-### Bước 1: Cấu hình biến môi trường (`.env`)
+## 3. HƯỚNG DẪN CẤU HÌNH BIẾN MÔI TRƯỜNG (`.env`)
 
 Tạo tệp `.env` tại thư mục `src/backend/` và cấu hình các giá trị sau:
 
@@ -80,61 +78,98 @@ SMTP_PASS=your_app_password
 GEMINI_API_KEY=AIzaSyDBgVXlA-rS0puux3vY1LA-q799qb2IDQc
 ```
 
-### Bước 2: Khởi chạy Database Seeder
+---
 
-Script này sẽ tự động khởi tạo cơ sở dữ liệu mẫu bao gồm danh sách các khu vực/nhà trọ thực tế tại TP.HCM (Quận 1, Quận 3, Quận 10, Bình Thạnh...), các loại phòng trọ, phòng trọ mẫu, dịch vụ kèm theo và các tài khoản demo.
+## 4. HƯỚNG DẪN KHỞI CHẠY HỆ THỐNG CHI TIẾT
 
-1.  Mở terminal tại thư mục backend:
-    ```bash
-    cd src/backend
+Để hệ thống hoạt động đầy đủ tính năng, bạn cần khởi chạy song song 3 dịch vụ: **Express Backend (Port 5001)**, **Flask Chatbot (Port 5002)** và **Vite Frontend (Port 5173)**.
+
+Vui lòng chọn hướng dẫn phù hợp với hệ điều hành của bạn dưới đây:
+
+### TÙY CHỌN A: DÀNH CHO HỆ ĐIỀU HÀNH WINDOWS
+
+#### 1. Khởi chạy Express Backend (Port 5001)
+Mở cửa sổ Command Prompt (CMD) thứ nhất:
+```cmd
+cd src\backend
+npm install
+# Khởi tạo dữ liệu mẫu (chỉ cần chạy một lần đầu tiên)
+npm run seed
+# Chạy server chính
+npm start
+```
+*Backend chính sẽ chạy tại: `http://localhost:5001`*
+
+#### 2. Khởi chạy Python Flask Backend (Port 5002)
+Mở cửa sổ Command Prompt (CMD) hoặc PowerShell thứ hai:
+*   **Nếu dùng Command Prompt (CMD):**
+    ```cmd
+    cd src\backend
+    python -m venv .venv
+    call .venv\Scripts\activate
+    pip install -r requirements.txt
+    set PORT=5002
+    python run.py
     ```
-2.  Cài đặt các dependency Node.js:
-    ```bash
-    npm install
+*   **Nếu dùng PowerShell:**
+    ```powershell
+    cd src\backend
+    python -m venv .venv
+    .venv\Scripts\Activate.ps1
+    pip install -r requirements.txt
+    $env:PORT="5002"
+    python run.py
     ```
-3.  Chạy script seeding dữ liệu:
-    ```bash
-    npm run seed
-    ```
+*Backend Flask phụ trợ sẽ chạy tại: `http://localhost:5002`*
 
-### Bước 3: Khởi chạy 3 Server (Express Backend, Flask Chatbot, Vite Frontend)
+#### 3. Khởi chạy Vite Frontend (Port 5173)
+Mở cửa sổ Command Prompt (CMD) thứ ba:
+```cmd
+cd src\frontend
+npm install
+npm run dev
+```
+*Giao diện Web sẽ chạy tại: `http://localhost:5173`*
 
-Để hệ thống hoạt động đầy đủ tính năng, bạn cần khởi chạy song song 3 dịch vụ sau:
+---
 
-#### 1. Chạy Express Backend (Main API - Port 5001)
+### TÙY CHỌN B: DÀNH CHO HỆ ĐIỀU HÀNH MACOS / LINUX
+
+#### 1. Khởi chạy Express Backend (Port 5001)
 Mở cửa sổ Terminal thứ nhất:
 ```bash
 cd src/backend
+npm install
+# Khởi tạo dữ liệu mẫu (chỉ cần chạy một lần đầu tiên)
+npm run seed
+# Chạy server chính
 npm start
 ```
-*API chính sẽ hoạt động tại: `http://localhost:5001`*
+*Backend chính sẽ chạy tại: `http://localhost:5001`*
 
-#### 2. Chạy Python Flask Backend (Port 5002)
-Mở cửa sổ Terminal thứ hai tại `src/backend/`:
+#### 2. Khởi chạy Python Flask Backend (Port 5002)
+Mở cửa sổ Terminal thứ hai:
 ```bash
 cd src/backend
-# Tạo môi trường ảo python (nếu cần)
 python3 -m venv .venv
 source .venv/bin/activate
-# Cài đặt thư viện
 pip install -r requirements.txt
-# Khởi chạy Flask Server trên cổng 5002
 PORT=5002 python run.py
 ```
-*API phụ sẽ hoạt động tại: `http://localhost:5002`*
+*Backend Flask phụ trợ sẽ chạy tại: `http://localhost:5002`*
 
-#### 3. Chạy Vite Frontend (Port 5173)
+#### 3. Khởi chạy Vite Frontend (Port 5173)
 Mở cửa sổ Terminal thứ ba:
 ```bash
 cd src/frontend
 npm install
 npm run dev
 ```
-*Giao diện Web sẽ hoạt động tại: `http://localhost:5173`*
+*Giao diện Web sẽ chạy tại: `http://localhost:5173`*
 
 ---
 
-## 4. TÀI KHOẢN TRẢI NGHIỆM HỆ THỐNG
+## 5. TÀI KHOẢN TRẢI NGHIỆM HỆ THỐNG
 
 Sau khi seed dữ liệu thành công, bạn truy cập `http://localhost:5173` và đăng nhập bằng một trong các tài khoản demo sau:
 
@@ -142,12 +177,12 @@ Sau khi seed dữ liệu thành công, bạn truy cập `http://localhost:5173` 
 | :--- | :--- | :--- | :--- |
 | **Chủ trọ / Admin** | `admin@boardinghouse.com` | `admin` | Quản lý toàn bộ chuỗi nhà trọ, thêm/sửa cơ sở, phân công quản lý (Manager) phụ trách từng cơ sở, xem biểu đồ doanh thu toàn hệ thống. |
 | **Quản lý / Manager** | `manager@boardinghouse.com` | `manager` | Quản lý cơ sở được phân công (chọn động từ dropdown ở sidebar). Thêm phòng, lập hợp đồng, cập nhật số điện nước, lập hóa đơn và theo dõi đóng tiền. |
-| **Khách thuê / Tenant** | `tenant@boardinghouse.com` | `tenant` | Xem phòng đang thuê, xem danh sách hóa đơn, giả lập thanh toán online, gửi phản ánh lên ban quản lý. |
+| **Khách thuê (Tenant)** | `tenant@boardinghouse.com` | `tenant` | Xem phòng đang thuê, xem danh sách hóa đơn, giả lập thanh toán online, gửi phản ánh lên ban quản lý. |
 | **Khách vãng lai / Visitor** | Không cần tài khoản | *N/A* | Tìm kiếm phòng trọ trống theo khu vực địa lý thực tế (Quận 1, Bình Thạnh...), xem chi tiết phòng, gửi yêu cầu đặt cọc giữ phòng. |
 
 ---
 
-## 5. TÍNH NĂNG ĐÃ ĐƯỢC ĐỒNG BỘ VÀ TỐI ƯU HÓA GẦN ĐÂY
+## 6. TÍNH NĂNG ĐÃ ĐƯỢC ĐỒNG BỘ VÀ TỐI ƯU HÓA GẦN ĐÂY
 
 1.  **Dữ liệu động 100%**: Sửa lỗi giao diện hiển thị dữ liệu giả (mockdata) trước đó. Toàn bộ thông tin hiển thị trên Admin Dashboard và Manager Dashboard đều được đồng bộ thời gian thực từ MongoDB Atlas (kể cả khi mảng trả về rỗng).
 2.  **Dropdown Cơ sở ở Sidebar**: Quản lý (Manager) có thể chuyển đổi linh hoạt qua lại giữa các khu vực nhà trọ thực tế tồn tại trong CSDL. Tất cả các tab chức năng (Phòng, Hợp đồng, Chỉ số điện nước, Hóa đơn) đều tự động tải lại dữ liệu tương ứng với cơ sở được chọn.
