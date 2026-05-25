@@ -11,6 +11,7 @@ export default function RoomSearchPage() {
   const [rooms, setRooms] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   
   const [district, setDistrict] = useState(searchParams.get('district') || '');
@@ -33,8 +34,10 @@ export default function RoomSearchPage() {
     ]).then(([propsData, roomsData]) => {
       setProperties(propsData);
       setRooms(roomsData);
+      setError(null);
     }).catch(err => {
       console.error('Lỗi tải dữ liệu phòng:', err);
+      setError('Mất kết nối với máy chủ cơ sở dữ liệu. Vui lòng thử lại sau.');
     }).finally(() => {
       setLoading(false);
     });
@@ -64,6 +67,8 @@ export default function RoomSearchPage() {
   const uniqueDistricts = [...new Set(properties.map(p => p.district))].filter(Boolean).sort();
 
   const filteredRooms = rooms.filter(r => {
+    if (r.status !== ROOM_STATUS_META.vacant && r.status !== 'vacant') return false;
+    
     if (district) {
       const prop = properties.find(p => p.id === r.propertyId);
       if (!prop || !prop.district.toLowerCase().includes(district.toLowerCase())) return false;
@@ -198,6 +203,17 @@ export default function RoomSearchPage() {
             {loading ? (
               <div className="flex items-center justify-center py-20 bg-white border border-line rounded-2xl">
                 <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : error ? (
+              <div className="bg-white rounded-2xl border border-line p-12 text-center">
+                <div className="w-16 h-16 bg-red-50 border border-red-150 rounded-2xl flex items-center justify-center mx-auto mb-4 text-danger">
+                  <RefreshCw size={24} />
+                </div>
+                <h3 className="font-bold text-lg text-ink">Lỗi kết nối cơ sở dữ liệu</h3>
+                <p className="text-sm text-ink-muted mt-2">{error}</p>
+                <button onClick={() => window.location.reload()} className="btn btn-primary btn-md rounded-xl mt-6">
+                  Tải lại trang
+                </button>
               </div>
             ) : filteredRooms.length === 0 ? (
               <div className="bg-white rounded-2xl border border-line p-12 text-center">
