@@ -861,11 +861,12 @@ ${statsContext}`
   }
 });
 
-// Khởi chạy Server sau khi kết nối CSDL thành công
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Backend server is running on http://localhost:${PORT}`);
-  });
-}).catch(err => {
-  console.error("Failed to start backend server due to DB connection error:", err.message);
+// Khởi chạy Server
+const server = app.listen(PORT, () => {
+  console.log(`Backend server is running on http://localhost:${PORT}`);
+});
+
+connectDB().catch(err => {
+  console.error("Warning: Failed to connect to MongoDB Atlas:", err.message);
+  console.error("Please ensure your public IP is whitelisted on MongoDB Atlas.");
 });
