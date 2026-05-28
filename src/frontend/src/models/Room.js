@@ -63,4 +63,32 @@ export class Room {
   get isAvailable() {
     return this.status === ROOM_STATUS.VACANT;
   }
+
+  get statusBgClass() {
+    switch (this.status) {
+      case ROOM_STATUS.VACANT:
+        return 'bg-emerald-600 border border-emerald-500/20 text-white shadow-md';
+      case ROOM_STATUS.OCCUPIED:
+        return 'bg-blue-600 border border-blue-500/20 text-white shadow-md';
+      case ROOM_STATUS.DEPOSIT:
+        return 'bg-amber-500 border border-amber-400/20 text-white shadow-md';
+      case ROOM_STATUS.PAUSED:
+      default:
+        return 'bg-gray-500 border border-gray-400/20 text-white shadow-md';
+    }
+  }
+
+  get statusTextClass() {
+    switch (this.status) {
+      case ROOM_STATUS.VACANT:
+        return 'text-emerald-600';
+      case ROOM_STATUS.OCCUPIED:
+        return 'text-blue-600';
+      case ROOM_STATUS.DEPOSIT:
+        return 'text-amber-500';
+      case ROOM_STATUS.PAUSED:
+      default:
+        return 'text-gray-500';
+    }
+  }
 }

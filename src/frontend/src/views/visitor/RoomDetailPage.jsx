@@ -65,7 +65,7 @@ export default function RoomDetailPage() {
                   alt={`Phòng ${room.code}`}
                   className="w-full h-full object-cover"
                 />
-                <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white bg-${ROOM_STATUS_META[room.status]?.color}-500 shadow-md`}>
+                <span className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${room.statusBgClass}`}>
                   {ROOM_STATUS_META[room.status]?.label}
                 </span>
               </div>
@@ -169,7 +169,7 @@ export default function RoomDetailPage() {
                 </div>
                 <div className="flex justify-between items-center text-xs border-t border-line pt-2">
                   <span className="text-ink-muted">Trạng thái phòng:</span>
-                  <span className={`font-semibold text-${ROOM_STATUS_META[room.status]?.color}-600`}>
+                  <span className={`font-bold ${room.statusTextClass}`}>
                     {ROOM_STATUS_META[room.status]?.label}
                   </span>
                 </div>

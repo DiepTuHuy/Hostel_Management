@@ -376,18 +376,27 @@ export default function DashboardPage() {
         <Card>
           <CardHeader title="Hoạt động gần đây" subtitle="Hệ thống & cảnh báo" />
           <ul className="space-y-3">
-            {NOTIFICATIONS.map((n) => (
-              <li key={n.id} className="flex gap-3 p-2 hover:bg-gray-50 rounded-lg -mx-2 transition-colors">
-                <span className={`mt-1 h-2 w-2 rounded-full bg-${n.color === 'warning' ? 'amber' : n.color === 'danger' ? 'red' : n.color === 'success' ? 'green' : 'sky'}-500 shrink-0`} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <Badge color={n.color}>{n.type}</Badge>
+            {NOTIFICATIONS.map((n) => {
+              const dotColors = {
+                warning: 'bg-amber-500',
+                danger: 'bg-red-500',
+                success: 'bg-green-500',
+                info: 'bg-sky-500',
+              };
+              const dotColorClass = dotColors[n.color] || 'bg-gray-500';
+              return (
+                <li key={n.id} className="flex gap-3 p-2 hover:bg-gray-50 rounded-lg -mx-2 transition-colors">
+                  <span className={`mt-1 h-2 w-2 rounded-full ${dotColorClass} shrink-0`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <Badge color={n.color}>{n.type}</Badge>
+                    </div>
+                    <p className="text-sm text-ink mt-1">{n.text}</p>
+                    <p className="text-xs text-ink-muted mt-0.5">{formatRelative(n.time)}</p>
                   </div>
-                  <p className="text-sm text-ink mt-1">{n.text}</p>
-                  <p className="text-xs text-ink-muted mt-0.5">{formatRelative(n.time)}</p>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </Card>
       </div>

@@ -214,7 +214,7 @@ export default function RoomSearchPage() {
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredRooms.map(r => (
-                  <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated transition-all overflow-hidden flex flex-col group">
+                  <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated overflow-hidden flex flex-col group">
                     <div className="h-44 bg-gray-100 overflow-hidden relative">
                       {r.photos.length > 0 ? (
                         <img src={r.photos[0]} alt={`Phòng ${r.code}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -223,7 +223,7 @@ export default function RoomSearchPage() {
                           Phòng {r.code}
                         </div>
                       )}
-                      <span className={`absolute top-3 left-3 px-2 py-0.5 text-xs font-semibold rounded-full bg-${ROOM_STATUS_META[r.status]?.color}-500 text-white shadow-sm`}>
+                      <span className={`absolute top-3 left-3 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${r.statusBgClass}`}>
                         {ROOM_STATUS_META[r.status]?.label}
                       </span>
                     </div>
@@ -256,7 +256,7 @@ export default function RoomSearchPage() {
             ) : (
               <div className="space-y-4">
                 {filteredRooms.map(r => (
-                  <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated transition-all p-4 flex flex-col sm:flex-row gap-4 items-center group">
+                  <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated p-4 flex flex-col sm:flex-row gap-4 items-center group">
                     <div className="w-full sm:w-44 h-32 bg-gray-100 rounded-xl overflow-hidden relative shrink-0">
                       {r.photos.length > 0 ? (
                         <img src={r.photos[0]} alt={`Phòng ${r.code}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -265,7 +265,7 @@ export default function RoomSearchPage() {
                           Phòng {r.code}
                         </div>
                       )}
-                      <span className={`absolute top-2 left-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-${ROOM_STATUS_META[r.status]?.color}-500 text-white shadow-sm`}>
+                      <span className={`absolute top-2 left-2 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${r.statusBgClass}`}>
                         {ROOM_STATUS_META[r.status]?.label}
                       </span>
                     </div>

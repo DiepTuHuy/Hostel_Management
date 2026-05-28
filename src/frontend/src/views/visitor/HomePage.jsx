@@ -126,15 +126,15 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {featured.map(r => (
-            <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated transition-all overflow-hidden flex flex-col group">
+            <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated overflow-hidden flex flex-col group">
               <div className="h-48 bg-gray-100 overflow-hidden relative">
                 <img
                   src={r.photos[0]}
                   alt={`Phòng ${r.code}`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <span className="absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-500 text-white shadow-sm">
-                  Còn trống
+                <span className={`absolute top-3 left-3 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${r.statusBgClass}`}>
+                  {r.statusMeta?.label || 'Còn trống'}
                 </span>
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between">
