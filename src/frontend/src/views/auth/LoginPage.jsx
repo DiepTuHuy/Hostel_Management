@@ -9,22 +9,9 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [step, setStep] = useState('credentials');
-  const [otp, setOtp] = useState('');
-  const [otpError, setOtpError] = useState('');
 
-  const submitCredentials = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setStep('otp');
-  };
-
-  const submitOtp = async (e) => {
-    e.preventDefault();
-    setOtpError('');
-    if (otp !== '123456') {
-      setOtpError('Mã OTP không đúng. Vui lòng nhập 123456 để thử nghiệm.');
-      return;
-    }
     try {
       const user = await login(email, password);
       const dest = {
@@ -33,9 +20,8 @@ export default function LoginPage() {
         tenant: '/tenant',
       }[user.role] || '/';
       navigate(dest, { replace: true });
-    } catch (err) {
-      setStep('credentials');
-      setOtpError(err.message || 'Đăng nhập thất bại');
+    } catch {
+      /* error is handled by useAuth */
     }
   };
 
@@ -57,101 +43,60 @@ export default function LoginPage() {
           </div>
 
           <div className="bg-surface border border-line p-8 rounded-3xl shadow-card w-full">
-            {step === 'credentials' ? (
-              <form onSubmit={submitCredentials}>
-                <div className="text-center mb-6">
-                  <h1 className="text-2xl font-bold text-ink">Đăng nhập</h1>
-                  <p className="text-xs text-ink-muted mt-1">Sử dụng tài khoản hệ thống cấp cho bạn</p>
-                </div>
+            <form onSubmit={handleSubmit}>
+              <div className="text-center mb-6">
+                <h1 className="text-2xl font-bold text-ink">Đăng nhập</h1>
+                <p className="text-xs text-ink-muted mt-1">Sử dụng tài khoản hệ thống cấp cho bạn</p>
+              </div>
 
-                <div className="space-y-4">
-                  <Input
-                    label="Email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="ten@boardinghouse.vn"
-                  />
-                  <Input
-                    label="Mật khẩu"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                  />
-                  <div className="flex justify-end">
-                    <Link to="/forgot-password" className="text-xs text-primary font-semibold hover:underline">
-                      Quên mật khẩu?
-                    </Link>
-                  </div>
-                </div>
-
-                {error && (
-                  <p className="mt-3 text-xs text-danger text-center font-medium">{error}</p>
-                )}
-
-                <Button type="submit" size="lg" className="w-full mt-6 rounded-2xl h-11">
-                  Đăng nhập
-                </Button>
-
-                <div className="mt-6 text-center text-xs text-ink-muted">
-                  Chưa có tài khoản?{' '}
-                  <Link to="/register" className="text-primary font-semibold hover:underline">
-                    Đăng ký ngay
+              <div className="space-y-4">
+                <Input
+                  label="Email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="ten@boardinghouse.vn"
+                />
+                <Input
+                  label="Mật khẩu"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                />
+                <div className="flex justify-end">
+                  <Link to="/forgot-password" className="text-xs text-primary font-semibold hover:underline">
+                    Quên mật khẩu?
                   </Link>
                 </div>
+              </div>
 
-                <div className="mt-8 pt-6 border-t border-line text-[11px] text-ink-muted space-y-2">
-                  <div className="font-bold text-ink uppercase tracking-wider text-[10px]">Tài khoản demo (password = role):</div>
-                  <div className="grid grid-cols-1 gap-1 font-medium bg-gray-50 p-2.5 rounded-xl border border-line">
-                    <div>• admin@boardinghouse.vn / admin</div>
-                    <div>• manager.q1@boardinghouse.vn / manager</div>
-                    <div>• duc.pm@gmail.com / tenant</div>
-                  </div>
+              {error && (
+                <p className="mt-3 text-xs text-danger text-center font-medium">{error}</p>
+              )}
+
+              <Button type="submit" size="lg" loading={loading} className="w-full mt-6 rounded-2xl h-11">
+                Đăng nhập
+              </Button>
+
+              <div className="mt-6 text-center text-xs text-ink-muted">
+                Chưa có tài khoản?{' '}
+                <Link to="/register" className="text-primary font-semibold hover:underline">
+                  Đăng ký ngay
+                </Link>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-line text-[11px] text-ink-muted space-y-2">
+                <div className="font-bold text-ink uppercase tracking-wider text-[10px]">Tài khoản demo (password = role):</div>
+                <div className="grid grid-cols-1 gap-1 font-medium bg-gray-50 p-2.5 rounded-xl border border-line">
+                  <div>• admin@boardinghouse.vn / admin</div>
+                  <div>• manager.q1@boardinghouse.vn / manager</div>
+                  <div>• duc.pm@gmail.com / tenant</div>
                 </div>
-              </form>
-            ) : (
-              <form onSubmit={submitOtp}>
-                <div className="text-center mb-6">
-                  <h1 className="text-2xl font-bold text-ink">Xác thực OTP</h1>
-                  <p className="text-xs text-ink-muted mt-1">Mã xác thực đã được gửi qua email/SMS của bạn</p>
-                </div>
-
-                <div className="space-y-4">
-                  <Input
-                    label="Nhập mã OTP (6 chữ số)"
-                    type="text"
-                    required
-                    maxLength={6}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    placeholder="123456"
-                    className="text-center text-lg tracking-widest font-bold"
-                  />
-                  <p className="text-[11px] text-ink-muted text-center">
-                    Nhập mã demo <span className="font-bold text-primary">123456</span> để hoàn tất đăng nhập.
-                  </p>
-                </div>
-
-                {otpError && (
-                  <p className="mt-3 text-xs text-danger text-center font-medium">{otpError}</p>
-                )}
-
-                <Button type="submit" size="lg" loading={loading} className="w-full mt-6 rounded-2xl h-11">
-                  Xác nhận và Đăng nhập
-                </Button>
-
-                <button
-                  type="button"
-                  onClick={() => setStep('credentials')}
-                  className="w-full text-center text-xs text-ink-muted mt-4 hover:underline"
-                >
-                  Quay lại đăng nhập bằng mật khẩu
-                </button>
-              </form>
-            )}
+              </div>
+            </form>
           </div>
 
         </div>
@@ -163,3 +108,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
