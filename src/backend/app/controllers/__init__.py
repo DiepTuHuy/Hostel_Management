@@ -1,0 +1,7 @@
+from app.controllers.auth_controller import AuthController
+from app.controllers.property_controller import PropertyController
+from app.controllers.room_controller import RoomController
+from app.controllers.contract_controller import ContractController
+from app.controllers.invoice_controller import InvoiceController
+from app.controllers.notification_controller import NotificationController
+from app.controllers.user_controller import UserController

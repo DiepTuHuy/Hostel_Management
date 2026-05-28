@@ -1,0 +1,19 @@
+[
+  { "id": "r-101", "code": "101", "propertyId": "p-001", "floor": 1, "type": "studio", "area": 22, "price": 4000000, "amenities": ["WC riêng", "Wifi", "Máy lạnh"], "status": "occupied", "currentTenantId": "u-tnt-001", "photos": ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800"], "description": "Phòng studio thoáng mát, có ban công." },
+  { "id": "r-102", "code": "102", "propertyId": "p-001", "floor": 1, "type": "studio", "area": 20, "price": 3800000, "amenities": ["WC riêng", "Wifi"], "status": "vacant", "currentTenantId": null, "photos": ["https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800"], "description": "Phòng tiêu chuẩn, gần ngay cửa chính." },
+  { "id": "r-103", "code": "103", "propertyId": "p-001", "floor": 1, "type": "private", "area": 18, "price": 3500000, "amenities": ["WC chung", "Wifi"], "status": "deposit", "currentTenantId": null, "photos": ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800"], "description": "Phòng đơn cho 1 người." },
+  { "id": "r-201", "code": "201", "propertyId": "p-001", "floor": 2, "type": "studio", "area": 22, "price": 4000000, "amenities": ["WC riêng", "Wifi", "Máy lạnh"], "status": "occupied", "currentTenantId": "u-tnt-002", "photos": [], "description": "" },
+  { "id": "r-202", "code": "202", "propertyId": "p-001", "floor": 2, "type": "studio", "area": 24, "price": 4500000, "amenities": ["WC riêng", "Wifi", "Máy lạnh", "Gác"], "status": "occupied", "currentTenantId": "u-tnt-003", "photos": [], "description": "" },
+  { "id": "r-301", "code": "305", "propertyId": "p-001", "floor": 3, "type": "studio", "area": 22, "price": 4000000, "amenities": ["WC riêng", "Wifi", "Máy lạnh"], "status": "occupied", "currentTenantId": "u-tnt-001", "photos": [], "description": "" },
+
+  { "id": "r-q3-101", "code": "A101", "propertyId": "p-002", "floor": 1, "type": "studio", "area": 25, "price": 4500000, "amenities": ["WC riêng", "Wifi", "Máy lạnh"], "status": "vacant", "currentTenantId": null, "photos": ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800"], "description": "Phòng mới sửa, đầy đủ tiện nghi." },
+  { "id": "r-q3-102", "code": "A102", "propertyId": "p-002", "floor": 1, "type": "studio", "area": 22, "price": 4200000, "amenities": ["WC riêng", "Wifi"], "status": "occupied", "currentTenantId": null, "photos": [], "description": "" },
+  { "id": "r-q3-201", "code": "A201", "propertyId": "p-002", "floor": 2, "type": "private", "area": 18, "price": 3500000, "amenities": ["WC chung", "Wifi"], "status": "occupied", "currentTenantId": null, "photos": [], "description": "" },
+
+  { "id": "r-td-101", "code": "T101", "propertyId": "p-003", "floor": 1, "type": "studio", "area": 28, "price": 3800000, "amenities": ["WC riêng", "Wifi", "Máy lạnh", "Bếp"], "status": "vacant", "currentTenantId": null, "photos": ["https://images.unsplash.com/photo-1554995207-c18c203602cb?w=800"], "description": "Phòng rộng có bếp riêng, thích hợp cho 2 người." },
+  { "id": "r-td-102", "code": "T102", "propertyId": "p-003", "floor": 1, "type": "private", "area": 16, "price": 2800000, "amenities": ["WC chung", "Wifi"], "status": "vacant", "currentTenantId": null, "photos": [], "description": "" },
+  { "id": "r-td-201", "code": "T201", "propertyId": "p-003", "floor": 2, "type": "studio", "area": 24, "price": 3500000, "amenities": ["WC riêng", "Wifi", "Máy lạnh"], "status": "occupied", "currentTenantId": null, "photos": [], "description": "" },
+
+  { "id": "r-gv-101", "code": "G101", "propertyId": "p-004", "floor": 1, "type": "studio", "area": 20, "price": 3200000, "amenities": ["WC riêng", "Wifi"], "status": "vacant", "currentTenantId": null, "photos": [], "description": "" },
+  { "id": "r-gv-102", "code": "G102", "propertyId": "p-004", "floor": 1, "type": "studio", "area": 22, "price": 3400000, "amenities": ["WC riêng", "Wifi", "Máy lạnh"], "status": "occupied", "currentTenantId": null, "photos": [], "description": "" }
+]

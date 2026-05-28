@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chi tiết hóa đơn - Tenant Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#f1f0f9",
+                      "surface-tint": "#3456c2",
+                      "primary-fixed-dim": "#b6c4ff",
+                      "background": "#faf8ff",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb68b",
+                      "surface-container-highest": "#e2e1eb",
+                      "tertiary-container": "#a04b00",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#f4f2fc",
+                      "primary-container": "#3a5bc7",
+                      "on-tertiary-container": "#ffd9c4",
+                      "on-secondary-fixed-variant": "#3a456e",
+                      "primary-fixed": "#dce1ff",
+                      "surface": "#faf8ff",
+                      "outline": "#747684",
+                      "on-error-container": "#93000a",
+                      "on-surface": "#1a1b22",
+                      "on-secondary": "#ffffff",
+                      "tertiary": "#7c3800",
+                      "on-primary-fixed": "#001550",
+                      "outline-variant": "#c4c5d5",
+                      "on-tertiary-fixed-variant": "#743400",
+                      "secondary-fixed-dim": "#bac4f5",
+                      "on-primary-fixed-variant": "#133ca9",
+                      "on-background": "#1a1b22",
+                      "surface-dim": "#dad9e3",
+                      "on-primary-container": "#d9dfff",
+                      "surface-variant": "#e2e1eb",
+                      "surface-bright": "#faf8ff",
+                      "secondary": "#525c87",
+                      "surface-container": "#eeedf7",
+                      "on-tertiary-fixed": "#321300",
+                      "on-error": "#ffffff",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#c2cdfe",
+                      "inverse-surface": "#2f3037",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-container": "#4b5680",
+                      "secondary-fixed": "#dce1ff",
+                      "inverse-primary": "#b6c4ff",
+                      "on-surface-variant": "#444653",
+                      "surface-container-high": "#e8e7f1",
+                      "tertiary-fixed": "#ffdbc8",
+                      "on-secondary-fixed": "#0d1940",
+                      "primary": "#1b41ae"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-sm": "4px",
+                      "margin-mobile": "16px",
+                      "stack-md": "12px",
+                      "container-max": "1440px",
+                      "base": "8px",
+                      "margin-desktop": "32px",
+                      "stack-lg": "24px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-md-mobile": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "26px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md-mobile": [
+                              "14px",
+                              {
+                                      "lineHeight": "22px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased pb-24">
+<!-- TopAppBar Structure -->
+<header class="fixed top-0 w-full bg-surface shadow-sm z-50 flex justify-between items-center px-margin-mobile py-base">
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm-mobile text-on-surface">Chi tiết hóa đơn</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+</div>
+</header>
+<main class="pt-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto space-y-stack-lg">
+<!-- Tổng cộng tiền cực lớn -->
+<section class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-outline-variant/30 flex flex-col items-center justify-center text-center mt-4">
+<p class="font-body-md-mobile text-body-md-mobile text-on-surface-variant mb-2">Tổng số tiền cần thanh toán</p>
+<h2 class="font-display-lg text-display-lg text-primary tracking-tight">5.490.000đ</h2>
+<div class="mt-4 px-3 py-1 bg-error-container text-on-error-container rounded-full font-label-md text-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="error">error</span>
+                Chưa thanh toán
+            </div>
+</section>
+<!-- Thông tin hóa đơn -->
+<section class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-outline-variant/30">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-4 pb-2 border-b border-outline-variant/30">Thông tin hóa đơn</h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface-variant">Mã hóa đơn</span>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">HD-082023-102</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface-variant">Ngày lập</span>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">01/08/2023</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface-variant">Hạn thanh toán</span>
+<span class="font-body-md-mobile text-body-md-mobile text-error font-medium">05/08/2023</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface-variant">Phòng</span>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">P.302 - Tòa A</span>
+</div>
+</div>
+</section>
+<!-- Chi tiết chi phí -->
+<section class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-outline-variant/30">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-4 pb-2 border-b border-outline-variant/30">Chi tiết chi phí</h3>
+<div class="space-y-4">
+<!-- Tiền phòng -->
+<div class="flex justify-between items-center border-b border-outline-variant/10 pb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="bed">bed</span>
+</div>
+<div>
+<p class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">Tiền phòng</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Tháng 8/2023</p>
+</div>
+</div>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-semibold">4.500.000đ</span>
+</div>
+<!-- Điện -->
+<div class="flex justify-between items-center border-b border-outline-variant/10 pb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</div>
+<div>
+<p class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">Điện</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">150 kWh x 3.800đ</p>
+</div>
+</div>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-semibold">570.000đ</span>
+</div>
+<!-- Nước -->
+<div class="flex justify-between items-center border-b border-outline-variant/10 pb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-tint/10 flex items-center justify-center text-surface-tint">
+<span class="material-symbols-outlined" data-icon="water_drop">water_drop</span>
+</div>
+<div>
+<p class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">Nước</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">1 người</p>
+</div>
+</div>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-semibold">100.000đ</span>
+</div>
+<!-- Internet -->
+<div class="flex justify-between items-center border-b border-outline-variant/10 pb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-tint/10 flex items-center justify-center text-surface-tint">
+<span class="material-symbols-outlined" data-icon="wifi">wifi</span>
+</div>
+<div>
+<p class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">Internet</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Cáp quang</p>
+</div>
+</div>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-semibold">150.000đ</span>
+</div>
+<!-- Gửi xe -->
+<div class="flex justify-between items-center border-b border-outline-variant/10 pb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-tint/10 flex items-center justify-center text-surface-tint">
+<span class="material-symbols-outlined" data-icon="two_wheeler">two_wheeler</span>
+</div>
+<div>
+<p class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">Gửi xe</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">1 chiếc</p>
+</div>
+</div>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-semibold">120.000đ</span>
+</div>
+<!-- Vệ sinh -->
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-tint/10 flex items-center justify-center text-surface-tint">
+<span class="material-symbols-outlined" data-icon="cleaning_services">cleaning_services</span>
+</div>
+<div>
+<p class="font-body-md-mobile text-body-md-mobile text-on-surface font-medium">Vệ sinh</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Phí thu gom rác</p>
+</div>
+</div>
+<span class="font-body-md-mobile text-body-md-mobile text-on-surface font-semibold">50.000đ</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Action -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant p-margin-mobile pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40">
+<button class="w-full bg-primary text-on-primary font-title-lg text-title-lg py-3 rounded-lg hover:bg-surface-tint transition-colors active:scale-95 duration-150 flex justify-center items-center gap-2">
+            Thanh toán ngay
+            <span class="material-symbols-outlined" data-icon="payment">payment</span>
+</button>
+</div>
+</body></html>

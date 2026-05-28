@@ -1,0 +1,56 @@
+# Dependency directories
+node_modules/
+src/frontend/node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+src/frontend/dist/
+src/frontend/dist-ssr/
+
+# IDE and system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp files
+*.tmp
+*.log
+~$*.docx
+~$*.xlsx
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+src/frontend/.env
+src/frontend/.env.local
+src/frontend/.env.*.local
+
+# Python virtual environment
+.venv/
+src/backend/.venv/
+__pycache__/
+src/backend/__pycache__/
+src/backend/app/__pycache__/
+**/__pycache__/
+
+# Backend node_modules (seeder dùng JS)
+src/backend/node_modules/
+
+# Vite cache
+.vite/
+src/frontend/.vite/
+
+# Vite log files
+src/frontend/vite_stdout.log
+src/frontend/vite_stderr.log
+src/frontend/strip-comments.js
+src/frontend/start-vite.js
+
+# Walkthrough and scripts
+walkthrough.md
+start.sh
+BAO_CAO_DOI_CHIEU_DAC_TA_VS_HE_THONG.md

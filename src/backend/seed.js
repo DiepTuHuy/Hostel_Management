@@ -1,0 +1,714 @@
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+import { connectDB } from './db.js';
+import { User } from './models/User.js';
+import { Property } from './models/Property.js';
+import { RoomType } from './models/RoomType.js';
+import { Room } from './models/Room.js';
+import { Service } from './models/Service.js';
+import { Contract } from './models/Contract.js';
+import { Invoice } from './models/Invoice.js';
+import { Payment } from './models/Payment.js';
+import { Notification } from './models/Notification.js';
+import { Reading } from './models/Reading.js';
+
+dotenv.config();
+
+const HCMC_DISTRICTS_DATA = [
+  { name: "Quận 1", code: "Q1", streets: ["Nguyễn Huệ", "Lê Lợi", "Nguyễn Du", "Trần Hưng Đạo", "Bùi Viện", "Nguyễn Cư Trinh", "Mạc Đĩnh Chi", "Lê Thánh Tôn"] },
+  { name: "Quận 3", code: "Q3", streets: ["Võ Văn Tần", "Cách Mạng Tháng 8", "Điện Biên Phủ", "Nam Kỳ Khởi Nghĩa", "Lê Văn Sỹ", "Nguyễn Đình Chiểu", "Trần Quốc Thảo"] },
+  { name: "Quận 4", code: "Q4", streets: ["Hoàng Diệu", "Khánh Hội", "Bến Vân Đồn", "Tôn Đản", "Đoàn Văn Bơ", "Vĩnh Hội"] },
+  { name: "Quận 5", code: "Q5", streets: ["Trần Hưng Đạo", "An Dương Vương", "Nguyễn Trãi", "Hồng Bàng", "Lão Tử", "Hải Thượng Lãn Ông"] },
+  { name: "Quận 6", code: "Q6", streets: ["Hậu Giang", "Bình Phú", "Lê Quang Sung", "Minh Phụng", "An Dương Vương", "Kinh Dương Vương"] },
+  { name: "Quận 7", code: "Q7", streets: ["Nguyễn Văn Linh", "Huỳnh Tấn Phát", "Nguyễn Thị Thập", "Lâm Văn Bền", "Trần Xuân Soạn", "Lê Văn Lương"] },
+  { name: "Quận 8", code: "Q8", streets: ["Phạm Thế Hiển", "Tạ Quang Bửu", "Hưng Phú", "Dương Bá Trạc", "Cao Lỗ", "Liên Tỉnh 5"] },
+  { name: "Quận 10", code: "Q10", streets: ["Ba Tháng Hai", "Tô Hiến Thành", "Sư Vạn Hạnh", "Lý Thường Kiệt", "Thất Sơn", "Ngô Gia Tự", "Vĩnh Viễn"] },
+  { name: "Quận 11", code: "Q11", streets: ["Lãnh Binh Thăng", "Lê Đại Hành", "Hòa Bình", "Minh Phụng", "Đội Cung", "Tôn Thất Hiệp"] },
+  { name: "Quận 12", code: "Q12", streets: ["Trường Chinh", "Tô Ký", "Phan Văn Hớn", "Hà Huy Giáp", "Nguyễn Ảnh Thủ", "Lê Văn Khương"] },
+  { name: "Quận Bình Tân", code: "BTan", streets: ["Tên Lửa", "Kinh Dương Vương", "Mã Lò", "Lê Văn Quới", "Hồ Học Lãm", "Tỉnh Lộ 10"] },
+  { name: "Quận Bình Thạnh", code: "BThanh", streets: ["Xô Viết Nghệ Tĩnh", "Điện Biên Phủ", "Bạch Đằng", "Lê Quang Định", "Nơ Trang Long", "Phan Văn Trị", "D2"] },
+  { name: "Quận Gò Vấp", code: "GV", streets: ["Quang Trung", "Nguyễn Oanh", "Phan Văn Trị", "Lê Đức Thọ", "Phạm Văn Chiêu", "Thống Nhất"] },
+  { name: "Quận Phú Nhuận", code: "PN", streets: ["Phan Xích Long", "Nguyễn Văn Trỗi", "Huỳnh Văn Bánh", "Lê Văn Sỹ", "Thích Quảng Đức", "Phan Đăng Lưu"] },
+  { name: "Quận Tân Bình", code: "TB", streets: ["Cộng Hòa", "Trường Chinh", "Hoàng Văn Thụ", "Út Tịch", "Phổ Quang", "Bạch Đằng", "Âu Cơ"] },
+  { name: "Quận Tân Phú", code: "TP", streets: ["Lũy Bán Bích", "Tân Sơn Nhì", "Độc Lập", "Hòa Bình", "Thoại Ngọc Hầu", "Tây Thạnh"] },
+  { name: "Thành phố Thủ Đức", code: "TD", streets: ["Võ Văn Ngân", "Xa Lộ Hà Nội", "Lê Văn Việt", "Kha Vạn Cân", "Đỗ Xuân Hợp", "Phạm Văn Đồng", "Hiệp Bình"] },
+  { name: "Huyện Bình Chánh", code: "BChanh", streets: ["Quốc Lộ 1A", "Nguyễn Văn Linh", "Trần Đại Nghĩa", "Trung Sơn", "Phạm Hùng"] },
+  { name: "Huyện Cần Giờ", code: "CG", streets: ["Duyên Hải", "Rừng Sác", "Tắc Xuất", "Thạnh Thới"] },
+  { name: "Huyện Củ Chi", code: "CC", streets: ["Tỉnh Lộ 8", "Quốc Lộ 22", "Nguyễn Văn Khạ", "Liêu Bình Hương"] },
+  { name: "Huyện Hóc Môn", code: "HM", streets: ["Tô Ký", "Lý Thường Kiệt", "Quốc Lộ 22", "Nguyễn Ảnh Thủ", "Lê Thị Hà"] },
+  { name: "Huyện Nhà Bè", code: "NB", streets: ["Huỳnh Tấn Phát", "Nguyễn Hữu Thọ", "Lê Văn Lương", "Phạm Hữu Lầu"] }
+];
+
+const mockUsers = [
+  {
+    hoTen: "Nguyễn Văn An",
+    email: "admin@boardinghouse.vn",
+    password: "admin",
+    sdt: "0901111111",
+    vaiTro: "admin",
+    trangThai: "active"
+  },
+  {
+    hoTen: "Trần Thị Bích",
+    email: "manager.q1@boardinghouse.vn",
+    password: "manager",
+    sdt: "0902222222",
+    vaiTro: "manager",
+    trangThai: "active"
+  },
+  {
+    hoTen: "Lê Hoàng Cường",
+    email: "manager.q3@boardinghouse.vn",
+    password: "manager",
+    sdt: "0903333333",
+    vaiTro: "manager",
+    trangThai: "active"
+  },
+  {
+    hoTen: "Phạm Minh Đức",
+    email: "duc.pm@gmail.com",
+    password: "tenant",
+    sdt: "0904444444",
+    vaiTro: "tenant",
+    trangThai: "active",
+    thongTinKhachThue: {
+      cccd: "079096001234",
+      ngheNghiep: "Lập trình viên",
+      diaChiThuongTru: "123 Đường 3/2, Quận 10, TP.HCM"
+    }
+  },
+  {
+    hoTen: "Hoàng Thuỳ Linh",
+    email: "linh.ht@gmail.com",
+    password: "tenant",
+    sdt: "0905555555",
+    vaiTro: "tenant",
+    trangThai: "active",
+    thongTinKhachThue: {
+      cccd: "079096005678",
+      ngheNghiep: "Sinh viên",
+      diaChiThuongTru: "456 Lê Lợi, TP. Huế"
+    }
+  },
+  {
+    hoTen: "Vũ Quang Huy",
+    email: "huy.vq@gmail.com",
+    password: "tenant",
+    sdt: "0906666666",
+    vaiTro: "tenant",
+    trangThai: "active",
+    thongTinKhachThue: {
+      cccd: "079096009999",
+      ngheNghiep: "Kinh doanh tự do",
+      diaChiThuongTru: "789 Quốc Lộ 1A, Biên Hòa, Đồng Nai"
+    }
+  },
+  // Kịch bản Trả muộn (Late Payment)
+  {
+    hoTen: "Trần Văn Muộn",
+    email: "tramuon@gmail.com",
+    password: "tenant",
+    sdt: "0907777777",
+    vaiTro: "tenant",
+    trangThai: "active",
+    thongTinKhachThue: {
+      cccd: "079096001111",
+      ngheNghiep: "Nhân viên văn phòng",
+      diaChiThuongTru: "12 Lũy Bán Bích, Quận Tân Phú, TP.HCM"
+    }
+  },
+  // Kịch bản Gọi dịch vụ sửa chữa (Requesting Repair Service)
+  {
+    hoTen: "Nguyễn Văn Sửa",
+    email: "suachua@gmail.com",
+    password: "tenant",
+    sdt: "0908888888",
+    vaiTro: "tenant",
+    trangThai: "active",
+    thongTinKhachThue: {
+      cccd: "079096002222",
+      ngheNghiep: "Kỹ sư cơ khí",
+      diaChiThuongTru: "34 Nguyễn Hữu Thọ, Huyện Nhà Bè, TP.HCM"
+    }
+  },
+  // Kịch bản Hợp đồng đã kết thúc / Trả phòng (Terminated/Left Tenant)
+  {
+    hoTen: "Lê Văn Hủy",
+    email: "dahuy@gmail.com",
+    password: "tenant",
+    sdt: "0909999999",
+    vaiTro: "tenant",
+    trangThai: "active",
+    thongTinKhachThue: {
+      cccd: "079096003333",
+      ngheNghiep: "Lao động tự do",
+      diaChiThuongTru: "56 Cộng Hòa, Quận Tân Bình, TP.HCM"
+    }
+  },
+  // Kịch bản Đặt cọc giữ phòng, chưa ký hợp đồng chính thức (Deposit/Draft Contract)
+  {
+    hoTen: "Phạm Thị Cọc",
+    email: "dactn@gmail.com",
+    password: "tenant",
+    sdt: "0901234567",
+    vaiTro: "tenant",
+    trangThai: "active",
+    thongTinKhachThue: {
+      cccd: "079096004444",
+      ngheNghiep: "Kế toán trưởng",
+      diaChiThuongTru: "78 Võ Văn Tần, Quận 3, TP.HCM"
+    }
+  }
+];
+
+const seedDatabase = async () => {
+  try {
+    // Đảm bảo cấu hình DNS Google để kết nối Atlas thành công trên Windows
+    const dns = await import('dns');
+    dns.setServers(['8.8.8.8', '8.8.4.4']);
+
+    await connectDB();
+
+    console.log("Cleaning existing database collections...");
+    await User.deleteMany({});
+    await Property.deleteMany({});
+    await RoomType.deleteMany({});
+    await Room.deleteMany({});
+    await Service.deleteMany({});
+    await Contract.deleteMany({});
+    await Invoice.deleteMany({});
+    await Payment.deleteMany({});
+    await Notification.deleteMany({});
+    await Reading.deleteMany({});
+    console.log("Database cleared successfully!");
+
+    console.log("Dropping obsolete indexes...");
+    try { await User.collection.dropIndexes(); } catch (e) {}
+    try { await Property.collection.dropIndexes(); } catch (e) {}
+    try { await RoomType.collection.dropIndexes(); } catch (e) {}
+    try { await Room.collection.dropIndexes(); } catch (e) {}
+    try { await Service.collection.dropIndexes(); } catch (e) {}
+    try { await Contract.collection.dropIndexes(); } catch (e) {}
+    try { await Invoice.collection.dropIndexes(); } catch (e) {}
+    try { await Payment.collection.dropIndexes(); } catch (e) {}
+    try { await Notification.collection.dropIndexes(); } catch (e) {}
+    try { await Reading.collection.dropIndexes(); } catch (e) {}
+    console.log("Obsolete indexes dropped successfully!");
+
+    // 1. Seed Users (with secure hashing)
+    console.log("Seeding users...");
+    const seededUsers = [];
+    for (const u of mockUsers) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(u.password, salt);
+      const newUser = await User.create({
+        hoTen: u.hoTen,
+        email: u.email,
+        matKhau: hashedPassword,
+        sdt: u.sdt,
+        vaiTro: u.vaiTro,
+        trangThai: u.trangThai,
+        thongTinKhachThue: u.thongTinKhachThue
+      });
+      seededUsers.push(newUser);
+    }
+    console.log(`Successfully seeded ${seededUsers.length} users.`);
+
+    const adminUser = seededUsers.find(u => u.vaiTro === 'admin');
+    const managerQ1 = seededUsers.find(u => u.email === 'manager.q1@boardinghouse.vn');
+    const managerQ3 = seededUsers.find(u => u.email === 'manager.q3@boardinghouse.vn');
+    
+    const tenantNormal1 = seededUsers.find(u => u.email === 'duc.pm@gmail.com');
+    const tenantNormal2 = seededUsers.find(u => u.email === 'huy.vq@gmail.com');
+    const tenantNormal3 = seededUsers.find(u => u.email === 'linh.ht@gmail.com');
+    const tenantLate = seededUsers.find(u => u.email === 'tramuon@gmail.com');
+    const tenantRepair = seededUsers.find(u => u.email === 'suachua@gmail.com');
+    const tenantLeft = seededUsers.find(u => u.email === 'dahuy@gmail.com');
+    const tenantDeposit = seededUsers.find(u => u.email === 'dactn@gmail.com');
+
+    // 2. Seed 220 Properties (10 per district in HCMC)
+    console.log("Seeding 220 hostel facilities (10 per HCMC district)...");
+    const seededProperties = [];
+    let branchCounter = 0;
+
+    for (const dist of HCMC_DISTRICTS_DATA) {
+      for (let i = 1; i <= 10; i++) {
+        branchCounter++;
+        const street = dist.streets[(i - 1) % dist.streets.length];
+        const addressNo = i * 15 + (i % 3);
+        const address = `${addressNo} ${street}, Phường ${i + 1}`;
+        const codeSuffix = i < 10 ? `0${i}` : `${i}`;
+        const code = `NT-${dist.code}-${codeSuffix}`;
+        const name = `Nhà trọ ${dist.name} — Cơ sở ${codeSuffix}`;
+        
+        let assignedManagers = [];
+        if (dist.code === 'Q1' && i === 1) {
+          assignedManagers = [managerQ1._id];
+        } else if (dist.code === 'Q3' && i === 1) {
+          assignedManagers = [managerQ3._id];
+        }
+
+        const prop = await Property.create({
+          maNhaTro: code,
+          tenNhaTro: name,
+          diaChi: address,
+          quanHuyen: dist.name,
+          thanhPho: "TP. Hồ Chí Minh",
+          hinhAnh: `https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&sig=${branchCounter}`,
+          tongSoPhong: 20,
+          soPhongDaThue: (dist.code === 'Q1' && i === 1) ? 5 : 0,
+          maQuanLyIds: assignedManagers,
+          maChuTroId: adminUser._id,
+          trangThai: "active"
+        });
+
+        if (dist.code === 'Q1' && i === 1) {
+          await User.findByIdAndUpdate(managerQ1._id, { $push: { maNhaTroIds: prop._id } });
+        } else if (dist.code === 'Q3' && i === 1) {
+          await User.findByIdAndUpdate(managerQ3._id, { $push: { maNhaTroIds: prop._id } });
+        }
+
+        seededProperties.push(prop);
+      }
+    }
+    console.log(`Successfully seeded ${seededProperties.length} facilities across HCMC.`);
+
+    // 3. Seed RoomTypes and Rooms for the FIRST property in EACH district (22 properties)
+    console.log("Seeding room types and rooms for 22 representative properties (1 per district)...");
+
+    const ROOM_TYPE_TEMPLATES = [
+      { name: "Phòng đơn Standard", area: 18, basePrice: 3500000, amenities: ["Máy lạnh", "Gác lửng", "Kệ bếp"] },
+      { name: "Phòng đôi Studio", area: 25, basePrice: 5000000, amenities: ["Máy lạnh", "Tủ lạnh", "Gác lửng", "Tủ quần áo", "Máy giặt chung"] },
+      { name: "Phòng ký túc xá", area: 12, basePrice: 1800000, amenities: ["Quạt trần", "WC chung"] },
+      { name: "Phòng VIP có ban công", area: 30, basePrice: 6500000, amenities: ["Máy lạnh", "Tủ lạnh", "Máy giặt riêng", "Ban công", "WC riêng", "Wifi"] },
+      { name: "Phòng đơn cao cấp", area: 20, basePrice: 4200000, amenities: ["Máy lạnh", "WC riêng", "Wifi", "Kệ bếp"] },
+      { name: "Phòng đôi tiết kiệm", area: 22, basePrice: 3800000, amenities: ["Quạt trần", "Gác lửng", "WC riêng"] },
+      { name: "Phòng Penthouse", area: 35, basePrice: 7500000, amenities: ["Máy lạnh", "Tủ lạnh", "Máy giặt riêng", "Ban công", "WC riêng", "Wifi", "Bếp", "Gác"] },
+    ];
+
+    const DISTRICT_PRICE_MULTIPLIER = {
+      "Q1": 1.5, "Q3": 1.35, "Q4": 0.9, "Q5": 1.0, "Q6": 0.85, "Q7": 1.2,
+      "Q8": 0.8, "Q10": 1.1, "Q11": 0.9, "Q12": 0.75, "BTan": 0.7,
+      "BThanh": 1.15, "GV": 0.95, "PN": 1.25, "TB": 1.05, "TP": 0.85,
+      "TD": 1.1, "BChanh": 0.65, "CG": 0.55, "CC": 0.6, "HM": 0.7, "NB": 0.75
+    };
+
+    const UNSPLASH_ROOM_PHOTOS = [
+      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=500',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500',
+      'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=500',
+      'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500',
+      'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=500',
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500',
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500',
+    ];
+
+    let totalRoomsSeeded = 0;
+    const allSeededRooms = [];
+    const allSeededRoomTypes = {};
+
+    const servicesToCreate = [];
+    const roomTypesToCreate = [];
+    const roomsToCreate = [];
+    const propertyUpdates = [];
+
+    for (const dist of HCMC_DISTRICTS_DATA) {
+      const districtProps = seededProperties.filter(p => p.quanHuyen === dist.name);
+      
+      for (let i = 1; i <= 10; i++) {
+        const propCode = `NT-${dist.code}-${i < 10 ? '0' : ''}${i}`;
+        const prop = districtProps.find(p => p.maNhaTro === propCode);
+        if (!prop) continue;
+
+        const isPrimary = (i === 1);
+        const multiplier = (DISTRICT_PRICE_MULTIPLIER[dist.code] || 1.0) * (1.0 + (i - 1) * 0.04);
+
+        const serviceIds = {
+          electric: new mongoose.Types.ObjectId(),
+          water: new mongoose.Types.ObjectId(),
+          internet: new mongoose.Types.ObjectId(),
+          trash: new mongoose.Types.ObjectId(),
+        };
+
+        servicesToCreate.push(
+          { _id: serviceIds.electric, maNhaTroId: prop._id, tenDichVu: "Điện", donVi: "kWh", donGia: 3500 + (i % 3) * 100, loaiTinh: "metered" },
+          { _id: serviceIds.water, maNhaTroId: prop._id, tenDichVu: "Nước", donVi: "m3", donGia: 15000 + (i % 2) * 1000, loaiTinh: "metered" },
+          { _id: serviceIds.internet, maNhaTroId: prop._id, tenDichVu: "Internet", donVi: "phòng", donGia: 100000, loaiTinh: "fixed" },
+          { _id: serviceIds.trash, maNhaTroId: prop._id, tenDichVu: "Vệ sinh", donVi: "người", donGia: 30000 + (i % 3) * 5000, loaiTinh: "fixed" }
+        );
+
+        const numTypes = isPrimary ? (2 + (dist.code.length % 2)) : 2;
+        const typeIndices = [];
+        for (let t = 0; t < numTypes; t++) {
+          typeIndices.push((HCMC_DISTRICTS_DATA.indexOf(dist) * 3 + t + i) % ROOM_TYPE_TEMPLATES.length);
+        }
+
+        const propRoomTypes = [];
+        for (const idx of typeIndices) {
+          const tmpl = ROOM_TYPE_TEMPLATES[idx];
+          const adjustedPrice = Math.round(tmpl.basePrice * multiplier / 100000) * 100000;
+          const rtId = new mongoose.Types.ObjectId();
+          
+          roomTypesToCreate.push({
+            _id: rtId,
+            maNhaTroId: prop._id,
+            tenLoai: `${tmpl.name}`,
+            dienTich: tmpl.area,
+            giaCoBan: adjustedPrice,
+            tienNghi: tmpl.amenities
+          });
+          propRoomTypes.push({ _id: rtId, basePrice: adjustedPrice, area: tmpl.area, name: tmpl.name });
+        }
+        allSeededRoomTypes[prop._id.toString()] = propRoomTypes;
+
+        let numRooms = 3;
+        if (isPrimary) {
+          numRooms = dist.code === 'Q1' ? 20 : (5 + (HCMC_DISTRICTS_DATA.indexOf(dist) % 6));
+        } else {
+          numRooms = 3 + ((HCMC_DISTRICTS_DATA.indexOf(dist) + i) % 3);
+        }
+        
+        let occupiedCount = 0;
+        let roomsCreatedCount = 0;
+
+        const maxFloor = isPrimary ? 4 : 2;
+        const roomsPerFloor = (isPrimary && dist.code === 'Q1') ? 6 : (isPrimary ? 5 : 3);
+
+        for (let floor = 1; floor <= maxFloor; floor++) {
+          if (roomsCreatedCount >= numRooms) break;
+          for (let r = 1; r <= roomsPerFloor; r++) {
+            if (roomsCreatedCount >= numRooms) break;
+            
+            const roomNumber = `${floor}0${r}`;
+            const roomType = propRoomTypes[(floor + r) % propRoomTypes.length];
+
+            let status = 'empty';
+            if (isPrimary && dist.code === 'Q1') {
+              if (roomNumber === '101') status = 'rented';
+              else if (roomNumber === '102') status = 'deposit';
+              else if (roomNumber === '103') status = 'rented';
+              else if (roomNumber === '104') status = 'rented';
+              else if (roomNumber === '105') status = 'maintenance';
+              else status = 'empty';
+            } else if (isPrimary) {
+              const roomIdx = roomsCreatedCount + 1;
+              if (roomIdx <= 2) status = 'rented';
+              else if (roomIdx === 3) status = 'deposit';
+              else if (roomIdx === numRooms) status = 'maintenance';
+              else status = 'empty';
+            } else {
+              const roomIdx = roomsCreatedCount + 1;
+              if (roomIdx === 1) status = 'rented';
+              else if (roomIdx === 2) status = 'deposit';
+              else status = 'empty';
+            }
+
+            if (status === 'rented') occupiedCount++;
+
+            const photoIdx = (HCMC_DISTRICTS_DATA.indexOf(dist) + floor + r + i) % UNSPLASH_ROOM_PHOTOS.length;
+
+            roomsToCreate.push({
+              maNhaTroId: prop._id,
+              maLoaiPhongId: roomType._id,
+              soPhong: roomNumber,
+              tang: floor,
+              giaThueHienTai: roomType.basePrice,
+              giaThue: roomType.basePrice,
+              dienTich: roomType.area,
+              maPhong: `${prop.maNhaTro}-${roomNumber}`,
+              trangThai: status,
+              hinhAnh: [UNSPLASH_ROOM_PHOTOS[photoIdx], UNSPLASH_ROOM_PHOTOS[(photoIdx + 1) % UNSPLASH_ROOM_PHOTOS.length]],
+              taiSan: [
+                { tenTaiSan: "Máy lạnh Daikin 1.5 HP", giaTri: 8000000, tinhTrang: status === 'maintenance' ? "Hỏng" : "Tốt" },
+                { tenTaiSan: "Công tơ điện tử", giaTri: 500000, tinhTrang: "Tốt" },
+              ]
+            });
+            
+            roomsCreatedCount++;
+            totalRoomsSeeded++;
+          }
+        }
+
+        propertyUpdates.push({
+          id: prop._id,
+          totalRooms: numRooms,
+          occupiedRooms: occupiedCount
+        });
+      }
+    }
+
+    console.log(`Inserting ${servicesToCreate.length} Services in bulk...`);
+    await Service.insertMany(servicesToCreate);
+
+    console.log(`Inserting ${roomTypesToCreate.length} RoomTypes in bulk...`);
+    await RoomType.insertMany(roomTypesToCreate);
+
+    console.log(`Inserting ${roomsToCreate.length} Rooms in bulk...`);
+    const seededRoomsResult = await Room.insertMany(roomsToCreate);
+    allSeededRooms.push(...seededRoomsResult);
+
+    console.log(`Updating ${propertyUpdates.length} Properties in database...`);
+    for (const update of propertyUpdates) {
+      await Property.findByIdAndUpdate(update.id, { tongSoPhong: update.totalRooms, soPhongDaThue: update.occupiedRooms });
+    }
+
+    console.log(`Successfully seeded ${totalRoomsSeeded} rooms across all ${seededProperties.length} hostel facilities!`);
+
+    const primaryProp = seededProperties.find(p => p.maNhaTro === 'NT-Q1-01');
+    if (primaryProp) {
+      console.log(`Setting up scenario contracts & invoices for primary property: ${primaryProp.tenNhaTro}...`);
+      
+      const electricService = await Service.findOne({ maNhaTroId: primaryProp._id, tenDichVu: "Điện" });
+      const waterService = await Service.findOne({ maNhaTroId: primaryProp._id, tenDichVu: "Nước" });
+      const internetService = await Service.findOne({ maNhaTroId: primaryProp._id, tenDichVu: "Internet" });
+      const trashService = await Service.findOne({ maNhaTroId: primaryProp._id, tenDichVu: "Vệ sinh" });
+
+      const seededRooms = await Room.find({ maNhaTroId: primaryProp._id }).sort({ soPhong: 1 });
+      console.log(`Found ${seededRooms.length} existing rooms for ${primaryProp.tenNhaTro} to assign scenario data.`);
+
+      // SCENARIO 1: Normal Active Tenant 1 (Room 101 - Phạm Minh Đức)
+      const room101 = seededRooms.find(r => r.soPhong === '101');
+      if (room101 && tenantNormal1) {
+        const contract = await Contract.create({
+          maPhongId: room101._id,
+          maKhachThueIds: [tenantNormal1._id],
+          ngayBatDau: new Date("2026-02-01"),
+          ngayKetThuc: new Date("2027-02-01"),
+          tienCoc: room101.giaThueHienTai * 2,
+          trangThai: "active",
+          duongDanPdf: "/contracts/NT-Q1-01-101-signed.pdf"
+        });
+
+        await Reading.create({ maPhongId: room101._id, maDichVuId: electricService._id, kyThanhToan: "2026-05", chiSoCu: 1000, chiSoMoi: 1150, tieuThu: 150 });
+        await Reading.create({ maPhongId: room101._id, maDichVuId: waterService._id, kyThanhToan: "2026-05", chiSoCu: 50, chiSoMoi: 60, tieuThu: 10 });
+
+        const rentAmount = room101.giaThueHienTai;
+        const total = rentAmount + (150 * electricService.donGia) + (10 * waterService.donGia) + internetService.donGia + trashService.donGia;
+        const deadline = new Date();
+        deadline.setDate(deadline.getDate() + 10);
+
+        await Invoice.create({
+          maHopDongId: contract._id,
+          maPhongId: room101._id,
+          kyThanhToan: "2026-05",
+          tongTien: total,
+          hanThanhToan: deadline,
+          trangThai: "pending",
+          chiTiet: [
+            { maDichVuId: null, tenDichVu: "Tiền phòng tháng 05/2026", soLuong: 1, donGia: rentAmount, thanhTien: rentAmount },
+            { maDichVuId: electricService._id, tenDichVu: "Tiền Điện", soLuong: 150, donGia: electricService.donGia, thanhTien: 150 * electricService.donGia },
+            { maDichVuId: waterService._id, tenDichVu: "Tiền Nước", soLuong: 10, donGia: waterService.donGia, thanhTien: 10 * waterService.donGia },
+            { maDichVuId: internetService._id, tenDichVu: "Internet cố định", soLuong: 1, donGia: internetService.donGia, thanhTien: internetService.donGia },
+            { maDichVuId: trashService._id, tenDichVu: "Phí vệ sinh", soLuong: 1, donGia: trashService.donGia, thanhTien: trashService.donGia }
+          ]
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantNormal1._id,
+          tieuDe: "Thông báo hoá đơn tháng 05/2026",
+          noiDung: `Hệ thống đã phát hành hoá đơn tháng 05/2026 trị giá ${total.toLocaleString('vi-VN')}đ cho phòng 101. Hạn thanh toán: ${deadline.toLocaleDateString('vi-VN')}.`,
+          kenh: "push",
+          daDoc: false
+        });
+      }
+
+      // SCENARIO 2: Deposit / Draft Contract (Room 102 - Phạm Thị Cọc)
+      const room102 = seededRooms.find(r => r.soPhong === '102');
+      if (room102 && tenantDeposit) {
+        await Contract.create({
+          maPhongId: room102._id,
+          maKhachThueIds: [tenantDeposit._id],
+          ngayBatDau: new Date("2026-06-01"),
+          ngayKetThuc: new Date("2027-06-01"),
+          tienCoc: room102.giaThueHienTai * 1.5,
+          trangThai: "draft",
+          duongDanPdf: "/contracts/NT-Q1-01-102-draft.pdf"
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantDeposit._id,
+          tieuDe: "Lời mời ký kết hợp đồng điện tử",
+          noiDung: "Yêu cầu đặt cọc phòng 102 của bạn đã được phê duyệt. Vui lòng xem và ký duyệt hợp đồng điện tử dự thảo trước ngày 28/05/2026.",
+          kenh: "push",
+          daDoc: false
+        });
+      }
+
+      // SCENARIO 3: Normal Active Tenant 2 (Room 103 - Vũ Quang Huy)
+      const room103 = seededRooms.find(r => r.soPhong === '103');
+      if (room103 && tenantNormal2) {
+        const contract = await Contract.create({
+          maPhongId: room103._id,
+          maKhachThueIds: [tenantNormal2._id],
+          ngayBatDau: new Date("2026-01-15"),
+          ngayKetThuc: new Date("2027-01-15"),
+          tienCoc: room103.giaThueHienTai * 2,
+          trangThai: "active",
+          duongDanPdf: "/contracts/NT-Q1-01-103-signed.pdf"
+        });
+
+        const rentAmount = room103.giaThueHienTai;
+        const total = rentAmount + internetService.donGia + trashService.donGia;
+        const paidInvoice = await Invoice.create({
+          maHopDongId: contract._id,
+          maPhongId: room103._id,
+          kyThanhToan: "2026-05",
+          tongTien: total,
+          hanThanhToan: new Date(),
+          trangThai: "paid",
+          chiTiet: [
+            { maDichVuId: null, tenDichVu: "Tiền phòng tháng 05/2026", soLuong: 1, donGia: rentAmount, thanhTien: rentAmount },
+            { maDichVuId: internetService._id, tenDichVu: "Internet cố định", soLuong: 1, donGia: internetService.donGia, thanhTien: internetService.donGia },
+            { maDichVuId: trashService._id, tenDichVu: "Phí vệ sinh", soLuong: 1, donGia: trashService.donGia, thanhTien: trashService.donGia }
+          ]
+        });
+
+        await Payment.create({
+          maHoaDonId: paidInvoice._id,
+          phuongThuc: "vnpay",
+          soTien: total,
+          trangThai: "success"
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantNormal2._id,
+          tieuDe: "Xác nhận thanh toán thành công",
+          noiDung: `Hóa đơn phòng 103 trị giá ${total.toLocaleString('vi-VN')}đ đã thanh toán thành công qua cổng VNPay. Xin cảm ơn quý khách!`,
+          kenh: "push",
+          daDoc: true
+        });
+      }
+
+      // SCENARIO 4: Late Payment / Overdue Invoice (Room 104 - Trần Văn Muộn)
+      const room104 = seededRooms.find(r => r.soPhong === '104');
+      if (room104 && tenantLate) {
+        const contract = await Contract.create({
+          maPhongId: room104._id,
+          maKhachThueIds: [tenantLate._id],
+          ngayBatDau: new Date("2025-10-01"),
+          ngayKetThuc: new Date("2026-10-01"),
+          tienCoc: room104.giaThueHienTai * 2,
+          trangThai: "active",
+          duongDanPdf: "/contracts/NT-Q1-01-104-signed.pdf"
+        });
+
+        await Reading.create({ maPhongId: room104._id, maDichVuId: electricService._id, kyThanhToan: "2026-05", chiSoCu: 1520, chiSoMoi: 1720, tieuThu: 200 });
+        await Reading.create({ maPhongId: room104._id, maDichVuId: waterService._id, kyThanhToan: "2026-05", chiSoCu: 80, chiSoMoi: 95, tieuThu: 15 });
+
+        const rentAmount = room104.giaThueHienTai;
+        const electricCost = 200 * electricService.donGia;
+        const waterCost = 15 * waterService.donGia;
+        const total = rentAmount + electricCost + waterCost + internetService.donGia + trashService.donGia;
+        
+        const overdueDeadline = new Date();
+        overdueDeadline.setDate(overdueDeadline.getDate() - 17);
+
+        await Invoice.create({
+          maHopDongId: contract._id,
+          maPhongId: room104._id,
+          kyThanhToan: "2026-05",
+          tongTien: total,
+          hanThanhToan: overdueDeadline,
+          trangThai: "overdue",
+          chiTiet: [
+            { maDichVuId: null, tenDichVu: "Tiền phòng tháng 05/2026", soLuong: 1, donGia: rentAmount, thanhTien: rentAmount },
+            { maDichVuId: electricService._id, tenDichVu: "Tiền Điện (chỉ số 1520 -> 1720)", soLuong: 200, donGia: electricService.donGia, thanhTien: electricCost },
+            { maDichVuId: waterService._id, tenDichVu: "Tiền Nước (chỉ số 80 -> 95)", soLuong: 15, donGia: waterService.donGia, thanhTien: waterCost },
+            { maDichVuId: internetService._id, tenDichVu: "Internet cố định", soLuong: 1, donGia: internetService.donGia, thanhTien: internetService.donGia },
+            { maDichVuId: trashService._id, tenDichVu: "Phí vệ sinh", soLuong: 1, donGia: trashService.donGia, thanhTien: trashService.donGia }
+          ]
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantLate._id,
+          tieuDe: "CẢNH BÁO QUÁ HẠN THANH TOÁN (Trễ 17 ngày)",
+          noiDung: `Hóa đơn phòng 104 trị giá ${total.toLocaleString('vi-VN')}đ đã quá hạn 17 ngày (Hạn chót: ${overdueDeadline.toLocaleDateString('vi-VN')}). Vui lòng thanh toán ngay để tránh bị phạt tiền và khóa cổng ra vào tự động.`,
+          kenh: "push",
+          daDoc: false
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantLate._id,
+          tieuDe: "Nhắc nhở đóng tiền trọ lần 2",
+          noiDung: "Yêu cầu thanh toán tiền thuê trọ kỳ tháng 05/2026. Nếu có khó khăn đột xuất, vui lòng liên hệ trực tiếp với quản lý cơ sở để được hỗ trợ giãn hạn.",
+          kenh: "email",
+          daDoc: false
+        });
+      }
+
+      // SCENARIO 5: Repair Service / Maintenance Request (Room 105 - Nguyễn Văn Sửa)
+      const room105 = seededRooms.find(r => r.soPhong === '105');
+      if (room105 && tenantRepair) {
+        await Contract.create({
+          maPhongId: room105._id,
+          maKhachThueIds: [tenantRepair._id],
+          ngayBatDau: new Date("2026-03-01"),
+          ngayKetThuc: new Date("2027-03-01"),
+          tienCoc: room105.giaThueHienTai * 2,
+          trangThai: "active",
+          duongDanPdf: "/contracts/NT-Q1-01-105-signed.pdf"
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantRepair._id,
+          tieuDe: "Báo cáo sự cố sửa chữa đã tiếp nhận",
+          noiDung: "Yêu cầu gọi thợ sửa máy lạnh Daikin (bị lỗi không lạnh) tại phòng 105 của bạn đã được quản lý tiếp nhận thành công.",
+          kenh: "push",
+          daDoc: true
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantRepair._id,
+          tieuDe: "Đặt lịch hẹn kỹ thuật sửa chữa",
+          noiDung: "Lịch sửa chữa điều hòa phòng 105 đã được đặt: Kỹ thuật viên Nguyễn Văn Bình sẽ đến kiểm tra và xử lý lúc 09:00 sáng mai (23/05/2026). Điện thoại liên hệ: 0912345678.",
+          kenh: "push",
+          daDoc: false
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantRepair._id,
+          tieuDe: "Nhắc lịch bảo trì thiết bị phòng",
+          noiDung: "Vui lòng chuẩn bị người ở phòng hoặc bàn giao chìa khóa cho quản lý trước thời điểm thợ đến kiểm tra sửa chữa điều hòa.",
+          kenh: "zalo",
+          daDoc: false
+        });
+      }
+
+      // SCENARIO 6: Terminated Contract / Left Tenant (Room 106 - Lê Văn Hủy)
+      const room106 = seededRooms.find(r => r.soPhong === '106');
+      if (room106 && tenantLeft) {
+        await Contract.create({
+          maPhongId: room106._id,
+          maKhachThueIds: [tenantLeft._id],
+          ngayBatDau: new Date("2025-01-01"),
+          ngayKetThuc: new Date("2026-01-01"),
+          tienCoc: room106.giaThueHienTai * 2,
+          trangThai: "terminated",
+          duongDanPdf: "/contracts/NT-Q1-01-106-terminated.pdf"
+        });
+
+        await Notification.create({
+          maNguoiDungId: tenantLeft._id,
+          tieuDe: "Biên bản thanh lý hợp đồng & trả cọc",
+          noiDung: "Hợp đồng phòng 106 đã được thanh lý hoàn tất vào ngày 01/01/2026. Số tiền đặt cọc đã được khấu trừ dịch vụ cuối cùng và hoàn trả đầy đủ cho bạn.",
+          kenh: "push",
+          daDoc: true
+        });
+      }
+    }
+
+    console.log("\nDatabase seeding completed successfully!");
+    mongoose.connection.close();
+    console.log("Database connection closed cleanly.");
+    process.exit(0);
+  } catch (error) {
+    console.error("Database seeding failed:", error.message);
+    mongoose.connection?.close();
+    process.exit(1);
+  }
+};
+
+// Khởi chạy seeding
+seedDatabase();

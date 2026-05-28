@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quản lý tài sản phòng</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#3456c2",
+                      "background": "#faf8ff",
+                      "surface-container-high": "#e8e7f1",
+                      "on-tertiary-container": "#ffd9c4",
+                      "secondary-fixed": "#dce1ff",
+                      "on-tertiary-fixed-variant": "#743400",
+                      "tertiary-fixed": "#ffdbc8",
+                      "inverse-primary": "#b6c4ff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-dim": "#dad9e3",
+                      "secondary-fixed-dim": "#bac4f5",
+                      "primary-fixed": "#dce1ff",
+                      "on-secondary-fixed-variant": "#3a456e",
+                      "tertiary": "#7c3800",
+                      "on-primary-fixed": "#001550",
+                      "secondary": "#525c87",
+                      "primary-container": "#3a5bc7",
+                      "on-tertiary-fixed": "#321300",
+                      "on-secondary-container": "#4b5680",
+                      "on-surface-variant": "#444653",
+                      "surface": "#faf8ff",
+                      "surface-variant": "#e2e1eb",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed-variant": "#133ca9",
+                      "primary": "#1b41ae",
+                      "on-surface": "#1a1b22",
+                      "error": "#ba1a1a",
+                      "inverse-on-surface": "#f1f0f9",
+                      "tertiary-fixed-dim": "#ffb68b",
+                      "secondary-container": "#c2cdfe",
+                      "on-primary-container": "#d9dfff",
+                      "inverse-surface": "#2f3037",
+                      "surface-container-highest": "#e2e1eb",
+                      "outline-variant": "#c4c5d5",
+                      "on-primary": "#ffffff",
+                      "surface-bright": "#faf8ff",
+                      "surface-container": "#eeedf7",
+                      "on-secondary-fixed": "#0d1940",
+                      "surface-container-low": "#f4f2fc",
+                      "primary-fixed-dim": "#b6c4ff",
+                      "on-error": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "tertiary-container": "#a04b00",
+                      "on-error-container": "#93000a",
+                      "outline": "#747684",
+                      "error-container": "#ffdad6",
+                      "on-background": "#1a1b22"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "stack-lg": "24px",
+                      "margin-mobile": "16px",
+                      "base": "8px",
+                      "margin-desktop": "32px",
+                      "stack-sm": "4px",
+                      "container-max": "1440px",
+                      "stack-md": "12px"
+              },
+              "fontFamily": {
+                      "body-md-mobile": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md-mobile": [
+                              "14px",
+                              {
+                                      "lineHeight": "22px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "26px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full py-gutter fixed left-0 top-0 w-[280px] bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline shadow-sm dark:shadow-none z-20">
+<div class="px-6 pb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">real_estate_agent</span>
+</div>
+<div>
+<h1 class="font-title-lg text-title-lg font-bold text-primary dark:text-primary-fixed-dim">Quản Lý Nhà Trọ</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Hệ thống vận hành</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">door_front</span>
+<span class="font-label-md text-label-md">Phòng trọ</span>
+</a>
+</li>
+<li>
+<a class="relative flex items-center px-6 py-3 text-primary dark:text-primary-fixed-dim font-bold before:content-[''] before:absolute before:left-0 before:w-1 before:h-8 before:bg-primary dark:before:bg-primary-fixed-dim before:rounded-r-full hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">inventory_2</span>
+<span class="font-label-md text-label-md">Tài sản phòng</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">person</span>
+<span class="font-label-md text-label-md">Khách thuê</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="font-label-md text-label-md">Hợp đồng</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">edit_note</span>
+<span class="font-label-md text-label-md">Ghi chỉ số</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">receipt</span>
+<span class="font-label-md text-label-md">Hóa đơn</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="font-label-md text-label-md">Thu tiền mặt</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 transform transition-all" href="#">
+<span class="material-symbols-outlined mr-3">notifications</span>
+<span class="font-label-md text-label-md">Thông báo</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="px-6 mt-auto space-y-4">
+<button class="w-full py-2 bg-primary-container text-on-primary-container rounded-xl font-label-md text-label-md font-bold flex justify-center items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add</span>
+                Thêm phòng mới
+            </button>
+<ul class="space-y-1 border-t border-outline-variant pt-4">
+<li>
+<a class="flex items-center px-2 py-2 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-label-md text-label-md">Cài đặt</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-2 py-2 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">logout</span>
+<span class="font-label-md text-label-md">Đăng xuất</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-[280px] min-h-screen bg-surface-container-lowest flex flex-col relative">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 md:left-[280px] h-16 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none z-10 flex justify-between items-center px-gutter">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="hidden md:flex gap-6">
+<a class="text-primary dark:text-primary-fixed-dim font-bold border-b-2 border-primary pb-5 mt-5 font-label-md text-label-md" href="#">Nhà trọ A</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors pb-5 mt-5 font-label-md text-label-md" href="#">Nhà trọ B</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors pb-5 mt-5 font-label-md text-label-md" href="#">Nhà trọ C</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-xl hover:bg-surface-container-low text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 rounded-xl hover:bg-surface-container-low text-on-surface-variant transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-xl hover:bg-surface-container-low text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden ml-2 cursor-pointer border border-outline-variant">
+<img alt="Manager Profile Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdoExaNsqDYHQWhTrEc79dHvZ8otd5Gc4isTRFLXb7bXglgxzfSOr6LL3gOvXIdWECPVufWhhifGMiZ9UGu1wE1O7eTsXjzDlDrqx1WqrolgnPMuo0DhM76yya0xyds5ZWM9JFFDyzzN7bcUCtLoKIJrUJebKGYP3Vbc-jwR_USKqU4Oo3oDAQbw8HeD2biKYO2mhHNlP3S6Nc1hnPjmlO1gDhAoEMkpolRVTA8nnqLx023_poobK3B-1yBhTgr3tg_2aYjBr8H1uS"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex-1 mt-16 p-4 md:p-gutter overflow-y-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Tài sản phòng</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Quản lý và theo dõi tình trạng trang thiết bị trong các phòng.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-low border border-outline-variant text-on-surface px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Lọc
+                    </button>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span> Thêm tài sản
+                    </button>
+</div>
+</div>
+<!-- Bento Layout Container -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Main Table Section (Takes up 2 columns on large screens) -->
+<div class="lg:col-span-2 bg-surface rounded-xl border border-outline-variant shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col h-full">
+<div class="p-5 border-b border-outline-variant bg-surface flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg text-on-surface">Danh sách tài sản</h3>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-9 pr-4 py-2 rounded-lg border border-outline-variant text-body-md focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none w-64 bg-surface-container-lowest" placeholder="Tìm tài sản..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-3 px-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Tên tài sản</th>
+<th class="py-3 px-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Phòng</th>
+<th class="py-3 px-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Loại</th>
+<th class="py-3 px-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Tình trạng</th>
+<th class="py-3 px-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Ngày cập nhật</th>
+<th class="py-3 px-5 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Thao tác</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-md text-body-md">
+<tr class="hover:bg-surface-container-lowest transition-colors bg-surface-container-low border-l-2 border-primary">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">ac_unit</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface">Điều hòa Daikin Inverter</div>
+<div class="text-label-sm text-on-surface-variant">Mã: TS-001</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5 text-on-surface">Phòng 101</td>
+<td class="py-4 px-5 text-on-surface-variant">Điện lạnh</td>
+<td class="py-4 px-5">
+<span class="px-2 py-1 rounded-md text-label-sm font-semibold bg-[#e6f4ea] text-[#137333]">Tốt</span>
+</td>
+<td class="py-4 px-5 text-on-surface-variant">12/10/2023</td>
+<td class="py-4 px-5 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-1"><span class="material-symbols-outlined text-[20px]">report</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors bg-surface">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">bed</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface">Giường gỗ 1m6</div>
+<div class="text-label-sm text-on-surface-variant">Mã: TS-002</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5 text-on-surface">Phòng 101</td>
+<td class="py-4 px-5 text-on-surface-variant">Nội thất</td>
+<td class="py-4 px-5">
+<span class="px-2 py-1 rounded-md text-label-sm font-semibold bg-[#fff8e1] text-[#f57f17]">Hỏng nhẹ</span>
+</td>
+<td class="py-4 px-5 text-on-surface-variant">05/10/2023</td>
+<td class="py-4 px-5 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-1"><span class="material-symbols-outlined text-[20px]">report</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors bg-surface">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">kitchen</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface">Tủ lạnh Aqua 90L</div>
+<div class="text-label-sm text-on-surface-variant">Mã: TS-003</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5 text-on-surface">Phòng 102</td>
+<td class="py-4 px-5 text-on-surface-variant">Điện lạnh</td>
+<td class="py-4 px-5">
+<span class="px-2 py-1 rounded-md text-label-sm font-semibold bg-[#fce8e6] text-[#c5221f]">Cần thay thế</span>
+</td>
+<td class="py-4 px-5 text-on-surface-variant">01/10/2023</td>
+<td class="py-4 px-5 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-1"><span class="material-symbols-outlined text-[20px]">report</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors bg-surface">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">water_heater</span>
+</div>
+<div>
+<div class="font-semibold text-on-surface">Bình nóng lạnh Ariston</div>
+<div class="text-label-sm text-on-surface-variant">Mã: TS-004</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-5 text-on-surface">Phòng 102</td>
+<td class="py-4 px-5 text-on-surface-variant">Điện nước</td>
+<td class="py-4 px-5">
+<span class="px-2 py-1 rounded-md text-label-sm font-semibold bg-[#e8eaed] text-[#3c4043]">Đã thay thế</span>
+</td>
+<td class="py-4 px-5 text-on-surface-variant">28/09/2023</td>
+<td class="py-4 px-5 text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-1"><span class="material-symbols-outlined text-[20px]">report</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center text-label-md text-on-surface-variant">
+<span>Hiển thị 1-4 của 24 tài sản</span>
+<div class="flex gap-2">
+<button class="p-1 rounded hover:bg-surface-variant disabled:opacity-50"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
+<button class="p-1 rounded hover:bg-surface-variant"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Asset Details Sidebar (Takes up 1 column on large screens) -->
+<div class="lg:col-span-1 flex flex-col gap-6">
+<!-- Asset Card -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="h-48 relative bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="A modern, high-quality photograph of a sleek white Daikin air conditioner mounted on a clean, light-colored bedroom wall. The lighting is bright and natural, creating a crisp, professional light-mode aesthetic. The setting feels like a well-maintained, contemporary residential space, emphasizing cleanliness and modern technology." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNrIVGohX9TnxWgp0D7KSd40sVZHDbuZn7UlyTSe9eCRN5k50nY9tbpEP2gi-eD_EflYddqPqKsBenx8e_fakk10hD3czyXZiL5Xp66EMQfX5X5ezRm-ZBGXQHJUefBbI57I250WFILJImy7s3aLJS8fUX6wKz2GJ4AHoFFuXN4AZPYE5LwAc0muhT7p6j51-0jb26rY173l2snWjAWIBDMUkAtHR4U1rjLqTOi5ROVqwsxzvJuEU25latiXIG8xXNrG9TGgM4aYtk"/>
+<div class="absolute top-4 right-4 bg-[#e6f4ea] text-[#137333] px-3 py-1 rounded-full font-label-sm font-bold shadow-sm">
+                                Tốt
+                            </div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Điều hòa Daikin Inverter</h3>
+<p class="font-label-md text-label-md text-on-surface-variant mt-1">TS-001 • Cung cấp bởi Nguyễn Kim</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-4 gap-x-2 mt-6">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Vị trí</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">Phòng 101</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Loại</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">Điện lạnh</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Giá trị</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">8,500,000 đ</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Bảo hành đến</p>
+<p class="font-body-md text-body-md text-on-surface font-medium">12/2025</p>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant flex gap-3">
+<button class="flex-1 bg-surface-container-low border border-outline-variant text-on-surface py-2 rounded-lg font-label-md text-label-md font-medium hover:bg-surface-container-high transition-colors text-center">
+                                    Sửa thông tin
+                                </button>
+<button class="flex-1 bg-error-container text-on-error-container py-2 rounded-lg font-label-md text-label-md font-medium hover:opacity-90 transition-opacity text-center flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[18px]">build</span> Ghi nhận lỗi
+                                </button>
+</div>
+</div>
+</div>
+<!-- Maintenance History -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] p-6 flex-1">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-title-lg text-title-lg text-on-surface font-bold">Lịch sử bảo trì</h3>
+<button class="text-primary font-label-md text-label-md font-medium hover:underline">Xem tất cả</button>
+</div>
+<div class="relative pl-4 border-l-2 border-surface-variant space-y-6">
+<!-- Timeline Item 1 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-surface"></div>
+<div class="mb-1 flex justify-between items-center">
+<p class="font-label-md text-label-md font-semibold text-on-surface">Vệ sinh định kỳ</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant">12/10/2023</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Thực hiện bởi: Thợ điện lạnh Minh Anh. Bơm thêm gas.</p>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-surface-variant ring-4 ring-surface"></div>
+<div class="mb-1 flex justify-between items-center">
+<p class="font-label-md text-label-md font-semibold text-on-surface">Lắp đặt mới</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant">15/05/2022</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Lắp đặt kèm hệ thống ống đồng 3m. Phòng 101.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

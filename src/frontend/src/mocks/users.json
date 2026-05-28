@@ -1,0 +1,58 @@
+[
+  {
+    "id": "u-admin-001",
+    "fullName": "Nguyễn Văn An",
+    "email": "admin@boardinghouse.vn",
+    "phone": "0901111111",
+    "role": "admin",
+    "status": "active",
+    "createdAt": "2025-01-10T08:00:00Z"
+  },
+  {
+    "id": "u-mgr-001",
+    "fullName": "Trần Thị Bích",
+    "email": "manager.q1@boardinghouse.vn",
+    "phone": "0902222222",
+    "role": "manager",
+    "status": "active",
+    "propertyIds": ["p-001"],
+    "createdAt": "2025-02-12T08:00:00Z"
+  },
+  {
+    "id": "u-mgr-002",
+    "fullName": "Lê Hoàng Cường",
+    "email": "manager.q3@boardinghouse.vn",
+    "phone": "0903333333",
+    "role": "manager",
+    "status": "active",
+    "propertyIds": ["p-002", "p-003"],
+    "createdAt": "2025-03-01T08:00:00Z"
+  },
+  {
+    "id": "u-tnt-001",
+    "fullName": "Phạm Minh Đức",
+    "email": "duc.pm@gmail.com",
+    "phone": "0904444444",
+    "role": "tenant",
+    "status": "active",
+    "createdAt": "2025-08-15T08:00:00Z"
+  },
+  {
+    "id": "u-tnt-002",
+    "fullName": "Hoàng Thuỳ Linh",
+    "email": "linh.ht@gmail.com",
+    "phone": "0905555555",
+    "role": "tenant",
+    "status": "active",
+    "createdAt": "2025-09-20T08:00:00Z"
+  },
+  {
+    "id": "u-tnt-003",
+    "fullName": "Vũ Quang Huy",
+    "email": "huy.vq@gmail.com",
+    "phone": "0906666666",
+    "role": "tenant",
+    "status": "active",
+    "createdAt": "2026-01-05T08:00:00Z"
+  }
+]

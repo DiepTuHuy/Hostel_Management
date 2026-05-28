@@ -1,0 +1,6 @@
+[
+  { "id": "n-001", "type": "invoice",  "title": "Hoá đơn tháng 05/2026 đã được phát hành", "body": "Tổng tiền 5.420.000đ — hạn 05/06/2026.", "userId": "u-tnt-001", "read": false, "createdAt": "2026-05-31T08:00:00Z" },
+  { "id": "n-002", "type": "contract", "title": "Hợp đồng HD2025-002 sắp hết hạn",        "body": "Còn 39 ngày. Liên hệ Quản lý nếu muốn gia hạn.", "userId": "u-tnt-002", "read": false, "createdAt": "2026-05-22T07:30:00Z" },
+  { "id": "n-003", "type": "system",   "title": "Đăng nhập từ thiết bị mới",                "body": "iPhone 15 — TP. Hồ Chí Minh.",                 "userId": "u-tnt-001", "read": true,  "createdAt": "2026-05-20T22:14:00Z" },
+  { "id": "n-004", "type": "payment",  "title": "Thanh toán thành công",                    "body": "Hoá đơn tháng 04/2026 — 5.136.000đ qua VNPay.",  "userId": "u-tnt-001", "read": true,  "createdAt": "2026-05-02T10:14:00Z" }
+]

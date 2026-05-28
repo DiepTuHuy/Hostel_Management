@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Danh sách hóa đơn - Tenant Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f1f0f9",
+                        "surface-tint": "#3456c2",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "background": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb68b",
+                        "surface-container-highest": "#e2e1eb",
+                        "tertiary-container": "#a04b00",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f4f2fc",
+                        "primary-container": "#3a5bc7",
+                        "on-tertiary-container": "#ffd9c4",
+                        "on-secondary-fixed-variant": "#3a456e",
+                        "primary-fixed": "#dce1ff",
+                        "surface": "#faf8ff",
+                        "outline": "#747684",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#1a1b22",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#7c3800",
+                        "on-primary-fixed": "#001550",
+                        "outline-variant": "#c4c5d5",
+                        "on-tertiary-fixed-variant": "#743400",
+                        "secondary-fixed-dim": "#bac4f5",
+                        "on-primary-fixed-variant": "#133ca9",
+                        "on-background": "#1a1b22",
+                        "surface-dim": "#dad9e3",
+                        "on-primary-container": "#d9dfff",
+                        "surface-variant": "#e2e1eb",
+                        "surface-bright": "#faf8ff",
+                        "secondary": "#525c87",
+                        "surface-container": "#eeedf7",
+                        "on-tertiary-fixed": "#321300",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#c2cdfe",
+                        "inverse-surface": "#2f3037",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#4b5680",
+                        "secondary-fixed": "#dce1ff",
+                        "inverse-primary": "#b6c4ff",
+                        "on-surface-variant": "#444653",
+                        "surface-container-high": "#e8e7f1",
+                        "tertiary-fixed": "#ffdbc8",
+                        "on-secondary-fixed": "#0d1940",
+                        "primary": "#1b41ae"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-sm": "4px",
+                        "margin-mobile": "16px",
+                        "stack-md": "12px",
+                        "container-max": "1440px",
+                        "base": "8px",
+                        "margin-desktop": "32px",
+                        "stack-lg": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md-mobile": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            background-color: #faf8ff; /* bg-background */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md antialiased pb-24 md:pb-8 pt-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full bg-surface shadow-sm flex justify-between items-center px-margin-mobile py-base z-50">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">person</span>
+</div>
+<h1 class="font-headline-sm text-headline-sm-mobile text-primary">Xin chào, Tenant</h1>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant active:scale-95 duration-150">
+<span class="material-symbols-outlined">support_agent</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop space-y-stack-lg mt-stack-md">
+<!-- Header & Filters -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
+<h2 class="font-display-lg text-display-lg text-on-surface">Danh sách hóa đơn</h2>
+<div class="flex items-center gap-stack-md">
+<!-- Filter Dropdowns -->
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors">
+<span>Tháng 10</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors">
+<span>Năm 2023</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex bg-surface-container-low p-1 rounded-xl w-full md:w-max overflow-x-auto">
+<button class="flex-1 md:flex-none px-6 py-2 bg-surface shadow-sm rounded-xl font-label-md text-label-md text-primary whitespace-nowrap text-center transition-all">
+                Chờ thanh toán
+            </button>
+<button class="flex-1 md:flex-none px-6 py-2 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-variant whitespace-nowrap text-center transition-all">
+                Đã thanh toán
+            </button>
+<button class="flex-1 md:flex-none px-6 py-2 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-variant whitespace-nowrap text-center transition-all">
+                Quá hạn
+            </button>
+</div>
+<!-- Invoice Grid (Bento style approach) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] transition-shadow duration-200 flex flex-col gap-stack-md relative overflow-hidden group">
+<!-- Decorative subtle gradient blob for high-end feel -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-fixed-dim/20 rounded-full blur-3xl group-hover:bg-primary-fixed-dim/40 transition-all"></div>
+<div class="flex justify-between items-start z-10">
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-outline">Mã hóa đơn</span>
+<p class="font-title-lg text-title-lg text-on-surface">INV-2310-001</p>
+</div>
+<span class="px-3 py-1 bg-error-container text-on-error-container font-label-sm text-label-sm rounded-full">Chờ thanh toán</span>
+</div>
+<div class="grid grid-cols-2 gap-stack-md py-stack-sm border-t border-b border-surface-variant z-10">
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                            Kỳ thanh toán
+                        </span>
+<p class="font-body-md text-body-md text-on-surface-variant">Tháng 10/2023</p>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">event_busy</span>
+                            Hạn thanh toán
+                        </span>
+<p class="font-body-md text-body-md text-error font-medium">05/11/2023</p>
+</div>
+</div>
+<div class="flex justify-between items-end z-10">
+<div>
+<span class="font-label-sm text-label-sm text-outline">Tổng tiền</span>
+<p class="font-headline-md text-headline-md text-primary">4.500.000đ</p>
+</div>
+</div>
+<div class="flex gap-stack-sm mt-stack-md z-10">
+<button class="flex-1 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-primary font-label-md text-label-md rounded-xl hover:bg-surface-container-low transition-colors">
+                        Xem chi tiết
+                    </button>
+<button class="flex-1 px-4 py-2 bg-primary text-on-primary font-label-md text-label-md rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+                        Thanh toán
+                    </button>
+</div>
+</div>
+<!-- Card 2 (Duplicate for layout demonstration) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] transition-shadow duration-200 flex flex-col gap-stack-md relative overflow-hidden group">
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-fixed-dim/20 rounded-full blur-3xl group-hover:bg-primary-fixed-dim/40 transition-all"></div>
+<div class="flex justify-between items-start z-10">
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-outline">Mã hóa đơn</span>
+<p class="font-title-lg text-title-lg text-on-surface">INV-2309-042</p>
+</div>
+<span class="px-3 py-1 bg-error-container text-on-error-container font-label-sm text-label-sm rounded-full">Chờ thanh toán</span>
+</div>
+<div class="grid grid-cols-2 gap-stack-md py-stack-sm border-t border-b border-surface-variant z-10">
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                            Kỳ thanh toán
+                        </span>
+<p class="font-body-md text-body-md text-on-surface-variant">Tháng 09/2023</p>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">event_busy</span>
+                            Hạn thanh toán
+                        </span>
+<p class="font-body-md text-body-md text-error font-medium">05/10/2023</p>
+</div>
+</div>
+<div class="flex justify-between items-end z-10">
+<div>
+<span class="font-label-sm text-label-sm text-outline">Tổng tiền</span>
+<p class="font-headline-md text-headline-md text-primary">3.250.000đ</p>
+</div>
+</div>
+<div class="flex gap-stack-sm mt-stack-md z-10">
+<button class="flex-1 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-primary font-label-md text-label-md rounded-xl hover:bg-surface-container-low transition-colors">
+                        Xem chi tiết
+                    </button>
+<button class="flex-1 px-4 py-2 bg-primary text-on-primary font-label-md text-label-md rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+                        Thanh toán
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Shell) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center bg-surface-container-lowest border-t border-outline-variant px-2 pb-safe h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] rounded-t-full md:hidden">
+<!-- Inactive Tab 0 -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm mt-1">Trang chủ</span>
+</a>
+<!-- Active Tab 1: Hóa đơn -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1.5 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined icon-filled">receipt_long</span>
+<span class="font-label-sm text-label-sm mt-1">Hóa đơn</span>
+</a>
+<!-- Inactive Tab 2 -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-sm text-label-sm mt-1">Hợp đồng</span>
+</a>
+<!-- Inactive Tab 3 -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-sm text-label-sm mt-1">Thông báo</span>
+</a>
+<!-- Inactive Tab 4 -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm mt-1">Cá nhân</span>
+</a>
+</nav>
+<!-- Sidebar for Web (hidden on mobile, using flex on md up based on generic SaaS layout rules, though not explicitly requested in JSON shell, bottom nav is explicitly md:hidden. We will just use standard top-down for this container block as prompt is single page) -->
+</body></html>

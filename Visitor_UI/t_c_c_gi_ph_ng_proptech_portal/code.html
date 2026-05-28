@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Đặt Cọc Giữ Phòng - PropTech Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#d3e4fe",
+                    "primary-container": "#3a5bc7",
+                    "tertiary-container": "#8c5800",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-secondary-fixed": "#002109",
+                    "text-body": "#334155",
+                    "border-light": "#E2E8F0",
+                    "surface-soft": "#F1F5F9",
+                    "surface-variant": "#d3e4fe",
+                    "on-tertiary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#6bff8f",
+                    "on-background": "#0b1c30",
+                    "surface-container-low": "#eff4ff",
+                    "on-secondary-container": "#007432",
+                    "surface-bright": "#f8f9ff",
+                    "on-surface": "#0b1c30",
+                    "error": "#ba1a1a",
+                    "secondary": "#006e2f",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "secondary-fixed-dim": "#4ae176",
+                    "on-primary-fixed-variant": "#133ca9",
+                    "on-primary-fixed": "#001550",
+                    "on-tertiary-fixed": "#2a1700",
+                    "secondary-container": "#6bff8f",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#444653",
+                    "on-primary-container": "#d9dfff",
+                    "outline": "#747684",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "text-heading": "#0F172A",
+                    "outline-variant": "#c4c5d5",
+                    "primary-fixed-dim": "#b6c4ff",
+                    "on-tertiary-container": "#ffdab2",
+                    "on-primary": "#ffffff",
+                    "surface-tint": "#3456c2",
+                    "surface-dim": "#cbdbf5",
+                    "inverse-primary": "#b6c4ff",
+                    "primary-fixed": "#dce1ff",
+                    "on-secondary-fixed-variant": "#005321",
+                    "surface-container": "#e5eeff",
+                    "background": "#f8f9ff",
+                    "primary": "#1b41ae",
+                    "surface-ice": "#F8FAFC",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary": "#6c4300",
+                    "inverse-surface": "#213145"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "base": "8px",
+                    "container-max": "1280px",
+                    "section-gap": "80px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "display-lg-mobile": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "60px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .step-active { color: #1b41ae; font-weight: 700; }
+        .step-line-active { background-color: #1b41ae; }
+        .form-input-focus:focus {
+            border-color: #1b41ae;
+            box-shadow: 0 0 0 1px #1b41ae;
+            outline: none;
+        }
+        /* Custom checkbox */
+        input[type="checkbox"]:checked {
+            background-color: #1b41ae;
+            border-color: #1b41ae;
+        }
+    </style>
+</head>
+<body class="bg-surface-ice text-text-body font-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface shadow-sm dark:shadow-none border-b border-border-light dark:border-outline-variant docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-20">
+<div class="flex items-center gap-base">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">PropTech Portal</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-primary dark:text-primary-fixed border-b-2 border-primary font-bold transition-colors py-2" href="#">Tìm phòng</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors py-2" href="#">Giới thiệu</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors py-2" href="#">Liên hệ</a>
+</nav>
+<div class="flex items-center gap-gutter">
+<button class="hidden lg:block text-label-md font-label-md text-primary bg-primary-container/10 px-4 py-2 rounded-lg hover:bg-primary-container/20 transition-all scale-95 active:scale-90">
+                    Dành cho Chủ nhà
+                </button>
+<div class="flex items-center gap-2 cursor-pointer">
+<span class="material-symbols-outlined text-primary">account_circle</span>
+<span class="hidden sm:inline font-label-md">Đăng nhập</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Wizard & Forms -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Wizard Progress -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<div class="flex items-center justify-between relative">
+<!-- Connecting Lines -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-surface-variant -translate-y-1/2 z-0"></div>
+<div class="absolute top-1/2 left-0 w-0 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all duration-500" id="progress-bar"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(1)">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold transition-all shadow-lg" id="step-circle-1">1</div>
+<span class="text-label-sm font-label-sm text-primary">Thông tin cá nhân</span>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(2)">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-bold transition-all" id="step-circle-2">2</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Thông tin đặt cọc</span>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(3)">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-bold transition-all" id="step-circle-3">3</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Xác nhận</span>
+</div>
+</div>
+</div>
+<!-- Form Sections -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0px_4px_20px_rgba(0,0,0,0.05)] min-h-[500px]" id="form-container">
+<!-- Step 1 Content -->
+<div class="space-y-6" id="step-content-1">
+<div class="border-b border-border-light pb-4">
+<h2 class="text-headline-md font-headline-md text-text-heading">Thông tin người thuê phòng</h2>
+<p class="text-body-md text-on-surface-variant">Vui lòng nhập chính xác thông tin để làm hợp đồng đặt cọc.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-text-heading">Họ và tên *</label>
+<input class="w-full p-3 rounded-lg border border-border-light form-input-focus transition-all" placeholder="Nguyễn Văn A" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-text-heading">Số CCCD/Passport *</label>
+<input class="w-full p-3 rounded-lg border border-border-light form-input-focus transition-all" placeholder="001xxxxxxxxx" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-text-heading">Số điện thoại *</label>
+<input class="w-full p-3 rounded-lg border border-border-light form-input-focus transition-all" placeholder="090 123 4567" type="tel"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-text-heading">Email *</label>
+<input class="w-full p-3 rounded-lg border border-border-light form-input-focus transition-all" placeholder="example@gmail.com" type="email"/>
+</div>
+</div>
+<div class="bg-surface-soft p-4 rounded-lg flex gap-4 items-start">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="text-label-sm text-on-surface-variant leading-relaxed">
+                                Thông tin cá nhân của bạn sẽ được bảo mật tuyệt đối và chỉ sử dụng cho mục đích xác thực giao dịch giữ chỗ tại PropTech Portal.
+                            </p>
+</div>
+</div>
+<!-- Step 2 Content (Hidden by default) -->
+<div class="hidden space-y-6 animate-fadeIn" id="step-content-2">
+<div class="border-b border-border-light pb-4">
+<h2 class="text-headline-md font-headline-md text-text-heading">Chi tiết đặt cọc</h2>
+<p class="text-body-md text-on-surface-variant">Chọn ngày nhận phòng dự kiến và phương thức giữ chỗ.</p>
+</div>
+<div class="grid grid-cols-1 gap-gutter">
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-text-heading">Ngày dự kiến dọn vào *</label>
+<input class="w-full p-3 rounded-lg border border-border-light form-input-focus transition-all" type="date"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-label-md text-text-heading">Ghi chú cho chủ nhà</label>
+<textarea class="w-full p-3 rounded-lg border border-border-light form-input-focus transition-all" placeholder="Ví dụ: Tôi muốn dọn vào buổi sáng, cần hỗ trợ chỗ để xe máy..." rows="4"></textarea>
+</div>
+</div>
+</div>
+<!-- Step 3 Content (Hidden by default) -->
+<div class="hidden space-y-6 animate-fadeIn" id="step-content-3">
+<div class="border-b border-border-light pb-4">
+<h2 class="text-headline-md font-headline-md text-text-heading">Xác nhận &amp; Điều khoản</h2>
+<p class="text-body-md text-on-surface-variant">Vui lòng kiểm tra kỹ mọi thông tin trước khi tiến hành thanh toán.</p>
+</div>
+<div class="space-y-4">
+<div class="flex items-start gap-4 p-4 border border-border-light rounded-lg">
+<input class="mt-1 w-5 h-5 rounded border-outline text-primary transition-all" id="terms" type="checkbox"/>
+<label class="text-body-md text-on-surface-variant" for="terms">
+                                    Tôi đã đọc và đồng ý với <a class="text-primary font-bold hover:underline" href="#">Chính sách đặt cọc giữ chỗ</a> và <a class="text-primary font-bold hover:underline" href="#">Điều khoản sử dụng</a> của PropTech Portal. Tôi hiểu rằng số tiền đặt cọc này sẽ không được hoàn lại nếu tôi không ký hợp đồng thuê trong vòng 48 giờ.
+                                </label>
+</div>
+</div>
+<div class="bg-primary-container/10 p-6 rounded-xl flex items-center gap-6">
+<div class="bg-primary p-3 rounded-full text-white">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div>
+<h4 class="text-label-md text-primary font-bold">Thanh toán an toàn</h4>
+<p class="text-label-sm text-on-surface-variant">Mọi giao dịch qua hệ thống đều được bảo chứng bởi ngân hàng đối tác.</p>
+</div>
+</div>
+</div>
+<!-- CTA Actions -->
+<div class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border-light pt-8">
+<button class="invisible w-full sm:w-auto px-8 py-3 rounded-lg border border-primary text-primary font-bold hover:bg-primary/5 transition-all" id="prev-btn" onclick="prevStep()">
+                            Quay lại
+                        </button>
+<button class="w-full sm:w-auto px-10 py-3 rounded-lg bg-primary text-white font-bold shadow-lg hover:bg-primary-container transition-all flex items-center justify-center gap-2" id="next-btn" onclick="nextStep()">
+<span>Tiếp tục</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Summary Card -->
+<div class="lg:col-span-4">
+<div class="sticky top-28 bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="relative h-48">
+<img alt="Luxury Studio" class="w-full h-full object-cover" data-alt="A modern and elegant studio apartment interior featuring clean lines, light oak flooring, and floor-to-ceiling windows letting in soft morning light. The decor follows a minimalist style with a neutral color palette of off-white and charcoal, accented by a deep navy blue velvet sofa. The atmosphere is quiet, sophisticated, and tranquil, reflecting a high-end PropTech portal aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK6We1Fn46opS_gQDiK0HdMVG8hKeOmKlw8C9xWH-mgUcMZBP9UK9AHs3aEE1RsH1w2f7QV6XEvWQFh_dpb7_xbpcC3j5bbHwUVXbLVimknrDq-NxfgaZENkz5h0XwreBmg7q2C4KTh8uBTyV397-FBl5Jc_2SdQJ2QPgErzsjP5NqFO6t-eShbMgHE3269JB_xS5cEb-tZWodyvxYoGhO_qJy48LjTB8iXzmPEPNBlzUXbxx_Hw67n0PAx-9d1Q9GNbdBaqLaHnGS"/>
+<div class="absolute top-4 left-4">
+<span class="bg-white/90 backdrop-blur-sm text-primary text-label-sm font-bold px-3 py-1 rounded-full">Phòng đang trống</span>
+</div>
+</div>
+<div class="p-6 space-y-6">
+<div>
+<h3 class="text-headline-md font-headline-md text-text-heading">Vinhomes Central Park - Studio P7</h3>
+<div class="flex items-center gap-1 text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="text-label-sm">Bình Thạnh, TP. Hồ Chí Minh</span>
+</div>
+</div>
+<div class="space-y-3 py-4 border-y border-border-light">
+<div class="flex justify-between items-center">
+<span class="text-body-md text-on-surface-variant">Giá thuê hàng tháng</span>
+<span class="text-label-md font-bold text-text-heading">12.000.000đ</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-md text-on-surface-variant">Phí dịch vụ</span>
+<span class="text-label-md font-bold text-text-heading">Miễn phí</span>
+</div>
+<div class="flex justify-between items-center pt-2">
+<span class="text-headline-md font-headline-md text-primary">Tiền đặt cọc</span>
+<span class="text-headline-md font-headline-md text-primary">5.000.000đ</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="text-label-sm">Giữ phòng trong 48 giờ</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">check_circle</span>
+<span class="text-label-sm">Hợp đồng điện tử pháp lý</span>
+</div>
+</div>
+<div class="p-4 bg-surface-soft rounded-lg text-center">
+<p class="text-label-sm text-on-surface-variant">Mọi thắc mắc vui lòng liên hệ</p>
+<p class="text-label-md font-bold text-primary mt-1">Hotline: 1900 1234</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-soft dark:bg-on-background mt-section-gap">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-section-gap max-w-container-max mx-auto">
+<div class="space-y-4">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">PropTech Portal</span>
+<p class="text-body-md text-on-surface-variant">Giải pháp tìm kiếm và thuê phòng hiện đại, minh bạch hàng đầu Việt Nam.</p>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="text-label-md font-bold text-text-heading">Liên kết</h4>
+<a class="text-label-sm text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">Về chúng tôi</a>
+<a class="text-label-sm text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">Chính sách bảo mật</a>
+<a class="text-label-sm text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">Điều khoản sử dụng</a>
+<a class="text-label-sm text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">FAQ</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="text-label-md font-bold text-text-heading">Khu vực</h4>
+<a class="text-label-sm text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">Hà Nội Apartments</a>
+<a class="text-label-sm text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">HCM Villas</a>
+<a class="text-label-sm text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">Đà Nẵng Homestay</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="text-label-md font-bold text-text-heading">Liên hệ</h4>
+<p class="text-label-sm text-on-surface-variant">Hotline: 1900 1234</p>
+<p class="text-label-sm text-on-surface-variant">Email: support@proptech.vn</p>
+<div class="flex gap-4 mt-2">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">social_leaderboard</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">mail</span>
+</div>
+</div>
+</div>
+<div class="border-t border-border-light px-margin-desktop py-8 text-center">
+<p class="text-label-sm text-on-surface-variant">© 2024 PropTech Portal. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        let currentStep = 1;
+
+        function updateUI() {
+            // Update contents
+            document.getElementById('step-content-1').classList.add('hidden');
+            document.getElementById('step-content-2').classList.add('hidden');
+            document.getElementById('step-content-3').classList.add('hidden');
+            document.getElementById(`step-content-${currentStep}`).classList.remove('hidden');
+
+            // Update circles and progress bar
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = (currentStep - 1) * 50 + '%';
+
+            for (let i = 1; i <= 3; i++) {
+                const circle = document.getElementById(`step-circle-${i}`);
+                const text = circle.nextElementSibling;
+                
+                if (i <= currentStep) {
+                    circle.classList.remove('bg-surface-variant', 'text-on-surface-variant');
+                    circle.classList.add('bg-primary', 'text-white', 'shadow-lg');
+                    text.classList.add('text-primary', 'font-bold');
+                    text.classList.remove('text-on-surface-variant');
+                } else {
+                    circle.classList.add('bg-surface-variant', 'text-on-surface-variant');
+                    circle.classList.remove('bg-primary', 'text-white', 'shadow-lg');
+                    text.classList.remove('text-primary', 'font-bold');
+                    text.classList.add('text-on-surface-variant');
+                }
+            }
+
+            // Update buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            if (currentStep === 1) {
+                prevBtn.classList.add('invisible');
+            } else {
+                prevBtn.classList.remove('invisible');
+            }
+
+            if (currentStep === 3) {
+                nextBtn.querySelector('span:first-child').innerText = 'Tiếp tục thanh toán';
+                nextBtn.classList.remove('bg-primary');
+                nextBtn.classList.add('bg-primary-container');
+            } else {
+                nextBtn.querySelector('span:first-child').innerText = 'Tiếp tục';
+                nextBtn.classList.add('bg-primary');
+                nextBtn.classList.remove('bg-primary-container');
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < 3) {
+                currentStep++;
+                updateUI();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                // Final action
+                const terms = document.getElementById('terms');
+                if (!terms.checked) {
+                    alert('Vui lòng đồng ý với điều khoản dịch vụ để tiếp tục.');
+                } else {
+                    alert('Đang chuyển hướng đến cổng thanh toán an toàn...');
+                }
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function goToStep(step) {
+            // Optional: validation logic before jumping
+            if (step < currentStep || (step > currentStep && currentStep < 3)) {
+                currentStep = step;
+                updateUI();
+            }
+        }
+
+        // Initialize UI
+        updateUI();
+    </script>
+</body></html>
