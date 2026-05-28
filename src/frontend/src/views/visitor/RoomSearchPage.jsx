@@ -112,7 +112,7 @@ export default function RoomSearchPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="bg-white rounded-2xl border border-line p-6 shadow-card h-fit space-y-6">
+          <div className="bg-white rounded-2xl border border-line p-6 shadow-card h-fit space-y-6 sticky top-24 self-start">
             <div className="flex items-center justify-between border-b border-line pb-4">
               <span className="font-bold text-ink flex items-center gap-2">
                 <SlidersHorizontal size={16} /> Bộ lọc nâng cao
