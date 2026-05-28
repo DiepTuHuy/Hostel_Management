@@ -487,6 +487,7 @@ export default function PropertiesPage() {
             <Card
               key={p.id}
               padded={false}
+              tilt={true}
               className="group overflow-hidden apple-card-hover apple-press cursor-pointer border border-line rounded-3xl"
               onClick={() => handleViewDetail(p)}
             >

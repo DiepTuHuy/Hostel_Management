@@ -2,7 +2,7 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '../../utils/cn.js';
 import { Card } from './Card.jsx';
 
-export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', extra, onClick, tilt = true }) {
+export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', extra, onClick, tilt = false }) {
   const accentBg = {
     primary: 'bg-primary-soft text-primary',
     success: 'bg-green-50 text-success',

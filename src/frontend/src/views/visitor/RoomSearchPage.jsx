@@ -230,7 +230,7 @@ export default function RoomSearchPage() {
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredRooms.map(r => (
-                  <Card key={r.id} tilt={true} padded={false} className="overflow-hidden flex flex-col group">
+                  <Card key={r.id} tilt={false} padded={false} className="overflow-hidden flex flex-col group">
                     <div className="h-44 bg-gray-100 overflow-hidden relative">
                       {r.photos.length > 0 ? (
                         <img src={r.photos[0]} alt={`Phòng ${r.code}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -272,7 +272,7 @@ export default function RoomSearchPage() {
             ) : (
               <div className="space-y-4">
                 {filteredRooms.map(r => (
-                  <Card key={r.id} tilt={true} padded={false} className="p-4 flex flex-col sm:flex-row gap-4 items-center group">
+                  <Card key={r.id} tilt={false} padded={false} className="p-4 flex flex-col sm:flex-row gap-4 items-center group">
                     <div className="w-full sm:w-44 h-32 bg-gray-100 rounded-xl overflow-hidden relative shrink-0">
                       {r.photos.length > 0 ? (
                         <img src={r.photos[0]} alt={`Phòng ${r.code}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
