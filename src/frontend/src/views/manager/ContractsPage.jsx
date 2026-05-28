@@ -6,7 +6,7 @@ import { useRooms } from '../../controllers/useRooms.js';
 import { CONTRACT_STATUS_META } from '../../models/Contract.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
 
-import { propertyService } from '../../services/propertyService.js';
+import { propertyService, contractService } from '../../services/index.js';
 
 export default function ManagerContractsPage() {
   const [propertyId, setPropertyId] = useState(localStorage.getItem('bhpro_selected_property_id') || '');
@@ -119,37 +119,35 @@ export default function ManagerContractsPage() {
     setStep((s) => s - 1);
   };
 
-  const handleCreateSubmit = () => {
+  const handleCreateSubmit = async () => {
     if (!monthlyRent || !deposit || !startDate || !endDate) {
       setToast({ message: 'Vui lòng điền đầy đủ các điều khoản hợp đồng', type: 'error' });
       return;
     }
 
-    const room = rooms.find((r) => r.id === selectedRoomId);
-    const newCode = `HĐ-202605-${Math.floor(Math.random() * 900 + 100)}`;
-    
-    const newContractObj = {
-      id: `c-new-${Date.now()}`,
-      code: newCode,
-      propertyId: propertyId,
-      roomId: room ? room.code : 'Phòng mới',
-      tenantId: tenantName,
-      startDate,
-      endDate,
-      deposit: parseFloat(deposit),
-      monthlyRent: parseFloat(monthlyRent),
-      status: 'pending_sign',
-      statusMeta: { label: 'Chờ ký', color: 'warning' },
-      services: ['Điện (3.000đ/kWh)', 'Nước (20.000đ/m³)', 'Internet (100.000đ/tháng)'],
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const newContract = await contractService.create({
+        roomId: selectedRoomId,
+        tenantName,
+        tenantPhone,
+        tenantCccd,
+        tenantEmail,
+        startDate,
+        endDate,
+        deposit: parseFloat(deposit),
+        monthlyRent: parseFloat(monthlyRent)
+      });
 
-    setContracts((prev) => [newContractObj, ...prev]);
-    setToast({
-      message: `Đã lập hợp đồng ${newCode} thành công và gửi liên kết ký số qua email: ${tenantEmail}!`,
-      type: 'success'
-    });
-    setIsCreateOpen(false);
+      setContracts((prev) => [newContract, ...prev]);
+      setToast({
+        message: `Đã lập hợp đồng ${newContract.code} thành công và gửi liên kết ký số qua email: ${tenantEmail}!`,
+        type: 'success'
+      });
+      setIsCreateOpen(false);
+    } catch (err) {
+      console.error(err);
+      setToast({ message: err.message || 'Lỗi hệ thống khi lập hợp đồng', type: 'error' });
+    }
   };
 
   const handleSimulateSign = (contractId) => {

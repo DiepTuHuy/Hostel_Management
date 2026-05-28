@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Check, X, Upload, Calendar, DollarSign, FileText } from 'lucide-react';
 import { Button, PageHeader, Card, Badge, Modal, Input, Toast } from '../../components/common';
 import { useInvoices } from '../../controllers/useInvoices.js';
+import { invoiceService } from '../../services/index.js';
 import { formatCurrency, formatPeriod } from '../../utils/format.js';
 
 export default function CashReceiptsPage() {
@@ -59,33 +60,43 @@ export default function CashReceiptsPage() {
     setRejectReason('');
   };
 
-  const handleConfirmSubmit = () => {
+  const handleConfirmSubmit = async () => {
     if (!actualAmount) {
       setToast({ message: 'Vui lòng nhập số tiền thực nhận', type: 'error' });
       return;
     }
     
-    // Perform simulated invoice confirm
-    setInvoices((prev) => prev.filter((i) => i.id !== confirmInvoice.id));
-    setToast({
-      message: `Xác nhận đã thu thành công ${formatCurrency(parseFloat(actualAmount))} tiền mặt cho hoá đơn ${confirmInvoice.code}!`,
-      type: 'success'
-    });
+    try {
+      await invoiceService.payWithCash(confirmInvoice.id);
+      setInvoices((prev) => prev.filter((i) => i.id !== confirmInvoice.id));
+      setToast({
+        message: `Xác nhận đã thu thành công ${formatCurrency(parseFloat(actualAmount))} tiền mặt cho hoá đơn ${confirmInvoice.code}!`,
+        type: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({ message: err.message || 'Lỗi hệ thống khi xác thực tiền mặt', type: 'error' });
+    }
     setConfirmInvoice(null);
   };
 
-  const handleRejectSubmit = () => {
+  const handleRejectSubmit = async () => {
     if (!rejectReason.trim()) {
       setToast({ message: 'Vui lòng nhập lý do từ chối', type: 'error' });
       return;
     }
 
-    // Perform simulated rejection
-    setInvoices((prev) => prev.filter((i) => i.id !== rejectInvoice.id));
-    setToast({
-      message: `Đã từ chối xác nhận thanh toán hoá đơn ${rejectInvoice.code}. Lý do: ${rejectReason}`,
-      type: 'warning'
-    });
+    try {
+      await invoiceService.rejectCash(rejectInvoice.id);
+      setInvoices((prev) => prev.filter((i) => i.id !== rejectInvoice.id));
+      setToast({
+        message: `Đã từ chối xác nhận thanh toán hoá đơn ${rejectInvoice.code}. Lý do: ${rejectReason}`,
+        type: 'warning'
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({ message: err.message || 'Lỗi hệ thống khi từ chối thanh toán', type: 'error' });
+    }
     setRejectInvoice(null);
   };
 

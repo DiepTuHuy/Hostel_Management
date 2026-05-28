@@ -14,4 +14,16 @@ export const invoiceService = {
     const res = await api.post(`/invoices/${id}/pay`, { method });
     return res.data;
   },
+  async generateInvoices(propertyId, period) {
+    const res = await api.post('/invoices/generate', { propertyId, period });
+    return res.data;
+  },
+  async payWithCash(id) {
+    const res = await api.post(`/invoices/${id}/pay-cash`);
+    return res.data;
+  },
+  async rejectCash(id) {
+    const res = await api.post(`/invoices/${id}/reject-cash`);
+    return res.data;
+  }
 };

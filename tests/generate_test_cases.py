@@ -348,7 +348,7 @@ def generate_csv():
     ]
 
     # Target CSV Path
-    csv_dir = r"d:\Study\System_Design\tests"
+    csv_dir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(csv_dir, exist_ok=True)
     csv_path = os.path.join(csv_dir, "danh_sach_test_cases.csv")
 

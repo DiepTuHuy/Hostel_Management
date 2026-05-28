@@ -6,7 +6,7 @@ const invoiceSchema = new mongoose.Schema({
   kyThanhToan: { type: String, required: true }, // '2026-05'
   tongTien: { type: Number, required: true },
   hanThanhToan: { type: Date, required: true },
-  trangThai: { type: String, enum: ['pending', 'paid', 'overdue', 'cancelled'], default: 'pending' },
+  trangThai: { type: String, enum: ['pending', 'pending_cash', 'paid', 'overdue', 'cancelled'], default: 'pending' },
   chiTiet: [{
     maDichVuId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
     tenDichVu: { type: String, required: true },

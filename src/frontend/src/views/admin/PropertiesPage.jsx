@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, MapPin, Users, X, Home, Phone, Mail, Calendar, Edit, DoorOpen, TrendingUp, Save } from 'lucide-react';
 import { Button, PageHeader, Card, Badge, Loading, Toast } from '../../components/common';
 import { useProperties } from '../../controllers/useProperties.js';
+import { propertyService } from '../../services/index.js';
 
 function PropertyDetailModal({ property, onClose, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -418,59 +419,65 @@ function AddPropertyModal({ onClose, onSave }) {
 }
 
 export default function PropertiesPage() {
-  const { data: properties = [], loading } = useProperties();
-  const [localProperties, setLocalProperties] = useState([]);
+  const { data: properties = [], loading, reload } = useProperties();
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [toast, setToast] = useState(null);
-
-  useEffect(() => {
-    if (!loading) {
-      setLocalProperties(properties || []);
-    }
-  }, [properties, loading]);
 
   const handleViewDetail = (property) => {
     setSelectedProperty(property);
   };
 
-  const handleSaveNewProperty = (formData) => {
-    const newId = `p-00${localProperties.length + 1}`;
-    const newProp = {
-      id: newId,
-      code: `P-00${localProperties.length + 1}`,
-      name: formData.name,
-      address: formData.address,
-      district: formData.district,
-      totalRooms: parseInt(formData.totalRooms) || 10,
-      occupiedRooms: 0,
-      occupancyRate: 0,
-      managerIds: formData.managerName ? ['u2'] : [],
-      createdAt: new Date().toISOString(),
-      image: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=80',
-      phone: formData.phone,
-      email: formData.email
-    };
-
-    setLocalProperties(prev => [newProp, ...prev]);
-    setShowAddModal(false);
-    
-    setToast({
-      message: `Đã thêm chi nhánh "${formData.name}" thành công!`,
-      type: 'success'
-    });
+  const handleSaveNewProperty = async (formData) => {
+    try {
+      await propertyService.create({
+        name: formData.name,
+        address: formData.address,
+        district: formData.district,
+        city: formData.city,
+        totalRooms: parseInt(formData.totalRooms) || 10,
+        phone: formData.phone,
+        email: formData.email
+      });
+      setShowAddModal(false);
+      reload();
+      setToast({
+        message: `Đã thêm chi nhánh "${formData.name}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      setToast({
+        message: `Không thể tạo nhà trọ: ${err?.response?.data?.message || err.message}`,
+        type: 'danger'
+      });
+    }
   };
 
-  const handleUpdateProperty = (updatedProperty) => {
-    setLocalProperties(prev => 
-      prev.map(p => p.id === updatedProperty.id ? updatedProperty : p)
-    );
-    setSelectedProperty(updatedProperty);
-    
-    setToast({
-      message: `Đã cập nhật thông tin chi nhánh "${updatedProperty.name}" thành công!`,
-      type: 'success'
-    });
+  const handleUpdateProperty = async (updatedProperty) => {
+    try {
+      await propertyService.update(updatedProperty.id, {
+        name: updatedProperty.name,
+        address: updatedProperty.address,
+        district: updatedProperty.district,
+        city: updatedProperty.city,
+        totalRooms: updatedProperty.totalRooms,
+        occupiedRooms: updatedProperty.occupiedRooms,
+        phone: updatedProperty.phone,
+        email: updatedProperty.email,
+        status: updatedProperty.status
+      });
+      setSelectedProperty(null);
+      reload();
+      setToast({
+        message: `Đã cập nhật thông tin chi nhánh "${updatedProperty.name}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      setToast({
+        message: `Không thể cập nhật: ${err?.response?.data?.message || err.message}`,
+        type: 'danger'
+      });
+    }
   };
 
   return (
@@ -481,9 +488,9 @@ export default function PropertiesPage() {
         actions={<Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)}>Thêm nhà trọ</Button>}
       />
 
-      {loading && localProperties.length === 0 ? <Loading /> : (
+      {loading && properties.length === 0 ? <Loading /> : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter animate-[fadeIn_0.3s_ease-out]">
-          {localProperties.map((p) => (
+          {properties.map((p) => (
             <Card
               key={p.id}
               tilt={true}

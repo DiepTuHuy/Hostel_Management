@@ -340,74 +340,67 @@ function ConfirmDeleteModal({ user, onClose, onConfirm }) {
 export default function UsersPage() {
   const [tab, setTab] = useState('all');
   const [search, setSearch] = useState('');
-  const { data: initialUsers = [], loading } = useFetch(() => userService.list(), []);
-  const [localUsers, setLocalUsers] = useState([]);
+  const { data: users = [], loading, reload } = useFetch(() => userService.list(), []);
   
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);
   const [toast, setToast] = useState(null);
 
-  // Sync loaded users
-  useEffect(() => {
-    if (initialUsers.length > 0 && localUsers.length === 0) {
-      setLocalUsers(initialUsers);
-    }
-  }, [initialUsers, localUsers]);
-
   // Handle new manager registration
   const handleSaveManager = (formData) => {
-    const newId = `u-${localUsers.length + 5}`;
-    const newUser = {
-      id: newId,
-      fullName: formData.fullName,
-      email: formData.email,
-      phone: formData.phone,
-      role: 'manager',
-      status: 'active',
-      propertyIds: formData.properties,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-
-    setLocalUsers(prev => [newUser, ...prev]);
     setShowAddModal(false);
-
     setToast({
-      message: `Đã đăng ký tài khoản quản lý "${formData.fullName}" thành công!`,
-      type: 'success'
+      message: `Tài khoản quản lý "${formData.fullName}" sẽ được đăng ký sau khi kết nối module xác thực.`,
+      type: 'info'
     });
   };
 
   // Handle editing user account details
-  const handleUpdateUser = (updatedUser) => {
-    setLocalUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
-    setEditingUser(null);
-    setToast({
-      message: `Đã cập nhật tài khoản "${updatedUser.fullName}" thành công!`,
-      type: 'success'
-    });
+  const handleUpdateUser = async (updatedUser) => {
+    try {
+      await userService.updateProfile(updatedUser.id, {
+        fullName: updatedUser.fullName,
+        phone: updatedUser.phone,
+        tenantProfile: {
+          cccd: updatedUser.cccd,
+          occupation: updatedUser.occupation || updatedUser.ngheNghiep,
+          permanentAddress: updatedUser.permanentAddress || updatedUser.diaChiThuongTru
+        }
+      });
+      setEditingUser(null);
+      reload();
+      setToast({
+        message: `Đã cập nhật tài khoản "${updatedUser.fullName}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      setToast({ message: "Lỗi cập nhật: " + err.message, type: 'danger' });
+    }
   };
 
   // Toggle user account lock/unlock status
-  const handleToggleLock = (user) => {
-    const nextStatus = user.status === 'locked' ? 'active' : 'locked';
-    setLocalUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: nextStatus } : u));
-    
-    setToast({
-      message: nextStatus === 'locked' 
-        ? `Đã khóa tài khoản của "${user.fullName}" thành công!`
-        : `Đã mở khóa tài khoản của "${user.fullName}" thành công!`,
-      type: 'success'
-    });
+  const handleToggleLock = async (user) => {
+    try {
+      const nextStatus = user.status === 'locked' ? 'active' : 'locked';
+      await userService.updateStatus(user.id, nextStatus);
+      reload();
+      
+      setToast({
+        message: nextStatus === 'locked' 
+          ? `Đã khóa tài khoản của "${user.fullName}" thành công!`
+          : `Đã mở khóa tài khoản của "${user.fullName}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      setToast({ message: "Lỗi đổi trạng thái: " + err.message, type: 'danger' });
+    }
   };
 
   // Confirm and execute user deletion
   const handleDeleteConfirm = () => {
-    if (!deletingUser) return;
-    setLocalUsers(prev => prev.filter(u => u.id !== deletingUser.id));
-    
     setToast({
-      message: `Đã xóa tài khoản "${deletingUser.fullName}" khỏi hệ thống thành công!`,
+      message: `Đã xóa tài khoản khỏi hệ thống thành công (chế độ giả lập)!`,
       type: 'success'
     });
     setDeletingUser(null);
@@ -421,7 +414,7 @@ export default function UsersPage() {
   };
 
   // Filter users by search string and role tabs
-  const filteredSearch = localUsers.filter((u) => {
+  const filteredSearch = users.filter((u) => {
     const term = search.toLowerCase();
     const nameMatch = u.fullName?.toLowerCase().includes(term);
     const emailMatch = u.email?.toLowerCase().includes(term);
@@ -434,10 +427,10 @@ export default function UsersPage() {
     : filteredSearch.filter((u) => u.role === tab);
 
   const counts = {
-    all: localUsers.length,
-    admin: localUsers.filter((u) => u.role === 'admin').length,
-    manager: localUsers.filter((u) => u.role === 'manager').length,
-    tenant: localUsers.filter((u) => u.role === 'tenant').length,
+    all: users.length,
+    admin: users.filter((u) => u.role === 'admin').length,
+    manager: users.filter((u) => u.role === 'manager').length,
+    tenant: users.filter((u) => u.role === 'tenant').length,
   };
 
   return (

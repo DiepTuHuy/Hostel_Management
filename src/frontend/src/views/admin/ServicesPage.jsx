@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Plus, Settings2, X, Check, Save } from 'lucide-react';
-import { Button, PageHeader, Card, Badge, Toast } from '../../components/common';
-import services from '../../mocks/services.json';
+import { Button, PageHeader, Card, Badge, Toast, Loading } from '../../components/common';
+import { useFetch } from '../../controllers/useFetch.js';
+import { serviceService } from '../../services/index.js';
 import { formatCurrency } from '../../utils/format.js';
 
 function AddEditServiceModal({ service, onClose, onSave }) {
@@ -149,7 +150,20 @@ function AddEditServiceModal({ service, onClose, onSave }) {
 }
 
 export default function ServicesPage() {
-  const [localServices, setLocalServices] = useState(services);
+  const { data: properties = [] } = useFetch(() => propertyService.list(), []);
+  const [selectedPropertyId, setSelectedPropertyId] = useState('');
+  
+  // Set default property ID once properties list is loaded
+  useEffect(() => {
+    if (properties.length > 0 && !selectedPropertyId) {
+      setSelectedPropertyId(properties[0].id);
+    }
+  }, [properties, selectedPropertyId]);
+
+  const { data: listServices = [], loading, reload } = useFetch(
+    () => selectedPropertyId ? serviceService.list(selectedPropertyId) : Promise.resolve([]),
+    [selectedPropertyId]
+  );
   
   // Modal visibility states
   const [selectedService, setSelectedService] = useState(null);
@@ -160,29 +174,45 @@ export default function ServicesPage() {
     setSelectedService(service);
   };
 
-  const handleSaveService = (savedData) => {
-    if (selectedService) {
-      // Edit mode
-      setLocalServices(prev => 
-        prev.map(s => s.id === selectedService.id ? { ...s, ...savedData } : s)
-      );
-      setSelectedService(null);
+  const handleSaveService = async (savedData) => {
+    if (!selectedPropertyId) {
+      setToast({ message: "Vui lòng chọn một nhà trọ trước khi thao tác.", type: "danger" });
+      return;
+    }
+    try {
+      if (selectedService) {
+        // Edit mode
+        await serviceService.update(selectedService.id, {
+          name: savedData.name,
+          unit: savedData.unit,
+          price: savedData.price,
+          type: savedData.type
+        });
+        setSelectedService(null);
+        setToast({
+          message: `Đã cập nhật dịch vụ "${savedData.name}" thành công!`,
+          type: 'success'
+        });
+      } else {
+        // Add mode
+        await serviceService.create({
+          propertyId: selectedPropertyId,
+          name: savedData.name,
+          unit: savedData.unit,
+          price: savedData.price,
+          type: savedData.type
+        });
+        setShowAddModal(false);
+        setToast({
+          message: `Đã thêm dịch vụ mới "${savedData.name}" thành công!`,
+          type: 'success'
+        });
+      }
+      reload();
+    } catch (err) {
       setToast({
-        message: `Đã cập nhật dịch vụ "${savedData.name}" thành công!`,
-        type: 'success'
-      });
-    } else {
-      // Add mode
-      const newId = `s-00${localServices.length + 1}`;
-      const newService = {
-        id: newId,
-        ...savedData
-      };
-      setLocalServices(prev => [...prev, newService]);
-      setShowAddModal(false);
-      setToast({
-        message: `Đã thêm dịch vụ mới "${savedData.name}" thành công!`,
-        type: 'success'
+        message: `Lỗi lưu dịch vụ: ${err?.response?.data?.message || err.message}`,
+        type: 'danger'
       });
     }
   };
@@ -192,65 +222,96 @@ export default function ServicesPage() {
       <PageHeader
         title="Cấu hình dịch vụ & đơn giá"
         subtitle="Thiết lập đơn giá điện, nước, internet và các dịch vụ kèm theo"
-        actions={<Button icon={<Plus size={16} />} onClick={() => setShowAddModal(true)}>Thêm dịch vụ</Button>}
+        actions={
+          <Button 
+            icon={<Plus size={16} />} 
+            onClick={() => setShowAddModal(true)}
+            disabled={!selectedPropertyId}
+          >
+            Thêm dịch vụ
+          </Button>
+        }
       />
 
-      <Card padded={false} className="overflow-hidden animate-[fadeIn_0.3s_ease-out] border border-line rounded-3xl shadow-sm bg-white">
-        <table className="table-base">
-          <thead>
-            <tr>
-              <th>Dịch vụ</th>
-              <th>Đơn vị</th>
-              <th>Loại</th>
-              <th>Đơn giá</th>
-              <th>Trạng thái</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {localServices.map((s) => (
-              <tr key={s.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="font-semibold text-ink">{s.name}</td>
-                <td>{s.unit}</td>
-                <td>
-                  <Badge color={s.type === 'metered' ? 'info' : 'neutral'}>
-                    {s.type === 'metered' ? 'Theo chỉ số' : 'Cố định'}
-                  </Badge>
-                </td>
-                <td>
-                  {s.tiers ? (
-                    <div className="space-y-1">
-                      {s.tiers.map((t, i) => (
-                        <div key={i} className="text-xs text-ink-muted">
-                          {t.from}-{t.to ?? '∞'} {s.unit}: <strong className="text-ink">{formatCurrency(t.price)}</strong>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="font-semibold text-primary">{formatCurrency(s.price)}/{s.unit}</span>
-                  )}
-                </td>
-                <td>
-                  <Badge color={s.active ? 'success' : 'neutral'}>{s.active ? 'Đang dùng' : 'Tạm tắt'}</Badge>
-                </td>
-                <td>
-                  <button 
-                    onClick={() => handleEditClick(s)}
-                    className="text-primary hover:text-primary-dark hover:underline flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-lg hover:bg-primary/5 transition-colors apple-press"
-                  >
-                    <Settings2 size={14} /> Sửa
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <Card className="mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <label className="block text-sm font-semibold text-ink mb-1.5">Chọn khu vực / nhà trọ để cấu hình</label>
+            <select
+              value={selectedPropertyId}
+              onChange={(e) => setSelectedPropertyId(e.target.value)}
+              className="h-10 px-3 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors w-full sm:w-72"
+            >
+              {properties.map(p => (
+                <option key={p.id} value={p.id}>{p.name} ({p.district})</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </Card>
 
+      {loading ? <Loading /> : (
+        <Card padded={false} className="overflow-hidden animate-[fadeIn_0.3s_ease-out] border border-line rounded-3xl shadow-sm bg-white">
+          <table className="table-base">
+            <thead>
+              <tr>
+                <th>Dịch vụ</th>
+                <th>Đơn vị</th>
+                <th>Loại</th>
+                <th>Đơn giá</th>
+                <th>Trạng thái</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {listServices.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-6 text-ink-muted text-sm">Chưa có dịch vụ nào cấu hình cho nhà trọ này</td>
+                </tr>
+              ) : listServices.map((s) => (
+                <tr key={s.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="font-semibold text-ink">{s.name}</td>
+                  <td>{s.unit}</td>
+                  <td>
+                    <Badge color={s.type === 'metered' ? 'info' : 'neutral'}>
+                      {s.type === 'metered' ? 'Theo chỉ số' : 'Cố định'}
+                    </Badge>
+                  </td>
+                  <td>
+                    {s.tiers ? (
+                      <div className="space-y-1">
+                        {s.tiers.map((t, i) => (
+                          <div key={i} className="text-xs text-ink-muted">
+                            {t.from}-{t.to ?? '∞'} {s.unit}: <strong className="text-ink">{formatCurrency(t.price)}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="font-semibold text-primary">{formatCurrency(s.price)}/{s.unit}</span>
+                    )}
+                  </td>
+                  <td>
+                    <Badge color={s.active !== false ? 'success' : 'neutral'}>{s.active !== false ? 'Đang dùng' : 'Tạm tắt'}</Badge>
+                  </td>
+                  <td>
+                    <button 
+                      onClick={() => handleEditClick(s)}
+                      className="text-primary hover:text-primary-dark hover:underline flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-lg hover:bg-primary/5 transition-colors apple-press"
+                    >
+                      <Settings2 size={14} /> Sửa
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      )}
+
       <Card className="mt-gutter animate-[fadeIn_0.3s_ease-out] border border-line rounded-3xl shadow-sm bg-white">
-        <h3 className="text-title-lg font-bold text-ink mb-3">Bậc thang điện áp dụng</h3>
+        <h3 className="text-title-lg font-bold text-ink mb-3">Bậc thang điện nước áp dụng</h3>
         <p className="text-sm text-ink-muted">
-          Đơn giá điện được tính theo bậc thang dựa trên tổng lượng tiêu thụ trong kỳ. Có hiệu lực từ 01/01/2026. Thay đổi đơn giá sẽ tự động được áp dụng cho các lô hóa đơn phát hành tiếp theo.
+          Đơn giá điện được tính lũy tiến hoặc cố định dựa trên cấu hình dịch vụ theo chỉ số. Thay đổi đơn giá sẽ tự động áp dụng cho các lô hóa đơn phát hành tiếp theo của nhà trọ được chọn.
         </p>
       </Card>
 

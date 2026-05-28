@@ -6,4 +6,7 @@ export { invoiceService } from './invoiceService.js';
 export { userService } from './userService.js';
 export { notificationService } from './notificationService.js';
 export { chatService } from './chatService.js';
+export { serviceService } from './serviceService.js';
+export { reportService } from './reportService.js';
+export { readingService } from './readingService.js';
 

@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useAuth } from '../../controllers/useAuth.jsx';
 import { useNavigate } from 'react-router-dom';
 import { User, Shield, Bell, LogOut, Check } from 'lucide-react';
+import { userService } from '../../services/index.js';
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState(user?.fullName || '');
@@ -21,14 +22,26 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
 
-  const handleUpdateProfile = (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      const updatedUser = await userService.updateProfile(user.id, {
+        fullName,
+        email,
+        phone
+      });
+      localStorage.setItem('bhpro_user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
       setSuccessMsg('Cập nhật thông tin tài khoản thành công!');
       setTimeout(() => setSuccessMsg(''), 3000);
-    }, 1000);
+    } catch (err) {
+      console.error(err);
+      setSuccessMsg(err.response?.data?.message || err.message || 'Lỗi hệ thống khi cập nhật hồ sơ');
+      setTimeout(() => setSuccessMsg(''), 3000);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleUpdatePassword = (e) => {

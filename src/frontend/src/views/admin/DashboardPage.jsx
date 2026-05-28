@@ -7,7 +7,7 @@ import {
 import { Button, PageHeader, StatCard, Card, CardHeader, Badge, Table, Toast } from '../../components/common';
 import { useProperties } from '../../controllers/useProperties.js';
 import { useInvoices } from '../../controllers/useInvoices.js';
-import revenue from '../../mocks/revenue.json';
+import { reportService, propertyService } from '../../services/index.js';
 import { formatCurrency, formatRelative } from '../../utils/format.js';
 
 const NOTIFICATIONS = [
@@ -187,8 +187,24 @@ export default function DashboardPage() {
   const [toast, setToast] = useState(null);
   
   const [localProperties, setLocalProperties] = useState([]);
-  const [localRevenue, setLocalRevenue] = useState(revenue);
-  const [multiplier, setMultiplier] = useState(1.0);
+  const [revenueData, setRevenueData] = useState([]);
+  
+  const [dashboardStats, setDashboardStats] = useState({
+    totalProperties: 0,
+    totalRooms: 0,
+    occupiedRooms: 0,
+    emptyRooms: 0,
+    depositRooms: 0,
+    occupancyRate: 0,
+    totalRevenue: 0,
+    totalDebt: 0
+  });
+
+  useEffect(() => {
+    reportService.getDashboard()
+      .then(data => setDashboardStats(data))
+      .catch(err => console.error("Lỗi lấy dữ liệu dashboard:", err));
+  }, []);
 
   useEffect(() => {
     if (properties.length > 0 && localProperties.length === 0) {
@@ -196,22 +212,36 @@ export default function DashboardPage() {
     }
   }, [properties, localProperties]);
 
-  const handleSelectMonth = (monthStr, mult) => {
+  useEffect(() => {
+    const fetchRevenueBreakdown = async () => {
+      try {
+        const results = await Promise.all(localProperties.slice(0, 5).map(async (prop) => {
+          const res = await reportService.getRevenue(prop.id, 2026);
+          return { propId: prop.id, data: res };
+        }));
+
+        const months = Array.from({ length: 12 }, (_, i) => `Tháng ${i + 1}`);
+        const chartRows = months.map((month, idx) => {
+          const row = { month };
+          results.forEach(res => {
+            row[res.propId] = res.data[idx]?.revenue || 0;
+          });
+          return row;
+        });
+        setRevenueData(chartRows);
+      } catch (err) {
+        console.error("Lỗi lấy doanh thu chi nhánh:", err);
+      }
+    };
+
+    if (localProperties.length > 0) {
+      fetchRevenueBreakdown();
+    }
+  }, [localProperties]);
+
+  const handleSelectMonth = (monthStr) => {
     setCurrentMonth(monthStr);
-    setMultiplier(mult);
     setShowMonthDropdown(false);
-    
-    // Scale revenue chart data dynamically to show visually changing statistics
-    const updatedRevenue = revenue.map(item => {
-      const newItem = { ...item };
-      Object.keys(newItem).forEach(key => {
-        if (key !== 'month') {
-          newItem[key] = Math.round(item[key] * mult);
-        }
-      });
-      return newItem;
-    });
-    setLocalRevenue(updatedRevenue);
     
     setToast({
       message: `Đã chuyển đổi kỳ báo cáo sang ${monthStr} thành công!`,
@@ -219,52 +249,39 @@ export default function DashboardPage() {
     });
   };
 
-  const handleSaveProperty = (formData) => {
-    const newId = `p-00${localProperties.length + 1}`;
-    const newProp = {
-      id: newId,
-      code: `P-00${localProperties.length + 1}`,
-      name: formData.name,
-      address: formData.address,
-      district: formData.district,
-      totalRooms: parseInt(formData.totalRooms) || 10,
-      occupiedRooms: 0,
-      occupancyRate: 0,
-      managerIds: formData.managerName ? ['u2'] : [],
-      createdAt: new Date().toISOString(),
-      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80'
-    };
+  const handleSaveProperty = async (formData) => {
+    try {
+      const newProp = await propertyService.create({
+        name: formData.name,
+        address: formData.address,
+        district: formData.district,
+        city: formData.city,
+        totalRooms: parseInt(formData.totalRooms) || 10,
+        managerName: formData.managerName,
+        phone: formData.phone,
+        email: formData.email
+      });
 
-    setLocalProperties(prev => [newProp, ...prev]);
-    setShowAddModal(false);
-    
-    setToast({
-      message: `Đã thêm chi nhánh "${formData.name}" thành công!`,
-      type: 'success'
-    });
+      setLocalProperties(prev => [newProp, ...prev]);
+      setShowAddModal(false);
+      
+      setToast({
+        message: `Đã thêm chi nhánh "${formData.name}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({ message: err.message || 'Lỗi thêm chi nhánh', type: 'error' });
+    }
   };
 
-  // Recalculate metrics with multiplier and localProperties
-  const totalRevenue = localRevenue.at(-1);
-  const baseRevenue = totalRevenue
-    ? Object.entries(totalRevenue).filter(([k]) => k !== 'month').reduce((s, [, v]) => s + v, 0)
-    : 0;
-  const revenueValue = Math.round(baseRevenue);
-
-  const totalRooms = localProperties.reduce((s, p) => s + p.totalRooms, 0);
-  const occupiedRooms = localProperties.reduce((s, p) => s + p.occupiedRooms, 0);
-  const occRate = totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
-  const debts = invoices.filter((i) => i.status === 'overdue' || i.status === 'pending_cash').reduce((s, i) => s + i.total, 0) * multiplier;
-
-  // Dynamic mapping of original revenue to the real database properties
-  const mappedRevenue = localRevenue.map(item => {
-    const newItem = { month: item.month };
-    localProperties.forEach((prop, idx) => {
-      const mockKey = `p-00${(idx % 4) + 1}`;
-      newItem[prop.id] = item[mockKey] || 0;
-    });
-    return newItem;
-  });
+  const revenueValue = dashboardStats.totalRevenue;
+  const totalRooms = dashboardStats.totalRooms;
+  const occupiedRooms = dashboardStats.occupiedRooms;
+  const occRate = dashboardStats.occupancyRate;
+  const debts = dashboardStats.totalDebt;
+  const multiplier = 1.0;
+  const mappedRevenue = revenueData;
 
   return (
     <>
@@ -410,9 +427,7 @@ export default function DashboardPage() {
             { key: 'occ',     header: 'Lấp đầy',       render: (r) => `${r.occupancyRate || 0}%` },
             { key: 'revenue', header: 'Doanh thu',     className: 'text-right font-semibold',
               render: (r) => {
-                const propIndex = localProperties.findIndex(p => p.id === r.id);
-                const mockKey = `p-00${((propIndex >= 0 ? propIndex : 0) % 4) + 1}`;
-                const val = (revenue.at(-1)?.[mockKey] || 0) * multiplier;
+                const val = revenueData.reduce((sum, row) => sum + (row[r.id] || 0), 0);
                 return formatCurrency(val, { compact: true });
               }
             },

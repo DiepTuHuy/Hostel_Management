@@ -10,4 +10,12 @@ export const userService = {
     const res = await api.get(`/users/${id}`);
     return res.data ? new User(res.data) : null;
   },
+  async updateProfile(id, data) {
+    const res = await api.put(`/users/${id}`, data);
+    return new User(res.data.user);
+  },
+  async updateStatus(id, status) {
+    const res = await api.patch(`/users/${id}/status`, { status });
+    return new User(res.data.user);
+  }
 };

@@ -5,29 +5,54 @@ import { useContracts } from '../../controllers/useContracts.js';
 import { useProperties } from '../../controllers/useProperties.js';
 import { CONTRACT_STATUS_META, Contract } from '../../models/Contract.js';
 import { formatDate, formatCurrency } from '../../utils/format.js';
+import { contractService, roomService } from '../../services/index.js';
 
 // Multi-step Create Contract Wizard component
 function CreateContractModal({ onClose, onSave }) {
   const { data: properties = [] } = useProperties();
   const [step, setStep] = useState(1);
   const [validationError, setValidationError] = useState('');
+  const [rooms, setRooms] = useState([]);
   const [formData, setFormData] = useState({
-    roomCode: 'P.101',
+    roomId: '',
+    roomCode: '',
     tenantName: '',
     tenantPhone: '',
     tenantEmail: '',
+    tenantCccd: '',
     monthlyRent: '3200000',
-    deposit: '3200000',
+    deposit: '6400000',
     startDate: '2026-06-01',
     endDate: '2027-06-01',
-    propertyId: 'p-001',
+    propertyId: '',
   });
 
   useEffect(() => {
-    if (properties.length > 0 && formData.propertyId === 'p-001') {
+    if (properties.length > 0 && !formData.propertyId) {
       setFormData(prev => ({ ...prev, propertyId: properties[0].id }));
     }
   }, [properties]);
+
+  useEffect(() => {
+    if (formData.propertyId) {
+      roomService.list({ propertyId: formData.propertyId, status: 'empty' })
+        .then(res => {
+          setRooms(res || []);
+          if (res.length > 0) {
+            setFormData(prev => ({
+              ...prev,
+              roomId: res[0].id,
+              roomCode: res[0].code,
+              monthlyRent: String(res[0].price),
+              deposit: String(res[0].price * 2)
+            }));
+          } else {
+            setFormData(prev => ({ ...prev, roomId: '', roomCode: '' }));
+          }
+        })
+        .catch(err => console.error("Error listing vacant rooms:", err));
+    }
+  }, [formData.propertyId]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -36,6 +61,14 @@ function CreateContractModal({ onClose, onSave }) {
 
   const handleNext = () => {
     if (step === 1) {
+      if (!formData.propertyId) {
+        setValidationError('Vui lòng chọn cơ sở chi nhánh');
+        return;
+      }
+      if (!formData.roomId) {
+        setValidationError('Không tìm thấy phòng trống khả dụng tại chi nhánh này');
+        return;
+      }
       if (!formData.tenantName || !formData.tenantPhone) {
         setValidationError('Vui lòng nhập đầy đủ Tên và Số điện thoại khách thuê');
         return;
@@ -117,16 +150,29 @@ function CreateContractModal({ onClose, onSave }) {
 
               <div>
                 <label className="block text-sm font-semibold text-ink mb-1">Chọn phòng <span className="text-danger">*</span></label>
-                <select
-                  value={formData.roomCode}
-                  onChange={(e) => handleChange('roomCode', e.target.value)}
-                  className="w-full h-10 px-3 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-                >
-                  <option value="P.101">Phòng P.101 (Trống)</option>
-                  <option value="P.104">Phòng P.104 (Trống)</option>
-                  <option value="P.202">Phòng P.202 (Trống)</option>
-                  <option value="P.301">Phòng P.301 (Trống)</option>
-                </select>
+                {rooms.length === 0 ? (
+                  <div className="p-2 border border-red-100 bg-red-50 text-danger rounded-xl text-xs">
+                    Không tìm thấy phòng trống khả dụng tại cơ sở này.
+                  </div>
+                ) : (
+                  <select
+                    value={formData.roomId}
+                    onChange={(e) => {
+                      const selected = rooms.find(r => r.id === e.target.value);
+                      handleChange('roomId', e.target.value);
+                      handleChange('roomCode', selected ? selected.code : '');
+                      if (selected) {
+                        handleChange('monthlyRent', String(selected.price));
+                        handleChange('deposit', String(selected.price * 2));
+                      }
+                    }}
+                    className="w-full h-10 px-3 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                  >
+                    {rooms.map(r => (
+                      <option key={r.id} value={r.id}>Phòng {r.code} ({formatCurrency(r.price)} / tháng)</option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
@@ -163,6 +209,17 @@ function CreateContractModal({ onClose, onSave }) {
                     placeholder="khachthue@gmail.com"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-ink mb-1">Số CMND/CCCD</label>
+                <input
+                  type="text"
+                  value={formData.tenantCccd || ''}
+                  onChange={(e) => handleChange('tenantCccd', e.target.value)}
+                  className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                  placeholder="001xxxxxxxxx"
+                />
               </div>
             </div>
           )}
@@ -434,31 +491,34 @@ export default function ContractsPage() {
   };
 
   // Handle new contract insertion from Wizard
-  const handleSaveContract = (formData) => {
-    const newId = `c-${localContracts.length + 3}`;
-    const newCode = `HD-2026-00${localContracts.length + 3}`;
-    const newContractObj = new Contract({
-      id: newId,
-      code: newCode,
-      propertyId: formData.propertyId,
-      roomId: formData.roomCode,
-      tenantId: formData.tenantName,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      deposit: parseInt(formData.deposit) || 3000000,
-      monthlyRent: parseInt(formData.monthlyRent) || 3000000,
-      status: 'pending_sign',
-      createdAt: new Date().toISOString()
-    });
+  const handleSaveContract = async (formData) => {
+    try {
+      const newContract = await contractService.create({
+        roomId: formData.roomId,
+        tenantName: formData.tenantName,
+        tenantPhone: formData.tenantPhone,
+        tenantEmail: formData.tenantEmail,
+        tenantCccd: formData.tenantCccd,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        deposit: parseFloat(formData.deposit),
+        monthlyRent: parseFloat(formData.monthlyRent)
+      });
 
-    // Insert new contract at the beginning of table
-    setLocalContracts(prev => [newContractObj, ...prev]);
-    setShowAddModal(false);
+      setLocalContracts(prev => [newContract, ...prev]);
+      setShowAddModal(false);
 
-    setToast({
-      message: `Lập hợp đồng "${newCode}" thành công! Mã phòng: ${formData.roomCode}.`,
-      type: 'success'
-    });
+      setToast({
+        message: `Lập hợp đồng "${newContract.code}" thành công! Mã phòng: ${newContract.roomId}.`,
+        type: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({
+        message: err.message || 'Lỗi hệ thống khi tạo hợp đồng.',
+        type: 'error'
+      });
+    }
   };
 
   // Handle simulated PDF download inside viewer

@@ -3,6 +3,7 @@ import { Send, FileDown, Filter, X, Check, Loader2, CreditCard, Bell, Eye, Check
 import { Button, PageHeader, Card, Tabs, Table, Badge, Toast, Loading } from '../../components/common';
 import { useInvoices } from '../../controllers/useInvoices.js';
 import { useProperties } from '../../controllers/useProperties.js';
+import { invoiceService } from '../../services/index.js';
 import { INVOICE_STATUS_META } from '../../models/Invoice.js';
 import { formatCurrency, formatDate, formatPeriod } from '../../utils/format.js';
 
@@ -126,13 +127,18 @@ function ViewReceiptModal({ invoice, onClose }) {
 }
 
 export default function InvoicesPage() {
-  const { data: initialInvoices = [], loading } = useInvoices();
-  const { data: properties = [] } = useProperties();
-  const [localInvoices, setLocalInvoices] = useState([]);
-  
   const [tab, setTab] = useState('all');
   const [periodFilter, setPeriodFilter] = useState('05/2026');
   const [branchFilter, setBranchFilter] = useState('all');
+  
+  const filters = {};
+  if (branchFilter !== 'all') filters.propertyId = branchFilter;
+  if (periodFilter !== 'all') {
+    filters.period = periodFilter.split('/').reverse().join('-');
+  }
+  
+  const { data: invoices = [], loading, reload } = useInvoices(filters);
+  const { data: properties = [] } = useProperties();
   
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [viewingReceipt, setViewingReceipt] = useState(null);
@@ -144,44 +150,75 @@ export default function InvoicesPage() {
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
 
-  // Sync loaded invoices
-  useEffect(() => {
-    if (initialInvoices.length > 0 && localInvoices.length === 0) {
-      setLocalInvoices(initialInvoices);
-    }
-  }, [initialInvoices, localInvoices]);
-
   const handleExportExcel = () => {
     setExcelLoading(true);
-    setTimeout(() => {
+    try {
+      const headers = ['Mã hoá đơn', 'Khách thuê', 'Phòng', 'Kỳ', 'Tổng tiền', 'Hạn thanh toán', 'Trạng thái'];
+      const rows = filtered.map(i => [
+        i.code,
+        i.tenantId || 'Nguyễn Văn Hải',
+        i.roomId,
+        formatPeriod(i.period),
+        i.total,
+        formatDate(i.dueDate),
+        i.status
+      ]);
+      const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `danh_sach_hoa_don_${periodFilter.replace('/', '_')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setToast({ message: 'Xuất file Excel (CSV UTF-8) thành công!', type: 'success' });
+    } catch (err) {
+      setToast({ message: 'Lỗi xuất file: ' + err.message, type: 'danger' });
+    } finally {
       setExcelLoading(false);
+    }
+  };
+
+  const handlePublishFinish = async () => {
+    if (branchFilter === 'all') {
+      setShowPublishModal(false);
       setToast({
-        message: 'Đã xuất dữ liệu danh sách hóa đơn ra file Excel thành công!',
+        message: 'Vui lòng chọn một nhà trọ cụ thể ở bộ lọc để phát hành lô hóa đơn!',
+        type: 'danger'
+      });
+      return;
+    }
+    
+    try {
+      const apiPeriod = periodFilter.split('/').reverse().join('-');
+      const res = await invoiceService.generateInvoices(branchFilter, apiPeriod);
+      setShowPublishModal(false);
+      reload();
+      setToast({
+        message: `Hệ thống đã tự động sinh và phát hành ${res.count} hóa đơn thành công!`,
         type: 'success'
       });
-    }, 600);
+    } catch (err) {
+      setShowPublishModal(false);
+      setToast({
+        message: `Lỗi phát hành lô hóa đơn: ${err?.response?.data?.message || err.message}`,
+        type: 'danger'
+      });
+    }
   };
 
-  const handlePublishFinish = () => {
-    // Modify any pending invoices to unpaid to simulate active billing release
-    setLocalInvoices(prev => 
-      prev.map(i => i.status === 'pending' ? { ...i, status: 'unpaid' } : i)
-    );
-    setShowPublishModal(false);
-    setToast({
-      message: 'Hệ thống đã phát hành đồng loạt và cập nhật trạng thái hóa đơn thành công!',
-      type: 'success'
-    });
-  };
-
-  const handleApprovePayment = (invoice) => {
-    setLocalInvoices(prev => 
-      prev.map(i => i.id === invoice.id ? { ...i, status: 'paid' } : i)
-    );
-    setToast({
-      message: `Đã phê duyệt thu tiền cho hóa đơn "${invoice.code}" thành công!`,
-      type: 'success'
-    });
+  const handleApprovePayment = async (invoice) => {
+    try {
+      await invoiceService.payWithCash(invoice.id);
+      reload();
+      setToast({
+        message: `Đã phê duyệt thu tiền mặt cho hóa đơn "${invoice.code}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      setToast({ message: 'Lỗi duyệt thu: ' + err.message, type: 'danger' });
+    }
   };
 
   const handleSendReminder = (invoice) => {
@@ -205,16 +242,7 @@ export default function InvoicesPage() {
   };
 
   // Filter listings by period, branch, and status tabs
-  const filtered = localInvoices
-    .filter(i => {
-      if (periodFilter === 'all') return true;
-      const checkVal = periodFilter === '05/2026' ? '05/2026' : periodFilter === '04/2026' ? '04/2026' : '03/2026';
-      return i.period === checkVal;
-    })
-    .filter(i => {
-      if (branchFilter === 'all') return true;
-      return i.propertyId === branchFilter;
-    })
+  const filtered = invoices
     .filter(i => {
       if (tab === 'all') return true;
       if (tab === 'pending') return i.status === 'pending' || i.status === 'unpaid';
@@ -227,11 +255,11 @@ export default function InvoicesPage() {
     });
 
   const counts = {
-    all: localInvoices.length,
-    pending: localInvoices.filter(i => i.status === 'pending' || i.status === 'unpaid').length,
-    pending_cash: localInvoices.filter(i => i.status === 'pending_cash').length,
-    paid: localInvoices.filter(i => i.status === 'paid').length,
-    overdue: localInvoices.filter(i => i.status === 'overdue').length,
+    all: invoices.length,
+    pending: invoices.filter(i => i.status === 'pending' || i.status === 'unpaid').length,
+    pending_cash: invoices.filter(i => i.status === 'pending_cash').length,
+    paid: invoices.filter(i => i.status === 'paid').length,
+    overdue: invoices.filter(i => i.status === 'overdue').length,
   };
 
   return (
@@ -333,7 +361,7 @@ export default function InvoicesPage() {
         )}
       </Card>
 
-      {loading && localInvoices.length === 0 ? <Loading /> : (
+      {loading && invoices.length === 0 ? <Loading /> : (
         <div className="animate-[fadeIn_0.3s_ease-out] border border-line rounded-3xl bg-white shadow-sm overflow-hidden">
           <Table
             columns={[

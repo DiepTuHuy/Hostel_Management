@@ -17,6 +17,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { useRooms } from '../../controllers/useRooms.js';
+import { roomService, serviceService, readingService, invoiceService } from '../../services/index.js';
 
 const initialRoomsData = [
   { id: '101', code: 'P.101', floor: 1, area: 25, price: 3200000, status: 'vacant', tenantName: '', tenantPhone: '', checkInDate: '' },
@@ -62,13 +63,27 @@ export default function RoomsPage() {
     }
   }, [apiRooms, loading]);
 
+  const [services, setServices] = useState([]);
+  useEffect(() => {
+    if (propertyId) {
+      serviceService.list(propertyId)
+        .then(data => setServices(data || []))
+        .catch(err => console.error("Lỗi tải cấu hình dịch vụ:", err));
+    }
+  }, [propertyId]);
+
+  const electricService = services.find(s => s.name.toLowerCase().includes('điện')) || { price: 3500, id: 'elec-default' };
+  const waterService = services.find(s => s.name.toLowerCase().includes('nước')) || { price: 15000, id: 'water-default' };
+  const serviceFeeObj = services.find(s => !s.name.toLowerCase().includes('điện') && !s.name.toLowerCase().includes('nước') && s.type === 'fixed') || { price: 150000 };
+
+  const electricityPrice = electricService.price;
+  const waterPrice = waterService.price;
+  const serviceFee = serviceFeeObj.price;
+
   const [electricityOld, setElectricityOld] = useState(1200);
   const [electricityNew, setElectricityNew] = useState(1350);
   const [waterOld, setWaterOld] = useState(45);
   const [waterNew, setWaterNew] = useState(52);
-  const [electricityPrice] = useState(3500);
-  const [waterPrice] = useState(15000);
-  const [serviceFee] = useState(150000);
   const [toastMessage, setToastMessage] = useState('');
 
   const selectedRoom = rooms.find((r) => r.id === selectedRoomId);
@@ -83,31 +98,72 @@ export default function RoomsPage() {
     setIsEditing(false);
   };
 
-  const handleSaveEdit = (e) => {
+  const handleSaveEdit = async (e) => {
     e.preventDefault();
-    setRooms(rooms.map((r) => (r.id === editForm.id ? editForm : r)));
-    setSelectedRoomId(editForm.id);
-    setIsEditing(false);
-    showToast(`Đã cập nhật thông tin phòng ${editForm.code}`);
+    try {
+      let backendStatus = editForm.status;
+      if (editForm.status === 'vacant') backendStatus = 'empty';
+      else if (editForm.status === 'occupied') backendStatus = 'rented';
+      else if (editForm.status === 'paused') backendStatus = 'maintenance';
+
+      const updated = await roomService.update(editForm.id, {
+        roomNumber: editForm.code,
+        status: backendStatus,
+        area: editForm.area,
+        price: editForm.price,
+        description: editForm.description
+      });
+
+      setRooms(rooms.map((r) => (r.id === updated.id ? updated : r)));
+      setSelectedRoomId(updated.id);
+      setIsEditing(false);
+      showToast(`Đã cập nhật thông tin phòng ${updated.code}`);
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || 'Lỗi hệ thống khi cập nhật phòng');
+    }
   };
 
   const handleOpenInvoice = (room) => {
     setInvoiceRoomId(room.id);
     setElectricityOld(1200 + Math.floor(Math.random() * 50));
-    setElectricityNew(1350 + Math.floor(Math.random() * 50));
+    setElectricityNew(1250 + Math.floor(Math.random() * 50));
     setWaterOld(45 + Math.floor(Math.random() * 10));
-    setWaterNew(52 + Math.floor(Math.random() * 10));
+    setWaterNew(48 + Math.floor(Math.random() * 10));
   };
 
-  const handleCreateInvoice = (e) => {
+  const handleCreateInvoice = async (e) => {
     e.preventDefault();
     const invoiceRoomObj = rooms.find((r) => r.id === invoiceRoomId);
-    const elecUsage = electricityNew - electricityOld;
-    const waterUsage = waterNew - waterOld;
-    const totalAmount = invoiceRoomObj.price + elecUsage * electricityPrice + waterUsage * waterPrice + serviceFee;
+    try {
+      // 1. Ghi chỉ số điện nước lên backend
+      const readingsPayload = [
+        {
+          roomId: invoiceRoomId,
+          serviceId: electricService.id,
+          period: '2026-05',
+          oldValue: electricityOld,
+          newValue: electricityNew
+        },
+        {
+          roomId: invoiceRoomId,
+          serviceId: waterService.id,
+          period: '2026-05',
+          oldValue: waterOld,
+          newValue: waterNew
+        }
+      ];
+      await readingService.create(readingsPayload);
 
-    setInvoiceRoomId(null);
-    showToast(`Đã lập hoá đơn thành công cho phòng ${invoiceRoomObj.code} với tổng tiền: ${formatCurrency(totalAmount)}`);
+      // 2. Sinh hoá đơn
+      await invoiceService.generateInvoices(propertyId, '2026-05');
+
+      setInvoiceRoomId(null);
+      showToast(`Đã lập hoá đơn thành công cho phòng ${invoiceRoomObj.code}!`);
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || 'Lỗi lập hoá đơn');
+    }
   };
 
   const showToast = (message) => {

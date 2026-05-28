@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Save, AlertTriangle, Send, Zap, Droplet, Check, Mail, MessageSquare } from 'lucide-react';
 import { Button, PageHeader, Card, Badge, Modal, Toast } from '../../components/common';
 import { useRooms } from '../../controllers/useRooms.js';
+import { useFetch } from '../../controllers/useFetch.js';
+import { serviceService, readingService, invoiceService } from '../../services/index.js';
 import { formatCurrency } from '../../utils/format.js';
 
 const ELECTRIC_PRICE = 3000;
@@ -22,8 +24,25 @@ export default function MetersPage() {
   }, []);
 
   const { data: rooms = [], loading } = useRooms({ propertyId, status: 'occupied' });
+  const { data: services = [] } = useFetch(
+    () => propertyId ? serviceService.list(propertyId) : Promise.resolve([]),
+    [propertyId]
+  );
+
+  const electricService = services.find(s => s.name.toLowerCase().includes('điện')) || { price: 3500, id: 'elec-default' };
+  const waterService = services.find(s => s.name.toLowerCase().includes('nước')) || { price: 15000, id: 'water-default' };
+
   const [readings, setReadings] = useState({});
+  const [prevReadings, setPrevReadings] = useState([]);
   const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    if (propertyId) {
+      readingService.list({ period: '2026-04' })
+        .then(data => setPrevReadings(data || []))
+        .catch(err => console.error("Lỗi tải chỉ số cũ:", err));
+    }
+  }, [propertyId]);
   
   // Modal states
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -40,15 +59,18 @@ export default function MetersPage() {
 
   const calc = (room) => {
     const r = readings[room.id] || {};
-    const prevE = 12450, prevW = 380;
+    const prevE_obj = prevReadings.find(x => x.roomId === room.id && x.serviceName.toLowerCase().includes('điện'));
+    const prevW_obj = prevReadings.find(x => x.roomId === room.id && x.serviceName.toLowerCase().includes('nước'));
+    const prevE = prevE_obj ? prevE_obj.newValue : 12450;
+    const prevW = prevW_obj ? prevW_obj.newValue : 380;
     const newE = r.newE !== undefined ? r.newE : prevE;
     const newW = r.newW !== undefined ? r.newW : prevW;
     const elec = Math.max(0, newE - prevE);
     const water = Math.max(0, newW - prevW);
-    const elecCost = elec * ELECTRIC_PRICE;
-    const waterCost = water * WATER_PRICE;
+    const elecCost = elec * (electricService.price || 3500);
+    const waterCost = water * (waterService.price || 15000);
     
-    // Warning if electric consumption is unusually high (e.g., > 200 kWh)
+    // Cảnh báo nếu điện > 250 kWh
     const warning = elec > 250; 
     
     return {
@@ -60,12 +82,42 @@ export default function MetersPage() {
   };
 
   // Handler for Save Draft
-  const handleSaveDraft = () => {
-    const enteredCount = Object.keys(readings).length;
-    setToast({
-      message: `Đã lưu nháp chỉ số thành công cho ${enteredCount || rooms.length} phòng! Trạng thái nháp sẽ được giữ trong phiên làm việc.`,
-      type: 'success'
-    });
+  const handleSaveDraft = async () => {
+    if (!propertyId) {
+      setToast({ message: "Vui lòng chọn cơ sở nhà trọ.", type: "danger" });
+      return;
+    }
+    try {
+      const readingsPayload = [];
+      rooms.forEach(room => {
+        const c = calc(room);
+        readingsPayload.push({
+          roomId: room.id,
+          serviceId: electricService.id,
+          period: '2026-05',
+          oldValue: c.prevE,
+          newValue: c.newE
+        });
+        readingsPayload.push({
+          roomId: room.id,
+          serviceId: waterService.id,
+          period: '2026-05',
+          oldValue: c.prevW,
+          newValue: c.newW
+        });
+      });
+
+      await readingService.create(readingsPayload);
+      setToast({
+        message: `Đã lưu chỉ số thành công cho ${rooms.length} phòng vào CSDL!`,
+        type: 'success'
+      });
+    } catch (err) {
+      setToast({
+        message: `Lỗi ghi nhận chỉ số: ${err?.response?.data?.message || err.message}`,
+        type: 'danger'
+      });
+    }
   };
 
   // Scan rooms with abnormal consumption warnings
@@ -97,16 +149,47 @@ export default function MetersPage() {
   // Total invoice summary calculation
   const totalInvoiceSum = rooms.reduce((sum, room) => sum + calc(room).total, 0);
 
-  const handleIssueInvoices = () => {
+  const handleIssueInvoices = async () => {
+    if (!propertyId) return;
     setIsIssuing(true);
-    setTimeout(() => {
+    try {
+      // Đầu tiên lưu chỉ số điện nước thật
+      const readingsPayload = [];
+      rooms.forEach(room => {
+        const c = calc(room);
+        readingsPayload.push({
+          roomId: room.id,
+          serviceId: electricService.id,
+          period: '2026-05',
+          oldValue: c.prevE,
+          newValue: c.newE
+        });
+        readingsPayload.push({
+          roomId: room.id,
+          serviceId: waterService.id,
+          period: '2026-05',
+          oldValue: c.prevW,
+          newValue: c.newW
+        });
+      });
+      await readingService.create(readingsPayload);
+
+      // Sinh hóa đơn tự động
+      const res = await invoiceService.generateInvoices(propertyId, '2026-05');
       setIsIssuing(false);
       setIsInvoiceOpen(false);
       setToast({
-        message: `Đã phát hành hoá đơn tiền điện nước Tháng 05/2026 thành công cho ${rooms.length} phòng! Tổng tiền hoá đơn: ${formatCurrency(totalInvoiceSum)}.`,
+        message: `Đã phát hành thành công ${res.count} hoá đơn cho các phòng!`,
         type: 'success'
       });
-    }, 1200);
+    } catch (err) {
+      setIsIssuing(false);
+      setIsInvoiceOpen(false);
+      setToast({
+        message: `Lỗi phát hành hoá đơn: ${err?.response?.data?.message || err.message}`,
+        type: 'danger'
+      });
+    }
   };
 
   return (

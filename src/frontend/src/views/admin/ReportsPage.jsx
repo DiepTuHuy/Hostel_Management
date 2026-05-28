@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FileDown, Calendar, Loader2, Sparkles, AlertCircle } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from 'recharts';
 import { Button, PageHeader, Card, CardHeader, Tabs, Toast } from '../../components/common';
 import { useProperties } from '../../controllers/useProperties.js';
-import revenue from '../../mocks/revenue.json';
+import { reportService } from '../../services/index.js';
 import { formatCurrency } from '../../utils/format.js';
 
 export default function ReportsPage() {
@@ -17,114 +17,107 @@ export default function ReportsPage() {
   
   // Dynamic interaction states
   const [chartLoading, setChartLoading] = useState(false);
-  const [localRevenue, setLocalRevenue] = useState(revenue);
+  const [reportData, setReportData] = useState([]);
   const [toast, setToast] = useState(null);
   const [exportingExcel, setExportingExcel] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
 
-  const getDisplayData = () => {
-    return localRevenue.map(item => {
-      const newItem = { month: item.month };
-      
-      if (branch === 'all') {
-        let totalVal = 0;
-        let count = 0;
-        properties.forEach((prop, idx) => {
-          const mockKey = `p-00${(idx % 4) + 1}`;
-          const rawVal = item[mockKey] || 0;
-          
-          let val = rawVal;
-          if (tab === 'occupancy') {
-            val = Math.min(100, Math.round(82 + (rawVal ? rawVal % 15 : 5)));
-          } else if (tab === 'debt') {
-            val = Math.round(rawVal * 0.08);
-          } else if (tab === 'cost') {
-            val = Math.round(rawVal * 0.40);
-          }
-          
-          totalVal += val;
-          count++;
-        });
-        
-        if (tab === 'occupancy') {
-          newItem['all'] = count ? Math.round(totalVal / count) : 0;
-        } else {
-          newItem['all'] = totalVal;
-        }
-      } else {
-        properties.forEach((prop, idx) => {
-          if (prop.id === branch) {
-            const mockKey = `p-00${(idx % 4) + 1}`;
-            const rawVal = item[mockKey] || 0;
-            
-            if (tab === 'occupancy') {
-              newItem[prop.id] = Math.min(100, Math.round(82 + (rawVal ? rawVal % 15 : 5)));
-            } else if (tab === 'debt') {
-              newItem[prop.id] = Math.round(rawVal * 0.08);
-            } else if (tab === 'cost') {
-              newItem[prop.id] = Math.round(rawVal * 0.40);
-            } else {
-              newItem[prop.id] = rawVal;
-            }
-          }
-        });
-      }
-      return newItem;
-    });
-  };
-
-  const chartData = getDisplayData();
-
-  const handleApplyFilters = () => {
+  const handleApplyFilters = async () => {
     setChartLoading(true);
-    
-    // Simulate real database calculation with 0.5s delay
-    setTimeout(() => {
+    try {
+      const dataKey = branch === 'all' ? 'all' : branch;
+      if (tab === 'revenue' || tab === 'debt') {
+        const year = period === '2025' ? 2025 : 2026;
+        const res = await reportService.getRevenue(branch === 'all' ? undefined : branch, year);
+        setReportData(res.map(r => ({
+          month: r.month,
+          [dataKey]: tab === 'revenue' ? r.revenue : r.debt
+        })));
+      } else if (tab === 'occupancy') {
+        const res = await reportService.getOccupancy();
+        if (branch === 'all') {
+          setReportData(res.map(o => {
+            const total = o.occupied + o.empty;
+            const rate = total > 0 ? Math.round((o.occupied / total) * 100) : 0;
+            return {
+              month: o.name,
+              all: rate
+            };
+          }));
+        } else {
+          setReportData(res.filter(o => o.name === properties.find(p => p.id === branch)?.name).map(o => {
+            const total = o.occupied + o.empty;
+            const rate = total > 0 ? Math.round((o.occupied / total) * 100) : 0;
+            return {
+              month: o.name,
+              [dataKey]: rate
+            };
+          }));
+        }
+      } else if (tab === 'cost') {
+        const year = period === '2025' ? 2025 : 2026;
+        const res = await reportService.getRevenue(branch === 'all' ? undefined : branch, year);
+        setReportData(res.map(r => ({
+          month: r.month,
+          [dataKey]: Math.round(r.revenue * 0.4)
+        })));
+      }
+    } catch (err) {
+      console.error(err);
+      setToast({ message: err.message || 'Lỗi tải dữ liệu báo cáo', type: 'error' });
+    } finally {
       setChartLoading(false);
-      
-      // Mutate chart bars depending on chosen filters
-      const propIndex = properties.findIndex(p => p.id === branch);
-      const mockKeyForScale = propIndex >= 0 ? `p-00${(propIndex % 4) + 1}` : 'all';
-      const scale = mockKeyForScale === 'p-001' ? 1.4 : mockKeyForScale === 'p-002' ? 0.9 : 1.1;
-      
-      const updatedRevenue = revenue.map(item => {
-        const newItem = { ...item };
-        Object.keys(newItem).forEach(key => {
-          if (key !== 'month') {
-            newItem[key] = Math.round(item[key] * scale);
-          }
-        });
-        return newItem;
-      });
-      setLocalRevenue(updatedRevenue);
-      
-      setToast({
-        message: 'Đã áp dụng bộ lọc và tính toán lại biểu đồ phân tích chuỗi trọ!',
-        type: 'success'
-      });
-    }, 550);
+    }
   };
+
+  const chartData = reportData;
+
+  useEffect(() => {
+    handleApplyFilters();
+  }, [tab, branch, period]);
 
   const handleExportExcel = () => {
     setExportingExcel(true);
-    setTimeout(() => {
-      setExportingExcel(false);
+    try {
+      let headers = ['Tháng/Cơ sở', 'Giá trị'];
+      if (tab === 'occupancy') headers = ['Cơ sở', 'Tỉ lệ lấp đầy (%)'];
+      else if (tab === 'revenue') headers = ['Tháng', 'Doanh thu (VND)'];
+      else if (tab === 'debt') headers = ['Tháng', 'Công nợ (VND)'];
+      else if (tab === 'cost') headers = ['Tháng', 'Chi phí (VND)'];
+
+      const csvRows = [headers.join(',')];
+      reportData.forEach(row => {
+        csvRows.push([row.month, row.all].join(','));
+      });
+      
+      const csvContent = "\uFEFF" + csvRows.join("\n");
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `bao_cao_${tab}_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       setToast({
-        message: 'Đã tổng hợp dữ liệu doanh thu và tải xuống tệp Excel thành công!',
+        message: 'Đã xuất dữ liệu báo cáo ra file CSV thành công!',
         type: 'success'
       });
-    }, 800);
+    } catch (err) {
+      console.error(err);
+      setToast({ message: 'Lỗi xuất CSV', type: 'error' });
+    } finally {
+      setExportingExcel(false);
+    }
   };
 
   const handleExportPdf = () => {
     setExportingPdf(true);
     setTimeout(() => {
       setExportingPdf(false);
-      setToast({
-        message: 'Đã kết xuất báo cáo tài chính dạng PDF thành công!',
-        type: 'success'
-      });
-    }, 950);
+      window.print();
+    }, 300);
   };
 
   return (

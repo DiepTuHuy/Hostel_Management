@@ -10,4 +10,16 @@ export const contractService = {
     const res = await api.get(`/contracts/${id}`);
     return res.data ? new Contract(res.data) : null;
   },
+  async create(data) {
+    const res = await api.post('/contracts', data);
+    return new Contract(res.data);
+  },
+  async terminate(id) {
+    const res = await api.patch(`/contracts/${id}/terminate`);
+    return new Contract(res.data);
+  },
+  async extend(id, endDate) {
+    const res = await api.patch(`/contracts/${id}/extend`, { endDate });
+    return new Contract(res.data);
+  }
 };

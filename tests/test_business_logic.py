@@ -817,7 +817,7 @@ def run_and_export():
     result = CSVTestResult()
     suite.run(result)
 
-    csv_dir = r"d:\Study\System_Design\tests"
+    csv_dir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(csv_dir, exist_ok=True)
     csv_path = os.path.join(csv_dir, "ket_qua_kiem_thu_tu_dong.csv")
 

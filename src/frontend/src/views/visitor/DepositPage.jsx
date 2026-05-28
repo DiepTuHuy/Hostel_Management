@@ -55,12 +55,23 @@ export default function DepositPage() {
     }
   };
 
-  const handlePay = () => {
+  const handlePay = async () => {
     setPaying(true);
-    setTimeout(() => {
-      setPaying(false);
+    try {
+      await roomService.deposit(room.id, {
+        fullName,
+        phone,
+        cccd,
+        depositAmount: 500000,
+        email
+      });
       setStep(4);
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || err.message || 'Lỗi hệ thống khi đặt cọc');
+    } finally {
+      setPaying(false);
+    }
   };
 
   return (
