@@ -1,7 +1,8 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '../../utils/cn.js';
+import { Card } from './Card.jsx';
 
-export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', extra, onClick }) {
+export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', extra, onClick, tilt = true }) {
   const accentBg = {
     primary: 'bg-primary-soft text-primary',
     success: 'bg-green-50 text-success',
@@ -13,11 +14,12 @@ export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', 
   const positive = delta != null && delta >= 0;
 
   return (
-    <div
+    <Card
       onClick={onClick}
+      tilt={tilt}
       className={cn(
-        "card-padded flex flex-col gap-4",
-        onClick && "cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+        "flex flex-col gap-4",
+        onClick && "cursor-pointer active:scale-[0.98] transition-transform duration-200"
       )}
     >
       <div className="flex justify-between items-start">
@@ -34,6 +36,6 @@ export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', 
         )}
         {extra && <div className="mt-2">{extra}</div>}
       </div>
-    </div>
+    </Card>
   );
 }

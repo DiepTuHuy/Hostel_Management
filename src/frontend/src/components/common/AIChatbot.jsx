@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Loader2, Sparkles, Trash2 } from 'lucide-react';
 import { chatService } from '../../services';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(useGSAP);
 
 export function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,16 +18,38 @@ export function AIChatbot() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const chatWindowRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  useGSAP(() => {
+    if (isOpen) {
+      gsap.set(chatWindowRef.current, { display: 'flex' });
+      gsap.fromTo(chatWindowRef.current,
+        { scale: 0.8, opacity: 0, y: 30, transformOrigin: 'bottom right' },
+        { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.2)' }
+      );
+    } else {
+      gsap.to(chatWindowRef.current, {
+        scale: 0.8,
+        opacity: 0,
+        y: 30,
+        duration: 0.3,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          gsap.set(chatWindowRef.current, { display: 'none' });
+        }
+      });
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen) {
       scrollToBottom();
       // Delay focus slightly for animation to finish
-      setTimeout(() => inputRef.current?.focus(), 300);
+      setTimeout(() => inputRef.current?.focus(), 350);
     }
   }, [messages, isOpen]);
 
@@ -89,101 +115,103 @@ export function AIChatbot() {
       </button>
 
       {/* Chat Window */}
-      {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[520px] z-[9999] flex flex-col bg-white border border-line rounded-2xl shadow-2xl overflow-hidden animate-apple-pop">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 bg-primary text-white">
-            <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center w-9 h-9 bg-white/20 rounded-xl">
-                <Sparkles size={18} className="text-white animate-pulse" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold leading-tight">BoardingHouse AI</h3>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[11px] text-white/80 font-medium">Trực tuyến</span>
-                </div>
-              </div>
+      <div
+        ref={chatWindowRef}
+        style={{ display: 'none', transform: 'scale(0.8) translateY(30px)', opacity: 0, transformOrigin: 'bottom right' }}
+        className="fixed bottom-24 right-6 w-96 h-[520px] z-[9999] flex flex-col bg-white border border-line rounded-2xl shadow-2xl overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3.5 bg-primary text-white">
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center w-9 h-9 bg-white/20 rounded-xl">
+              <Sparkles size={18} className="text-white animate-pulse" />
             </div>
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={handleClear}
-                className="p-1.5 hover:bg-white/10 rounded-lg text-white/80 hover:text-white transition-colors"
-                title="Xoá hội thoại"
-              >
-                <Trash2 size={16} />
-              </button>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 hover:bg-white/10 rounded-lg text-white/80 hover:text-white transition-colors"
-              >
-                <X size={18} />
-              </button>
+            <div>
+              <h3 className="text-sm font-bold leading-tight">BoardingHouse AI</h3>
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[11px] text-white/80 font-medium">Trực tuyến</span>
+              </div>
             </div>
           </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={handleClear}
+              className="p-1.5 hover:bg-white/10 rounded-lg text-white/80 hover:text-white transition-colors"
+              title="Xoá hội thoại"
+            >
+              <Trash2 size={16} />
+            </button>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1.5 hover:bg-white/10 rounded-lg text-white/80 hover:text-white transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
 
-          {/* Messages Area */}
-          <div className="flex-1 p-4 overflow-y-auto bg-gray-50/50 space-y-4">
-            {messages.map((msg, index) => (
+        {/* Messages Area */}
+        <div className="flex-1 p-4 overflow-y-auto bg-gray-50/50 space-y-4">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex gap-2 max-w-[85%] ${
+                msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+              }`}
+            >
+              {msg.role === 'assistant' && (
+                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <Sparkles size={14} className="text-primary" />
+                </div>
+              )}
               <div
-                key={index}
-                className={`flex gap-2 max-w-[85%] ${
-                  msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                className={`p-3 rounded-2xl text-sm whitespace-pre-wrap leading-relaxed shadow-sm ${
+                  msg.role === 'user'
+                    ? 'bg-primary text-white rounded-tr-none'
+                    : 'bg-white text-ink border border-line rounded-tl-none'
                 }`}
               >
-                {msg.role === 'assistant' && (
-                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Sparkles size={14} className="text-primary" />
-                  </div>
-                )}
-                <div
-                  className={`p-3 rounded-2xl text-sm whitespace-pre-wrap leading-relaxed shadow-sm ${
-                    msg.role === 'user'
-                      ? 'bg-primary text-white rounded-tr-none'
-                      : 'bg-white text-ink border border-line rounded-tl-none'
-                  }`}
-                >
-                  {msg.content}
-                </div>
+                {msg.content}
               </div>
-            ))}
-            
-            {loading && (
-              <div className="flex gap-2 max-w-[85%] mr-auto">
-                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Sparkles size={14} className="text-primary animate-pulse" />
-                </div>
-                <div className="p-3 bg-white text-ink border border-line rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
-                  <Loader2 size={14} className="text-primary animate-spin" />
-                  <span className="text-xs text-ink-muted">AI đang suy nghĩ...</span>
-                </div>
+            </div>
+          ))}
+          
+          {loading && (
+            <div className="flex gap-2 max-w-[85%] mr-auto">
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Sparkles size={14} className="text-primary animate-pulse" />
               </div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Panel */}
-          <form onSubmit={handleSend} className="p-3.5 border-t border-line bg-white flex gap-2">
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Hỏi tôi bất cứ điều gì..."
-              disabled={loading}
-              className="flex-1 h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors placeholder:text-gray-400"
-            />
-            <button
-              type="submit"
-              disabled={!inputValue.trim() || loading}
-              className="w-10 h-10 shrink-0 bg-primary hover:bg-primary-dark disabled:opacity-40 text-white rounded-xl flex items-center justify-center transition-all shadow-sm active:scale-95"
-            >
-              <Send size={16} />
-            </button>
-          </form>
+              <div className="p-3 bg-white text-ink border border-line rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
+                <Loader2 size={14} className="text-primary animate-spin" />
+                <span className="text-xs text-ink-muted">AI đang suy nghĩ...</span>
+              </div>
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
         </div>
-      )}
+
+        {/* Input Panel */}
+        <form onSubmit={handleSend} className="p-3.5 border-t border-line bg-white flex gap-2">
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Hỏi tôi bất cứ điều gì..."
+            disabled={loading}
+            className="flex-1 h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors placeholder:text-gray-400"
+          />
+          <button
+            type="submit"
+            disabled={!inputValue.trim() || loading}
+            className="w-10 h-10 shrink-0 bg-primary hover:bg-primary-dark disabled:opacity-40 text-white rounded-xl flex items-center justify-center transition-all shadow-sm active:scale-95"
+          >
+            <Send size={16} />
+          </button>
+        </form>
+      </div>
     </>
   );
 }
