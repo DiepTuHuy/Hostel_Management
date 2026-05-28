@@ -54,3 +54,9 @@ src/frontend/start-vite.js
 walkthrough.md
 start.sh
 BAO_CAO_DOI_CHIEU_DAC_TA_VS_HE_THONG.md
+
+# Static UI mockups
+Admin_UI/
+Manager_UI/
+Tenant_UI/
+Visitor_UI/
