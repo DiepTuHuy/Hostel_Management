@@ -126,7 +126,13 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {featured.map(r => (
-            <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated overflow-hidden flex flex-col group">
+            <Card
+              key={r.id}
+              tilt={true}
+              padded={false}
+              className="group overflow-hidden apple-press cursor-pointer border border-line rounded-3xl bg-white shadow-card flex flex-col"
+              onClick={() => navigate(`/rooms/${r.id}`)}
+            >
               <div className="h-48 bg-gray-100 overflow-hidden relative">
                 <img
                   src={r.photos[0]}

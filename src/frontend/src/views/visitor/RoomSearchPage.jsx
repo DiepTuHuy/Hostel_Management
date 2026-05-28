@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Filter, SlidersHorizontal, Check, RefreshCw, Grid, List as ListIcon } from 'lucide-react';
 import { roomService } from '../../services/roomService.js';
 import { propertyService } from '../../services/propertyService.js';
@@ -8,6 +8,7 @@ import { ROOM_STATUS_META } from '../../models/Room.js';
 import { Card } from '../../components/common';
 
 export default function RoomSearchPage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [rooms, setRooms] = useState([]);
   const [properties, setProperties] = useState([]);
@@ -214,7 +215,13 @@ export default function RoomSearchPage() {
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredRooms.map(r => (
-                  <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated overflow-hidden flex flex-col group">
+                  <Card
+                    key={r.id}
+                    tilt={true}
+                    padded={false}
+                    className="group overflow-hidden apple-press cursor-pointer border border-line rounded-3xl bg-white shadow-card flex flex-col"
+                    onClick={() => navigate(`/rooms/${r.id}`)}
+                  >
                     <div className="h-44 bg-gray-100 overflow-hidden relative">
                       {r.photos.length > 0 ? (
                         <img src={r.photos[0]} alt={`Phòng ${r.code}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -257,7 +264,13 @@ export default function RoomSearchPage() {
             ) : (
               <div className="space-y-4">
                 {filteredRooms.map(r => (
-                  <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated p-4 flex flex-col sm:flex-row gap-4 items-center group">
+                  <Card
+                    key={r.id}
+                    tilt={true}
+                    padded={false}
+                    className="group overflow-hidden apple-press cursor-pointer border border-line rounded-3xl bg-white shadow-card p-4 flex flex-col sm:flex-row gap-4 items-center"
+                    onClick={() => navigate(`/rooms/${r.id}`)}
+                  >
                     <div className="w-full sm:w-44 h-32 bg-gray-100 rounded-xl overflow-hidden relative shrink-0">
                       {r.photos.length > 0 ? (
                         <img src={r.photos[0]} alt={`Phòng ${r.code}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
