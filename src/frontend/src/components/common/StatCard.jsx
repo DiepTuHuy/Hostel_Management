@@ -18,8 +18,8 @@ export function StatCard({ label, value, delta, icon: Icon, accent = 'primary', 
       onClick={onClick}
       tilt={tilt}
       className={cn(
-        "flex flex-col gap-4",
-        onClick && "cursor-pointer active:scale-[0.98] transition-transform duration-200"
+        "flex flex-col gap-4 transition-transform duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:scale-[1.02] [will-change:transform]",
+        onClick && "cursor-pointer active:scale-[0.98]"
       )}
     >
       <div className="flex justify-between items-start">
