@@ -41,6 +41,11 @@ Sơ đồ lớp trong tài liệu đặc tả sử dụng tiếng Việt không 
    - *Thực tế*: Nhúng trực tiếp mảng `details: [{ serviceId, name, quantity, price, amount }]` bên trong Schema `Invoice`.
 5. **Ràng buộc Chi nhánh / Nhà trọ**:
    - *Thực tế*: Schema `RoomType` (Loại phòng) và `Service` (Dịch vụ) đều có trường `propertyId` để quản lý theo từng cơ sở cụ thể. Đặc tả chưa mô tả các mối liên kết này, dẫn đến việc thiết kế đơn giá dịch vụ bị hiểu lầm là áp dụng chung cho toàn hệ thống thay vì cấu hình riêng cho từng khu trọ.
+6. **Mối quan hệ Quản lý - Nhà trọ (Nhiều - Nhiều)**:
+   - *Đặc tả*: Thiết kế mối quan hệ đơn giản một chiều (1 nhà trọ chỉ gán cho 1 quản lý).
+   - *Thực tế*: Model `Property` chứa mảng `maQuanLyIds` và Model `User` (Manager) chứa mảng `maNhaTroIds` trỏ ngược lại. Thiết kế Nhiều - Nhiều (N - N) thực tế này cho phép một khu trọ lớn có nhiều quản lý phụ trách và một quản lý có thể trông coi nhiều khu trọ cùng lúc.
+7. **Quy trình Trạng thái Người dùng và Kỳ hóa đơn**:
+   - *Thực tế*: Schema `User` bổ sung trạng thái `pending` dành riêng cho luồng xác thực OTP kích hoạt tài khoản đăng ký mới. Schema `Invoice` bổ sung trường `kyThanhToan` định dạng chuẩn chuỗi `'YYYY-MM'` (ví dụ: `'2026-05'`) để quản lý kỳ hóa đơn chính xác theo từng tháng. Đặc tả chưa mô tả các cơ chế này.
 
 ### 2.2. Sự khác biệt về Luồng Nghiệp vụ (Use Cases)
 

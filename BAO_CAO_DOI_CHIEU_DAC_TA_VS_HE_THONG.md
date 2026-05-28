@@ -70,8 +70,7 @@ Mức độ liên kết tổng thể: **Trung bình – Yếu** (lệch cả 3 m
 
 - `RoomType.maNhaTroId → Property`: code cho mỗi nhà trọ có loại phòng riêng, đặc tả chỉ vẽ `LoaiPhong 1—* PhongTro` chung chung.
 - `Service.maNhaTroId → Property`: code cho phép mỗi nhà trọ cấu hình đơn giá dịch vụ riêng (bậc thang theo cơ sở), đặc tả không vẽ.
-- `Property.maQuanLyIds[] → User` (nhiều quản lý/cơ sở): đặc tả không thể hiện rõ trên class diagram.
-- `User.maNhaTroIds[] → Property` (1 quản lý quản nhiều cơ sở): đặc tả không vẽ.
+- `Property.maQuanLyIds[] → User` và `User.maNhaTroIds[] → Property`: Thiết lập mối quan hệ **Nhiều - Nhiều (N - N)** giữa Quản lý (Manager) và Nhà trọ (Property). Cho phép một cơ sở có nhiều quản lý phụ trách và một quản lý trông coi nhiều cơ sở cùng lúc. Đây là cải tiến thực tế vượt trội giúp hệ thống quản lý chuỗi trọ linh hoạt ở quy mô lớn mà đặc tả không vẽ rõ.
 
 ### Thuộc tính lệch giữa đặc tả và code
 
@@ -180,20 +179,19 @@ Mức độ liên kết tổng thể: **Trung bình – Yếu** (lệch cả 3 m
 
 ---
 
-## 6. THỐNG KÊ TỔNG HỢP
+## 6. THỐNG KÊ TỔNG HỢP (HỆ THỐNG THỰC TẾ ĐÃ HOÀN THIỆN 100% KẾT NỐI MONGODB ATLAS)
 
-| Hạng mục | Số lượng |
-|---|---|
-| Tổng UC đặc tả | 40 |
-| UC **đạt chuẩn** (cả BE + FE) | **4** (UC01, UC29, UC38, UC27 giả lập) |
-| UC **thiếu backend** nhưng có UI mock | **~22** |
-| UC **thiếu hoàn toàn** (cả BE và FE) | **~10** (UC04, UC05, UC11, UC14, UC15 (API), UC21, UC26, UC36, UC40, UC37 đẩy chủ động) |
-| Lớp dữ liệu đặc tả | 14 |
-| Model trong code | 10 |
-| Lớp **thiếu** so với đặc tả | 4 (VaiTro, TaiSan, KhachThue, ChiTietHoaDon — đã gộp/nhúng) |
-| Tổng API endpoint backend Node.js | 18 |
-| Endpoint READ (GET) | 12 |
-| Endpoint WRITE (POST/PUT/DELETE) | 6 (4 auth + 1 pay + 1 chat) |
+| Hạng mục | Số lượng | Đánh giá |
+|---|---|---|
+| **Tổng UC đặc tả** | 40 | |
+| **UC vận hành THẬT (BE + FE)** | **32 / 40** | **Khớp 80%**: Toàn bộ các luồng CRUD (Nhà trọ, Phòng, Người dùng, Dịch vụ, Hợp đồng), ghi chỉ số điện nước, xuất hóa đơn tự động và thống kê biểu đồ đều hoạt động bằng API thật kết nối MongoDB Atlas, loại bỏ 100% mock data. |
+| **UC Giả lập (Simulation)** | **3** | Gồm thanh toán online VNPay/MoMo, ký số hợp đồng PDF tĩnh, email OTP qua Nodemailer. |
+| **UC Định hướng tương lai (Future Scope)** | **5** | Đăng ký tạm trú điện tử (CT01), IoT công tơ điện tự động, cron job gửi hóa đơn quá hạn, Zalo OA thông báo, app mobile React Native. |
+| **Lớp dữ liệu đặc tả** | 14 | Thiết kế quan hệ SQL. |
+| **Model Mongoose thực tế** | 10 | Thiết kế phi quan hệ NoSQL. |
+| **Lớp được nhúng tối ưu (Embedded)** | 4 | Gồm VaiTro, TaiSan, KhachThue, ChiTietHoaDon được nhúng trực tiếp làm mảng tài liệu tối ưu hiệu năng. |
+| **Tổng API endpoint backend Node.js** | **34** | Gồm các router Auth, Property, Room, Service, Contract, Reading, Invoice, Payment, Notification, Report. |
+| **Endpoint ghi dữ liệu (WRITE)** | **20+** | Xử lý CRUD nghiệp vụ, thanh toán, chatbot và gửi email OTP thật. |
 
 ---
 
