@@ -5,6 +5,7 @@ import { roomService } from '../../services/roomService.js';
 import { propertyService } from '../../services/propertyService.js';
 import { formatCurrency } from '../../utils/format.js';
 import { ROOM_STATUS_META } from '../../models/Room.js';
+import { Card } from '../../components/common/Card.jsx';
 
 export default function RoomSearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -229,7 +230,7 @@ export default function RoomSearchPage() {
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredRooms.map(r => (
-                  <div key={r.id} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated transition-all duration-300 transform hover:-translate-y-1 overflow-hidden flex flex-col group">
+                  <Card key={r.id} tilt={true} padded={false} className="overflow-hidden flex flex-col group">
                     <div className="h-44 bg-gray-100 overflow-hidden relative">
                       {r.photos.length > 0 ? (
                         <img src={r.photos[0]} alt={`Phòng ${r.code}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -265,13 +266,13 @@ export default function RoomSearchPage() {
                         </Link>
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 ))}
               </div>
             ) : (
               <div className="space-y-4">
                 {filteredRooms.map(r => (
-                  <div key={r.id} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated transition-all p-4 flex flex-col sm:flex-row gap-4 items-center group">
+                  <Card key={r.id} tilt={true} padded={false} className="p-4 flex flex-col sm:flex-row gap-4 items-center group">
                     <div className="w-full sm:w-44 h-32 bg-gray-100 rounded-xl overflow-hidden relative shrink-0">
                       {r.photos.length > 0 ? (
                         <img src={r.photos[0]} alt={`Phòng ${r.code}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -315,7 +316,7 @@ export default function RoomSearchPage() {
                         </Link>
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 ))}
               </div>
             )}

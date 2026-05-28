@@ -5,7 +5,7 @@ import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(useGSAP);
 
-export function Card({ className = '', padded = true, children, tilt = false, ...rest }) {
+export function Card({ className = '', padded = true, children, tilt = true, ...rest }) {
   const cardRef = useRef(null);
 
   useGSAP(() => {
