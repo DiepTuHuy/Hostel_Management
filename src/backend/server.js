@@ -1994,7 +1994,7 @@ app.post('/api/chat', async (req, res) => {
     if (!apiKey) {
       console.warn("[Chatbot AI] Chưa cấu hình GEMINI_API_KEY, tự động chạy chế độ Offline.");
       const fallbackReply = getFallbackResponse(message, dbData);
-      return res.json({ reply: fallbackReply });
+      return res.json({ reply: fallbackReply, isOnline: false });
     }
 
     // Map history to Gemini API format
@@ -2065,14 +2065,14 @@ ${statsContext}`
     const data = await response.json();
     const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, tôi không thể tìm thấy câu trả lời phù hợp lúc này.";
 
-    res.json({ reply: replyText });
+    res.json({ reply: replyText, isOnline: true });
   } catch (error) {
     console.error("Lỗi API Chatbot:", error.message);
     try {
       console.log("[Chatbot AI] Kích hoạt cơ chế Trợ lý Offline dựa trên dữ liệu database thực tế do lỗi kết nối AI.");
       const dbData = await getDetailedSystemContext();
       const fallbackReply = getFallbackResponse(message, dbData);
-      return res.json({ reply: fallbackReply });
+      return res.json({ reply: fallbackReply, isOnline: false });
     } catch (fallbackError) {
       console.error("Lỗi cả fallback ngoại tuyến:", fallbackError.message);
       res.status(500).json({ message: "Trợ lý AI đang gặp sự cố kết nối và không thể tải dữ liệu offline." });

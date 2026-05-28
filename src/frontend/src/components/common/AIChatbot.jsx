@@ -4,6 +4,7 @@ import { chatService } from '../../services';
 
 export function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -42,8 +43,12 @@ export function AIChatbot() {
       // Send message to Gemini backend API (sending history as context)
       const data = await chatService.sendChatMessage(messageText, messages);
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      if (data.isOnline !== undefined) {
+        setIsOnline(data.isOnline);
+      }
     } catch (err) {
       console.error(err);
+      setIsOnline(false);
       setMessages(prev => [
         ...prev,
         {
@@ -96,8 +101,8 @@ export function AIChatbot() {
           <div className="relative">
             <MessageSquare size={24} className="group-hover:rotate-12 transition-transform" />
             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border border-white"></span>
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOnline ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+              <span className={`relative inline-flex rounded-full h-3.5 w-3.5 border border-white ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
             </span>
           </div>
         )}
@@ -115,8 +120,10 @@ export function AIChatbot() {
               <div>
                 <h3 className="text-sm font-bold leading-tight">BoardingHouse AI</h3>
                 <div className="flex items-center gap-1 mt-0.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[11px] text-white/80 font-medium">Trực tuyến</span>
+                  <span className={`h-1.5 w-1.5 rounded-full animate-pulse ${isOnline ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                  <span className="text-[11px] text-white/80 font-medium">
+                    {isOnline ? 'Trực tuyến' : 'Ngoại tuyến (Offline)'}
+                  </span>
                 </div>
               </div>
             </div>
