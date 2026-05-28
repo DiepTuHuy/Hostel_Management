@@ -37,6 +37,16 @@ export const authService = {
     return res.data;
   },
 
+  async forgotPassword(email) {
+    const res = await api.post('/auth/forgot-password', { email });
+    return res.data;
+  },
+
+  async resetPassword(email, otp, newPassword) {
+    const res = await api.post('/auth/reset-password', { email, otp, newPassword });
+    return res.data;
+  },
+
   async logout() {
     localStorage.removeItem('bhpro_token');
     localStorage.removeItem('bhpro_user');

@@ -70,13 +70,41 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const forgotPassword = async (email) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.forgotPassword(email);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Yêu cầu OTP thất bại');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (email, otp, newPassword) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await authService.resetPassword(email, otp, newPassword);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Khôi phục mật khẩu thất bại');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     await authService.logout();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, error, login, logout, register, verifyOtp, resendOtp }}>
+    <AuthContext.Provider value={{ user, setUser, loading, error, login, logout, register, verifyOtp, resendOtp, forgotPassword, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );
