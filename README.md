@@ -75,7 +75,7 @@ SMTP_USER=your_email@gmail.com
 SMTP_PASS=your_app_password
 
 # API Key Gemini để chatbot AI hoạt động
-GEMINI_API_KEY=AIzaSyDBgVXlA-rS0puux3vY1LA-q799qb2IDQc
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 ---
