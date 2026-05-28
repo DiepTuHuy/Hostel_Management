@@ -10,12 +10,14 @@
 
 | Tiêu chí | Mô tả trong tài liệu đặc tả | Thực trạng hệ thống thực tế | Đánh giá mức độ liên kết |
 | :--- | :--- | :--- | :--- |
-| **Giao diện (Frontend)** | Mô tả chạy trên nền tảng Web (ReactJS) và Mobile (React Native). | Chia thành 4 thư mục UI phẳng độc lập (`Admin_UI`, `Manager_UI`, `Tenant_UI`, `Visitor_UI`) sử dụng **HTML, CSS, JS thuần (Vanilla)**, kết hợp thư viện biểu đồ tĩnh. | **Lệch pha trung bình**: Cần cập nhật công nghệ Frontend trong tài liệu sang HTML/CSS/JS thuần hoặc ghi rõ ReactJS là định hướng nâng cấp. |
+| **Giao diện (Frontend)** | Mô tả chạy trên nền tảng Web (ReactJS) và Mobile (React Native). | Chia thành 4 thư mục UI phẳng độc lập (`Admin_UI`, `Manager_UI`, `Tenant_UI`, `Visitor_UI`) sử dụng **HTML, CSS, JS thuần (Vanilla)**. Đặc biệt, giao diện tìm phòng của Khách vãng lai (Visitor_UI) vừa được cải tiến hiển thị dưới dạng danh sách (List view) tinh tế, thuận mắt và cực kỳ trực quan thay vì dạng lưới truyền thống. | **Lệch pha trung bình**: Gần như toàn bộ UI đã chạy mượt mà. Cần cập nhật công nghệ Frontend và giao diện dạng danh sách của Visitor vào tài liệu đặc tả. |
 | **Backend & API** | Đề xuất sử dụng Node.js hoặc Spring Boot để xây dựng REST API. | Chạy song song hai backend kết nối chung database: **Node.js Express** (port 5001 - xử lý auth, CRUD, chatbot, mail OTP) và **Python Flask** (xử lý logic dữ liệu và thống kê). | **Lệch pha nhẹ**: Cần bổ sung Python Flask vào phần thiết kế kiến trúc hệ thống của tài liệu. |
 | **Cơ sở dữ liệu** | Class Diagram thiết kế theo mô hình quan hệ (chứa các bảng thực thể riêng biệt như Vai trò, Chi tiết hóa đơn, Tài sản). | Sử dụng **MongoDB (NoSQL)**. Các thực thể phụ được nhúng trực tiếp (embedded arrays) để tối ưu hiệu năng. | **Lệch pha lớn**: Class Diagram tiếng Việt và Schema MongoDB tiếng Anh có cấu trúc quan hệ khác nhau. |
 | **Xác thực OTP** | Đăng nhập hệ thống bắt buộc có xác thực 2 lớp qua mã OTP (UC02). | Đăng nhập trực tiếp bằng email/mật khẩu. OTP được dùng ở luồng **Đăng ký tài khoản** để kích hoạt tài khoản trạng thái *pending*. | **Lệch pha trung bình**: Cần điều chỉnh lại mô tả Use Case xác thực OTP. |
 | **Ký số hợp đồng** | Ký số trực tuyến nhúng chữ ký vẽ tay hoặc OTP, xuất file PDF (UC16 + UC17). | Lưu đường dẫn file PDF tĩnh (`fileUrl`). Logic ký số động và vẽ tay chưa được phát triển thực tế mà chỉ lưu trạng thái qua API. | **Mô phỏng**: Cần ghi rõ đây là tính năng giả lập hoặc bổ sung mô tả giới hạn công nghệ. |
 | **Đăng ký tạm trú** | Tự động sinh mẫu CT01 gửi qua API cho Công an phường (UC21). | Không có mã nguồn hay API endpoint nào thực hiện gửi dữ liệu CT01 đi cơ quan công an. | **Chưa triển khai**: Tính năng này hoàn toàn nằm ngoài mã nguồn thực tế. |
+| **Trợ lý ảo Chatbot AI** | Không được đề cập trong tài liệu đặc tả đồ án. | Tích hợp **BoardingHouse AI** kết nối trực tiếp MongoDB Atlas theo thời gian thực (real-time DB context), tự động nạp ngữ cảnh hoạt động. Hỗ trợ **Hệ chuyên gia tự động phân tích & tính toán ngoại tuyến** (fallback offline kháng lỗi khi gặp sự cố mạng hoặc 429 Rate Limit), giao diện hiển thị **trạng thái Trực tuyến/Ngoại tuyến động** (online/offline indicator) và bộ lọc **tự động đổi màu văn bản in đậm sang xanh thương hiệu** (`text-primary`) thay vì ký tự `**`. | **Bổ sung vượt trội**: Đây là tính năng nâng cao vô cùng cao cấp và thực tế. Cần bổ sung ca sử dụng (Use Case) chatbot vào tài liệu đặc tả để đạt điểm số tối đa. |
+
 
 ---
 
@@ -54,6 +56,14 @@ Sơ đồ lớp trong tài liệu đặc tả sử dụng tiếng Việt không 
 4. **Cổng thanh toán trực tuyến (UC27)**:
    - *Đặc tả*: Hỗ trợ thanh toán thực qua cổng VNPay/MoMo.
    - *Thực tế*: Mã nguồn backend (`server.js`) xử lý thanh toán bằng cách cập nhật trạng thái hóa đơn thành `paid` và tạo bản ghi `Payment` giả lập phương thức `'vnpay'`, `'momo'`, `'cash'`, hoặc `'bank_transfer'` mà không thực sự chuyển hướng hay xử lý giao dịch tiền tệ thật qua API VNPay Sandbox.
+5. **Trợ lý ảo AI Chatbot nâng cao (BoardingHouse AI)**:
+   - *Đặc tả*: Hoàn toàn không đề cập đến bất kỳ công nghệ hay tính năng AI nào.
+   - *Thực tế*: Xây dựng hẳn một module **BoardingHouse AI** kết nối trực tiếp MongoDB Atlas qua hàm `getDetailedSystemContext` để nạp toàn bộ thông tin nhà trọ, dịch vụ, danh sách khách thuê, chi tiết phòng, hợp đồng và hóa đơn thực tế vào `systemInstruction` của mô hình `gemini-2.5-flash`.
+   - *Kháng lỗi (Fault-tolerance)*: Khi bị giới hạn lượt gọi (Gemini 429 Rate Limit) hoặc mất kết nối mạng, chatbot tự động kích hoạt **Hệ chuyên gia offline** (`getFallbackResponse`) tự động tra cứu, tính toán trực tiếp từ database (phòng rẻ nhất/đắt nhất, lọc theo quận huyện, tra cứu thông tin khách thuê theo tên hoặc phòng cụ thể).
+   - *Trải nghiệm người dùng*: Tích hợp chấm trạng thái Trực tuyến/Ngoại tuyến động ở cả Frontend và Backend; bộ lọc `parseMessageContent` ở Frontend tự động gỡ bỏ các ký tự `**` thô và đổi màu chữ sang màu xanh thương hiệu (`text-primary` font-semibold) vô cùng thẩm mỹ.
+6. **Màn hình tìm phòng Khách vãng lai (VisitorRoomSearch)**:
+   - *Đặc tả*: Mô tả tìm phòng cơ bản hiển thị dạng lưới (Grid layout) với thông tin thô.
+   - *Thực tế*: Giao diện tìm phòng của Visitor được nâng cấp hiển thị dạng danh sách (List view) cực kỳ tinh tế, bo góc mượt mà, phân cấp thông tin rõ ràng: hình ảnh chất lượng cao bên trái, thông tin diện tích, tầng, loại phòng, danh sách tiện nghi và giá thuê được bố trí theo hàng dọc thuận mắt, giúp Visitor dễ dàng so sánh và đưa ra quyết định nhanh chóng.
 
 ### 2.3. Đồng bộ thuật ngữ trên Giao diện
 
@@ -81,6 +91,7 @@ Hệ thống thực tế vừa được cập nhật các nhãn giao diện quan
 
 #### A. Sơ đồ Use Case (Use Case Diagram):
 - **UC02 Đăng nhập có xác thực 2 lớp (OTP)**: Cập nhật lại thành **UC02 Đăng nhập trực tiếp** (không include OTP) và bổ sung **UC01 Đăng ký tài khoản (kèm xác thực OTP qua Email)**. Luồng đăng ký sẽ include Use Case xác thực OTP.
+- **Bổ sung UC41 Trợ lý ảo AI Chatbot (BoardingHouse AI)**: Vẽ thêm Use Case này vào sơ đồ Use Case tổng quát, kết nối với cả 3 Actor (Admin, Manager, Tenant) và liên kết với Actor phụ thứ 3 là `Gemini API`. Mô tả ca sử dụng bao gồm 2 luồng hoạt động song song: Luồng trực tuyến (Online) tương tác trực tiếp qua mô hình ngôn ngữ lớn, và Luồng ngoại tuyến (Offline fallback) tự động kích hoạt thông qua Hệ chuyên gia cục bộ truy vấn MongoDB Atlas.
 - Đánh dấu các Use Case nâng cao như **UC21 Đăng ký tạm trú**, **Ký số trực tuyến bằng chữ ký vẽ tay**, **IoT công tơ điện** dưới dạng *"Tính năng định hướng phát triển (Future Scope) / Giả lập hệ thống"* để tránh hiểu lầm khi kiểm thử thực tế.
 
 #### B. Sơ đồ lớp (Class Diagram - Hình 2.12):
