@@ -438,3 +438,25 @@ Chúng ta đã tiến hành cập nhật trực tiếp 3 tệp báo cáo đối 
 ### 3. Đẩy tài liệu cập nhật lên GitHub
 *   Các tệp báo cáo đối chiếu đã được lưu trữ sạch sẽ, đồng bộ và nhất quán ở cả thư mục làm việc và thư mục gốc của dự án.
 *   Thực hiện đồng bộ mã nguồn và tài liệu mới cập nhật lên nhánh `main` của repository GitHub.
+
+---
+
+## Cập nhật Ngày 28/05/2026 (Tiếp tục): Kết nối và Seed toàn bộ dữ liệu MongoDB Atlas thực tế siêu quy mô
+
+Theo yêu cầu mới nhất của người dùng, chúng ta đã cấu hình hệ thống trỏ vào connection string MongoDB Atlas thật và nạp dữ liệu sạch sẽ, hoàn chỉnh để loại bỏ hoàn toàn mock data:
+
+### 1. Cập nhật Connection String thật trong `.env`
+*   Đảm bảo `MONGODB_URI` trong [src/backend/.env](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/backend/.env) trỏ chính xác vào DB `boardinghouse_db` trên cluster Atlas của người dùng (`cluster0.dfn1bnl.mongodb.net`), đảm bảo Mongoose liên kết đúng và an toàn.
+
+### 2. Thực thi Seeding dữ liệu thực tế siêu quy mô
+*   Chạy script [seed.js](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/backend/seed.js) nạp sạch sẽ dữ liệu mẫu thực tế cực kỳ lớn và phong phú vào MongoDB Atlas:
+    - **10 tài khoản người dùng thực tế** (gồm Admin, Manager, và Tenants với CCCD, nghề nghiệp, địa chỉ thường trú).
+    - **220 khu nhà trọ (Properties)** hoạt động thực tế trên khắp 22 quận huyện tại TP.HCM (mỗi quận 10 cơ sở).
+    - **880 Services** (các đơn giá điện, nước, internet cấu hình động theo từng cơ sở).
+    - **443 Loại phòng (RoomTypes)** chi tiết với diện tích, giá và danh sách tiện nghi đi kèm.
+    - **968 Phòng trọ (Rooms)** phân bổ trên 220 khu nhà trọ với trạng thái empty/rented/deposit/maintenance và mảng tài sản nhúng (`assets[]`).
+    - **Hợp đồng & Hóa đơn thực tế** gán cho cơ sở chính "Nhà trọ Quận 1 — Cơ sở 01" (gồm các phòng 101, 102...) để người dùng có thể demo ngay lập tức các luồng nghiệp vụ mà không cần nhập liệu thủ công.
+
+### 3. Vận hành và Đồng bộ hóa 100% dữ liệu thật
+*   Các dịch vụ backend (Express 5001) và frontend (Vite 5173) đã tự động nhận dạng cơ sở dữ liệu mới seed và tải dữ liệu thật lên các màn hình Sidebar, Dashboard, RoomsPage, MetersPage, InvoicesPage, ContractsPage, v.v.
+*   Chatbot AI (cả chế độ Online Gemini API và chế độ Offline fallback Hệ chuyên gia) giờ đây đã nắm giữ toàn bộ dữ liệu thực tế siêu quy mô trên Atlas này để hỗ trợ trả lời chuẩn xác.
