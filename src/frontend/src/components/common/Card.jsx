@@ -33,15 +33,15 @@ export function Card({ className = '', padded = true, children, tilt = false, ..
       gsap.to(card, {
         rotateX: -normY * maxRotX,
         rotateY: normX * maxRotY,
-        scale: 1.025,
+        scale: 1.03,
         transformPerspective: 1000,
-        ease: 'power2.out',
-        duration: 0.3,
+        ease: 'power1.out',
+        duration: 0.08,
         overwrite: 'auto',
         boxShadow: `
-          ${-normX * 15}px ${-normY * 15}px 30px rgba(0, 0, 0, 0.08),
-          0 10px 20px rgba(0, 0, 0, 0.04),
-          0 1px 3px rgba(0, 0, 0, 0.02)
+          ${-normX * 20}px ${-normY * 20}px 35px rgba(0, 0, 0, 0.12),
+          0 12px 24px rgba(0, 0, 0, 0.06),
+          0 1px 4px rgba(0, 0, 0, 0.03)
         `
       });
     };
@@ -52,8 +52,8 @@ export function Card({ className = '', padded = true, children, tilt = false, ..
         rotateY: 0,
         scale: 1,
         boxShadow: '', // Reset về mặc định css
-        ease: 'power3.out',
-        duration: 0.6,
+        ease: 'power2.out',
+        duration: 0.4,
         overwrite: 'auto'
       });
     };
@@ -74,6 +74,7 @@ export function Card({ className = '', padded = true, children, tilt = false, ..
       style={{
         transformStyle: 'preserve-3d',
         willChange: tilt ? 'transform, box-shadow' : 'auto',
+        transition: tilt ? 'none' : undefined,
         ...rest.style
       }}
       {...rest}

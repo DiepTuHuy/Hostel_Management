@@ -488,7 +488,7 @@ export default function PropertiesPage() {
               key={p.id}
               tilt={true}
               padded={false}
-              className="group overflow-hidden apple-card-hover apple-press cursor-pointer border border-line rounded-3xl"
+              className="group overflow-hidden apple-press cursor-pointer border border-line rounded-3xl"
               onClick={() => handleViewDetail(p)}
             >
               <div className="h-44 bg-gray-100 relative overflow-hidden">

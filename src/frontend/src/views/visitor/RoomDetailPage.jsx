@@ -65,7 +65,8 @@ export default function RoomDetailPage() {
                   alt={`Phòng ${room.code}`}
                   className="w-full h-full object-cover"
                 />
-                <span className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${room.statusBgClass}`}>
+                <span className={`absolute top-4 left-4 px-3.5 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1.5 ${room.statusBgClass}`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                   {ROOM_STATUS_META[room.status]?.label}
                 </span>
               </div>

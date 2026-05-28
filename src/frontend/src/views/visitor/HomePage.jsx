@@ -133,7 +133,8 @@ export default function HomePage() {
                   alt={`Phòng ${r.code}`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <span className={`absolute top-3 left-3 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${r.statusBgClass}`}>
+                <span className={`absolute top-3 left-3 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-widest rounded-full flex items-center gap-1.5 ${r.statusBgClass}`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                   {r.statusMeta?.label || 'Còn trống'}
                 </span>
               </div>

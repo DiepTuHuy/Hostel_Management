@@ -67,28 +67,28 @@ export class Room {
   get statusBgClass() {
     switch (this.status) {
       case ROOM_STATUS.VACANT:
-        return 'bg-emerald-600 border border-emerald-500/20 text-white shadow-md';
+        return 'bg-[#059669] border border-[#34D399]/40 text-white shadow-[0_4px_12px_rgba(5,150,105,0.45)]';
       case ROOM_STATUS.OCCUPIED:
-        return 'bg-blue-600 border border-blue-500/20 text-white shadow-md';
+        return 'bg-[#2563EB] border border-[#60A5FA]/40 text-white shadow-[0_4px_12px_rgba(37,99,235,0.45)]';
       case ROOM_STATUS.DEPOSIT:
-        return 'bg-amber-500 border border-amber-400/20 text-white shadow-md';
+        return 'bg-[#D97706] border border-[#FBBF24]/40 text-white shadow-[0_4px_12px_rgba(217,119,6,0.45)]';
       case ROOM_STATUS.PAUSED:
       default:
-        return 'bg-gray-500 border border-gray-400/20 text-white shadow-md';
+        return 'bg-[#4B5563] border border-[#9CA3AF]/40 text-white shadow-[0_4px_12px_rgba(75,85,99,0.45)]';
     }
   }
 
   get statusTextClass() {
     switch (this.status) {
       case ROOM_STATUS.VACANT:
-        return 'text-emerald-600';
+        return 'text-[#059669]';
       case ROOM_STATUS.OCCUPIED:
-        return 'text-blue-600';
+        return 'text-[#2563EB]';
       case ROOM_STATUS.DEPOSIT:
-        return 'text-amber-500';
+        return 'text-[#D97706]';
       case ROOM_STATUS.PAUSED:
       default:
-        return 'text-gray-500';
+        return 'text-[#4B5563]';
     }
   }
 }
