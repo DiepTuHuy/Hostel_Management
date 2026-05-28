@@ -1888,12 +1888,12 @@ function getFallbackResponse(message, statsContext) {
 
 // 9. API Chatbot AI kết nối MongoDB
 app.post('/api/chat', async (req, res) => {
-  try {
-    const { message, history = [] } = req.body;
-    if (!message) {
-      return res.status(400).json({ message: "Vui lòng nhập tin nhắn." });
-    }
+  const { message, history = [] } = req.body;
+  if (!message) {
+    return res.status(400).json({ message: "Vui lòng nhập tin nhắn." });
+  }
 
+  try {
     // Lấy context dữ liệu thực tế từ Database theo thời gian thực
     const statsContext = await getDetailedSystemContext();
 
