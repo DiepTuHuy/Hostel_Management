@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const paymentSchema = new mongoose.Schema({
-  maHoaDonId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invoice', required: true },
+  maHoaDonId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invoice', required: false },
   phuongThuc: { type: String, enum: ['vnpay', 'momo', 'cash', 'bank_transfer'], required: true },
   soTien: { type: Number, required: true },
   ngayGiaoDich: { type: Date, default: Date.now },
