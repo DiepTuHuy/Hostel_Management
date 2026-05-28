@@ -486,6 +486,7 @@ export default function PropertiesPage() {
           {localProperties.map((p) => (
             <Card
               key={p.id}
+              tilt={true}
               padded={false}
               className="group overflow-hidden apple-card-hover apple-press cursor-pointer border border-line rounded-3xl"
               onClick={() => handleViewDetail(p)}
