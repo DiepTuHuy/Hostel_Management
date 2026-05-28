@@ -22,7 +22,8 @@ export default defineConfig({
     port: 5173,
     open: false,
     watch: {
-      ignored: ['**/*'],
+      usePolling: true,
+      interval: 100,
     },
   },
 });
