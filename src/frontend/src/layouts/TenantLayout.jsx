@@ -107,7 +107,7 @@ export default function TenantLayout() {
 
           <nav ref={navRef} className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto relative">
             <div
-              className="absolute bg-primary-soft rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none z-0 shadow-[0_4px_12px_-2px_rgba(58,91,199,0.12)] [will-change:transform,opacity]"
+              className="absolute bg-primary-soft rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none z-0 shadow-[0_4px_12px_-2px_rgba(58,91,199,0.12)] [will-change:transform,opacity]"
               style={{
                 transform: `translate3d(${indicatorStyle.left}px, ${indicatorStyle.top}px, 0)`,
                 width: `${indicatorStyle.width}px`,

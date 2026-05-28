@@ -38,7 +38,7 @@ export function Tabs({ tabs = [], value, onChange, variant = 'underline' }) {
     return (
       <div ref={containerRef} className="inline-flex gap-1 p-1 bg-gray-100 rounded-lg relative">
         <div
-          className="absolute bg-white rounded-md transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none z-0 shadow-sm [will-change:transform,opacity]"
+          className="absolute bg-white rounded-md transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none z-0 shadow-sm [will-change:transform,opacity]"
           style={{
             transform: `translate3d(${indicatorStyle.left}px, 0, 0)`,
             width: `${indicatorStyle.width}px`,
@@ -74,7 +74,7 @@ export function Tabs({ tabs = [], value, onChange, variant = 'underline' }) {
   return (
     <div ref={containerRef} className="flex gap-6 border-b border-line relative">
       <div
-        className="absolute bottom-0 h-[2px] w-[1px] bg-primary origin-left transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none z-0 [will-change:transform,opacity]"
+        className="absolute bottom-0 h-[2px] w-[1px] bg-primary origin-left transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none z-0 [will-change:transform,opacity]"
         style={{
           transform: `translate3d(${indicatorStyle.left}px, 0, 0) scaleX(${indicatorStyle.width})`,
           opacity: indicatorStyle.opacity,
