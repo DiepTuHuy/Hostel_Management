@@ -4,6 +4,7 @@ import { Search, Shield, Zap, CircleDollarSign, CheckCircle } from 'lucide-react
 import { roomService } from '../../services/roomService.js';
 import { propertyService } from '../../services/propertyService.js';
 import { formatCurrency } from '../../utils/format.js';
+import { Card } from '../../components/common';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -125,7 +126,7 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {featured.map(r => (
-            <div key={r.id} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated transition-all duration-300 transform hover:-translate-y-1.5 overflow-hidden flex flex-col group">
+            <Card key={r.id} tilt={true} padded={false} className="bg-white rounded-2xl border border-line shadow-card hover:shadow-elevated transition-all overflow-hidden flex flex-col group">
               <div className="h-48 bg-gray-100 overflow-hidden relative">
                 <img
                   src={r.photos[0]}
@@ -169,7 +170,7 @@ export default function HomePage() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </section>
