@@ -4,6 +4,7 @@ import { ProtectedRoute } from './ProtectedRoute.jsx';
 
 const LoginPage = lazy(() => import('../views/auth/LoginPage.jsx'));
 const RegisterPage = lazy(() => import('../views/auth/RegisterPage.jsx'));
+const ForgotPasswordPage = lazy(() => import('../views/auth/ForgotPasswordPage.jsx'));
 const AdminLayout = lazy(() => import('../layouts/AdminLayout.jsx'));
 const AdminDashboard = lazy(() => import('../views/admin/DashboardPage.jsx'));
 const AdminProperties = lazy(() => import('../views/admin/PropertiesPage.jsx'));
@@ -54,6 +55,7 @@ export function AppRouter() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         <Route
           path="/admin"

@@ -382,6 +382,100 @@ app.post('/api/auth/resend-otp', async (req, res) => {
   }
 });
 
+// 1.3. Yêu cầu gửi OTP quên mật khẩu (dành riêng cho khách thuê - tenant)
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Vui lòng cung cấp địa chỉ email." });
+    }
+
+    const emailLower = email.toLowerCase();
+    // Tìm user theo email, phải là active và có vai trò tenant
+    const user = await User.findOne({ email: emailLower, vaiTro: 'tenant' });
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy tài khoản khách thuê nào đã kích hoạt với email này." });
+    }
+
+    if (user.trangThai !== 'active') {
+      return res.status(400).json({ message: "Tài khoản khách thuê này chưa được kích hoạt xác thực." });
+    }
+
+    // Sinh mã OTP khôi phục mật khẩu mới
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
+
+    user.otp = { maOtp: otpCode, hanSuDung: otpExpires };
+    await user.save();
+
+    console.log(`[Database] Đã gửi mã OTP quên mật khẩu cho tài khoản: ${emailLower} - OTP: ${otpCode}`);
+
+    // Gửi email khôi phục
+    const emailSent = await emailService.sendForgotPasswordOtpEmail(emailLower, user.hoTen, otpCode);
+
+    res.status(200).json({
+      message: emailSent
+        ? "Mã OTP khôi phục mật khẩu đã được gửi thành công đến email của bạn!"
+        : `[CHẾ ĐỘ THỬ NGHIỆM] Gửi email thất bại. Mã OTP khôi phục của bạn là: ${otpCode}`
+    });
+  } catch (error) {
+    console.error("Lỗi yêu cầu OTP quên mật khẩu:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi yêu cầu quên mật khẩu." });
+  }
+});
+
+// 1.4. Xác thực OTP quên mật khẩu và đặt lại mật khẩu mới
+app.post('/api/auth/reset-password', async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "Vui lòng nhập đầy đủ các thông tin (email, mã OTP, mật khẩu mới)." });
+    }
+
+    const emailLower = email.toLowerCase();
+    const user = await User.findOne({ email: emailLower, vaiTro: 'tenant' });
+
+    if (!user) {
+      return res.status(404).json({ message: "Tài khoản khách thuê không tồn tại." });
+    }
+
+    if (!user.otp || !user.otp.maOtp) {
+      return res.status(400).json({ message: "Không tìm thấy phiên yêu cầu OTP khôi phục mật khẩu." });
+    }
+
+    // Kiểm tra hết hạn OTP
+    if (new Date() > new Date(user.otp.hanSuDung)) {
+      return res.status(400).json({ message: "Mã OTP đã hết hạn. Vui lòng yêu cầu lại mã mới." });
+    }
+
+    // Kiểm tra mã OTP khớp
+    if (user.otp.maOtp !== otp.trim()) {
+      return res.status(400).json({ message: "Mã OTP nhập vào không chính xác. Vui lòng kiểm tra lại." });
+    }
+
+    // Hash mật khẩu mới bằng bcryptjs
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Lưu mật khẩu mới và xóa OTP
+    user.matKhau = hashedPassword;
+    user.otp = { maOtp: undefined, hanSuDung: undefined };
+    await user.save();
+
+    console.log(`[Database] Đặt lại mật khẩu thành công cho tài khoản khách thuê: ${emailLower}`);
+
+    res.status(200).json({
+      message: "Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới."
+    });
+  } catch (error) {
+    console.error("Lỗi đặt lại mật khẩu:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi khôi phục mật khẩu." });
+  }
+});
+
 // 2. Đăng nhập (Kiểm tra tài khoản từ database MongoDB Atlas)
 app.post('/api/auth/login', async (req, res) => {
   try {
