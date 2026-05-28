@@ -25,11 +25,17 @@ export default function TenantLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const navRef = useRef(null);
+  const bottomNavRef = useRef(null);
   const [indicatorStyle, setIndicatorStyle] = useState({
     left: 0,
     top: 0,
     width: 0,
     height: 0,
+    opacity: 0
+  });
+  const [bottomIndicatorStyle, setBottomIndicatorStyle] = useState({
+    left: 0,
+    width: 0,
     opacity: 0
   });
 
@@ -50,9 +56,24 @@ export default function TenantLayout() {
       }
     };
 
+    const updateBottomIndicator = () => {
+      if (!bottomNavRef.current) return;
+      const activeEl = bottomNavRef.current.querySelector('.active');
+      if (activeEl) {
+        setBottomIndicatorStyle({
+          left: activeEl.offsetLeft,
+          width: activeEl.offsetWidth,
+          opacity: 1
+        });
+      } else {
+        setBottomIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
+      }
+    };
+
     updateIndicator();
-    const timer = setTimeout(updateIndicator, 50);
-    window.addEventListener('resize', updateIndicator);
+    updateBottomIndicator();
+    const timer = setTimeout(() => { updateIndicator(); updateBottomIndicator(); }, 50);
+    window.addEventListener('resize', () => { updateIndicator(); updateBottomIndicator(); });
     return () => {
       clearTimeout(timer);
       window.removeEventListener('resize', updateIndicator);
@@ -195,7 +216,16 @@ export default function TenantLayout() {
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-line max-w-screen-sm mx-auto z-30 lg:hidden">
-        <div className="grid grid-cols-4 h-full">
+        <div ref={bottomNavRef} className="grid grid-cols-4 h-full relative">
+          <div
+            className="absolute top-0 h-[2px] bg-primary transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none z-0 [will-change:transform,opacity]"
+            style={{
+              transform: `translate3d(${bottomIndicatorStyle.left}px, 0, 0)`,
+              width: `${bottomIndicatorStyle.width}px`,
+              opacity: bottomIndicatorStyle.opacity,
+              left: 0,
+            }}
+          />
           {BOTTOM_NAV.map((item) => (
             <NavLink
               key={item.to}
@@ -203,8 +233,8 @@ export default function TenantLayout() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  'flex flex-col items-center justify-center gap-0.5 text-xs',
-                  isActive ? 'text-primary' : 'text-ink-muted'
+                  'flex flex-col items-center justify-center gap-0.5 text-xs font-medium relative z-10 transition-colors duration-200',
+                  isActive ? 'active text-primary' : 'text-ink-muted'
                 )
               }
             >
