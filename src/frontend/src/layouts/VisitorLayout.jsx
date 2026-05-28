@@ -108,7 +108,7 @@ export default function VisitorLayout() {
                   cn(
                     'relative px-4 py-2 rounded-xl text-sm font-semibold transition-apple duration-300 apple-press z-10',
                     isActive
-                      ? 'text-primary'
+                      ? 'active text-primary'
                       : 'text-ink-muted hover:bg-gray-100/70 hover:text-ink'
                   )
                 }

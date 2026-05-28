@@ -126,7 +126,7 @@ export default function TenantLayout() {
                   cn(
                     'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold relative apple-press transition-apple duration-200 z-10',
                     isActive
-                      ? 'text-primary'
+                      ? 'active text-primary'
                       : 'text-ink-muted hover:bg-gray-100/70 hover:text-ink hover:translate-x-1'
                   )
                 }
