@@ -79,7 +79,19 @@ export function Card({ className = '', padded = true, children, tilt = false, ..
       }}
       {...rest}
     >
-      <div style={{ transform: tilt ? 'translateZ(15px)' : 'none', transformStyle: 'preserve-3d' }}>
+      <div 
+        style={{ 
+          transform: tilt ? 'translateZ(15px)' : 'none', 
+          transformStyle: 'preserve-3d',
+          display: tilt ? (className.includes('flex') ? 'flex' : 'block') : 'contents',
+          flexDirection: className.includes('flex-col') ? 'column' : (className.includes('flex-row') ? 'row' : 'inherit'),
+          alignItems: 'inherit',
+          justifyContent: 'inherit',
+          gap: 'inherit',
+          width: tilt ? '100%' : 'auto',
+          height: tilt ? '100%' : 'auto'
+        }}
+      >
         {children}
       </div>
     </div>
