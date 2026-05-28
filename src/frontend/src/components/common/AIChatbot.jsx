@@ -67,6 +67,21 @@ export function AIChatbot() {
     }
   };
 
+  const parseMessageContent = (content) => {
+    if (!content) return '';
+    const parts = content.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <span key={index} className="text-primary font-semibold">
+            {part.slice(2, -2)}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <>
       {/* Floating Chat Button */}
@@ -143,7 +158,7 @@ export function AIChatbot() {
                       : 'bg-white text-ink border border-line rounded-tl-none'
                   }`}
                 >
-                  {msg.content}
+                  {msg.role === 'assistant' ? parseMessageContent(msg.content) : msg.content}
                 </div>
               </div>
             ))}
