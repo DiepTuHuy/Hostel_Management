@@ -188,8 +188,10 @@ export default function TenantLayout() {
         </div>
       </header>
 
-      <main className="flex-1 pb-20 lg:pb-6 px-4 lg:px-6 py-4 lg:py-6 lg:ml-[240px] lg:mt-16 lg:max-w-container-max lg:w-full lg:mx-auto">
-        <Outlet />
+      <main className="flex-1 pb-20 lg:pb-6 px-4 lg:px-6 py-4 lg:py-6 lg:ml-[240px] lg:mt-16">
+        <div className="max-w-container-max mx-auto">
+          <Outlet />
+        </div>
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-line max-w-screen-sm mx-auto z-30 lg:hidden">
