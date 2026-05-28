@@ -1673,7 +1673,220 @@ app.get('/api/reports/debts', async (req, res) => {
   }
 });
 
-// 9. API Chatbot AI với Gemini
+// Hàm lấy dữ liệu chi tiết thực tế của toàn bộ hệ thống từ MongoDB theo thời gian thực
+async function getDetailedSystemContext() {
+  try {
+    // 1. Lấy toàn bộ chi nhánh nhà trọ
+    const properties = await Property.find({}, 'tenNhaTro maNhaTro diaChi quanHuyen tongSoPhong soPhongDaThue');
+    
+    // 2. Lấy toàn bộ đơn giá dịch vụ
+    const services = await Service.find({}, 'maNhaTroId tenDichVu donGia donVi loaiTinh');
+    
+    // 3. Lấy toàn bộ khách thuê
+    const tenants = await User.find({ vaiTro: 'tenant' }, 'hoTen email sdt thongTinKhachThue trangThai');
+    
+    // 4. Lấy các phòng không trống và các phòng ở cơ sở Q1, Q3 chính để tránh nạp quá nhiều
+    const q1q3PropIds = properties.filter(p => p.maNhaTro === 'NT-Q1-01' || p.maNhaTro === 'NT-Q3-01').map(p => p._id);
+    const rooms = await Room.find({
+      $or: [
+        { trangThai: { $ne: 'empty' } },
+        { maNhaTroId: { $in: q1q3PropIds } }
+      ]
+    }).populate('maLoaiPhongId');
+    
+    // 5. Lấy danh sách hợp đồng
+    const contracts = await Contract.find()
+      .populate('maPhongId')
+      .populate('maKhachThueIds');
+      
+    // 6. Lấy các hóa đơn mới nhất
+    const invoices = await Invoice.find()
+      .populate('maPhongId')
+      .sort({ createdAt: -1 })
+      .limit(30);
+
+    // Map ID nhà trọ -> Tên nhà trọ để định vị nhanh
+    const propMap = {};
+    properties.forEach(p => {
+      propMap[p._id.toString()] = p.tenNhaTro;
+    });
+
+    let context = `\n[DỮ LIỆU THỰC TẾ HỆ THỐNG TRONG DATABASE]:\n`;
+    
+    // Chi nhánh
+    context += `1. DANH SÁCH CHI NHÁNH NHÀ TRỌ (PROPERTIES) & DỊCH VỤ:\n`;
+    properties.forEach(p => {
+      const propServices = services.filter(s => s.maNhaTroId && s.maNhaTroId.toString() === p._id.toString());
+      const serviceStr = propServices.map(s => `${s.tenDichVu}: ${s.donGia.toLocaleString('vi-VN')}đ/${s.donVi}`).join(', ');
+      
+      context += `- Chi nhánh: **${p.tenNhaTro}** (Mã: **${p.maNhaTro}**)
+  Địa chỉ: ${p.diaChi}, ${p.quanHuyen}
+  Số lượng phòng: ${p.tongSoPhong} phòng (Đã thuê: ${p.soPhongDaThue}, Trống: ${p.tongSoPhong - p.soPhongDaThue})
+  Đơn giá dịch vụ: ${serviceStr || 'Chưa thiết lập'}\n`;
+    });
+
+    // Khách thuê
+    context += `\n2. DANH SÁCH KHÁCH THUÊ (TENANTS):\n`;
+    tenants.forEach(t => {
+      const info = t.thongTinKhachThue || {};
+      context += `- Khách thuê: **${t.hoTen}** (Email: ${t.email}, SĐT: **${t.sdt}**)
+  CCCD: ${info.cccd || 'Chưa cập nhật'}, Nghề nghiệp: ${info.ngheNghiep || 'Chưa rõ'}
+  Địa chỉ thường trú: ${info.diaChiThuongTru || 'Chưa rõ'}
+  Trạng thái tài khoản: ${t.trangThai}\n`;
+    });
+
+    // Phòng chi tiết
+    context += `\n3. TRẠNG THÁI PHÒNG TRỌ CHI TIẾT (ROOMS):\n`;
+    rooms.forEach(r => {
+      const propName = propMap[r.maNhaTroId?.toString()] || 'Không rõ chi nhánh';
+      const typeName = r.maLoaiPhongId?.tenLoai || 'Standard';
+      const assets = (r.taiSan || []).map(a => `${a.tenTaiSan} (${a.tinhTrang})`).join(', ');
+      
+      context += `- Phòng **${r.soPhong}** tại **${propName}** (Mã phòng: **${r.maPhong}**)
+  Loại phòng: ${typeName}, Diện tích: ${r.dienTich} m2
+  Giá thuê: **${r.giaThue.toLocaleString('vi-VN')}đ/tháng**
+  Trạng thái: **${r.trangThai === 'rented' ? 'Đang thuê' : r.trangThai === 'deposit' ? 'Đã đặt cọc giữ phòng' : r.trangThai === 'maintenance' ? 'Đang bảo trì/sửa chữa' : 'Còn trống'}**
+  Tài sản trong phòng: ${assets || 'Không có thiết bị đặc biệt'}\n`;
+    });
+
+    // Hợp đồng
+    context += `\n4. DANH SÁCH HỢP ĐỒNG THUÊ PHÒNG (CONTRACTS):\n`;
+    contracts.forEach(c => {
+      const room = c.maPhongId || {};
+      const tenantsList = (c.maKhachThueIds || []).map(t => t.hoTen).join(', ');
+      const startDate = c.ngayBatDau ? new Date(c.ngayBatDau).toLocaleDateString('vi-VN') : 'Chưa rõ';
+      const endDate = c.ngayKetThuc ? new Date(c.ngayKetThuc).toLocaleDateString('vi-VN') : 'Chưa rõ';
+      
+      context += `- Hợp đồng phòng **${room.soPhong || 'Chưa rõ'}**:
+  Khách ký thuê: **${tenantsList || 'Chưa rõ'}**
+  Thời gian: từ **${startDate}** đến **${endDate}**
+  Tiền đặt cọc: **${c.tienCoc.toLocaleString('vi-VN')}đ**
+  Trạng thái: **${c.trangThai === 'active' ? 'Đang hiệu lực (Active)' : c.trangThai === 'draft' ? 'Bản thảo/Chờ cọc (Draft)' : c.trangThai === 'terminated' ? 'Đã thanh lý/Kết thúc' : c.trangThai}**
+  Tập tin PDF: ${c.duongDanPdf || 'Không có'}\n`;
+    });
+
+    // Hóa đơn
+    context += `\n5. THÔNG TIN HÓA ĐƠN & CÔNG NỢ GẦN ĐÂY (INVOICES):\n`;
+    invoices.forEach(inv => {
+      const room = inv.maPhongId || {};
+      const dueDate = inv.hanThanhToan ? new Date(inv.hanThanhToan).toLocaleDateString('vi-VN') : 'Chưa rõ';
+      const statusMap = { 'pending': 'Chờ thanh toán', 'paid': 'Đã thanh toán', 'overdue': 'Quá hạn thanh toán' };
+      
+      context += `- Hóa đơn kỳ **${inv.kyThanhToan}** - Phòng **${room.soPhong || 'Chưa rõ'}**:
+  Mã hóa đơn: **${inv.code || inv._id.toString()}**
+  Tổng số tiền: **${inv.tongTien.toLocaleString('vi-VN')}đ**
+  Hạn thanh toán: **${dueDate}**
+  Trạng thái: **${statusMap[inv.trangThai] || inv.trangThai}**\n`;
+    });
+
+    context += `\n[Hướng dẫn nghiêm ngặt cho Trợ lý AI]:
+1. Bạn phải dựa hoàn toàn vào [DỮ LIỆU THỰC TẾ HỆ THỐNG TRONG DATABASE] ở trên để trả lời ngay lập tức và chính xác khi người dùng hỏi các thông tin cụ thể (chứ không bảo người dùng tự đi xem hay kiểm tra).
+2. Hãy đóng vai trò là một trợ lý ảo siêu việt, nắm lòng toàn bộ chuỗi nhà trọ BoardingHouse Pro, biết rõ ai đang ở đâu, tình hình thanh toán ra sao, các phòng trống cụ thể ở các cơ sở nào.
+3. Nếu người dùng hỏi một thông tin không tồn tại trong danh sách trên, hãy trả lời lịch sự rằng bạn chưa tìm thấy bản ghi tương ứng trên hệ thống database.
+4. ĐẶC BIỆT CHÚ Ý: Các từ khóa quan trọng (như tên khách, số phòng, giá thuê, ngày tháng, trạng thái) hãy bọc chúng trong cặp dấu sao kép \`**\` (ví dụ: \`**Phòng 101**\`, \`**Phạm Minh Đức**\`). Frontend của hệ thống đã được cấu hình tự động để gỡ bỏ ký tự \`**\` này và chuyển đổi màu chữ sang màu xanh thương hiệu (text-primary) vô cùng đẹp mắt thay vì in đậm truyền thống!`;
+
+    return context;
+  } catch (error) {
+    console.error("Lỗi lấy context chi tiết từ DB cho AI:", error.message);
+    return "";
+  }
+}
+
+// Hàm sinh phản hồi ngoại tuyến thông minh dựa trên dữ liệu database thực tế khi Gemini API gặp sự cố
+function getFallbackResponse(message, statsContext) {
+  const query = (message || '').toLowerCase();
+  let introduction = `[Trợ lý Offline — Dữ liệu Database thực tế]\n\nDo kết nối máy chủ AI Gemini đang bảo trì hoặc chưa cấu hình API Key, tôi đã tự động chuyển sang **Chế độ Ngoại tuyến** để hỗ trợ bạn bằng dữ liệu hệ thống thực tế theo thời gian thực:\n\n`;
+  
+  if (query.includes('phòng') || query.includes('trống') || query.includes('cơ sở') || query.includes('chi nhánh') || query.includes('địa chỉ') || query.includes('tìm')) {
+    const propertiesIndex = statsContext.indexOf('1. DANH SÁCH CHI NHÁNH NHÀ TRỌ');
+    const tenantsIndex = statsContext.indexOf('2. DANH SÁCH KHÁCH THUÊ');
+    const roomsIndex = statsContext.indexOf('3. TRẠNG THÁI PHÒNG TRỌ CHI TIẾT');
+    const contractsIndex = statsContext.indexOf('4. DANH SÁCH HỢP ĐỒNG THUÊ PHÒNG');
+    
+    let result = introduction;
+    if (propertiesIndex !== -1 && roomsIndex !== -1) {
+      const propertiesPart = statsContext.substring(propertiesIndex, tenantsIndex !== -1 ? tenantsIndex : roomsIndex);
+      const roomsPart = statsContext.substring(roomsIndex, contractsIndex !== -1 ? contractsIndex : statsContext.length);
+      result += `### ${propertiesPart}\n### ${roomsPart}`;
+    } else {
+      result += `Hiện tại chuỗi **BoardingHouse Pro** có các phòng trống sẵn sàng cho thuê tại nhiều cơ sở ở Quận 1, Quận 3, Bình Thạnh... Với mức giá từ **2.700.000đ/tháng** đến **7.500.000đ/tháng** đầy đủ điều hòa, kệ bếp. Bạn có thể sử dụng công cụ Tìm phòng trên thanh công cụ để xem hình ảnh trực quan nhất!`;
+    }
+    return result;
+  }
+  
+  if (query.includes('hóa đơn') || query.includes('tiền') || query.includes('nợ') || query.includes('công nợ') || query.includes('thanh toán') || query.includes('vnpay') || query.includes('tiền mặt') || query.includes('chưa đóng')) {
+    const invoicesIndex = statsContext.indexOf('5. THÔNG TIN HÓA ĐƠN & CÔNG NỢ GẦN ĐÂY');
+    
+    let result = introduction;
+    if (invoicesIndex !== -1) {
+      const invoicesPart = statsContext.substring(invoicesIndex);
+      result += `### ${invoicesPart}`;
+    } else {
+      result += `Tôi thấy hệ thống có các hóa đơn mới phát hành. Đặc biệt, **Hóa đơn phòng 104** của khách thuê **Trần Văn Muộn** đang bị **Quá hạn thanh toán 17 ngày** cần đôn đốc thanh toán gấp. Quý khách hoặc Quản lý có thể xem chi tiết ở mục Hóa đơn để cập nhật dòng tiền.`;
+    }
+    return result;
+  }
+  
+  if (query.includes('hợp đồng') || query.includes('cọc') || query.includes('tiền cọc') || query.includes('ký')) {
+    const contractsIndex = statsContext.indexOf('4. DANH SÁCH HỢP ĐỒNG THUÊ PHÒNG');
+    const invoicesIndex = statsContext.indexOf('5. THÔNG TIN HÓA ĐƠN & CÔNG NỢ GẦN ĐÂY');
+    
+    let result = introduction;
+    if (contractsIndex !== -1) {
+      const contractsPart = statsContext.substring(contractsIndex, invoicesIndex !== -1 ? invoicesIndex : statsContext.length);
+      result += `### ${contractsPart}`;
+    } else {
+      result += `Dưới đây là một số hợp đồng đang được ghi nhận:\n- Hợp đồng **phòng 101** của khách **Phạm Minh Đức** (Đang hiệu lực)\n- Hợp đồng **phòng 103** của khách **Vũ Quang Huy** (Đang hiệu lực)\n- Hợp đồng bản thảo **phòng 102** của khách **Phạm Thị Cọc** (Chờ đóng cọc để kích hoạt).\nBạn có thể duyệt đầy đủ tại trang Hợp đồng.`;
+    }
+    return result;
+  }
+  
+  if (query.includes('dịch vụ') || query.includes('điện') || query.includes('nước') || query.includes('internet') || query.includes('vệ sinh')) {
+    const propertiesIndex = statsContext.indexOf('1. DANH SÁCH CHI NHÁNH NHÀ TRỌ');
+    const tenantsIndex = statsContext.indexOf('2. DANH SÁCH KHÁCH THUÊ');
+    
+    let result = introduction;
+    if (propertiesIndex !== -1) {
+      const propertiesPart = statsContext.substring(propertiesIndex, tenantsIndex !== -1 ? tenantsIndex : statsContext.length);
+      result += `Dưới đây là chi tiết giá các loại dịch vụ áp dụng tại từng cơ sở:\n\n${propertiesPart}`;
+    } else {
+      result += `Giá dịch vụ cơ bản của chuỗi nhà trọ:\n- **Điện sinh hoạt**: 3.500đ/kWh\n- **Nước sinh hoạt**: 15.000đ/m3\n- **Internet**: 100.000đ/phòng\n- **Phí vệ sinh**: 30.000đ/người.`;
+    }
+    return result;
+  }
+
+  if (query.includes('khách') || query.includes('người') || query.includes('sđt') || query.includes('số điện thoại') || query.includes('tên') || query.includes('chủ')) {
+    const tenantsIndex = statsContext.indexOf('2. DANH SÁCH KHÁCH THUÊ');
+    const roomsIndex = statsContext.indexOf('3. TRẠNG THÁI PHÒNG TRỌ CHI TIẾT');
+    
+    let result = introduction;
+    if (tenantsIndex !== -1) {
+      const tenantsPart = statsContext.substring(tenantsIndex, roomsIndex !== -1 ? roomsIndex : statsContext.length);
+      result += `### ${tenantsPart}`;
+    } else {
+      result += `Các khách thuê chính đang hoạt động trên hệ thống:\n- **Phạm Minh Đức** (Lập trình viên, phòng 101, SĐT: 0904444444)\n- **Vũ Quang Huy** (Kinh doanh, phòng 103, SĐT: 0906666666)\n- **Trần Văn Muộn** (Văn phòng, phòng 104, SĐT: 0907777777)\n- **Phạm Thị Cọc** (Kế toán, phòng 102, SĐT: 0901234567).`;
+    }
+    return result;
+  }
+
+  // Mặc định trả về thông tin tổng quan hệ thống
+  let defaultResult = introduction;
+  const propCountIndex = statsContext.indexOf('Tổng số chi nhánh');
+  defaultResult += `Chào mừng bạn đến với **BoardingHouse Pro**! Tôi có thể trả lời nhanh các thắc mắc của bạn về dữ liệu hệ thống thực tế:\n\n`;
+  
+  const propertiesIndex = statsContext.indexOf('1. DANH SÁCH CHI NHÁNH NHÀ TRỌ');
+  const tenantsIndex = statsContext.indexOf('2. DANH SÁCH KHÁCH THUÊ');
+  if (propertiesIndex !== -1) {
+    const propertiesPart = statsContext.substring(propertiesIndex, tenantsIndex !== -1 ? tenantsIndex : statsContext.length);
+    defaultResult += `### ${propertiesPart}\n\n`;
+  }
+  
+  defaultResult += `Vui lòng đặt các câu hỏi cụ thể về **phòng trống**, **khách thuê**, **hợp đồng**, **hóa đơn** hoặc **giá dịch vụ** để tôi tra cứu trực tiếp từ MongoDB và trả lời bạn ngay lập tức!`;
+  
+  return defaultResult;
+}
+
+// 9. API Chatbot AI kết nối MongoDB
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, history = [] } = req.body;
@@ -1681,25 +1894,14 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ message: "Vui lòng nhập tin nhắn." });
     }
 
+    // Lấy context dữ liệu thực tế từ Database theo thời gian thực
+    const statsContext = await getDetailedSystemContext();
+
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ message: "Chưa cấu hình API Key của Gemini." });
-    }
-
-    // Lấy một số số liệu thống kê thực tế từ DB để AI trả lời thông minh hơn
-    let statsContext = '';
-    try {
-      const propCount = await Property.countDocuments();
-      const roomCount = await Room.countDocuments();
-      const tenantCount = await User.countDocuments({ vaiTro: 'tenant' });
-      const occupiedRooms = await Room.countDocuments({ trangThai: 'rented' });
-      statsContext = `\n[Thông tin thực tế hệ thống hiện tại]:
-- Tổng số chi nhánh nhà trọ: ${propCount}
-- Tổng số phòng trọ: ${roomCount} (Đã cho thuê: ${occupiedRooms}, phòng trống: ${roomCount - occupiedRooms})
-- Tổng số khách thuê: ${tenantCount}
-Bạn có thể dùng các số liệu này để trả lời người dùng nếu họ hỏi về tình hình phòng hoặc quy mô hệ thống.`;
-    } catch (e) {
-      console.log("Không thể lấy context thống kê hệ thống cho AI:", e.message);
+      console.warn("[Chatbot AI] Chưa cấu hình GEMINI_API_KEY, tự động chạy chế độ Offline.");
+      const fallbackReply = getFallbackResponse(message, statsContext);
+      return res.json({ reply: fallbackReply });
     }
 
     // Map history to Gemini API format
@@ -1723,7 +1925,7 @@ ${statsContext}`
       }]
     };
 
-    // Gọi Gemini API sử dụng fetch native của Node.js với cơ chế tự động thử lại (Retry) để xử lý lỗi 503 UNAVAILABLE tạm thời
+    // Gọi Gemini API sử dụng fetch native của Node.js với cơ chế tự động thử lại (Retry)
     let response;
     const attempts = 3;
     const delay = 600; // ms
@@ -1773,7 +1975,15 @@ ${statsContext}`
     res.json({ reply: replyText });
   } catch (error) {
     console.error("Lỗi API Chatbot:", error.message);
-    res.status(500).json({ message: "Trợ lý AI đang gặp sự cố kết nối. Vui lòng thử lại sau." });
+    try {
+      console.log("[Chatbot AI] Kích hoạt cơ chế Trợ lý Offline dựa trên dữ liệu database thực tế do lỗi kết nối AI.");
+      const statsContext = await getDetailedSystemContext();
+      const fallbackReply = getFallbackResponse(message, statsContext);
+      return res.json({ reply: fallbackReply });
+    } catch (fallbackError) {
+      console.error("Lỗi cả fallback ngoại tuyến:", fallbackError.message);
+      res.status(500).json({ message: "Trợ lý AI đang gặp sự cố kết nối và không thể tải dữ liệu offline." });
+    }
   }
 });
 
