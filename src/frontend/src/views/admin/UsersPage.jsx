@@ -465,7 +465,7 @@ export default function UsersPage() {
         </div>
       </Card>
 
-      {loading && localUsers.length === 0 ? <Loading /> : (
+      {loading && users.length === 0 ? <Loading /> : (
         <div className="animate-[fadeIn_0.3s_ease-out] border border-line rounded-3xl bg-white shadow-sm overflow-hidden">
           <Table
             columns={[

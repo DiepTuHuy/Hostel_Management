@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Settings2, X, Check, Save } from 'lucide-react';
 import { Button, PageHeader, Card, Badge, Toast, Loading } from '../../components/common';
 import { useFetch } from '../../controllers/useFetch.js';
