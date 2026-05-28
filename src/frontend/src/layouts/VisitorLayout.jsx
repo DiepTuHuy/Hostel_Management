@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '../utils/cn.js';
@@ -14,6 +14,41 @@ const NAV = [
 export default function VisitorLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const navRef = useRef(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+    opacity: 0
+  });
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      if (!navRef.current) return;
+      const activeEl = navRef.current.querySelector('.active');
+      if (activeEl) {
+        setIndicatorStyle({
+          left: activeEl.offsetLeft,
+          top: activeEl.offsetTop,
+          width: activeEl.offsetWidth,
+          height: activeEl.offsetHeight,
+          opacity: 1
+        });
+      } else {
+        setIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
+      }
+    };
+
+    updateIndicator();
+    const timer = setTimeout(updateIndicator, 50);
+    window.addEventListener('resize', updateIndicator);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateIndicator);
+    };
+  }, [location.pathname]);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNavClick = (to, e) => {
@@ -52,7 +87,17 @@ export default function VisitorLayout() {
             </div>
           </Link>
           
-          <nav className="hidden md:flex items-center gap-2">
+          <nav ref={navRef} className="hidden md:flex items-center gap-2 relative">
+            <div
+              className="absolute bg-primary-soft rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none z-0 shadow-[0_4px_12px_-2px_rgba(58,91,199,0.1)]"
+              style={{
+                left: `${indicatorStyle.left}px`,
+                top: `${indicatorStyle.top}px`,
+                width: `${indicatorStyle.width}px`,
+                height: `${indicatorStyle.height}px`,
+                opacity: indicatorStyle.opacity,
+              }}
+            />
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
@@ -61,9 +106,9 @@ export default function VisitorLayout() {
                 onClick={(e) => handleNavClick(item.to, e)}
                 className={({ isActive }) =>
                   cn(
-                    'relative px-4 py-2 rounded-xl text-sm font-semibold transition-apple duration-300 apple-press',
+                    'relative px-4 py-2 rounded-xl text-sm font-semibold transition-apple duration-300 apple-press z-10',
                     isActive
-                      ? 'bg-primary-soft text-primary shadow-[0_4px_12px_-2px_rgba(58,91,199,0.1)] scale-[1.02]'
+                      ? 'text-primary'
                       : 'text-ink-muted hover:bg-gray-100/70 hover:text-ink'
                   )
                 }

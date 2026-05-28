@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Building2, Users, FileText, Receipt,
   Wallet, Settings2, BarChart3, Settings, LogOut, Bell, Search, HelpCircle, Menu, X,
@@ -25,6 +25,41 @@ const NAV = [
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navRef = useRef(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+    opacity: 0
+  });
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      if (!navRef.current) return;
+      const activeEl = navRef.current.querySelector('.active');
+      if (activeEl) {
+        setIndicatorStyle({
+          left: activeEl.offsetLeft,
+          top: activeEl.offsetTop,
+          width: activeEl.offsetWidth,
+          height: activeEl.offsetHeight,
+          opacity: 1
+        });
+      } else {
+        setIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
+      }
+    };
+
+    updateIndicator();
+    const timer = setTimeout(updateIndicator, 50);
+    window.addEventListener('resize', updateIndicator);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateIndicator);
+    };
+  }, [location.pathname]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -124,7 +159,17 @@ export default function AdminLayout() {
             <X size={18} />
           </button>
         </div>
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
+        <nav ref={navRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 relative">
+          <div
+            className="absolute bg-primary-soft rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none z-0 shadow-[0_4px_12px_-2px_rgba(58,91,199,0.12)]"
+            style={{
+              left: `${indicatorStyle.left}px`,
+              top: `${indicatorStyle.top}px`,
+              width: `${indicatorStyle.width}px`,
+              height: `${indicatorStyle.height}px`,
+              opacity: indicatorStyle.opacity,
+            }}
+          />
           {NAV.map((item) => (
             <NavLink
               key={item.to}
@@ -133,9 +178,9 @@ export default function AdminLayout() {
               onClick={() => setIsDrawerOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold relative apple-press transition-apple duration-200',
+                  'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold relative apple-press transition-apple duration-200 z-10',
                   isActive
-                    ? 'bg-primary-soft text-primary shadow-[0_4px_12px_-2px_rgba(58,91,199,0.12)] scale-[1.02]'
+                    ? 'text-primary'
                     : 'text-ink-muted hover:bg-gray-100/70 hover:text-ink hover:translate-x-1'
                 )
               }
