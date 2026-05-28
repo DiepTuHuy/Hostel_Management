@@ -131,48 +131,48 @@ export default function VisitorLayout() {
             </button>
           </div>
         </div>
-      </header>
 
-      {/* Mobile Menu Dropdown */}
-      <div 
-        className={cn(
-          "md:hidden bg-white border-b border-line overflow-hidden transition-all duration-300 [transition-timing-function:var(--ease-apple-spring)]",
-          isMobileMenuOpen ? "max-h-[300px] opacity-100 py-4" : "max-h-0 opacity-0 py-0"
-        )}
-      >
-        <div className="px-4 flex flex-col gap-2">
-          {NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              onClick={(e) => {
-                setIsMobileMenuOpen(false);
-                handleNavClick(item.to, e);
-              }}
-              className={({ isActive }) =>
-                cn(
-                  'px-4 py-3 rounded-xl text-sm font-semibold transition-apple duration-200 apple-press block',
-                  isActive
-                    ? 'bg-primary-soft text-primary shadow-[0_2px_8px_-1px_rgba(58,91,199,0.06)]'
-                    : 'text-ink-muted hover:bg-gray-50 hover:text-ink'
-                )
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-          <div className="border-t border-line my-2 pt-2 flex flex-col gap-2 sm:hidden">
-            <Link 
-              to="/login" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="btn btn-md btn-secondary w-full apple-press"
-            >
-              Đăng nhập
-            </Link>
+        {/* Mobile Menu Dropdown - Nested inside sticky header so it stays fixed in view on scroll */}
+        <div 
+          className={cn(
+            "md:hidden bg-white border-t border-line overflow-hidden transition-all duration-300 [transition-timing-function:var(--ease-apple-spring)]",
+            isMobileMenuOpen ? "max-h-[300px] opacity-100 py-4" : "max-h-0 opacity-0 py-0"
+          )}
+        >
+          <div className="px-4 flex flex-col gap-2">
+            {NAV.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                onClick={(e) => {
+                  setIsMobileMenuOpen(false);
+                  handleNavClick(item.to, e);
+                }}
+                className={({ isActive }) =>
+                  cn(
+                    'px-4 py-3 rounded-xl text-sm font-semibold transition-apple duration-200 apple-press block',
+                    isActive
+                      ? 'bg-primary-soft text-primary shadow-[0_2px_8px_-1px_rgba(58,91,199,0.06)]'
+                      : 'text-ink-muted hover:bg-gray-50 hover:text-ink'
+                  )
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+            <div className="border-t border-line my-2 pt-2 flex flex-col gap-2 sm:hidden">
+              <Link 
+                to="/login" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="btn btn-md btn-secondary w-full apple-press"
+              >
+                Đăng nhập
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
       <main className="flex-1">
         <Outlet />
