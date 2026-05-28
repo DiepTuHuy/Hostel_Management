@@ -67,29 +67,37 @@ export function Card({ className = '', padded = true, children, tilt = false, ..
     };
   }, [tilt]);
 
+  if (!tilt) {
+    return (
+      <div
+        className={cn('card', padded && 'p-6', className)}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div
       ref={cardRef}
-      className={cn('card', padded && 'p-6', className)}
       style={{
         transformStyle: 'preserve-3d',
-        willChange: tilt ? 'transform, box-shadow' : 'auto',
-        transition: tilt ? 'none' : undefined,
+        willChange: 'transform, box-shadow',
+        transition: 'none',
+        width: '100%',
+        height: '100%',
         ...rest.style
       }}
       {...rest}
     >
       <div 
+        className={cn('card', padded && 'p-6', className)}
         style={{ 
-          transform: tilt ? 'translateZ(15px)' : 'none', 
+          transform: 'translateZ(15px)', 
           transformStyle: 'preserve-3d',
-          display: tilt ? (className.includes('flex') ? 'flex' : 'block') : 'contents',
-          flexDirection: className.includes('flex-col') ? 'column' : (className.includes('flex-row') ? 'row' : 'inherit'),
-          alignItems: 'inherit',
-          justifyContent: 'inherit',
-          gap: 'inherit',
-          width: tilt ? '100%' : 'auto',
-          height: tilt ? '100%' : 'auto'
+          width: '100%',
+          height: '100%'
         }}
       >
         {children}
