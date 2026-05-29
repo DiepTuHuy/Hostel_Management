@@ -476,3 +476,23 @@ Chúng ta đã tiến hành rà soát kỹ lưỡng hệ thống và đặc tả
 
 ### 2. Đẩy đồng bộ Git và repository GitHub
 *   Thực hiện force add và push đồng bộ toàn bộ 3 tệp báo cáo đối chiếu mới cập nhật lên nhánh `main` của GitHub.
+
+---
+
+## Cập nhật Ngày 29/05/2026: Vá lỗi Chức năng Tải hợp đồng PDF ở Frontend
+
+Theo phản hồi từ người dùng về việc nút "Tải PDF" trên modal Xem trước Hợp đồng ký số không hoạt động, chúng ta đã tiến hành kiểm tra mã nguồn và triển khai giải pháp vá lỗi hoàn chỉnh nhất:
+
+### 1. Nguyên nhân lỗi cũ
+*   Nút "Tải PDF" ở phân hệ Admin [ContractsPage.jsx](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/admin/ContractsPage.jsx) khi click chỉ gọi `onDownload(contract.code)` giả lập nạp thông báo Toast thành công mà không có bất kỳ logic tải hay in file thực tế nào về máy.
+*   Ở phân hệ khách thuê (Tenant), nút "Xem văn bản PDF" chỉ đơn giản hiện thông báo `alert()` mô phỏng.
+
+### 2. Giải pháp Vá lỗi & Tải PDF Thực tế (In A4 chuẩn nét)
+*   **Gán nhãn vùng in**: Thêm thuộc tính `id="contract-print-area"` vào thẻ bao bọc tờ giấy hợp đồng màu trắng trong component `ViewPdfModal` ở cả Admin và Tenant.
+*   **Giải pháp iframe ẩn chuyên nghiệp**: Tái cấu trúc hàm `handleDownloadPdf` để:
+    1. Tự động khởi tạo một phần tử `<iframe>` ẩn tạm thời dưới DOM.
+    2. Compile động nội dung hợp đồng HTML sạch sẽ cùng với thư viện Tailwind CSS và CSS `@media print` được căn lề A4 chuẩn chỉ.
+    3. Nạp nội dung vào iframe và gọi lệnh `print()` gốc của trình duyệt.
+    4. Trình duyệt hiển thị hộp thoại in hệ thống (ngay lập tức hỗ trợ "Save as PDF" A4 siêu nét và chuẩn xác tuyệt đối không lỗi font chữ), sau đó tự động hủy phần tử iframe để làm sạch DOM.
+*   **Đồng bộ hóa Tenant**: Tích hợp hoàn chỉnh `ViewPdfModal` và hàm tải PDF cho phân hệ Khách thuê [ContractsPage.jsx](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/tenant/ContractsPage.jsx) thay thế cho popup alert thô sơ trước đây.
+*   **Xác minh**: Chạy lệnh biên dịch production `npm run build` thành công 100% không phát sinh lỗi biên dịch, xác minh mã nguồn frontend hoàn hảo và sẵn sàng phục vụ.

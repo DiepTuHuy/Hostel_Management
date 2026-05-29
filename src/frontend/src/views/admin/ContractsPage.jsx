@@ -388,7 +388,7 @@ function ViewPdfModal({ contract, onClose, onDownload }) {
 
         {/* Paper Contract Simulator View */}
         <div className="p-8 flex-1 overflow-y-auto max-h-[calc(90vh-8rem)] bg-gray-100 text-gray-800 text-sm font-serif leading-relaxed">
-          <div className="max-w-2xl mx-auto bg-white p-12 shadow-md border border-line/60 rounded-sm relative min-h-[800px]">
+          <div id="contract-print-area" className="max-w-2xl mx-auto bg-white p-12 shadow-md border border-line/60 rounded-sm relative min-h-[800px]">
             {/* National Title */}
             <div className="text-center font-bold font-sans tracking-wide mb-6">
               <p className="text-base">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
@@ -521,10 +521,70 @@ export default function ContractsPage() {
     }
   };
 
-  // Handle simulated PDF download inside viewer
+  // Handle real PDF print & download inside viewer via dynamic iframe
   const handleDownloadPdf = (contractCode) => {
+    const printContent = document.getElementById('contract-print-area');
+    if (!printContent) {
+      window.print();
+      return;
+    }
+
+    // Tạo một iframe ẩn tạm thời để in riêng nội dung hợp đồng sạch sẽ, tránh lẫn giao diện web
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`
+      <html>
+        <head>
+          <title>Hop_Dong_${contractCode}</title>
+          <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+          <style>
+            body {
+              font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+              padding: 3rem;
+              background-color: white;
+            }
+            .text-primary {
+              color: #2563eb;
+            }
+            @media print {
+              body {
+                padding: 0;
+              }
+              @page {
+                size: A4;
+                margin: 20mm;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="max-w-2xl mx-auto">
+            ${printContent.innerHTML}
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() {
+                window.frameElement.remove();
+              }, 200);
+            }
+          </script>
+        </body>
+      </html>
+    `);
+    doc.close();
+
     setToast({
-      message: `Đã tải bản hợp đồng ${contractCode} dạng PDF về máy thành công!`,
+      message: `Đang chuẩn bị bản in / tải PDF cho hợp đồng ${contractCode}...`,
       type: 'success'
     });
   };
