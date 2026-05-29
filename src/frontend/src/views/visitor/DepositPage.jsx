@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Info, Calendar, ShieldCheck, CreditCard, Sparkles, Copy, Check, QrCode } from 'lucide-react';
+import { ChevronLeft, Info, Calendar, ShieldCheck, CreditCard, Sparkles, Copy, Check, QrCode, X } from 'lucide-react';
 import { roomService } from '../../services/roomService.js';
 import { propertyService } from '../../services/propertyService.js';
 import { formatCurrency } from '../../utils/format.js';
@@ -21,6 +21,7 @@ export default function DepositPage() {
   const [paying, setPaying] = useState(false);
   const [payConfirmStep, setPayConfirmStep] = useState(1);
   const [copiedText, setCopiedText] = useState('');
+  const [showLargeQR, setShowLargeQR] = useState(false);
 
   const handleCopy = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -279,7 +280,11 @@ export default function DepositPage() {
                   </div>
 
                   <div className="flex flex-col md:flex-row gap-6 items-center justify-center p-4 bg-gray-50 rounded-2xl border border-line">
-                    <div className="bg-white p-4 rounded-2xl border border-line shadow-sm relative flex flex-col items-center justify-center shrink-0 w-52 h-52">
+                    <div
+                      onClick={() => setShowLargeQR(true)}
+                      className="bg-white p-4 rounded-2xl border border-line shadow-sm relative flex flex-col items-center justify-center shrink-0 w-52 h-52 cursor-pointer hover:scale-[1.02] active:scale-98 transition-all group"
+                      title="Click để phóng to mã QR"
+                    >
                       <img
                         src={
                           property?.qrCodeUrl ||
@@ -288,9 +293,9 @@ export default function DepositPage() {
                         alt="QR Code thanh toán cọc thật"
                         className="w-full h-full object-contain rounded-xl"
                       />
-                      <div className="absolute inset-x-0 bottom-0 bg-primary/90 text-white text-[9px] text-center py-1 rounded-b-2xl font-semibold flex items-center justify-center gap-1">
-                        <QrCode size={10} />
-                        QUÉT MÃ ĐỂ CHUYỂN KHOẢN
+                      <div className="absolute inset-x-0 bottom-0 bg-primary/90 group-hover:bg-primary text-white text-[9px] text-center py-1.5 rounded-b-2xl font-bold flex items-center justify-center gap-1.5 transition-colors">
+                        <QrCode size={11} />
+                        QUÉT MÃ ĐỂ CHUYỂN KHOẢN (CLICK PHÓNG TO)
                       </div>
                     </div>
 
@@ -417,6 +422,45 @@ export default function DepositPage() {
           )}
         </div>
       </div>
+
+      {showLargeQR && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+          <div className="relative bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col items-center animate-[fadeInScale_0.3s_ease-out]">
+            <button
+              onClick={() => setShowLargeQR(false)}
+              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-xl text-ink-muted transition-colors"
+            >
+              <X size={20} />
+            </button>
+            
+            <h3 className="text-lg font-bold text-ink mb-1 text-center">Mã QR Thanh Toán</h3>
+            <p className="text-[11px] text-ink-muted mb-4 text-center">Quét mã bằng ứng dụng ngân hàng hoặc ví điện tử để chuyển khoản</p>
+
+            <div className="bg-white p-4 rounded-2xl border border-line shadow-sm w-64 h-64 flex items-center justify-center">
+              <img
+                src={
+                  property?.qrCodeUrl ||
+                  `https://img.vietqr.io/image/MB-0364962299-compact2.png?amount=500000&addInfo=${encodeURIComponent(`DAT COC PHONG ${room?.code} - SĐT ${phone}`)}&accountName=${encodeURIComponent('HE THONG NHA TRO AN NINH')}`
+                }
+                alt="Large QR Code"
+                className="w-full h-full object-contain rounded-xl"
+              />
+            </div>
+            
+            <div className="mt-4 w-full bg-gray-50 border border-line rounded-xl p-3.5 text-xs space-y-1.5">
+              <div className="flex justify-between"><span className="text-ink-muted font-medium">Số tiền:</span> <span className="font-extrabold text-primary">500.000 ₫</span></div>
+              <div className="flex justify-between"><span className="text-ink-muted font-medium">Nội dung:</span> <span className="font-bold text-ink">{`DAT COC PHONG ${room?.code} ${phone}`}</span></div>
+            </div>
+
+            <button
+              onClick={() => setShowLargeQR(false)}
+              className="mt-5 w-full btn btn-primary h-10 rounded-xl font-bold"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
