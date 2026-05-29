@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, MapPin, Users, X, Home, Phone, Mail, Calendar, Edit, DoorOpen, TrendingUp, Save } from 'lucide-react';
+import { Plus, MapPin, Users, X, Home, Phone, Mail, Calendar, Edit, DoorOpen, TrendingUp, Save, Upload } from 'lucide-react';
 import { Button, PageHeader, Card, Badge, Loading, Toast } from '../../components/common';
 import { useProperties } from '../../controllers/useProperties.js';
 import { propertyService } from '../../services/index.js';
@@ -251,15 +251,49 @@ function PropertyDetailModal({ property, onClose, onSave }) {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-ink mb-1.5">Đường dẫn ảnh mã QR thanh toán</label>
-                <input
-                  type="text"
-                  value={formData.qrCodeUrl}
-                  onChange={(e) => handleChange('qrCodeUrl', e.target.value)}
-                  className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-                  placeholder="VD: https://myhostel.vn/images/qr_branch1.jpg"
-                />
+               <div>
+                <label className="block text-sm font-medium text-ink mb-1.5">Ảnh mã QR thanh toán chi nhánh</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.qrCodeUrl}
+                    onChange={(e) => handleChange('qrCodeUrl', e.target.value)}
+                    className="flex-1 h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                    placeholder="VD: Dán link ảnh QR hoặc click tải lên bên phải"
+                  />
+                  <label className="h-10 px-4 bg-primary hover:bg-primary/95 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0">
+                    <Upload size={14} />
+                    Tải ảnh lên
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            handleChange('qrCodeUrl', reader.result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {formData.qrCodeUrl && (
+                  <div className="mt-2.5 relative inline-block group border border-line rounded-xl p-1.5 bg-white">
+                    <img src={formData.qrCodeUrl} alt="Preview QR" className="max-h-36 object-contain rounded-lg" />
+                    <button
+                      type="button"
+                      onClick={() => handleChange('qrCodeUrl', '')}
+                      className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors"
+                      title="Xoá ảnh QR"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-3 pt-4 border-t border-line">
@@ -424,15 +458,49 @@ function AddPropertyModal({ onClose, onSave }) {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Đường dẫn ảnh mã QR thanh toán</label>
-            <input
-              type="text"
-              value={formData.qrCodeUrl}
-              onChange={(e) => handleChange('qrCodeUrl', e.target.value)}
-              className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-              placeholder="VD: https://myhostel.vn/images/qr_branch1.jpg"
-            />
+           <div>
+            <label className="block text-sm font-medium text-ink mb-1.5">Ảnh mã QR thanh toán chi nhánh</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={formData.qrCodeUrl}
+                onChange={(e) => handleChange('qrCodeUrl', e.target.value)}
+                className="flex-1 h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                placeholder="VD: Dán link ảnh QR hoặc click tải lên bên phải"
+              />
+              <label className="h-10 px-4 bg-primary hover:bg-primary/95 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0">
+                <Upload size={14} />
+                Tải ảnh lên
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        handleChange('qrCodeUrl', reader.result);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            {formData.qrCodeUrl && (
+              <div className="mt-2.5 relative inline-block group border border-line rounded-xl p-1.5 bg-white">
+                <img src={formData.qrCodeUrl} alt="Preview QR" className="max-h-36 object-contain rounded-lg" />
+                <button
+                  type="button"
+                  onClick={() => handleChange('qrCodeUrl', '')}
+                  className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors"
+                  title="Xoá ảnh QR"
+                >
+                  <X size={10} />
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3 pt-3 border-t border-line">
