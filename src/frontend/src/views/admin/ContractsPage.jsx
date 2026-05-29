@@ -467,9 +467,29 @@ export default function ContractsPage() {
   
   // Modals visibility states
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingContract, setEditingContract] = useState(null);
   const [selectedPdfContract, setSelectedPdfContract] = useState(null);
   const [excelLoading, setExcelLoading] = useState(false);
   const [toast, setToast] = useState(null);
+
+  const handleUpdateContract = async (id, updatedData) => {
+    try {
+      const updatedContract = await contractService.update(id, updatedData);
+      setLocalContracts(prev => prev.map(c => c.id === id ? updatedContract : c));
+      setToast({
+        message: `Cập nhật hợp đồng "${updatedContract.code}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({
+        message: err.message || 'Lỗi hệ thống khi cập nhật hợp đồng.',
+        type: 'error'
+      });
+      throw err;
+    }
+  };
 
   // Sync initial loading data
   useEffect(() => {
@@ -600,13 +620,15 @@ export default function ContractsPage() {
 
   const filtered = tab === 'all' 
     ? filteredSearch 
-    : filteredSearch.filter((c) => c.status === tab);
+    : tab === 'pending_sign'
+      ? filteredSearch.filter((c) => c.status === 'pending_sign' || c.status === 'draft')
+      : filteredSearch.filter((c) => c.status === tab);
 
   const counts = {
     all: localContracts.length,
     active: localContracts.filter((c) => c.status === 'active').length,
     expiring: localContracts.filter((c) => c.status === 'expiring').length,
-    pending_sign: localContracts.filter((c) => c.status === 'pending_sign').length,
+    pending_sign: localContracts.filter((c) => c.status === 'pending_sign' || c.status === 'draft').length,
     ended: localContracts.filter((c) => c.status === 'ended').length,
   };
 
@@ -668,12 +690,25 @@ export default function ContractsPage() {
               },
               { key: 'action',  header: '',
                 render: (c) => (
-                  <button 
-                    onClick={() => setSelectedPdfContract(c)}
-                    className="text-primary text-sm hover:text-primary-dark font-medium flex items-center gap-1 transition-colors hover:underline px-2.5 py-1 rounded-lg hover:bg-primary/5 apple-press"
-                  >
-                    <Eye size={14} /> Xem PDF
-                  </button>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setSelectedPdfContract(c)}
+                      className="text-primary text-sm hover:text-primary-dark font-medium flex items-center gap-1 transition-colors hover:underline px-2.5 py-1 rounded-lg hover:bg-primary/5 apple-press"
+                    >
+                      <Eye size={14} /> Xem PDF
+                    </button>
+                    {(c.status === 'draft' || c.status === 'pending_sign') && (
+                      <button 
+                        onClick={() => {
+                          setEditingContract(c);
+                          setShowEditModal(true);
+                        }}
+                        className="text-amber-600 text-sm hover:text-amber-700 font-medium flex items-center gap-1 transition-colors hover:underline px-2.5 py-1 rounded-lg hover:bg-amber-50/50 apple-press"
+                      >
+                        Sửa
+                      </button>
+                    )}
+                  </div>
                 )
               },
             ]}
@@ -687,6 +722,17 @@ export default function ContractsPage() {
         <CreateContractModal 
           onClose={() => setShowAddModal(false)}
           onSave={handleSaveContract}
+        />
+      )}
+
+      {showEditModal && editingContract && (
+        <EditContractModal 
+          contract={editingContract}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingContract(null);
+          }}
+          onSave={handleUpdateContract}
         />
       )}
 
@@ -706,5 +752,125 @@ export default function ContractsPage() {
         />
       )}
     </>
+  );
+}
+
+function EditContractModal({ contract, onClose, onSave }) {
+  const [formData, setFormData] = useState({
+    startDate: contract.startDate ? new Date(contract.startDate).toISOString().split('T')[0] : '',
+    endDate: contract.endDate ? new Date(contract.endDate).toISOString().split('T')[0] : '',
+    deposit: String(contract.deposit || ''),
+    monthlyRent: String(contract.monthlyRent || ''),
+  });
+  const [validationError, setValidationError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.startDate || !formData.endDate || !formData.deposit || !formData.monthlyRent) {
+      setValidationError('Vui lòng điền đầy đủ các thông tin điều khoản.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await onSave(contract.id, {
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        deposit: Number(formData.deposit),
+        monthlyRent: Number(formData.monthlyRent),
+      });
+      onClose();
+    } catch (err) {
+      setValidationError(err.message || 'Lỗi hệ thống khi cập nhật hợp đồng.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
+      <div className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden animate-[fadeInScale_0.3s_ease-out] flex flex-col">
+        {/* Modal Header */}
+        <div className="p-5 border-b border-line flex justify-between items-center bg-gray-50">
+          <div>
+            <h2 className="text-lg font-bold text-ink">Chỉnh sửa hợp đồng</h2>
+            <p className="text-xs text-ink-muted mt-0.5">Cập nhật điều khoản hợp đồng nháp {contract.code}</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-xl text-ink-muted transition-colors">
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Modal Body */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
+          {validationError && (
+            <div className="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-semibold">
+              {validationError}
+            </div>
+          )}
+
+          <div>
+            <label className="label">Giá thuê hàng tháng (VNĐ)</label>
+            <input
+              type="number"
+              value={formData.monthlyRent}
+              onChange={(e) => setFormData({ ...formData, monthlyRent: e.target.value })}
+              className="w-full input"
+              placeholder="Nhập giá thuê"
+            />
+          </div>
+
+          <div>
+            <label className="label">Tiền đặt cọc (VNĐ)</label>
+            <input
+              type="number"
+              value={formData.deposit}
+              onChange={(e) => setFormData({ ...formData, deposit: e.target.value })}
+              className="w-full input"
+              placeholder="Nhập tiền cọc"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="label">Ngày bắt đầu</label>
+              <input
+                type="date"
+                value={formData.startDate}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                className="w-full input"
+              />
+            </div>
+            <div>
+              <label className="label">Ngày kết thúc</label>
+              <input
+                type="date"
+                value={formData.endDate}
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                className="w-full input"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t border-line mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 h-10 bg-white border border-line text-ink rounded-xl text-xs font-bold hover:bg-gray-50 transition-colors"
+            >
+              Đóng
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 h-10 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary-dark transition-colors flex items-center justify-center disabled:opacity-50"
+            >
+              {loading ? 'Đang cập nhật...' : 'Cập nhật hợp đồng'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

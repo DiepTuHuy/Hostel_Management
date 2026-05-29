@@ -9,4 +9,5 @@ export { chatService } from './chatService.js';
 export { serviceService } from './serviceService.js';
 export { reportService } from './reportService.js';
 export { readingService } from './readingService.js';
+export { roomTypeService } from './roomTypeService.js';
 

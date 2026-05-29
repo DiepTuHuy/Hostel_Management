@@ -16,5 +16,9 @@ export const reportService = {
   async getDebts(propertyId) {
     const res = await api.get('/reports/debts', { params: { propertyId } });
     return res.data;
+  },
+  async sendDebtReminder(invoiceId) {
+    const res = await api.post(`/reports/debts/${invoiceId}/remind`);
+    return res.data;
   }
 };

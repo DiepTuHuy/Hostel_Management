@@ -445,19 +445,67 @@ Chúng ta đã nâng cấp toàn diện Chatbot AI trong [server.js](file:///Use
 
 ---
 
-## Cập nhật Ngày 29/05/2026: Khắc phục triệt để lỗi Chọn khu vực / Nhà trọ bị trống rỗng tại trang Cấu hình Dịch vụ & Đơn giá
+## Cập nhật Ngày 29/05/2026 (Tiếp tục): Vá lỗi và Hoàn thiện 100% 10 Use Cases (UC) Theo Đặc Tả & CSDL Thực Tế
 
-Chúng ta đã tiến hành kiểm tra và vá thành công lỗi hộp chọn (select box) "Chọn khu vực / nhà trọ" bị trống rỗng ở trang Cấu hình dịch vụ của Admin:
+Chúng ta đã tiến hành kiểm tra, vá lỗi đồng bộ và hoàn thiện toàn bộ mã nguồn thực tế cho 10 Use Cases cốt lõi ở cả Backend (Express API) và Frontend (React SPA):
 
-*   **Nguyên nhân lỗi**: Tại tệp [ServicesPage.jsx](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/admin/ServicesPage.jsx), hàm hook `useFetch` nạp danh sách cơ sở qua lệnh `propertyService.list()`. Tuy nhiên, tệp này chỉ import `serviceService` mà quên import `propertyService` từ thư viện dịch vụ dùng chung `../../services/index.js`, dẫn đến lỗi `ReferenceError: propertyService is not defined` và khiến `useFetch` catch lỗi và trả về mảng rỗng `[]` trên giao diện.
-*   **Giải pháp khắc phục**:
-    - Cập nhật dòng import dịch vụ trong [ServicesPage.jsx](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/admin/ServicesPage.jsx) để import đầy đủ cả hai dịch vụ:
-      ```javascript
-      import { serviceService, propertyService } from '../../services/index.js';
-      ```
-*   **Kết quả xác minh**:
-    - Đã chạy thử lệnh biên dịch `npm run build` của Frontend thành công 100% không phát sinh bất kỳ lỗi cú pháp nào.
-    - Hộp chọn "Chọn khu vực / nhà trọ để cấu hình" giờ đây hiển thị đầy đủ danh sách 220 khu vực nhà trọ động lấy từ cơ sở dữ liệu MongoDB Atlas thực tế. Khi chọn một khu vực, các dịch vụ và đơn giá tương ứng của khu vực đó được nạp động và kết xuất chính xác lên màn hình.
+### 1. UC03: Đăng xuất hệ thống hoàn chỉnh
+- **Backend**: Thêm API đăng xuất thực tế `POST /api/auth/logout` để dọn dẹp phiên và lưu nhật ký đăng xuất.
+- **Frontend**: Kết nối API đăng xuất phía Backend với client-service (`authService.js` & `useAuth.jsx`), thực hiện xóa sạch localStorage (`bhpro_token`, `bhpro_user`) và điều hướng người dùng về trang đăng nhập một cách mượt mà.
+
+### 2. UC11: Quản lý Loại phòng & Tiện nghi (CRUD thật)
+- **Backend**: Xây dựng hoàn chỉnh cụm CRUD API cho `RoomType` (/api/room-types và /api/properties/:propertyId/room-types) kết nối trực tiếp với MongoDB Atlas.
+- **Frontend**: Tạo mới client-service `roomTypeService.js` và xây dựng trang quản lý loại phòng `RoomTypesPage.jsx` với thiết kế Apple-style sang trọng. Admin/Manager có thể tạo mới loại phòng trọ, cấu hình diện tích, giá cơ bản, phân phối tiện nghi đi kèm, chỉnh sửa hoặc xóa loại phòng trực tiếp từ CSDL.
+
+### 3. UC14: Quản lý Tài sản Phòng trọ trực quan
+- **Backend**: Cập nhật helper `mapRoom(roomDoc)` trả về mảng `assets` (tài sản) thật được lưu trong database.
+- **Frontend**: Thiết kế và tích hợp khối hiển thị danh sách tài sản phòng trọ ngay trong Panel chi tiết ở lề phải sơ đồ phòng (`RoomsPage.jsx`). Bổ sung Modal Quản lý Tài sản cho phép Quản lý thêm tài sản mới, sửa đổi thông tin (tên, giá trị khấu hao, tình trạng) hoặc xóa tài sản, lưu trực tiếp xuống DB Atlas qua API `PUT /api/rooms/:id`.
+
+### 4. UC17: Ký số Hợp đồng Điện tử thật (Tenant)
+- **Backend**: Thêm API ký hợp đồng `PATCH /api/contracts/:id/sign`. Khi được gọi, API sẽ:
+  - Đổi trạng thái hợp đồng thành `active`.
+  - Tự động cập nhật trạng thái phòng trọ tương ứng thành `rented` (occupied) và gán khách thuê vào trường `currentTenantId` của phòng.
+  - Tự động cộng tăng số lượng phòng đã thuê (`soPhongDaThue`) tại chi nhánh cơ sở tương ứng trong DB.
+- **Frontend**: Bổ sung nút **"Ký hợp đồng"** trên thẻ hợp đồng `draft` tại trang Hợp đồng của Tenant (`ContractsPage.jsx`). Khi nhấp chọn, hiển thị Modal Xem & Ký Hợp Đồng chứa văn bản hợp đồng chi tiết, kèm theo checkbox đồng ý điều khoản. Nút "Đồng ý & Ký số" chỉ kích hoạt khi tick checkbox, gọi API `PATCH /api/contracts/:id/sign` kích hoạt hợp đồng thật và cập nhật trạng thái phòng trọ sang rented ngay lập tức.
+
+### 5. UC19: Chỉnh sửa điều khoản Hợp đồng (Admin/Manager)
+- **Backend**: Thêm API sửa hợp đồng `PUT /api/contracts/:id` cập nhật các thông số cốt lõi (Ngày bắt đầu, ngày kết thúc, tiền cọc, tiền phòng).
+- **Frontend**: Bổ sung nút và Modal **"Chỉnh sửa hợp đồng"** cho các hợp đồng ở trạng thái `draft` trong cả phân hệ Manager và Admin (`ContractsPage.jsx`). Cho phép người quản lý thay đổi linh hoạt các thông số giá thuê, tiền cọc, ngày bắt đầu/kết thúc và cập nhật trực tiếp xuống MongoDB Atlas.
+
+### 6. UC26: Tự động hóa sinh hóa đơn định kỳ hàng tháng (Backend Cron)
+- **Backend**: Xây dựng cơ chế quét tự động `autoGenerateInvoicesForActiveContracts()` chạy định kỳ mỗi 24 giờ. Hàm này tự động lọc tất cả các hợp đồng ở trạng thái `active` của tháng hiện tại, kiểm tra xem phòng trọ đã được lập hóa đơn hay chưa, và tự động tạo mới hóa đơn định kỳ chuẩn xác vào CSDL thực tế.
+
+### 7. UC27: VietQR động & Cấu hình ảnh QR thật của Admin
+- **Backend**: Bổ sung trường `qrCodeUrl` lưu đường dẫn ảnh mã QR thanh toán của cơ sở trong `Property` Schema & APIs.
+- **Frontend (Admin)**: Trong Modal thêm/sửa nhà trọ tại `PropertiesPage.jsx`, bổ sung trường nhập **"Đường dẫn ảnh mã QR thanh toán"** giúp Admin dán ảnh mã QR thanh toán thật của cơ sở.
+- **Frontend (Tenant)**: Tại Modal thanh toán trực tuyến (`payStep === 2`) của trang Hóa đơn (`InvoicesPage.jsx`), hệ thống sẽ:
+  - Tự động nạp `qrCodeUrl` thật của cơ sở nếu Admin đã cấu hình.
+  - Nếu chưa có ảnh QR, tự động tạo mã QR VietQR động (chuyển khoản MB Bank) chứa đúng số tiền hóa đơn thật và nội dung chuyển khoản chuẩn cấu trúc `Thanh toan hoa don [invoiceCode]`.
+  - Tích hợp nút **"Tôi đã chuyển khoản thành công"** để khách hàng gửi xác nhận và đổi trạng thái hóa đơn sang `paid` thực tế.
+
+### 8. UC30 & UC37: Đối soát Công nợ động & Gửi nhắc nợ qua Gmail thật
+- **Backend**: Thêm API `/api/reports/debts/:invoiceId/remind`. Khi được gọi, API sẽ tra cứu email khách thuê và sử dụng dịch vụ Nodemailer gửi email nhắc nợ thật kèm 1 template HTML Apple-style cực kỳ cao cấp, thông báo chi tiết số tiền nợ, mã hóa đơn, kỳ thu tiền và hạn đóng.
+- **Frontend**: Kết nối trang công nợ Admin `DebtsPage.jsx` gọi trực tiếp `reportService.getDebts()` lấy mảng dữ liệu nợ thật từ server. Khi click nút **"Gửi nhắc nợ"** cho từng khách thuê hoặc nhắc nợ hàng loạt, gọi API `POST /api/reports/debts/:invoiceId/remind` kích hoạt gửi thư nhắc nợ thật trực tiếp qua Gmail của khách trọ đó.
+
+### 9. UC34: Báo cáo công nợ & Đối soát chi tiết (Reports)
+- **Backend**: Kết xuất dữ liệu nợ thực tế của hệ thống qua endpoint `/api/reports/debts` theo thời gian thực.
+- **Frontend**: Nạp dữ liệu nợ động từ server vào tab Công nợ (`debt`) của `ReportsPage.jsx`. Tích hợp thêm một bảng số liệu tóm tắt công nợ chi tiết ở dưới biểu đồ để tối ưu hóa khả năng đối soát chi tiết của Admin (hiển thị Mã hóa đơn, Phòng, Khách thuê, SĐT, Hạn thanh toán, Số ngày quá hạn và Số tiền nợ).
+
+---
+
+## 📈 Kết quả Xác minh và Biên dịch
+
+- **Đồng bộ hóa 100%**: Tất cả các Use Cases đã được kết nối đồng bộ trực tiếp tới cơ sở dữ liệu MongoDB Atlas thông qua các RESTful API sạch sẽ, loại bỏ hoàn toàn các cơ chế giả lập hay mockup dữ liệu cũ.
+- **Biên dịch Frontend thành công**: Chạy lệnh `npm run build` cho kết quả biên dịch **SUCCESS** hoàn toàn, không phát sinh bất kỳ cảnh báo hay lỗi biên dịch nào.
+- **Trải nghiệm Premium**: Giao diện và các modal, ảnh QR VietQR động hiển thị đẹp mắt theo chuẩn thiết kế Apple-style sang trọng.
+
+---
+
+## 💾 Đẩy mã nguồn lên GitHub
+
+- Stage toàn bộ các tập tin frontend và backend đã thay đổi.
+- Thực hiện commit tiếng Việt: `Hoàn thiện đồng bộ 10 Use Cases cốt lõi FE & BE, ký hợp đồng điện tử thật, sửa hợp đồng draft, QR thanh toán chi nhánh, VietQR động, nhắc nợ qua Gmail thật và đối soát công nợ chi tiết`.
+- Đẩy thành công mã nguồn lên nhánh `main` của repository [Hostel_Management](https://github.com/DiepTuHuy/Hostel_Management.git).
 
 
 

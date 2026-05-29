@@ -14,7 +14,8 @@ function PropertyDetailModal({ property, onClose, onSave }) {
     totalRooms: property.totalRooms,
     occupiedRooms: property.occupiedRooms || 0,
     phone: property.phone || '0901234567',
-    email: property.email || 'contact@boardinghouse.vn'
+    email: property.email || 'contact@boardinghouse.vn',
+    qrCodeUrl: property.qrCodeUrl || ''
   });
 
   if (!property) return null;
@@ -132,6 +133,15 @@ function PropertyDetailModal({ property, onClose, onSave }) {
                     </div>
                   </div>
                 </div>
+
+                {formData.qrCodeUrl && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-ink mb-2.5">QR thanh toán chi nhánh</h4>
+                    <div className="bg-gray-50 rounded-xl p-4 flex justify-center border border-line">
+                      <img src={formData.qrCodeUrl} alt="Mã QR chi nhánh" className="max-h-48 object-contain rounded-lg" />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-3 mt-6 pt-4 border-t border-line">
@@ -241,6 +251,17 @@ function PropertyDetailModal({ property, onClose, onSave }) {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-ink mb-1.5">Đường dẫn ảnh mã QR thanh toán</label>
+                <input
+                  type="text"
+                  value={formData.qrCodeUrl}
+                  onChange={(e) => handleChange('qrCodeUrl', e.target.value)}
+                  className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                  placeholder="VD: https://myhostel.vn/images/qr_branch1.jpg"
+                />
+              </div>
+
               <div className="flex items-center gap-3 pt-4 border-t border-line">
                 <Button type="submit" className="flex-1" icon={<Save size={16} />}>Lưu thay đổi</Button>
                 <button
@@ -268,7 +289,8 @@ function AddPropertyModal({ onClose, onSave }) {
     totalRooms: '',
     managerName: '',
     phone: '',
-    email: ''
+    email: '',
+    qrCodeUrl: ''
   });
 
   const [validationError, setValidationError] = useState('');
@@ -402,6 +424,17 @@ function AddPropertyModal({ onClose, onSave }) {
             </div>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-ink mb-1.5">Đường dẫn ảnh mã QR thanh toán</label>
+            <input
+              type="text"
+              value={formData.qrCodeUrl}
+              onChange={(e) => handleChange('qrCodeUrl', e.target.value)}
+              className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+              placeholder="VD: https://myhostel.vn/images/qr_branch1.jpg"
+            />
+          </div>
+
           <div className="flex items-center gap-3 pt-3 border-t border-line">
             <Button type="submit" className="flex-1" icon={<Plus size={16} />}>Thêm nhà trọ</Button>
             <button
@@ -437,7 +470,8 @@ export default function PropertiesPage() {
         city: formData.city,
         totalRooms: parseInt(formData.totalRooms) || 10,
         phone: formData.phone,
-        email: formData.email
+        email: formData.email,
+        qrCodeUrl: formData.qrCodeUrl
       });
       setShowAddModal(false);
       reload();

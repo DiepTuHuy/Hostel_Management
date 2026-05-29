@@ -56,6 +56,8 @@ export default function RoomsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
   const [invoiceRoomId, setInvoiceRoomId] = useState(null);
+  const [showAssetsModal, setShowAssetsModal] = useState(false);
+  const [assetsFormList, setAssetsFormList] = useState([]);
 
   useEffect(() => {
     if (!loading) {
@@ -121,6 +123,27 @@ export default function RoomsPage() {
     } catch (err) {
       console.error(err);
       showToast(err.message || 'Lỗi hệ thống khi cập nhật phòng');
+    }
+  };
+
+  const handleOpenAssets = (room) => {
+    setAssetsFormList(room.assets || []);
+    setShowAssetsModal(true);
+  };
+
+  const handleSaveAssets = async (e) => {
+    e.preventDefault();
+    try {
+      const updated = await roomService.update(selectedRoomId, {
+        assets: assetsFormList
+      });
+      setRooms(rooms.map(r => r.id === updated.id ? updated : r));
+      setSelectedRoomId(updated.id);
+      setShowAssetsModal(false);
+      showToast(`Đã cập nhật danh sách tài sản phòng ${updated.code}`);
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || 'Lỗi hệ thống khi cập nhật tài sản');
     }
   };
 
@@ -522,6 +545,34 @@ export default function RoomsPage() {
                       <span>Không có khách thuê hiện tại</span>
                     </div>
                   )}
+
+                  {/* Danh sách tài sản trong phòng - UC14 */}
+                  <div className="bg-gray-50 border border-line p-3 rounded-lg flex flex-col gap-2">
+                    <h3 className="font-semibold text-ink flex items-center justify-between border-b border-line/60 pb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <Layers size={14} className="text-primary" />
+                        <span>Tài Sản Trong Phòng</span>
+                      </div>
+                      <button
+                        onClick={() => handleOpenAssets(selectedRoom)}
+                        className="text-[10px] text-primary hover:underline font-bold"
+                      >
+                        Quản lý tài sản
+                      </button>
+                    </h3>
+                    <div className="flex flex-col gap-1 text-[11px] max-h-40 overflow-y-auto">
+                      {selectedRoom.assets && selectedRoom.assets.length > 0 ? (
+                        selectedRoom.assets.map((a, idx) => (
+                          <div key={idx} className="flex justify-between items-center py-0.5 border-b border-gray-100 last:border-0">
+                            <span className="text-ink font-medium">{a.name}</span>
+                            <span className="text-ink-muted text-[10px]">{a.condition} — {formatCurrency(a.value)}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <span className="text-ink-muted text-center py-2">Chưa có cấu hình tài sản</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex gap-2 pt-4 border-t border-line">
@@ -683,6 +734,129 @@ export default function RoomsPage() {
         </div>
       )}
 
+      {showAssetsModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-line rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 shadow-modal animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-hidden">
+            <div className="flex justify-between items-center border-b border-line pb-3">
+              <h2 className="text-base font-bold text-ink flex items-center gap-2">
+                <Layers className="text-primary" size={18} />
+                <span>Quản Lý Tài Sản Phòng {rooms.find(r => r.id === selectedRoomId)?.code}</span>
+              </h2>
+              <button
+                onClick={() => setShowAssetsModal(false)}
+                className="text-ink-muted hover:text-ink transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveAssets} className="flex flex-col gap-4 text-xs flex-1 overflow-hidden">
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                {assetsFormList.length === 0 ? (
+                  <div className="text-center py-6 text-ink-muted">Chưa có tài sản nào trong phòng này. Nhấp thêm tài sản bên dưới.</div>
+                ) : (
+                  assetsFormList.map((asset, idx) => (
+                    <div key={idx} className="grid grid-cols-12 gap-2 bg-gray-50 p-2.5 rounded-xl border border-line/60 relative">
+                      <div className="col-span-5 flex flex-col gap-1">
+                        <label className="text-[10px] text-ink-muted font-bold">Tên tài sản</label>
+                        <input
+                          type="text"
+                          required
+                          value={asset.name || asset.tenTaiSan || ''}
+                          placeholder="Giường ngủ, tủ..."
+                          onChange={(e) => {
+                            const newArr = [...assetsFormList];
+                            newArr[idx] = { ...newArr[idx], name: e.target.value, tenTaiSan: e.target.value };
+                            setAssetsFormList(newArr);
+                          }}
+                          className="bg-white text-ink border border-line px-2 py-1.5 rounded-lg focus:outline-none focus:border-primary text-xs"
+                        />
+                      </div>
+                      
+                      <div className="col-span-3 flex flex-col gap-1">
+                        <label className="text-[10px] text-ink-muted font-bold">Tình trạng</label>
+                        <select
+                          value={asset.condition || asset.tinhTrang || 'Tốt'}
+                          onChange={(e) => {
+                            const newArr = [...assetsFormList];
+                            newArr[idx] = { ...newArr[idx], condition: e.target.value, tinhTrang: e.target.value };
+                            setAssetsFormList(newArr);
+                          }}
+                          className="bg-white text-ink border border-line px-2 py-1.5 rounded-lg focus:outline-none focus:border-primary text-xs"
+                        >
+                          <option value="Tốt">Tốt</option>
+                          <option value="Khá">Khá</option>
+                          <option value="Cũ">Cũ</option>
+                          <option value="Cần sửa">Cần sửa</option>
+                          <option value="Hỏng">Hỏng</option>
+                        </select>
+                      </div>
+
+                      <div className="col-span-3 flex flex-col gap-1">
+                        <label className="text-[10px] text-ink-muted font-bold">Giá trị (đ)</label>
+                        <input
+                          type="number"
+                          value={asset.value !== undefined ? asset.value : (asset.giaTri !== undefined ? asset.giaTri : 0)}
+                          onChange={(e) => {
+                            const newArr = [...assetsFormList];
+                            const val = parseInt(e.target.value) || 0;
+                            newArr[idx] = { ...newArr[idx], value: val, giaTri: val };
+                            setAssetsFormList(newArr);
+                          }}
+                          className="bg-white text-ink border border-line px-2 py-1.5 rounded-lg focus:outline-none focus:border-primary text-xs font-semibold"
+                        />
+                      </div>
+
+                      <div className="col-span-1 flex items-end justify-center pb-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAssetsFormList(assetsFormList.filter((_, i) => i !== idx));
+                          }}
+                          className="p-1.5 text-danger hover:bg-red-50 rounded-lg transition-colors apple-press"
+                          title="Xóa tài sản"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="flex justify-between items-center pt-3 border-t border-line">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAssetsFormList([...assetsFormList, { name: '', condition: 'Tốt', value: 0, tenTaiSan: '', tinhTrang: 'Tốt', giaTri: 0 }]);
+                  }}
+                  className="px-3.5 py-2 bg-gray-50 hover:bg-gray-100 text-primary border border-primary/20 font-bold rounded-xl transition-colors flex items-center gap-1 apple-press"
+                >
+                  <Plus size={14} />
+                  <span>Thêm tài sản</span>
+                </button>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAssetsModal(false)}
+                    className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-ink border border-line font-semibold rounded-lg transition-colors"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-colors shadow-sm"
+                  >
+                    Lưu thay đổi
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
       {invoiceRoomId && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white border border-line rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 shadow-modal animate-in fade-in zoom-in-95 duration-150">

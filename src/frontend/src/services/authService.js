@@ -48,6 +48,11 @@ export const authService = {
   },
 
   async logout() {
+    try {
+      await api.post('/auth/logout');
+    } catch (e) {
+      console.warn("Backend logout error:", e);
+    }
     localStorage.removeItem('bhpro_token');
     localStorage.removeItem('bhpro_user');
   },

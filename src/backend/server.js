@@ -85,7 +85,14 @@ function mapRoom(roomDoc) {
     ],
     description: room.moTa || `Phòng sạch sẽ, thoáng mát tại ${roomType.tenLoai || 'nhà trọ'}. Đầy đủ tiện nghi cơ bản.`,
     roomNumber: room.soPhong,
-    roomTypeId: room.maLoaiPhongId?._id || room.maLoaiPhongId
+    roomTypeId: room.maLoaiPhongId?._id || room.maLoaiPhongId,
+    assets: (room.taiSan || []).map(a => ({
+      id: a._id ? a._id.toString() : Math.random().toString(),
+      name: a.tenTaiSan,
+      value: a.giaTri,
+      condition: a.tinhTrang
+    })),
+    taiSan: room.taiSan || []
   };
 }
 
@@ -511,6 +518,11 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// 2.1. Đăng xuất
+app.post('/api/auth/logout', (req, res) => {
+  res.json({ message: "Đăng xuất thành công." });
+});
+
 // 3. Lấy danh sách các cơ sở nhà trọ (220 cơ sở đã seed ở TP.HCM)
 app.get('/api/properties', async (req, res) => {
   try {
@@ -528,7 +540,8 @@ app.get('/api/properties', async (req, res) => {
         occupiedRooms: p.soPhongDaThue,
         managerIds: p.maQuanLyIds ? p.maQuanLyIds.map(m => m.toString()) : [],
         ownerId: p.maChuTroId ? p.maChuTroId.toString() : undefined,
-        status: p.trangThai
+        status: p.trangThai,
+        qrCodeUrl: p.qrCodeUrl
       };
     }));
   } catch (error) {
@@ -557,7 +570,8 @@ app.get('/api/properties/:id', async (req, res) => {
       occupiedRooms: p.soPhongDaThue,
       managerIds: p.maQuanLyIds ? p.maQuanLyIds.map(m => m.toString()) : [],
       ownerId: p.maChuTroId ? p.maChuTroId.toString() : undefined,
-      status: p.trangThai
+      status: p.trangThai,
+      qrCodeUrl: p.qrCodeUrl
     });
   } catch (error) {
     console.error("Lỗi lấy chi tiết cơ sở:", error.message);
@@ -908,7 +922,7 @@ app.patch('/api/users/:id/status', async (req, res) => {
 // B.1 Thêm cơ sở nhà trọ mới
 app.post('/api/properties', async (req, res) => {
   try {
-    const { name, address, district, city, totalRooms, phone, email, managerIds } = req.body;
+    const { name, address, district, city, totalRooms, phone, email, managerIds, qrCodeUrl } = req.body;
     const code = `CN-${Math.floor(100 + Math.random() * 900)}`;
 
     const p = await Property.create({
@@ -921,7 +935,8 @@ app.post('/api/properties', async (req, res) => {
       soPhongDaThue: 0,
       hinhAnh: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=500',
       maQuanLyIds: managerIds || [],
-      trangThai: 'active'
+      trangThai: 'active',
+      qrCodeUrl: qrCodeUrl || ''
     });
 
     res.status(201).json({
@@ -935,7 +950,8 @@ app.post('/api/properties', async (req, res) => {
       totalRooms: p.tongSoPhong,
       occupiedRooms: p.soPhongDaThue,
       managerIds: p.maQuanLyIds,
-      status: p.trangThai
+      status: p.trangThai,
+      qrCodeUrl: p.qrCodeUrl
     });
   } catch (error) {
     console.error("Lỗi tạo cơ sở nhà trọ:", error.message);
@@ -946,7 +962,7 @@ app.post('/api/properties', async (req, res) => {
 // B.2 Cập nhật cơ sở nhà trọ
 app.put('/api/properties/:id', async (req, res) => {
   try {
-    const { name, address, district, city, totalRooms, occupiedRooms, managerIds, status } = req.body;
+    const { name, address, district, city, totalRooms, occupiedRooms, managerIds, status, qrCodeUrl } = req.body;
     const p = await Property.findById(req.params.id);
     if (!p) return res.status(404).json({ message: "Không tìm thấy cơ sở nhà trọ." });
 
@@ -958,6 +974,7 @@ app.put('/api/properties/:id', async (req, res) => {
     if (occupiedRooms !== undefined) p.soPhongDaThue = Number(occupiedRooms);
     if (managerIds) p.maQuanLyIds = managerIds;
     if (status) p.trangThai = status;
+    if (qrCodeUrl !== undefined) p.qrCodeUrl = qrCodeUrl;
 
     await p.save();
     res.json({
@@ -971,7 +988,8 @@ app.put('/api/properties/:id', async (req, res) => {
       totalRooms: p.tongSoPhong,
       occupiedRooms: p.soPhongDaThue,
       managerIds: p.maQuanLyIds,
-      status: p.trangThai
+      status: p.trangThai,
+      qrCodeUrl: p.qrCodeUrl
     });
   } catch (error) {
     console.error("Lỗi cập nhật nhà trọ:", error.message);
@@ -1195,16 +1213,26 @@ app.post('/api/contracts', async (req, res) => {
       ngayBatDau: new Date(startDate || Date.now()),
       ngayKetThuc: new Date(endDate || Date.now() + 365 * 24 * 60 * 60 * 1000),
       tienCoc: Number(deposit) || room.giaThueHienTai || 3000000,
-      trangThai: 'active',
+      trangThai: 'draft',
       duongDanPdf: `https://boardinghouse.vn/contracts/${code}.pdf`
     });
 
-    room.trangThai = 'rented';
-    await room.save();
-
-    await Property.findByIdAndUpdate(room.maNhaTroId, { $inc: { soPhongDaThue: 1 } });
-
     const populated = await Contract.findById(contract._id).populate('maPhongId').populate('maKhachThueIds');
+    
+    // Gửi email thông báo thật qua Gmail bằng Nodemailer
+    const primaryTenant = populated.maKhachThueIds?.[0];
+    if (primaryTenant && primaryTenant.email) {
+      await emailService.sendContractNotificationEmail(
+        primaryTenant.email,
+        primaryTenant.hoTen,
+        code,
+        room.giaThueHienTai || room.giaThue || 3000000,
+        Number(deposit) || room.giaThueHienTai || 3000000,
+        startDate || Date.now(),
+        endDate || (Date.now() + 365 * 24 * 60 * 60 * 1000)
+      );
+    }
+
     res.status(201).json(mapContract(populated));
   } catch (error) {
     console.error("Lỗi lập hợp đồng:", error.message);
@@ -2079,6 +2107,241 @@ ${statsContext}`
     }
   }
 });
+
+// CRUD ROOMTYPE (LOẠI PHÒNG & TIỆN NGHI - UC11)
+app.get('/api/properties/:propertyId/room-types', async (req, res) => {
+  try {
+    const roomTypes = await RoomType.find({ maNhaTroId: req.params.propertyId }).lean();
+    res.json(roomTypes.map(rt => ({
+      id: rt._id.toString(),
+      propertyId: rt.maNhaTroId.toString(),
+      name: rt.tenLoai,
+      area: rt.dienTich,
+      basePrice: rt.giaCoBan,
+      amenities: rt.tienNghi || []
+    })));
+  } catch (error) {
+    console.error("Lỗi lấy danh sách loại phòng:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống." });
+  }
+});
+
+app.post('/api/room-types', async (req, res) => {
+  try {
+    const { propertyId, name, area, basePrice, amenities } = req.body;
+    if (!propertyId || !name) {
+      return res.status(400).json({ message: "Vui lòng truyền mã nhà trọ và tên loại phòng." });
+    }
+    const rt = await RoomType.create({
+      maNhaTroId: propertyId,
+      tenLoai: name,
+      dienTich: Number(area) || 0,
+      giaCoBan: Number(basePrice) || 0,
+      tienNghi: amenities || []
+    });
+    res.status(201).json({
+      id: rt._id.toString(),
+      propertyId: rt.maNhaTroId.toString(),
+      name: rt.tenLoai,
+      area: rt.dienTich,
+      basePrice: rt.giaCoBan,
+      amenities: rt.tienNghi
+    });
+  } catch (error) {
+    console.error("Lỗi tạo loại phòng:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi tạo loại phòng." });
+  }
+});
+
+app.put('/api/room-types/:id', async (req, res) => {
+  try {
+    const { name, area, basePrice, amenities } = req.body;
+    const rt = await RoomType.findById(req.params.id);
+    if (!rt) return res.status(404).json({ message: "Không tìm thấy loại phòng." });
+    
+    if (name) rt.tenLoai = name;
+    if (area !== undefined) rt.dienTich = Number(area);
+    if (basePrice !== undefined) rt.giaCoBan = Number(basePrice);
+    if (amenities) rt.tienNghi = amenities;
+    
+    await rt.save();
+    res.json({
+      id: rt._id.toString(),
+      propertyId: rt.maNhaTroId.toString(),
+      name: rt.tenLoai,
+      area: rt.dienTich,
+      basePrice: rt.giaCoBan,
+      amenities: rt.tienNghi
+    });
+  } catch (error) {
+    console.error("Lỗi sửa loại phòng:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi sửa loại phòng." });
+  }
+});
+
+app.delete('/api/room-types/:id', async (req, res) => {
+  try {
+    const rt = await RoomType.findByIdAndDelete(req.params.id);
+    if (!rt) return res.status(404).json({ message: "Không tìm thấy loại phòng." });
+    res.json({ message: "Xóa loại phòng thành công." });
+  } catch (error) {
+    console.error("Lỗi xóa loại phòng:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống." });
+  }
+});
+
+// KÝ HỢP ĐỒNG ĐIỆN TỬ (UC17)
+app.patch('/api/contracts/:id/sign', async (req, res) => {
+  try {
+    const contract = await Contract.findById(req.params.id);
+    if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
+    
+    contract.trangThai = 'active';
+    await contract.save();
+    
+    // Tự động đổi trạng thái phòng tương ứng sang rented (đang thuê) và gán khách thuê
+    await Room.findByIdAndUpdate(contract.maPhongId, {
+      trangThai: 'rented',
+      currentTenantId: contract.maKhachThueIds?.[0]
+    });
+
+    // Tăng số lượng phòng đã thuê
+    const room = await Room.findById(contract.maPhongId);
+    if (room) {
+      await Property.findByIdAndUpdate(room.maNhaTroId, { $inc: { soPhongDaThue: 1 } });
+    }
+    
+    const populated = await Contract.findById(contract._id).populate('maPhongId maKhachThueIds');
+    res.json(mapContract(populated));
+  } catch (error) {
+    console.error("Lỗi ký hợp đồng:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi ký hợp đồng." });
+  }
+});
+
+// SỬA HỢP ĐỒNG (UC19)
+app.put('/api/contracts/:id', async (req, res) => {
+  try {
+    const { startDate, endDate, deposit, monthlyRent } = req.body;
+    const contract = await Contract.findById(req.params.id);
+    if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
+    
+    if (startDate) contract.ngayBatDau = new Date(startDate);
+    if (endDate) contract.ngayKetThuc = new Date(endDate);
+    if (deposit !== undefined) contract.tienCoc = Number(deposit);
+    
+    await contract.save();
+    
+    // Nếu có sửa tiền phòng, có thể cập nhật trực tiếp lên phòng trọ
+    if (monthlyRent !== undefined) {
+      await Room.findByIdAndUpdate(contract.maPhongId, {
+        giaThue: Number(monthlyRent),
+        giaThueHienTai: Number(monthlyRent)
+      });
+    }
+    
+    const populated = await Contract.findById(contract._id).populate('maPhongId maKhachThueIds');
+    res.json(mapContract(populated));
+  } catch (error) {
+    console.error("Lỗi sửa hợp đồng:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi sửa hợp đồng." });
+  }
+});
+
+// NHẮC NỢ QUA EMAIL THẬT (UC37)
+app.post('/api/reports/debts/:invoiceId/remind', async (req, res) => {
+  try {
+    const invoice = await Invoice.findById(req.params.invoiceId)
+      .populate({
+        path: 'maHopDongId',
+        populate: { path: 'maKhachThueIds' }
+      })
+      .populate('maPhongId');
+      
+    if (!invoice) return res.status(404).json({ message: "Không tìm thấy hóa đơn." });
+    
+    const contract = invoice.maHopDongId || {};
+    const tenant = contract.maKhachThueIds?.[0];
+    if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê của hóa đơn này." });
+    if (!tenant.email) return res.status(400).json({ message: "Khách thuê chưa đăng ký địa chỉ email." });
+    
+    // Gọi gửi email thật qua Nodemailer
+    const success = await emailService.sendDebtReminderEmail(
+      tenant.email,
+      tenant.hoTen,
+      invoice.tongTien,
+      invoice.hanThanhToan,
+      invoice.code || `HD-${invoice._id.toString().substring(18).toUpperCase()}`,
+      invoice.kyThanhToan
+    );
+    
+    if (success) {
+      res.json({ message: `Đã gửi thành công email nhắc nợ đến khách thuê ${tenant.hoTen} (${tenant.email}).` });
+    } else {
+      res.status(500).json({ message: "Gửi email nhắc nợ thất bại." });
+    }
+  } catch (error) {
+    console.error("Lỗi gửi nhắc nợ:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi gửi nhắc nợ." });
+  }
+});
+
+// TỰ ĐỘNG HÓA SINH HÓA ĐƠN ĐỊNH KỲ HÀNG THÁNG (UC26)
+async function autoGenerateInvoicesForActiveContracts() {
+  try {
+    const today = new Date();
+    const period = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    console.log(`[Cron Job] Bắt đầu tự động quét & sinh hóa đơn cho kỳ: ${period}`);
+    
+    const activeContracts = await Contract.find({ trangThai: 'active' })
+      .populate('maPhongId')
+      .populate('maKhachThueIds');
+      
+    let count = 0;
+    for (const contract of activeContracts) {
+      const room = contract.maPhongId;
+      if (!room) continue;
+      
+      // Kiểm tra xem kỳ này đã có hóa đơn chưa
+      const existing = await Invoice.findOne({
+        maPhongId: room._id,
+        kyThanhToan: period
+      });
+      
+      if (existing) continue;
+      
+      // Tự động sinh hóa đơn mới
+      const monthlyRent = room.giaThueHienTai || room.giaThue || 3000000;
+      const code = `INV-${room.soPhong}-${period.replace('-', '')}-${Math.floor(100 + Math.random() * 900)}`;
+      
+      // Hạn thanh toán là ngày 5 hàng tháng
+      const dueDate = new Date(today.getFullYear(), today.getMonth(), 5);
+      
+      await Invoice.create({
+        maHopDongId: contract._id,
+        maPhongId: room._id,
+        kyThanhToan: period,
+        hanThanhToan: dueDate,
+        tongTien: monthlyRent,
+        trangThai: 'pending',
+        code: code,
+        chiTiet: [
+          { tenDichVu: 'Tiền thuê phòng cố định', donGia: monthlyRent, soLuong: 1, thanhTien: monthlyRent, donVi: 'tháng' }
+        ]
+      });
+      count++;
+    }
+    console.log(`[Cron Job] Đã tự động sinh thành công ${count} hóa đơn mới cho kỳ: ${period}`);
+  } catch (error) {
+    console.error("[Cron Job Error] Lỗi tự động sinh hóa đơn:", error.message);
+  }
+}
+
+// Chạy quét khi server khởi động và lặp lại sau mỗi 24 giờ
+setTimeout(() => {
+  autoGenerateInvoicesForActiveContracts();
+}, 5000); // Sau 5 giây
+setInterval(autoGenerateInvoicesForActiveContracts, 24 * 60 * 60 * 1000); // Lặp lại mỗi 24 giờ
 
 // Khởi chạy Server
 const server = app.listen(PORT, () => {

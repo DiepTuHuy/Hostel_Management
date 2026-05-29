@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, DoorOpen, Users, Zap, Banknote, Bell, LogOut, Search, ChevronDown, Menu, X,
-  FileText, Receipt, AlertCircle
+  FileText, Receipt, AlertCircle, Layers
 } from 'lucide-react';
 import { useAuth } from '../controllers/useAuth.jsx';
 import { Avatar } from '../components/common/Avatar.jsx';
@@ -13,6 +13,7 @@ import { propertyService } from '../services/propertyService.js';
 const NAV = [
   { to: '/manager',            label: 'Dashboard',         icon: LayoutDashboard, end: true },
   { to: '/manager/rooms',      label: 'Phòng & tài sản',   icon: DoorOpen },
+  { to: '/manager/room-types', label: 'Loại phòng & tiện nghi', icon: Layers },
   { to: '/manager/contracts',  label: 'Khách & hợp đồng',  icon: Users },
   { to: '/manager/billing',    label: 'Chốt số điện nước',  icon: Zap },
   { to: '/manager/cash-receipts', label: 'Thu tiền mặt',   icon: Banknote },

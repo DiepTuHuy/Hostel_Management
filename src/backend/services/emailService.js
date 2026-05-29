@@ -351,5 +351,215 @@ export const emailService = {
       console.log(`[Email Service - FALLBACK] Mã OTP quên mật khẩu của bạn là: ${otp}`);
       return false;
     }
+  },
+
+  /**
+   * Gửi thông báo hợp đồng mới cần ký số qua Email thật
+   */
+  async sendContractNotificationEmail(email, fullName, contractCode, monthlyRent, deposit, startDate, endDate) {
+    const formattedRent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(monthlyRent);
+    const formattedDeposit = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(deposit);
+    const formattedStart = new Date(startDate).toLocaleDateString('vi-VN');
+    const formattedEnd = new Date(endDate).toLocaleDateString('vi-VN');
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hợp đồng thuê phòng trọ mới cần ký kết - BoardingHouse Pro</title>
+  <style>
+    body { font-family: 'Inter', -apple-system, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }
+    .wrapper { width: 100%; background-color: #f8fafc; padding: 40px 0; }
+    .container { max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; padding: 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.02); }
+    .logo-icon { background: linear-gradient(135deg, #3a5bc7 0%, #2563eb 100%); color: #ffffff; font-weight: 800; font-size: 18px; padding: 10px 14px; border-radius: 12px; display: inline-block; }
+    .brand-name { font-size: 20px; font-weight: 800; color: #0f172a; margin-left: 8px; vertical-align: middle; }
+    h1 { font-size: 20px; color: #0f172a; margin: 24px 0 12px 0; font-weight: 700; }
+    p { font-size: 14px; color: #475569; line-height: 1.6; margin: 0 0 20px 0; }
+    .details-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+    .details-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+    .details-table td.label { color: #64748b; font-weight: 500; }
+    .details-table td.value { color: #0f172a; font-weight: 700; text-align: right; }
+    .btn-container { text-align: center; margin: 30px 0; }
+    .btn { background: linear-gradient(135deg, #3a5bc7 0%, #2563eb 100%); color: #ffffff !important; font-weight: 700; font-size: 14px; padding: 14px 28px; border-radius: 12px; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
+    .footer { border-top: 1px solid #f1f5f9; padding-top: 24px; font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <div>
+        <span class="logo-icon">BH</span>
+        <span class="brand-name">BoardingHouse Pro</span>
+      </div>
+      <h1>Hợp đồng thuê phòng mới</h1>
+      <p>Xin chào <strong>${fullName}</strong>,</p>
+      <p>Ban quản lý cơ sở trọ vừa khởi tạo thành công hợp đồng thuê phòng trọ mới dành cho bạn trên hệ thống. Vui lòng đăng nhập và thực hiện ký số điện tử để kích hoạt hợp đồng:</p>
+      
+      <table class="details-table">
+        <tr>
+          <td class="label">Mã hợp đồng:</td>
+          <td class="value">${contractCode}</td>
+        </tr>
+        <tr>
+          <td class="label">Tiền phòng hằng tháng:</td>
+          <td class="value" style="color: #2563eb;">${formattedRent}</td>
+        </tr>
+        <tr>
+          <td class="label">Tiền đặt cọc phòng:</td>
+          <td class="value">${formattedDeposit}</td>
+        </tr>
+        <tr>
+          <td class="label">Thời hạn thuê:</td>
+          <td class="value">${formattedStart} → ${formattedEnd}</td>
+        </tr>
+      </table>
+
+      <div class="btn-container">
+        <a href="http://localhost:5173/forgot-password" class="btn">Đăng Nhập Ký Số Hợp Đồng</a>
+      </div>
+
+      <p style="font-size: 12px; color: #64748b; text-align: center;">
+        Nếu bạn chưa có tài khoản, vui lòng dùng email này để lấy lại mật khẩu hoặc liên hệ Quản lý.
+      </p>
+
+      <div class="footer">
+        Bản quyền thuộc về © 2026 BoardingHouse Pro Inc.<br>
+        Chuỗi căn hộ dịch vụ và phòng trọ thông minh chất lượng cao.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    const hasConfig = process.env.SMTP_USER && process.env.SMTP_PASS;
+    if (!hasConfig) {
+      console.log(`\n==================================================`);
+      console.log(`[Email Service - MOCK LOG] Gửi thông báo hợp đồng mới`);
+      console.log(`Đang giả lập gửi mail hợp đồng ${contractCode} đến email: ${email}`);
+      console.log(`==================================================\n`);
+      return true;
+    }
+
+    try {
+      const mailOptions = {
+        from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: `[BoardingHouse Pro] Thông báo ký số hợp đồng thuê phòng trọ mới: ${contractCode}`,
+        html: htmlContent,
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`[Email Service] Đã gửi thành công email hợp đồng đến: ${email}. MessageId: ${info.messageId}`);
+      return true;
+    } catch (error) {
+      console.error(`[Email Service - LỖI GỬI EMAIL HỢP ĐỒNG]:`, error.message);
+      return false;
+    }
+  },
+
+  /**
+   * Gửi email nhắc nợ công nợ hóa đơn trễ hạn qua Email thật
+   */
+  async sendDebtReminderEmail(email, fullName, amount, dueDate, invoiceCode, period) {
+    const formattedAmount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    const formattedDueDate = new Date(dueDate).toLocaleDateString('vi-VN');
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Thông báo nhắc đóng tiền phòng trọ - BoardingHouse Pro</title>
+  <style>
+    body { font-family: 'Inter', -apple-system, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }
+    .wrapper { width: 100%; background-color: #f8fafc; padding: 40px 0; }
+    .container { max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; padding: 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.02); }
+    .logo-icon { background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); color: #ffffff; font-weight: 800; font-size: 18px; padding: 10px 14px; border-radius: 12px; display: inline-block; }
+    .brand-name { font-size: 20px; font-weight: 800; color: #0f172a; margin-left: 8px; vertical-align: middle; }
+    h1 { font-size: 20px; color: #be123c; margin: 24px 0 12px 0; font-weight: 700; }
+    p { font-size: 14px; color: #475569; line-height: 1.6; margin: 0 0 20px 0; }
+    .details-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+    .details-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+    .details-table td.label { color: #64748b; font-weight: 500; }
+    .details-table td.value { color: #0f172a; font-weight: 700; text-align: right; }
+    .btn-container { text-align: center; margin: 30px 0; }
+    .btn { background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); color: #ffffff !important; font-weight: 700; font-size: 14px; padding: 14px 28px; border-radius: 12px; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(225,29,72,0.2); }
+    .footer { border-top: 1px solid #f1f5f9; padding-top: 24px; font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <div>
+        <span class="logo-icon">BH</span>
+        <span class="brand-name">BoardingHouse Pro</span>
+      </div>
+      <h1>Nhắc nhở thanh toán hóa đơn quá hạn</h1>
+      <p>Xin chào <strong>${fullName}</strong>,</p>
+      <p>Hệ thống ghi nhận hóa đơn dịch vụ định kỳ của bạn đã quá hạn thanh toán. Vui lòng sắp xếp thanh toán trong thời gian sớm nhất để tránh bị gián đoạn dịch vụ:</p>
+      
+      <table class="details-table">
+        <tr>
+          <td class="label">Mã hóa đơn:</td>
+          <td class="value">${invoiceCode}</td>
+        </tr>
+        <tr>
+          <td class="label">Kỳ hóa đơn:</td>
+          <td class="value">${period}</td>
+        </tr>
+        <tr>
+          <td class="label">Tổng tiền cần thanh toán:</td>
+          <td class="value" style="color: #e11d48;">${formattedAmount}</td>
+        </tr>
+        <tr>
+          <td class="label">Hạn thanh toán ban đầu:</td>
+          <td class="value">${formattedDueDate}</td>
+        </tr>
+      </table>
+
+      <div class="btn-container">
+        <a href="http://localhost:5173/forgot-password" class="btn">Thanh Toán Trực Tuyến Ngay</a>
+      </div>
+
+      <p style="font-size: 12px; color: #64748b; text-align: center;">
+        Nếu bạn đã thanh toán rồi, vui lòng liên hệ Ban quản lý cơ sở để xác nhận gỡ nợ trên hệ thống.
+      </p>
+
+      <div class="footer">
+        Bản quyền thuộc về © 2026 BoardingHouse Pro Inc.<br>
+        Chuỗi căn hộ dịch vụ và phòng trọ thông minh chất lượng cao.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    const hasConfig = process.env.SMTP_USER && process.env.SMTP_PASS;
+    if (!hasConfig) {
+      console.log(`\n==================================================`);
+      console.log(`[Email Service - MOCK LOG] Nhắc nợ công nợ hóa đơn`);
+      console.log(`Đang giả lập gửi email nhắc nợ ${invoiceCode} trị giá ${formattedAmount} đến email: ${email}`);
+      console.log(`==================================================\n`);
+      return true;
+    }
+
+    try {
+      const mailOptions = {
+        from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: `[CẢNH BÁO QUÁ HẠN] Nhắc đóng tiền phòng trọ kỳ ${period} - Mã hóa đơn: ${invoiceCode}`,
+        html: htmlContent,
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`[Email Service] Đã gửi thành công email nhắc nợ đến: ${email}. MessageId: ${info.messageId}`);
+      return true;
+    } catch (error) {
+      console.error(`[Email Service - LỖI GỬI EMAIL NHẮC NỢ]:`, error.message);
+      return false;
+    }
   }
 };

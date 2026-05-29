@@ -50,6 +50,28 @@ export default function ManagerContractsPage() {
   // States for detailed view modal
   const [selectedContract, setSelectedContract] = useState(null);
 
+  // States for edit contract modal
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingContract, setEditingContract] = useState(null);
+
+  const handleUpdateContract = async (id, updatedData) => {
+    try {
+      const updatedContract = await contractService.update(id, updatedData);
+      setContracts(prev => prev.map(c => c.id === id ? updatedContract : c));
+      setToast({
+        message: `Cập nhật hợp đồng "${updatedContract.code}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({
+        message: err.message || 'Lỗi hệ thống khi cập nhật hợp đồng.',
+        type: 'error'
+      });
+      throw err;
+    }
+  };
+
   // States for new contract multi-step wizard modal
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [step, setStep] = useState(1); // steps: 1 (Room), 2 (Tenant), 3 (Terms)
@@ -217,12 +239,25 @@ export default function ManagerContractsPage() {
                 key: 'action',
                 header: '',
                 render: (c) => (
-                  <button 
-                    onClick={() => setSelectedContract(c)}
-                    className="text-primary text-sm hover:underline flex items-center gap-1 apple-press font-semibold"
-                  >
-                    <FileText size={14}/> Xem
-                  </button>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setSelectedContract(c)}
+                      className="text-primary text-sm hover:underline flex items-center gap-1 apple-press font-semibold"
+                    >
+                      <FileText size={14}/> Xem
+                    </button>
+                    {(c.status === 'draft' || c.status === 'pending_sign') && (
+                      <button 
+                        onClick={() => {
+                          setEditingContract(c);
+                          setIsEditOpen(true);
+                        }}
+                        className="text-amber-600 text-sm hover:underline flex items-center gap-1 apple-press font-semibold"
+                      >
+                        Sửa
+                      </button>
+                    )}
+                  </div>
                 )
               },
             ]}
@@ -483,6 +518,18 @@ export default function ManagerContractsPage() {
         )}
       </Modal>
 
+      {/* Edit Contract Modal */}
+      {isEditOpen && editingContract && (
+        <EditContractModal
+          contract={editingContract}
+          onClose={() => {
+            setIsEditOpen(false);
+            setEditingContract(null);
+          }}
+          onSave={handleUpdateContract}
+        />
+      )}
+
       {/* Toast Alert */}
       {toast && (
         <Toast
@@ -492,5 +539,122 @@ export default function ManagerContractsPage() {
         />
       )}
     </>
+  );
+}
+
+function EditContractModal({ contract, onClose, onSave }) {
+  const [formData, setFormData] = useState({
+    startDate: contract.startDate ? new Date(contract.startDate).toISOString().split('T')[0] : '',
+    endDate: contract.endDate ? new Date(contract.endDate).toISOString().split('T')[0] : '',
+    deposit: String(contract.deposit || ''),
+    monthlyRent: String(contract.monthlyRent || ''),
+  });
+  const [validationError, setValidationError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.startDate || !formData.endDate || !formData.deposit || !formData.monthlyRent) {
+      setValidationError('Vui lòng điền đầy đủ các thông tin điều khoản.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await onSave(contract.id, {
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        deposit: Number(formData.deposit),
+        monthlyRent: Number(formData.monthlyRent),
+      });
+      onClose();
+    } catch (err) {
+      setValidationError(err.message || 'Lỗi hệ thống khi cập nhật hợp đồng.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl border border-line p-6 max-w-sm w-full space-y-5 animate-fade-in shadow-elevated">
+        <div className="flex justify-between items-center border-b border-line pb-3">
+          <div>
+            <h3 className="font-bold text-ink text-sm">Chỉnh sửa hợp đồng</h3>
+            <p className="text-[10px] text-ink-muted">Cập nhật điều khoản hợp đồng nháp {contract.code}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg text-ink-muted transition-colors">
+            <X size={16} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {validationError && (
+            <div className="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-semibold">
+              {validationError}
+            </div>
+          )}
+
+          <div>
+            <label className="label">Giá thuê hàng tháng (VNĐ)</label>
+            <input
+              type="number"
+              value={formData.monthlyRent}
+              onChange={(e) => setFormData({ ...formData, monthlyRent: e.target.value })}
+              className="w-full input"
+              placeholder="Nhập giá thuê"
+            />
+          </div>
+
+          <div>
+            <label className="label">Tiền đặt cọc (VNĐ)</label>
+            <input
+              type="number"
+              value={formData.deposit}
+              onChange={(e) => setFormData({ ...formData, deposit: e.target.value })}
+              className="w-full input"
+              placeholder="Nhập tiền cọc"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">Ngày bắt đầu</label>
+              <input
+                type="date"
+                value={formData.startDate}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                className="w-full input"
+              />
+            </div>
+            <div>
+              <label className="label">Ngày kết thúc</label>
+              <input
+                type="date"
+                value={formData.endDate}
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                className="w-full input"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-3 border-t border-line">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 h-10 bg-white border border-line text-ink rounded-xl text-xs font-bold hover:bg-gray-50 transition-colors"
+            >
+              Đóng
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 h-10 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary-dark transition-colors flex items-center justify-center disabled:opacity-50"
+            >
+              {loading ? 'Đang cập nhật...' : 'Cập nhật hợp đồng'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

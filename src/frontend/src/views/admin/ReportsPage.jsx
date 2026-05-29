@@ -18,9 +18,16 @@ export default function ReportsPage() {
   // Dynamic interaction states
   const [chartLoading, setChartLoading] = useState(false);
   const [reportData, setReportData] = useState([]);
+  const [debts, setDebts] = useState([]);
   const [toast, setToast] = useState(null);
   const [exportingExcel, setExportingExcel] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
+
+  useEffect(() => {
+    reportService.getDebts().then(res => {
+      setDebts(res || []);
+    }).catch(err => console.error("Error fetching debts for reports:", err));
+  }, []);
 
   const handleApplyFilters = async () => {
     setChartLoading(true);
@@ -279,6 +286,62 @@ export default function ReportsPage() {
           </Card>
         </div>
       </div>
+
+      {tab === 'debt' && (
+        <Card className="border border-line rounded-3xl bg-white shadow-sm overflow-hidden p-6 mt-gutter">
+          <h3 className="text-title-lg font-bold text-ink mb-4">Chi tiết đối soát công nợ quá hạn</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left border-collapse">
+              <thead>
+                <tr className="border-b border-line text-xs font-semibold text-ink-muted bg-gray-50/50">
+                  <th className="py-3 px-4">Mã Hóa đơn</th>
+                  <th className="py-3 px-4">Phòng</th>
+                  <th className="py-3 px-4">Khách thuê</th>
+                  <th className="py-3 px-4">Số điện thoại</th>
+                  <th className="py-3 px-4">Hạn thanh toán</th>
+                  <th className="py-3 px-4">Số ngày quá hạn</th>
+                  <th className="py-3 px-4 text-right">Số tiền nợ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {debts.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="py-8 text-center text-ink-muted text-xs">
+                      Hiện không có công nợ quá hạn cần đối soát.
+                    </td>
+                  </tr>
+                ) : (
+                  debts.map((d) => (
+                    <tr key={d.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="py-3.5 px-4 font-semibold text-primary">{d.invoiceCode}</td>
+                      <td className="py-3.5 px-4 text-ink font-semibold">{d.roomNumber}</td>
+                      <td className="py-3.5 px-4 text-ink">{d.tenantName}</td>
+                      <td className="py-3.5 px-4 text-ink-muted">{d.tenantPhone}</td>
+                      <td className="py-3.5 px-4 text-ink-muted">{new Date(d.dueDate).toLocaleDateString('vi-VN')}</td>
+                      <td className="py-3.5 px-4">
+                        <span className="bg-red-50 text-red-700 px-2 py-0.5 rounded-full text-xs font-semibold border border-red-100">
+                          {d.daysOverdue} ngày
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-bold text-red-600">{formatCurrency(d.amount)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+              {debts.length > 0 && (
+                <tfoot>
+                  <tr className="bg-gray-50/80 font-bold border-t-2 border-line">
+                    <td colSpan="6" className="py-3 px-4 text-ink">Tổng cộng công nợ quá hạn</td>
+                    <td className="py-3 px-4 text-right text-red-600 text-base">
+                      {formatCurrency(debts.reduce((sum, d) => sum + d.amount, 0))}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </Card>
+      )}
 
       {toast && (
         <Toast 

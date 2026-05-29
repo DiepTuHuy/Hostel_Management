@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Send, AlertTriangle, X, Check, ArrowRight, Loader2 } from 'lucide-react';
 import { Button, PageHeader, Card, Table, Badge, StatCard, Toast } from '../../components/common';
-import { useInvoices } from '../../controllers/useInvoices.js';
+import { reportService } from '../../services/index.js';
 import { formatCurrency } from '../../utils/format.js';
 
 function BatchReminderModal({ totalTenants, onClose, onFinish }) {
@@ -67,42 +67,109 @@ function BatchReminderModal({ totalTenants, onClose, onFinish }) {
 }
 
 export default function DebtsPage() {
-  const { data: invoices = [] } = useInvoices({ status: 'overdue' });
+  const [debts, setDebts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingReminder, setLoadingReminder] = useState(null);
   const [toast, setToast] = useState(null);
   const [showBatchModal, setShowBatchModal] = useState(false);
 
-  // Group invoices by tenantId to aggregate debts
-  const grouped = invoices.reduce((acc, inv) => {
-    const k = inv.tenantId || 'Nguyễn Văn Hải';
-    if (!acc[k]) acc[k] = { tenantId: k, months: 0, total: 0, oldestDays: 0 };
+  const fetchDebts = () => {
+    setLoading(true);
+    reportService.getDebts().then(res => {
+      setDebts(res || []);
+      setLoading(false);
+    }).catch(err => {
+      console.error(err);
+      setToast({ message: 'Không thể lấy danh sách công nợ từ server', type: 'error' });
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    fetchDebts();
+  }, []);
+
+  // Group invoices by tenantName to aggregate debts
+  const grouped = debts.reduce((acc, inv) => {
+    const k = inv.tenantName || 'Khách thuê';
+    if (!acc[k]) {
+      acc[k] = { 
+        tenantName: k, 
+        tenantPhone: inv.tenantPhone || '—', 
+        invoiceIds: [], 
+        months: 0, 
+        total: 0, 
+        oldestDays: 0 
+      };
+    }
+    acc[k].invoiceIds.push(inv.id);
     acc[k].months += 1;
-    acc[k].total += inv.total;
-    acc[k].oldestDays = Math.max(acc[k].oldestDays, inv.daysOverdue || 12);
+    acc[k].total += inv.amount;
+    acc[k].oldestDays = Math.max(acc[k].oldestDays, inv.daysOverdue || 0);
     return acc;
   }, {});
+
   const rows = Object.values(grouped);
   const totalDebt = rows.reduce((s, r) => s + r.total, 0);
 
-  const handleSendReminder = (tenantName) => {
-    setToast({
-      message: `Đã gửi tin nhắn nhắc nợ qua Zalo & SMS cho khách thuê "${tenantName}" thành công!`,
-      type: 'success'
-    });
+  const handleSendReminder = async (row) => {
+    try {
+      setLoadingReminder(row.tenantName);
+      for (const invoiceId of row.invoiceIds) {
+        await reportService.sendDebtReminder(invoiceId);
+      }
+      setToast({
+        message: `Đã gửi email nhắc nợ chi tiết qua Gmail đến khách thuê "${row.tenantName}" thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({
+        message: `Gửi nhắc nợ thất bại: ${err.message || 'Lỗi hệ thống'}`,
+        type: 'error'
+      });
+    } finally {
+      setLoadingReminder(null);
+    }
   };
 
-  const handleFinishBatch = () => {
+  const handleFinishBatch = async () => {
     setShowBatchModal(false);
-    setToast({
-      message: `Đã gửi tin nhắn nhắc nợ đồng loạt đến ${rows.length} khách thuê thành công!`,
-      type: 'success'
-    });
+    try {
+      setLoading(true);
+      const allInvoiceIds = debts.map(d => d.id);
+      for (const id of allInvoiceIds) {
+        await reportService.sendDebtReminder(id);
+      }
+      setToast({
+        message: `Đã gửi email nhắc nợ đồng loạt đến ${rows.length} khách thuê thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({
+        message: `Lỗi nhắc nợ hàng loạt: ${err.message}`,
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading && debts.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 size={30} className="text-primary animate-spin" />
+        <span className="ml-3 text-sm text-ink-muted">Đang lấy dữ liệu công nợ thật từ hệ thống...</span>
+      </div>
+    );
+  }
 
   return (
     <>
       <PageHeader
         title="Công nợ"
-        subtitle="Tổng hợp công nợ theo khách thuê — gửi nhắc nợ hàng loạt"
+        subtitle="Tổng hợp công nợ theo khách thuê — gửi nhắc nợ hàng loạt qua Gmail"
         actions={
           <Button 
             icon={<Send size={16} />} 
@@ -122,7 +189,7 @@ export default function DebtsPage() {
       <div className="animate-[fadeIn_0.3s_ease-out]">
         <Table
           columns={[
-            { key: 'tenant', header: 'Khách thuê', render: (r) => <span className="font-semibold text-ink">{r.tenantId}</span> },
+            { key: 'tenant', header: 'Khách thuê', render: (r) => <span className="font-semibold text-ink">{r.tenantName}</span> },
             { key: 'months', header: 'Số tháng nợ', render: (r) => `${r.months} tháng` },
             { key: 'total', header: 'Tổng nợ', className: 'text-right font-bold text-danger', render: (r) => formatCurrency(r.total) },
             { key: 'oldest', header: 'Quá hạn lâu nhất', render: (r) => <Badge color="danger">{r.oldestDays} ngày</Badge> },
@@ -131,7 +198,8 @@ export default function DebtsPage() {
                 <Button 
                   size="sm" 
                   variant="secondary"
-                  onClick={() => handleSendReminder(r.tenantId)}
+                  onClick={() => handleSendReminder(r)}
+                  loading={loadingReminder === r.tenantName}
                   icon={<Send size={12} />}
                 >
                   Gửi nhắc nợ

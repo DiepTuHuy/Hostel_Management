@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../controllers/useAuth.jsx';
 import { invoiceService } from '../../services/invoiceService.js';
+import { propertyService } from '../../services/propertyService.js';
 import { Invoice } from '../../models/Invoice.js';
 import { formatCurrency, formatPeriod, formatDate } from '../../utils/format.js';
 import { FileText, ChevronRight, Zap, CheckCircle2, AlertCircle, Calendar, CreditCard, ChevronDown, Check } from 'lucide-react';
@@ -10,6 +11,7 @@ export default function InvoicesPage() {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [invoices, setInvoices] = useState([]);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('unpaid');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
@@ -18,6 +20,12 @@ export default function InvoicesPage() {
   const [payStep, setPayStep] = useState(1);
   const [payMethod, setPayMethod] = useState('vnpay');
   const [paying, setPaying] = useState(false);
+
+  useEffect(() => {
+    propertyService.list().then(res => {
+      setProperties(res || []);
+    }).catch(err => console.error("Error loading properties:", err));
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -303,30 +311,60 @@ export default function InvoicesPage() {
             {payStep === 2 && (
               <div className="space-y-4">
                 <h3 className="font-bold text-ink">Xác nhận thanh toán</h3>
-                <p className="text-xs text-ink-muted">
-                  {payMethod === 'cash'
-                    ? 'Bạn xác nhận sẽ trả bằng tiền mặt cho quản lý trọ? Hoá đơn sẽ chuyển sang trạng thái chờ xác nhận tiền mặt.'
-                    : `Hệ thống sẽ kết nối đến cổng thanh toán trực tuyến ${payMethod.toUpperCase()} để hoàn tất thanh toán.`}
-                </p>
-
-                <div className="border border-line rounded-xl p-3 bg-gray-50 text-xs space-y-2">
-                  <div className="flex justify-between"><span className="text-ink-muted">Hoá đơn kỳ:</span> <span className="font-semibold text-ink">{formatPeriod(selectedInvoice.period)}</span></div>
-                  <div className="flex justify-between"><span className="text-ink-muted">Tổng cộng:</span> <span className="font-bold text-primary">{formatCurrency(selectedInvoice.total)}</span></div>
-                </div>
+                
+                {payMethod === 'cash' ? (
+                  <>
+                    <p className="text-xs text-ink-muted">
+                      Bạn xác nhận sẽ trả bằng tiền mặt cho quản lý trọ? Hoá đơn sẽ chuyển sang trạng thái chờ xác nhận tiền mặt.
+                    </p>
+                    <div className="border border-line rounded-xl p-3 bg-gray-50 text-xs space-y-2">
+                      <div className="flex justify-between"><span className="text-ink-muted">Hoá đơn kỳ:</span> <span className="font-semibold text-ink">{formatPeriod(selectedInvoice.period)}</span></div>
+                      <div className="flex justify-between"><span className="text-ink-muted">Tổng cộng:</span> <span className="font-bold text-primary">{formatCurrency(selectedInvoice.total)}</span></div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-ink-muted leading-relaxed">
+                      Vui lòng quét mã QR chuyển khoản dưới đây để thanh toán hóa đơn. Hệ thống tự động thiết lập số tiền và nội dung đối soát.
+                    </p>
+                    <div className="flex flex-col items-center justify-center p-3 bg-gray-50 border border-line rounded-2xl space-y-2">
+                      <img
+                        src={
+                          properties.find(p => p.id === selectedInvoice.propertyId)?.qrCodeUrl ||
+                          `https://img.vietqr.io/image/970422-000000000000-compact.jpg?amount=${selectedInvoice.total}&addInfo=${encodeURIComponent(`Thanh toan hoa don ${selectedInvoice.code}`)}`
+                        }
+                        alt="QR Thanh toán"
+                        className="max-h-44 object-contain rounded-xl border border-line shadow-sm bg-white p-2"
+                      />
+                      <div className="text-center text-[10px] space-y-1 text-ink-muted">
+                        <div>Ngân hàng: <strong className="text-ink">MB Bank</strong></div>
+                        <div>Số tài khoản: <strong className="text-ink">000000000000</strong></div>
+                        <div>Số tiền: <strong className="text-primary font-bold">{formatCurrency(selectedInvoice.total)}</strong></div>
+                        <div>Nội dung: <strong className="text-ink font-mono bg-gray-100 px-1 py-0.5 rounded text-[9px]">{`Thanh toan hoa don ${selectedInvoice.code}`}</strong></div>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <button
                   onClick={handlePaymentSubmit}
                   disabled={paying}
-                  className="btn btn-primary h-11 w-full rounded-xl font-bold flex items-center justify-center"
+                  className="btn btn-primary h-11 w-full rounded-xl font-bold flex items-center justify-center gap-1.5 apple-press shadow-sm"
                 >
                   {paying ? (
                     <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : 'Xác nhận ngay'}
+                  ) : payMethod === 'cash' ? (
+                    'Xác nhận thanh toán tiền mặt'
+                  ) : (
+                    <>
+                      <Check size={16} /> Tôi đã chuyển khoản thành công
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={() => setPayStep(1)}
                   disabled={paying}
-                  className="btn btn-secondary h-11 w-full rounded-xl font-bold"
+                  className="btn btn-secondary h-11 w-full rounded-xl font-bold text-xs"
                 >
                   Quay lại
                 </button>

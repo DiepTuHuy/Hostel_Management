@@ -14,6 +14,7 @@ const NAV = [
   { to: '/admin',             label: 'Tổng quan',         icon: LayoutDashboard, end: true },
   { to: '/admin/branches',    label: 'Nhà trọ & chi nhánh', icon: Building2 },
   { to: '/admin/users',       label: 'Người dùng',        icon: Users },
+  { to: '/admin/room-types',  label: 'Loại phòng & tiện nghi', icon: Layers },
   { to: '/admin/contracts',   label: 'Hợp đồng',          icon: FileText },
   { to: '/admin/invoices',    label: 'Hoá đơn',           icon: Receipt },
   { to: '/admin/debts',       label: 'Công nợ',           icon: Wallet },

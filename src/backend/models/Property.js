@@ -11,7 +11,8 @@ const propertySchema = new mongoose.Schema({
   soPhongDaThue: { type: Number, default: 0 },
   maQuanLyIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   maChuTroId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  trangThai: { type: String, enum: ['active', 'inactive'], default: 'active' }
+  trangThai: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  qrCodeUrl: { type: String }
 }, { timestamps: true });
 
 export const Property = mongoose.model('Property', propertySchema);

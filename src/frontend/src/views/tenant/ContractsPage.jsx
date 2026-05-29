@@ -108,6 +108,14 @@ export default function ContractsPage() {
               >
                 <Eye size={14} /> Xem văn bản PDF
               </button>
+              {(c.status === 'draft' || c.status === 'pending_sign') && (
+                <button
+                  onClick={() => setSelectedPdfContract(c)}
+                  className="flex-1 h-10 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-1.5 text-xs hover:bg-primary-dark transition-colors shadow-sm"
+                >
+                  <FileText size={14} /> Ký hợp đồng
+                </button>
+              )}
               {c.status === 'active' && (
                 <button
                   onClick={() => setShowExtendModal(true)}
@@ -185,6 +193,20 @@ export default function ContractsPage() {
           contract={selectedPdfContract}
           onClose={() => setSelectedPdfContract(null)}
           onDownload={handleDownloadPdf}
+          onSign={async (id) => {
+            try {
+              const updated = await contractService.sign(id);
+              setContracts(prev => prev.map(c => c.id === id ? updated : c));
+              if (activeContract?.id === id) {
+                setActiveContract(updated);
+              }
+              setSelectedPdfContract(null);
+              alert('Đồng ý & Ký số điện tử thành công! Hợp đồng thuê đã có hiệu lực pháp lý.');
+            } catch (err) {
+              console.error(err);
+              alert('Lỗi hệ thống khi thực hiện ký số hợp đồng.');
+            }
+          }}
         />
       )}
     </div>
@@ -255,8 +277,10 @@ const handleDownloadPdf = (contractCode) => {
 };
 
 // Beautiful PDF Viewer Drawer with simulated signatures and progress
-function ViewPdfModal({ contract, onClose, onDownload }) {
+function ViewPdfModal({ contract, onClose, onDownload, onSign }) {
   const [downloading, setDownloading] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const [signing, setSigning] = useState(false);
 
   const handleDownloadClick = () => {
     setDownloading(true);
@@ -264,6 +288,20 @@ function ViewPdfModal({ contract, onClose, onDownload }) {
       setDownloading(false);
       onDownload(contract.code);
     }, 850);
+  };
+
+  const handleSignClick = async () => {
+    if (!agreed) return;
+    setSigning(true);
+    setTimeout(async () => {
+      try {
+        await onSign(contract.id);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setSigning(false);
+      }
+    }, 1000);
   };
 
   return (
@@ -338,6 +376,28 @@ function ViewPdfModal({ contract, onClose, onDownload }) {
             </div>
           </div>
         </div>
+
+        {/* Signature Box (Only for draft status) */}
+        {(contract.status === 'draft' || contract.status === 'pending_sign') && (
+          <div className="p-5 border-t border-line bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0">
+            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-ink">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="w-4 h-4 rounded border-line text-primary focus:ring-primary"
+              />
+              <span>Tôi đồng ý với các điều khoản của Hợp đồng thuê phòng trọ này.</span>
+            </label>
+            <button
+              onClick={handleSignClick}
+              disabled={!agreed || signing}
+              className="w-full sm:w-auto px-6 h-10 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shadow-sm"
+            >
+              {signing ? 'Đang thực hiện ký số...' : 'Đồng ý & Ký số'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

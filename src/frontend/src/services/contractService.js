@@ -21,5 +21,13 @@ export const contractService = {
   async extend(id, endDate) {
     const res = await api.patch(`/contracts/${id}/extend`, { endDate });
     return new Contract(res.data);
+  },
+  async sign(id) {
+    const res = await api.patch(`/contracts/${id}/sign`);
+    return new Contract(res.data);
+  },
+  async update(id, data) {
+    const res = await api.put(`/contracts/${id}`, data);
+    return new Contract(res.data);
   }
 };

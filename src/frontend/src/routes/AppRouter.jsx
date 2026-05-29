@@ -16,6 +16,7 @@ const AdminServices = lazy(() => import('../views/admin/ServicesPage.jsx'));
 const AdminReports = lazy(() => import('../views/admin/ReportsPage.jsx'));
 const AdminSettings = lazy(() => import('../views/admin/SettingsPage.jsx'));
 const AdminNotifications = lazy(() => import('../views/admin/NotificationsPage.jsx'));
+const AdminRoomTypes = lazy(() => import('../views/admin/RoomTypesPage.jsx'));
 
 const ManagerLayout = lazy(() => import('../layouts/ManagerLayout.jsx'));
 const ManagerDashboard = lazy(() => import('../views/manager/DashboardPage.jsx'));
@@ -74,6 +75,7 @@ export function AppRouter() {
           <Route path="invoices" element={<AdminInvoices />} />
           <Route path="debts" element={<AdminDebts />} />
           <Route path="services" element={<AdminServices />} />
+          <Route path="room-types" element={<AdminRoomTypes />} />
           <Route path="reports" element={<AdminReports />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="notifications" element={<AdminNotifications />} />
@@ -93,6 +95,7 @@ export function AppRouter() {
           <Route path="billing" element={<ManagerMeters />} />
           <Route path="meters" element={<ManagerMeters />} />
           <Route path="cash-receipts" element={<ManagerCashReceipts />} />
+          <Route path="room-types" element={<AdminRoomTypes />} />
           <Route path="notifications" element={<ManagerNotifications />} />
         </Route>
 
