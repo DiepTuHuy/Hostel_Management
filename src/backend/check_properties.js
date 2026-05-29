@@ -12,8 +12,8 @@ async function run() {
     await connectDB();
     const properties = await Property.find();
     console.log(`Found ${properties.length} properties in database.`);
-    properties.slice(0, 10).forEach((p, idx) => {
-      console.log(`${idx + 1}. ID: ${p._id}, Code: ${p.code}, Name: ${p.name}`);
+    properties.forEach((p, idx) => {
+      console.log(`${idx + 1}. ID: ${p._id}, Code: ${p.maNhaTro}, Name: ${p.tenNhaTro}, qrCodeUrl length: ${p.qrCodeUrl ? p.qrCodeUrl.length : 0}, startsWith: ${p.qrCodeUrl ? p.qrCodeUrl.substring(0, 50) : 'N/A'}`);
     });
   } catch (err) {
     console.error(err);

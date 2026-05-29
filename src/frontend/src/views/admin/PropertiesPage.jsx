@@ -566,7 +566,8 @@ export default function PropertiesPage() {
         occupiedRooms: updatedProperty.occupiedRooms,
         phone: updatedProperty.phone,
         email: updatedProperty.email,
-        status: updatedProperty.status
+        status: updatedProperty.status,
+        qrCodeUrl: updatedProperty.qrCodeUrl
       });
       setSelectedProperty(null);
       reload();
