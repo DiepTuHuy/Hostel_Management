@@ -15,6 +15,7 @@ export class Property {
     occupiedRooms = 0,
     managerIds = [],
     status = 'active', // 'active' | 'paused'
+    qrCodeUrl = '',
     createdAt,
   }) {
     this.id = id;
@@ -29,6 +30,7 @@ export class Property {
     this.occupiedRooms = occupiedRooms;
     this.managerIds = managerIds;
     this.status = status;
+    this.qrCodeUrl = qrCodeUrl;
     this.createdAt = createdAt;
   }
 
