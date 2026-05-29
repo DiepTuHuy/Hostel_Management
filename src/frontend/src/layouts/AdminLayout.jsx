@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Building2, Users, FileText, Receipt,
   Wallet, Settings2, BarChart3, Settings, LogOut, Bell, Search, HelpCircle, Menu, X,
-  Shield, AlertCircle
+  Shield, AlertCircle, Layers
 } from 'lucide-react';
 import { useAuth } from '../controllers/useAuth.jsx';
 import { Avatar } from '../components/common/Avatar.jsx';
