@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Settings2, X, Check, Save } from 'lucide-react';
 import { Button, PageHeader, Card, Badge, Toast, Loading } from '../../components/common';
 import { useFetch } from '../../controllers/useFetch.js';
-import { serviceService } from '../../services/index.js';
+import { serviceService, propertyService } from '../../services/index.js';
 import { formatCurrency } from '../../utils/format.js';
 
 function AddEditServiceModal({ service, onClose, onSave }) {
