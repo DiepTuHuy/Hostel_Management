@@ -388,7 +388,6 @@ export default function DepositPage() {
               )}
             </div>
           )}
-
           {step === 4 && (
             <div className="text-center py-8 space-y-6 animate-fade-in">
               <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto shadow-elevated">
@@ -425,7 +424,7 @@ export default function DepositPage() {
 
       {showLargeQR && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-          <div className="relative bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col items-center animate-[fadeInScale_0.3s_ease-out]">
+          <div className="relative bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl flex flex-col items-center animate-[fadeInScale_0.3s_ease-out]">
             <button
               onClick={() => setShowLargeQR(false)}
               className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-xl text-ink-muted transition-colors"
@@ -433,10 +432,10 @@ export default function DepositPage() {
               <X size={20} />
             </button>
             
-            <h3 className="text-lg font-bold text-ink mb-1 text-center">Mã QR Thanh Toán</h3>
-            <p className="text-[11px] text-ink-muted mb-4 text-center">Quét mã bằng ứng dụng ngân hàng hoặc ví điện tử để chuyển khoản</p>
+            <h3 className="text-xl font-bold text-ink mb-1 text-center">Mã QR Thanh Toán</h3>
+            <p className="text-xs text-ink-muted mb-4 text-center">Quét mã bằng ứng dụng ngân hàng hoặc ví điện tử để chuyển khoản</p>
 
-            <div className="bg-white p-4 rounded-2xl border border-line shadow-sm w-64 h-64 flex items-center justify-center">
+            <div className="bg-white p-2 rounded-2xl border border-line shadow-sm w-full max-w-[420px] h-[420px] flex items-center justify-center bg-gray-50/50">
               <img
                 src={
                   property?.qrCodeUrl ||
@@ -447,14 +446,14 @@ export default function DepositPage() {
               />
             </div>
             
-            <div className="mt-4 w-full bg-gray-50 border border-line rounded-xl p-3.5 text-xs space-y-1.5">
-              <div className="flex justify-between"><span className="text-ink-muted font-medium">Số tiền:</span> <span className="font-extrabold text-primary">500.000 ₫</span></div>
-              <div className="flex justify-between"><span className="text-ink-muted font-medium">Nội dung:</span> <span className="font-bold text-ink">{`DAT COC PHONG ${room?.code} ${phone}`}</span></div>
+            <div className="mt-5 w-full bg-gray-50 border border-line rounded-xl p-4 text-xs space-y-2 max-w-[420px]">
+              <div className="flex justify-between items-center"><span className="text-ink-muted font-medium text-sm">Số tiền:</span> <span className="font-extrabold text-primary text-base">500.000 ₫</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink-muted font-medium text-sm">Nội dung:</span> <span className="font-bold text-ink text-sm">{`DAT COC PHONG ${room?.code} ${phone}`}</span></div>
             </div>
 
             <button
               onClick={() => setShowLargeQR(false)}
-              className="mt-5 w-full btn btn-primary h-10 rounded-xl font-bold"
+              className="mt-5 w-full max-w-[420px] btn btn-primary h-12 rounded-xl font-bold text-base shadow-md"
             >
               Đóng
             </button>
