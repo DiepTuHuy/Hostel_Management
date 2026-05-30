@@ -591,7 +591,13 @@ app.get('/api/rooms', async (req, res) => {
       }
       filter.maNhaTroId = propertyId;
     }
-    if (status) filter.trangThai = status;
+    if (status) {
+      let dbStatus = status;
+      if (status === 'occupied') dbStatus = 'rented';
+      else if (status === 'vacant') dbStatus = 'empty';
+      else if (status === 'paused') dbStatus = 'maintenance';
+      filter.trangThai = dbStatus;
+    }
 
     const rooms = await Room.find(filter).populate('maLoaiPhongId');
     res.json(rooms.map(mapRoom));

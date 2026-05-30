@@ -506,7 +506,30 @@ Chúng ta đã tiến hành kiểm tra, vá lỗi đồng bộ và hoàn thiện
 - Stage toàn bộ các tập tin frontend và backend đã thay đổi.
 - Thực hiện commit tiếng Việt: `Hoàn thiện đồng bộ 10 Use Cases cốt lõi FE & BE, ký hợp đồng điện tử thật, sửa hợp đồng draft, QR thanh toán chi nhánh, VietQR động, nhắc nợ qua Gmail thật và đối soát công nợ chi tiết`.
 - Đẩy thành công mã nguồn lên nhánh `main` của repository [Hostel_Management](https://github.com/DiepTuHuy/Hostel_Management.git).
+---
 
+## Cập nhật Ngày 31/05/2026: Tích hợp đồng thời 2 phiên bản Mobile & Desktop cho toàn bộ Ảnh màn hình Chương 3
 
+Chúng ta đã hoàn thành việc nâng cấp toàn bộ hệ thống ảnh chụp màn hình minh họa (screenshots) trong Chương 3 của file đặc tả thiết kế hệ thống ([Báo cáo PTTKHT - Quản lý chuỗi nhà trọ (đã chỉnh sửa) - BACKUP.docx](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/docs/Báo cáo PTTKHT - Quản lý chuỗi nhà trọ (đã chỉnh sửa) - BACKUP.docx)). 
 
+### 1. Đồng bộ hóa 2 phiên bản ảnh (Mobile & Desktop)
+*   **Chụp ảnh tự động qua Puppeteer**: Cập nhật công cụ `capture_all.mjs` chạy Puppeteer giả lập kích thước máy tính để bàn (Desktop Viewport: 1440x900) và điện thoại di động (Mobile Viewport: 375x812, hasTouch: true).
+*   **Trích xuất hình ảnh thực**: Trình duyệt Puppeteer tự động thực hiện đăng nhập cho từng Actor tương ứng (Admin, Manager, Tenant, Visitor) và lưu trữ 20 ảnh chụp sắc nét cho 10 hình minh họa trong Chương 3:
+    *   `Hình 3.1` (Admin Dashboard)
+    *   `Hình 3.2` (Manager Dashboard)
+    *   `Hình 3.3` (Tenant Portal)
+    *   `Hình 3.4` (Visitor Home)
+    *   `Hình 3.5` (Manager Rooms)
+    *   `Hình 3.6` (Manager Billing)
+    *   `Hình 3.7` (Manager Contracts)
+    *   `Hình 3.8` (Tenant Invoices)
+    *   `Hình 3.9` (Visitor Rooms)
+    *   `Hình 3.10` (Admin Reports)
 
+### 2. Khắc phục lỗi co giãn méo hình (Aspect Ratio Fix) trong Word
+*   **Nguyên nhân lỗi cũ**: Việc thay thế trực tiếp nhị phân của đối tượng ảnh (`part._blob = ...`) trong python-docx giữ nguyên kích thước XML của khung dây (wireframe placeholder) cũ, khiến các ảnh desktop dài bị kéo dãn dọc sai tỷ lệ nghiêm trọng.
+*   **Giải pháp xử lý**: 
+    *   Viết script `replace_with_two_versions.py` xóa bỏ hoàn toàn phần tử vẽ (`w:drawing`) của placeholder cũ trong đoạn văn bản.
+    *   Chèn lại ảnh Desktop mới với chiều rộng cố định là **5.8 inches** (căn giữa) để tự động căn tỷ lệ chiều cao gốc.
+    *   Tự động chèn thêm một đoạn văn bản mới chứa ảnh Mobile tương ứng ngay bên dưới ảnh Desktop với chiều rộng **2.5 inches** (căn giữa) để tự động căn tỷ lệ gốc.
+    *   Toàn bộ ảnh hiển thị sắc nét, thẳng thắn, không bị kéo giãn hay méo hình, mang lại diện mạo tài liệu vô cùng chuẩn chỉ và cao cấp.
