@@ -2,8 +2,11 @@ import { useRef } from 'react';
 import { cn } from '../../utils/cn.js';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { CustomEase } from 'gsap/CustomEase';
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, CustomEase);
+
+CustomEase.create('appleInOut', '0.25, 0.1, 0.25, 1');
 
 export function Card({ className = '', padded = true, children, tilt = false, ...rest }) {
   const cardRef = useRef(null);
@@ -35,8 +38,8 @@ export function Card({ className = '', padded = true, children, tilt = false, ..
         rotateY: normX * maxRotY,
         scale: 1.03,
         transformPerspective: 1000,
-        ease: 'power1.out',
-        duration: 0.08,
+        ease: 'appleInOut',
+        duration: 0.12,
         overwrite: 'auto',
         boxShadow: `
           ${-normX * 20}px ${-normY * 20}px 35px rgba(0, 0, 0, 0.12),
@@ -52,8 +55,8 @@ export function Card({ className = '', padded = true, children, tilt = false, ..
         rotateY: 0,
         scale: 1,
         boxShadow: '', // Reset về mặc định css
-        ease: 'power2.out',
-        duration: 0.4,
+        ease: 'appleInOut',
+        duration: 0.55,
         overwrite: 'auto'
       });
     };

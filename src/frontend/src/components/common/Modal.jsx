@@ -2,8 +2,11 @@ import { useEffect, useState, useRef } from 'react';
 import { X } from 'lucide-react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { CustomEase } from 'gsap/CustomEase';
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, CustomEase);
+
+CustomEase.create('appleInOut', '0.25, 0.1, 0.25, 1');
 
 export function Modal({ open, onClose, title, children, size = 'md', footer }) {
   const [shouldRender, setShouldRender] = useState(open);
@@ -28,20 +31,20 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }) {
       }
     });
 
-    // Mờ dần backdrop
+    // Mờ dần backdrop (ra chậm - Apple style)
     tl.to(backdropRef.current, {
       opacity: 0,
-      duration: 0.25,
-      ease: 'power2.inOut'
+      duration: 0.5,
+      ease: 'appleInOut'
     }, 0);
 
-    // Thu nhỏ và trượt nhẹ xuống dưới đối với container
+    // Thu nhỏ và trượt nhẹ xuống dưới đối với container (ra chậm - Apple style)
     tl.to(containerRef.current, {
       scale: 0.95,
       y: 20,
       opacity: 0,
-      duration: 0.25,
-      ease: 'power3.in'
+      duration: 0.5,
+      ease: 'appleInOut'
     }, 0);
   });
 
@@ -63,20 +66,20 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }) {
       gsap.set(backdropRef.current, { opacity: 0 });
       gsap.set(containerRef.current, { scale: 0.95, y: 20, opacity: 0 });
 
-      // Animate backdrop mờ dần vào
+      // Animate backdrop mờ dần vào (vào nhanh - Apple style)
       gsap.to(backdropRef.current, {
         opacity: 1,
-        duration: 0.4,
-        ease: 'power2.out'
+        duration: 0.35,
+        ease: 'appleInOut'
       });
 
-      // Animate container xuất hiện theo chuẩn Apple (expo easing mượt mà)
+      // Animate container xuất hiện theo chuẩn Apple (vào nhanh - Apple style)
       gsap.to(containerRef.current, {
         scale: 1,
         y: 0,
         opacity: 1,
-        duration: 0.45,
-        ease: 'power4.out'
+        duration: 0.35,
+        ease: 'appleInOut'
       });
     } else if (!open && shouldRender) {
       // Trường hợp open chuyển từ true -> false từ component cha

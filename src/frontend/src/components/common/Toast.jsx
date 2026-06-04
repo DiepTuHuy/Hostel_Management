@@ -3,20 +3,23 @@ import { CheckCircle2, AlertTriangle, XCircle, Info, X } from 'lucide-react';
 import { cn } from '../../utils/cn.js';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { CustomEase } from 'gsap/CustomEase';
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, CustomEase);
+
+CustomEase.create('appleInOut', '0.25, 0.1, 0.25, 1');
 
 export function Toast({ message, type = 'success', onClose, duration = 3000 }) {
   const toastRef = useRef(null);
   const { contextSafe } = useGSAP({ scope: toastRef });
 
-  // Tự động đóng Toast kèm theo animation slide-out sang phải trước khi unmount
+  // Tự động đóng Toast kèm theo animation slide-out sang phải trước khi unmount (ra chậm - Apple style)
   const handleClose = contextSafe(() => {
     gsap.to(toastRef.current, {
       x: '120%',
       opacity: 0,
-      duration: 0.35,
-      ease: 'power3.in',
+      duration: 0.5,
+      ease: 'appleInOut',
       onComplete: () => {
         onClose?.();
       }
@@ -30,11 +33,11 @@ export function Toast({ message, type = 'success', onClose, duration = 3000 }) {
     return () => clearTimeout(timer);
   }, [duration, handleClose]);
 
-  // Entrance animation: Trượt nảy từ bên phải vào (spring-back easing)
+  // Entrance animation: Trượt mượt từ bên phải vào (vào nhanh - Apple style)
   useGSAP(() => {
     gsap.fromTo(toastRef.current,
       { x: '120%', opacity: 0 },
-      { x: '0%', opacity: 1, duration: 0.45, ease: 'back.out(1.1)' }
+      { x: '0%', opacity: 1, duration: 0.35, ease: 'appleInOut' }
     );
   }, { scope: toastRef });
 
