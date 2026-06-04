@@ -14,49 +14,58 @@ actor "Quản lý"        as Manager
 actor "Khách thuê"     as Tenant
 actor "Khách vãng lai" as Visitor
 
+Owner -[hidden]down-> Manager
+Tenant -[hidden]down-> Visitor
+
 rectangle "HỆ THỐNG QUẢN LÝ CHUỖI NHÀ TRỌ" {
 
-  package "Nhóm UC-A: Xác thực & Tài khoản" {
+  package "Nhóm UC: Xác thực & Tài khoản" as pkg_A {
     usecase "Quản lý xác thực\n& tài khoản"            as UC_Auth
     usecase "Quản trị User\n& Phân quyền"              as UC_Sys
   }
 
-  package "Nhóm UC-B: Nhà trọ & Phòng" {
+  package "Nhóm UC: Nhà trọ & Phòng" as pkg_B {
     usecase "Quản lý nhà trọ\n/ chi nhánh"             as UC_Branch
     usecase "Quản lý phòng\n& tài sản"                 as UC_Room
   }
 
-  package "Nhóm UC-C: Hợp đồng & Khách thuê" {
+  package "Nhóm UC: Hợp đồng & Khách thuê" as pkg_C {
     usecase "Quản lý hợp đồng\n& khách thuê"           as UC_Contract
   }
 
-  package "Nhóm UC-D: Dịch vụ – Hoá đơn – Thanh toán" {
+  package "Nhóm UC: Dịch vụ, Hoá đơn & Thanh toán" as pkg_D {
     usecase "Cấu hình dịch vụ\n& đơn giá"              as UC_Service
     usecase "Ghi chỉ số\n& tính tiền"                  as UC_Meter
     usecase "Quản lý hoá đơn"                          as UC_Invoice
     usecase "Thanh toán hoá đơn"                       as UC_Payment
   }
 
-  package "Nhóm UC-E: Báo cáo & Thống kê" {
+  package "Nhóm UC: Báo cáo & Thống kê" as pkg_E {
     usecase "Báo cáo & thống kê"                       as UC_Report
   }
 
-  package "Nhóm UC-F: Tiện ích bổ trợ" {
+  package "Nhóm UC: Tiện ích bổ trợ" as pkg_F {
     usecase "Gửi thông báo\n& nhắc nợ"                 as UC_Notify
     usecase "Tìm kiếm\n& đặt cọc phòng"                as UC_Search
     usecase "Trợ lý ảo\nAI Chatbot"                    as UC_Chat
   }
+
+  pkg_A -[hidden]down-> pkg_B
+  pkg_B -[hidden]down-> pkg_C
+  pkg_C -[hidden]down-> pkg_D
+  pkg_D -[hidden]down-> pkg_E
+  pkg_E -[hidden]down-> pkg_F
 }
 
-' Quan hệ Actor — Use Case
-Owner   -- UC_Auth
-Owner   -- UC_Sys
-Owner   -- UC_Branch
-Owner   -- UC_Service
-Owner   -- UC_Contract
-Owner   -- UC_Invoice
-Owner   -- UC_Report
-Owner   -- UC_Chat
+' Mối quan hệ giữa Actor bên trái (Owner, Manager) với Use Case
+Owner -- UC_Auth
+Owner -- UC_Sys
+Owner -- UC_Branch
+Owner -- UC_Contract
+Owner -- UC_Service
+Owner -- UC_Invoice
+Owner -- UC_Report
+Owner -- UC_Chat
 
 Manager -- UC_Auth
 Manager -- UC_Room
@@ -66,13 +75,14 @@ Manager -- UC_Payment
 Manager -- UC_Notify
 Manager -- UC_Chat
 
-Tenant  -- UC_Auth
-Tenant  -- UC_Invoice
-Tenant  -- UC_Payment
-Tenant  -- UC_Notify
-Tenant  -- UC_Chat
+' Mối quan hệ giữa Use Case với Actor bên phải (Tenant, Visitor)
+UC_Auth -- Tenant
+UC_Invoice -- Tenant
+UC_Payment -- Tenant
+UC_Notify -- Tenant
+UC_Chat -- Tenant
 
-Visitor -- UC_Search
-Visitor -- UC_Auth : (đăng ký)
+UC_Search -- Visitor
+UC_Auth -- Visitor : (đăng ký)
 
 @enduml
