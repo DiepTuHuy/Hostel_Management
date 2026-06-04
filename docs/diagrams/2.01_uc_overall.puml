@@ -2,6 +2,7 @@
 title Hình 2.1 — Sơ đồ Use Case tổng quát hệ thống Quản lý chuỗi Nhà trọ
 
 left to right direction
+scale 1.5
 skinparam packageStyle rectangle
 skinparam shadowing false
 skinparam usecase {
@@ -14,8 +15,9 @@ actor "Quản lý"        as Manager
 actor "Khách thuê"     as Tenant
 actor "Khách vãng lai" as Visitor
 
-Owner -[hidden]down-> Manager
-Tenant -[hidden]down-> Visitor
+' Sắp xếp dọc các Actor ở bên trái và bên phải
+Owner -[hidden]right-> Manager
+Tenant -[hidden]right-> Visitor
 
 rectangle "HỆ THỐNG QUẢN LÝ CHUỖI NHÀ TRỌ" {
 
@@ -50,11 +52,12 @@ rectangle "HỆ THỐNG QUẢN LÝ CHUỖI NHÀ TRỌ" {
     usecase "Trợ lý ảo\nAI Chatbot"                    as UC_Chat
   }
 
-  pkg_A -[hidden]down-> pkg_B
-  pkg_B -[hidden]down-> pkg_C
-  pkg_C -[hidden]down-> pkg_D
-  pkg_D -[hidden]down-> pkg_E
-  pkg_E -[hidden]down-> pkg_F
+  ' Sắp xếp dọc các gói từ trên xuống dưới
+  pkg_A -[hidden]right-> pkg_B
+  pkg_B -[hidden]right-> pkg_C
+  pkg_C -[hidden]right-> pkg_D
+  pkg_D -[hidden]right-> pkg_E
+  pkg_E -[hidden]right-> pkg_F
 }
 
 ' Mối quan hệ giữa Actor bên trái (Owner, Manager) với Use Case
