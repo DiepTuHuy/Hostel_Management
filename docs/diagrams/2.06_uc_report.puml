@@ -16,7 +16,7 @@ rectangle "Báo cáo & thống kê vận hành" {
   usecase "UC32 - Báo cáo doanh thu\n(Tháng / Quý / Năm)" as R2
   usecase "UC33 - Báo cáo tỉ lệ lấp đầy" as R3
   usecase "UC34 - Báo cáo công nợ" as R4
-  usecase "UC35 - Báo cáo chi phí vận hành\n(định hướng v2)" as R5
+  usecase "UC35 - Báo cáo chi phí vận hành" as R5
   usecase "UC36 - Xuất Excel / PDF\n(định hướng v2)"        as R6
 }
 
