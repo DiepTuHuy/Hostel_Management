@@ -1,0 +1,60 @@
+@startuml Act_Contract_Sign
+title Hình 2.9 — Sơ đồ hoạt động UC Lập hợp đồng & Ký số
+
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #E6F5EA
+  BorderColor #2E7D32
+  DiamondBackgroundColor #FFF6E5
+  DiamondBorderColor #E59300
+}
+
+|Quản lý|
+start
+:Vào /manager/contracts;
+:Nhấn "Tạo hợp đồng mới";
+:Chọn phòng trống (Room.trangThai='empty');
+
+|Frontend|
+if (Khách thuê đã có hồ sơ?) then (Có)
+  :Chọn từ danh sách khách thuê;
+else (Chưa)
+  :Nhập thông tin mới\n(họ tên, email, SĐT, CCCD);
+endif
+:Nhập điều khoản:\nNgày bắt đầu/kết thúc, tiền cọc, giá thuê,\ndịch vụ kèm theo;
+:Nhấn "Tạo hợp đồng";
+
+|Backend Express|
+:POST /api/contracts;
+if (Khách chưa có User trong DB?) then (Có)
+  :Tạo User mới với\nmật khẩu mặc định "123456";
+endif
+:Tạo Contract\n(trạng thái = "active",\nduongDanPdf = URL PDF);
+:Cập nhật Room.trangThai = "rented"\n+ currentTenantId = tenantId;
+:Tăng Property.soPhongDaThue +1;
+:Gửi email\nsendContractNotificationEmail()\nvới chi tiết hợp đồng cho khách;
+
+|Khách thuê|
+:Nhận email + link;
+:Đăng nhập /tenant/contract;
+:Xem PDF + điều khoản;
+if (Đồng ý?) then (Có)
+  :Nhấn "Ký số";
+  :PATCH /api/contracts/:id/sign;
+
+  |Backend Express|
+  :Cập nhật Contract = "active";
+  :(v1) Lưu duongDanPdf tĩnh;
+  :(v2 - định hướng) Nhúng chữ ký\nvẽ tay hoặc CA vào PDF;
+  :Sinh biên lai cọc;
+
+  |Quản lý|
+  :Nhận thông báo đã ký;
+  stop
+else (Từ chối)
+  :Contract → "cancelled";
+  :Room → "empty";
+  stop
+endif
+
+@enduml

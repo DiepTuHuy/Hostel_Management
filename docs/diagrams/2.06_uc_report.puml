@@ -1,0 +1,35 @@
+@startuml UC_Report
+title Hình 2.6 — Sơ đồ Use Case 5: Báo cáo & thống kê vận hành
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #E0F2F1
+  BorderColor #00695C
+}
+
+actor "Chủ trọ" as Owner
+
+rectangle "Báo cáo & thống kê vận hành" #FAFCFF {
+  usecase "UC31 - Dashboard tổng quan\n(KPI: doanh thu, lấp đầy,\ncông nợ, chi phí)" as R1
+  usecase "UC32 - Báo cáo doanh thu\n(Tháng / Quý / Năm)" as R2
+  usecase "UC33 - Báo cáo tỉ lệ lấp đầy" as R3
+  usecase "UC34 - Báo cáo công nợ" as R4
+  usecase "UC35 - Báo cáo chi phí vận hành\n(định hướng v2)" as R5
+  usecase "UC36 - Xuất Excel / PDF\n(định hướng v2)"        as R6
+}
+
+Owner -- R1
+Owner -- R2
+Owner -- R3
+Owner -- R4
+Owner -- R5
+Owner -- R6
+
+R2 ..> R6 : <<extend>>
+R3 ..> R6 : <<extend>>
+R4 ..> R6 : <<extend>>
+R5 ..> R6 : <<extend>>
+
+@enduml

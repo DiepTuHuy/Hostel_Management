@@ -1,0 +1,55 @@
+@startuml Act_Payment
+title Hình 2.11 — Sơ đồ hoạt động UC Thanh toán hoá đơn
+
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #E0F2F1
+  BorderColor #00695C
+  DiamondBackgroundColor #FFF6E5
+  DiamondBorderColor #E59300
+}
+
+|Khách thuê|
+start
+:Đăng nhập /tenant/invoices;
+:Chọn hoá đơn cần thanh toán;
+:Mở modal "Chọn phương thức thanh toán";
+
+switch (Phương thức?)
+case (VNPay / MoMo - Online)
+  |Frontend|
+  :POST /api/invoices/:id/pay\nbody = {method: 'vnpay'};
+  |Backend Express|
+  note right
+    v1 (giả lập): chỉ cập nhật
+    Invoice.trangThai = 'paid'
+    + tạo Payment record.
+    v2 (định hướng): chuyển hướng
+    VNPay HMAC-SHA512 + IPN.
+  end note
+  :Cập nhật Invoice = paid;
+  :Tạo Payment {phuongThuc, soTien, success};
+  :Trả {success: true};
+case (Bank Transfer)
+  :Khách quét QR Property.qrCodeUrl;
+  :Khách gửi biên lai cho Quản lý;
+case (Tiền mặt)
+  |Quản lý|
+  :Vào /manager/cash-receipts;
+  :Chọn hoá đơn pending;
+  :Nhấn "Xác nhận thu";
+  |Backend Express|
+  :POST /api/invoices/:id/pay-cash;
+  :Cập nhật Invoice = paid;
+  :Tạo Payment {phuongThuc: 'cash'};
+endswitch
+
+|Frontend|
+:Hiển thị Toast & biên lai điện tử;
+
+|Backend Express|
+:(Định hướng v2)\nGửi email biên lai +\nthông báo Zalo cho khách;
+
+stop
+
+@enduml

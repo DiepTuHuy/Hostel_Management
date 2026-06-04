@@ -1,0 +1,59 @@
+@startuml Seq_Meter_Invoice
+title Hình 2.15 — Sơ đồ tuần tự UC23+UC25 Ghi chỉ số & Tạo hoá đơn lô
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam ParticipantBackgroundColor #FBE6F1
+skinparam ParticipantBorderColor #AD1457
+
+actor       "Quản lý"            as Mgr
+boundary    "MetersPage"         as UI
+control     "ReadingCtrl"        as Meter
+control     "InvoiceCtrl"        as Bill
+entity      "MongoDB"            as DB
+control     "EmailService\n(định hướng v2)" as Mail
+
+== Mở phiên ghi chỉ số ==
+Mgr -> UI : Vào /manager/meters\n+ chọn cơ sở (Branch Switcher)
+UI -> Meter : GET /api/rooms?propertyId&status=rented
+Meter -> DB : Room.find()
+DB --> Meter : Rooms[]
+Meter --> UI : Hiển thị bảng inline editable
+UI -> Meter : GET /api/readings?period=YYYY-MM (kỳ trước)
+Meter -> DB : Reading.find()
+DB --> Meter : Readings cũ
+Meter --> UI : Điền cột "Điện cũ", "Nước cũ"
+
+== Nhập chỉ số mới ==
+Mgr -> UI : Nhập chỉ số mới cho từng phòng
+UI -> UI : Tự tính tiêu thụ + tổng dự kiến\n+ cảnh báo nếu mới < cũ hoặc >200%
+
+== Lưu nháp ==
+Mgr -> UI : Nhấn "Lưu nháp"
+UI -> Meter : POST /api/readings\n{readings: [...]}
+Meter -> DB : Reading.insertMany()
+Meter --> UI : 200 {success}
+
+== Phát hành hoá đơn lô ==
+Mgr -> UI : Nhấn "Phát hành hoá đơn"
+UI -> Bill : POST /api/invoices/generate\n{propertyId, period}
+Bill -> DB : Room.find(maNhaTroId, trangThai:'rented')
+DB --> Bill : Rooms đang thuê
+loop Mỗi phòng
+    Bill -> DB : Contract.findOne(maPhongId, active)
+    Bill -> DB : Reading.find(maPhongId, period) + Service.find(maNhaTroId, fixed)
+    Bill -> Bill : Tính chiTiet = tiền phòng\n+ Σ (tiêu thụ × đơn giá)\n+ Σ phí cố định
+    note right of Bill
+      v1: đơn giá phẳng.
+      v2: bậc thang EVN.
+    end note
+    Bill -> DB : Invoice.deleteMany cũ\n+ Invoice.create mới (pending)
+end
+Bill --> UI : 200 {count: N}
+UI --> Mgr : Toast "Đã phát hành N hoá đơn"
+
+== (v2 — định hướng) Gửi & nhắc nợ tự động ==
+Bill -> Mail : (Cron 8h hàng ngày)\nsendInvoiceEmail + sendDebtReminderEmail
+Mail --> "Khách thuê" : Email + Zalo + Push
+
+@enduml

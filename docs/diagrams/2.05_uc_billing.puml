@@ -1,0 +1,47 @@
+@startuml UC_Billing
+title Hình 2.5 — Sơ đồ Use Case 4: Dịch vụ, ghi chỉ số, hoá đơn & thanh toán
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FBE6F1
+  BorderColor #AD1457
+}
+
+actor "Chủ trọ"     as Owner
+actor "Quản lý"     as Manager
+actor "Khách thuê"  as Tenant
+
+rectangle "Dịch vụ, ghi chỉ số, hoá đơn & thanh toán" #FAFCFF {
+  ' --- Cấu hình ---
+  usecase "UC22 - Cấu hình đơn giá\ndịch vụ"             as B1
+
+  ' --- Ghi chỉ số & tính tiền ---
+  usecase "UC23 - Ghi chỉ số\nđiện nước"                 as B2
+  usecase "UC24 - Tính tiền dịch vụ"                     as B3
+
+  ' --- Hoá đơn ---
+  usecase "UC25 - Tạo hoá đơn"                           as B4
+  usecase "UC26 - Gửi hoá đơn\n& nhắc thanh toán"        as B5
+
+  ' --- Thanh toán ---
+  usecase "UC27 - Thanh toán online\n(VNPay/MoMo - v1 giả lập)" as B6
+  usecase "UC28 - Xác nhận đã thu\ntiền mặt"             as B7
+  usecase "UC29 - Tra cứu lịch sử\nhoá đơn"              as B8
+  usecase "UC30 - Quản lý công nợ"                       as B9
+}
+
+Owner   -- B1
+Owner   -- B4
+Owner   -- B9
+Manager -- B2
+Manager -- B7
+Tenant  -- B6
+Tenant  -- B8
+
+B2 ..> B3 : <<include>>
+B3 ..> B4 : <<include>>
+B4 ..> B5 : <<extend>>
+
+@enduml

@@ -1,0 +1,59 @@
+@startuml Act_Room
+title Hình 2.8 — Sơ đồ hoạt động UC Quản lý phòng
+
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #FFF6E5
+  BorderColor #E59300
+  DiamondBackgroundColor #E8EEF9
+  DiamondBorderColor #3A5BC7
+}
+
+|Quản lý|
+start
+:Đăng nhập vào /manager;
+:Chọn cơ sở từ dropdown\n(Branch Switcher);
+
+|Frontend React|
+:Lưu propertyId vào localStorage\nbhpro_selected_property_id;
+:Gọi GET /api/rooms?propertyId=...;
+:Hiển thị sơ đồ phòng theo tầng\n(5 thẻ KPI + Card 3D Tilt);
+
+|Quản lý|
+:Chọn thao tác;
+switch (Loại thao tác)
+case (Thêm phòng)
+  :Mở modal "Thêm phòng";
+  :Nhập số phòng, tầng, loại phòng,\ngiá thuê, mô tả;
+  :Gọi POST /api/rooms;
+case (Sửa phòng)
+  :Chọn phòng → modal "Sửa";
+  :Gọi PUT /api/rooms/:id;
+case (Đổi trạng thái)
+  :Chọn trạng thái mới\n(empty/rented/deposit/maintenance);
+  :Gọi PATCH /api/rooms/:id/status;
+case (Quản lý tài sản)
+  :Mở tab Tài sản;
+  :Thêm/sửa Asset embedded;
+  :Gọi PUT /api/rooms/:id\n(với taiSan[] mới);
+case (Xoá phòng)
+  :Xác nhận xoá;
+  :Gọi DELETE /api/rooms/:id;
+endswitch
+
+|Backend Express|
+:Validate dữ liệu;
+if (Hợp lệ?) then (Có)
+  :Cập nhật MongoDB;
+  :Cập nhật Property.tongSoPhong\n+ soPhongDaThue nếu cần;
+  :Trả về Room đã mapRoom();
+else (Không)
+  :Trả lỗi 400 + thông báo;
+endif
+
+|Frontend React|
+:Hiển thị Toast thông báo;
+:Reload danh sách phòng;
+stop
+
+@enduml

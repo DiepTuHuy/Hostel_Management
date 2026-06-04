@@ -1,0 +1,47 @@
+@startuml Seq_Chatbot_AI
+title Hình 2.17 — Sơ đồ tuần tự UC41 Trợ lý ảo AI Chatbot (Online Gemini + Offline Fallback)
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam ParticipantBackgroundColor #E6F0FA
+skinparam ParticipantBorderColor #1F3864
+
+actor       "Người dùng"            as User
+boundary    "AIChatbot.jsx\n(floating widget)" as UI
+control     "ChatController\n(server.js)"  as Ctrl
+control     "FallbackEngine\n(getFallbackResponse)" as FB
+entity      "MongoDB\n(Properties, Rooms,\nUsers, Contracts, Invoices)" as DB
+control     "Google Gemini\n2.5 Flash API"   as Gem
+
+User -> UI : Mở chat (click biểu tượng tròn nổi)
+UI -> User : Hiển thị welcome + badge online/offline
+User -> UI : Nhập câu hỏi + nhấn Gửi
+UI -> Ctrl : POST /api/chat\n{message, history[]}
+
+== Bước 1: Tải context động ==
+Ctrl -> DB : countDocuments(Property, Room, User, Invoice)
+DB --> Ctrl : Thống kê {N cơ sở, M phòng, K tenant}
+
+== Bước 2: Gọi Gemini (3 lần retry) ==
+loop tối đa 3 lần
+    Ctrl -> Gem : POST contents + systemInstruction\n(kèm context thống kê)
+    alt 200 OK
+        Gem --> Ctrl : reply text
+        Ctrl --> UI : {reply, isOnline: true}
+        UI -> User : Hiển thị bubble + badge xanh
+        note right of UI : KẾT THÚC
+    else 429 (Rate limit) hoặc 5xx
+        Ctrl -> Ctrl : delay 600ms × n + retry
+    end
+end
+
+== Bước 3: Fallback Offline (khi Gemini fail) ==
+Ctrl -> FB : getFallbackResponse(message, dbData)
+FB -> DB : Property.find() + Room.find()\n+ User.find() + Contract.find()\n+ Invoice.find()
+DB --> FB : Toàn bộ dữ liệu hiện hành
+FB -> FB : Phân tích từ khoá:\n• "rẻ nhất / đắt nhất"\n• "phòng <số>"\n• "khách thuê / hợp đồng"\n• "hoá đơn / công nợ"
+FB --> Ctrl : reply tổng hợp từ MongoDB
+Ctrl --> UI : {reply, isOnline: false}
+UI -> User : Hiển thị bubble + badge đỏ\n("Trợ lý Offline – Dữ liệu thực tế")
+
+@enduml

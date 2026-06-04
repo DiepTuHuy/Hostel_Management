@@ -1,0 +1,84 @@
+@startuml UC_Overall
+title Hình 2.1 — Sơ đồ Use Case tổng quát hệ thống Quản lý chuỗi Nhà trọ
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #F5F7FB
+  BorderColor #3A5BC7
+}
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #1F3864
+}
+
+' ====== 4 Actors (sắp xếp 2 trái – 2 phải) ======
+actor "Chủ trọ\n(Admin & Kế toán)"  as Owner
+actor "Quản lý"                      as Manager
+actor "Khách thuê"                   as Tenant
+actor "Khách vãng lai"               as Visitor
+
+rectangle "HỆ THỐNG QUẢN LÝ CHUỖI NHÀ TRỌ" #FAFCFF {
+
+  package "Nhóm UC-A: Xác thực & Tài khoản" #E8EEF9 {
+    usecase "Quản lý xác thực\n& tài khoản"            as UC_Auth
+    usecase "Quản trị User\n& Phân quyền"              as UC_Sys
+  }
+
+  package "Nhóm UC-B: Nhà trọ & Phòng" #FFF6E5 {
+    usecase "Quản lý nhà trọ\n/ chi nhánh"             as UC_Branch
+    usecase "Quản lý phòng\n& tài sản"                 as UC_Room
+  }
+
+  package "Nhóm UC-C: Hợp đồng & Khách thuê" #E6F5EA {
+    usecase "Quản lý hợp đồng\n& khách thuê"           as UC_Contract
+  }
+
+  package "Nhóm UC-D: Dịch vụ – Hoá đơn – Thanh toán" #FBE6F1 {
+    usecase "Cấu hình dịch vụ\n& đơn giá"              as UC_Service
+    usecase "Ghi chỉ số\n& tính tiền"                  as UC_Meter
+    usecase "Quản lý hoá đơn"                          as UC_Invoice
+    usecase "Thanh toán hoá đơn"                       as UC_Payment
+  }
+
+  package "Nhóm UC-E: Báo cáo & Thống kê" #E0F2F1 {
+    usecase "Báo cáo & thống kê"                       as UC_Report
+  }
+
+  package "Nhóm UC-F: Tiện ích bổ trợ" #E6F0FA {
+    usecase "Gửi thông báo\n& nhắc nợ"                 as UC_Notify
+    usecase "Tìm kiếm\n& đặt cọc phòng"                as UC_Search
+    usecase "Trợ lý ảo\nAI Chatbot"                    as UC_Chat
+  }
+}
+
+' ====== Quan hệ Actor ↔ Use Case ======
+Owner   -- UC_Auth
+Owner   -- UC_Sys
+Owner   -- UC_Branch
+Owner   -- UC_Service
+Owner   -- UC_Contract
+Owner   -- UC_Invoice
+Owner   -- UC_Report
+Owner   -- UC_Chat
+
+Manager -- UC_Auth
+Manager -- UC_Room
+Manager -- UC_Contract
+Manager -- UC_Meter
+Manager -- UC_Payment
+Manager -- UC_Notify
+Manager -- UC_Chat
+
+Tenant  -- UC_Auth
+Tenant  -- UC_Invoice
+Tenant  -- UC_Payment
+Tenant  -- UC_Notify
+Tenant  -- UC_Chat
+
+Visitor -- UC_Search
+Visitor -- UC_Auth : (đăng ký)
+
+@enduml

@@ -1,0 +1,46 @@
+@startuml Seq_Register_OTP
+title Hình 2.13 — Sơ đồ tuần tự UC01 Đăng ký + Kích hoạt OTP qua Email
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam ParticipantBackgroundColor #F5F7FB
+skinparam ParticipantBorderColor #3A5BC7
+skinparam ActorBackgroundColor #FFFFFF
+
+actor       "Người dùng"        as User
+boundary    "RegisterPage.jsx"  as UI
+control     "AuthController\n(server.js)" as Auth
+entity      "MongoDB User"      as DB
+control     "EmailService\n(Nodemailer Gmail)" as Mail
+
+== Bước 1: Đăng ký ==
+User -> UI : Nhập họ tên, email, SĐT, mật khẩu
+UI -> Auth : POST /api/auth/register
+Auth -> DB : findOne({email})
+DB --> Auth : null (chưa tồn tại)
+Auth -> Auth : bcrypt.hash(password)\n+ random OTP 6 chữ số\n+ otpExpires = now + 5 phút
+Auth -> DB : User.create({\n  hoTen, email, matKhau, sdt,\n  trangThai: 'pending',\n  otp: {maOtp, hanSuDung}\n})
+DB --> Auth : User._id
+Auth -> Mail : sendOtpEmail(email, hoTen, otp)
+Mail --> User : Email "Mã xác thực OTP: ······"
+Auth --> UI : 201 {status: 'pending', email}
+UI --> User : Hiển thị bước nhập 6 ô OTP
+
+== Bước 2: Xác thực OTP & Kích hoạt ==
+User -> UI : Nhập 6 chữ số OTP
+UI -> Auth : POST /api/auth/verify-otp\n{email, otp}
+Auth -> DB : findOne({email})
+DB --> Auth : User (pending)
+Auth -> Auth : So khớp otp & kiểm hạn dùng
+alt OTP đúng & còn hạn
+    Auth -> DB : update {trangThai: 'active', otp: null}
+    Auth -> Auth : Sinh JWT token
+    Auth --> UI : 200 {token, user}
+    UI -> UI : Lưu localStorage\n(bhpro_token, bhpro_user)
+    UI --> User : Chuyển dashboard theo vai trò
+else OTP sai/hết hạn
+    Auth --> UI : 400 {message: "OTP không hợp lệ"}
+    UI --> User : Hiển thị lỗi + nút "Gửi lại OTP"
+end
+
+@enduml

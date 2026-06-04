@@ -1,0 +1,76 @@
+@startuml Architecture_Deployment
+title Hình 2.18 — Sơ đồ kiến trúc triển khai hệ thống thực tế (3 tầng)
+
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam linetype ortho
+skinparam component {
+  BackgroundColor #FAFCFF
+  BorderColor #3A5BC7
+}
+skinparam node {
+  BackgroundColor #F5F7FB
+  BorderColor #1F3864
+}
+
+actor "Người dùng\n(Admin/Manager/Tenant/Visitor)" as User
+
+cloud "Internet" {
+}
+
+node "Trình duyệt (Chrome/Edge/Safari)" #FFFFFF {
+  component "React 18 SPA\n(Vite Dev Server)\nport 5173" as Frontend {
+    [Layout 4 phân hệ:\nAdmin/Manager/Tenant/Visitor]
+    [26 Pages]
+    [AIChatbot Widget]
+    [3D Tilt + Apple-style UX]
+  }
+}
+
+node "Máy chủ Backend (Node.js 18)" #E8EEF9 {
+  component "Express Server\nport 5001" as Backend {
+    [54 REST API Endpoints]
+    [JWT Auth Middleware]
+    [Mongoose ODM]
+    [Fallback Engine\n(getFallbackResponse)]
+  }
+}
+
+cloud "MongoDB Atlas Cloud" #FFF6E5 {
+  database "boardinghouse_db" as DB {
+    folder "10 Collections" {
+      [User]
+      [Property]
+      [RoomType]
+      [Room]
+      [Contract]
+      [Service]
+      [Reading]
+      [Invoice]
+      [Payment]
+      [Notification]
+    }
+  }
+}
+
+cloud "Google Gemini API" #E6F5EA {
+  component "gemini-2.5-flash" as Gemini
+}
+
+cloud "Gmail SMTP" #FBE6F1 {
+  component "smtp.gmail.com:587\n(Nodemailer)" as SMTP
+}
+
+User --> Frontend : HTTPS\n(localhost dev /\nVercel-Cloudflare prod)
+Frontend --> Backend : REST API\n(axios)
+Backend --> DB : Mongoose driver\nDNS: 8.8.8.8 (bypass IPv6 SRV)
+Backend --> Gemini : POST generateContent\n(3-retry with 600ms backoff)
+Backend --> SMTP : sendOtpEmail / sendForgotPasswordOtpEmail /\nsendContractNotificationEmail / sendDebtReminderEmail
+
+note bottom of Backend
+  Khởi chạy 1 lệnh: ./start.sh
+  - Express 5001 (Node + Mongoose)
+  - Vite 5173 (React Dev)
+end note
+
+@enduml

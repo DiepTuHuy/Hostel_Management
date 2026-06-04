@@ -1,0 +1,35 @@
+@startuml UC_Room
+title Hình 2.3 — Sơ đồ Use Case 2: Quản lý nhà trọ, chi nhánh & phòng
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF6E5
+  BorderColor #E59300
+}
+
+actor "Chủ trọ"  as Owner
+actor "Quản lý"  as Manager
+
+rectangle "Quản lý nhà trọ, chi nhánh & phòng" #FAFCFF {
+  ' --- Cấp Nhà trọ ---
+  usecase "UC09 - Thêm/Sửa/Ngừng\nhoạt động nhà trọ"     as R1
+  usecase "UC10 - Phân công quản lý\ncho cơ sở"          as R2
+  usecase "UC11 - Quản lý Loại phòng\n& Tiện nghi"       as R3
+
+  ' --- Cấp Phòng ---
+  usecase "UC12 - Thêm/Sửa/Xoá phòng"                    as R4
+  usecase "UC13 - Cập nhật trạng thái phòng\n(empty/rented/deposit/maintenance)" as R5
+  usecase "UC14 - Quản lý tài sản\ntrong phòng"          as R6
+}
+
+Owner   -- R1
+Owner   -- R2
+Owner   -- R3
+Manager -- R3
+Manager -- R4
+Manager -- R5
+Manager -- R6
+
+@enduml

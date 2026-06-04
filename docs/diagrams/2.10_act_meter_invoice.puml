@@ -1,0 +1,62 @@
+@startuml Act_Meter_Invoice
+title Hình 2.10 — Sơ đồ hoạt động UC Ghi chỉ số & Tạo hoá đơn lô
+
+skinparam shadowing false
+skinparam activity {
+  BackgroundColor #FBE6F1
+  BorderColor #AD1457
+  DiamondBackgroundColor #FFF6E5
+  DiamondBorderColor #E59300
+}
+
+|Quản lý|
+start
+:Đến kỳ chốt số (vd: ngày 1 hàng tháng);
+:Vào /manager/meters;
+:Chọn cơ sở (Branch Switcher);
+
+|Frontend|
+:GET /api/rooms?propertyId&status=rented;
+:GET /api/readings?period=YYYY-MM\n(kỳ trước);
+:Hiển thị bảng inline-editable 8 cột\n(Phòng, Khách, Điện cũ/mới, Tiêu thụ điện,\nNước cũ/mới, Tổng dự kiến);
+
+|Quản lý|
+:Nhập chỉ số mới cho từng phòng;
+
+|Frontend|
+:Tự tính tiêu thụ = mới − cũ;
+if (Chỉ số mới < cũ?) then (Có)
+  :Hiển thị cảnh báo bất thường;
+else (Không)
+  if (Tiêu thụ > 200% kỳ trước?) then (Có)
+    :Cảnh báo "có thể rò rỉ";
+  endif
+endif
+
+|Quản lý|
+:Nhấn "Lưu nháp";
+
+|Backend Express|
+:POST /api/readings (batch insert);
+
+|Quản lý|
+:Nhấn "Phát hành hoá đơn lô";
+
+|Backend Express|
+:POST /api/invoices/generate?propertyId&period;
+repeat
+  :Lấy 1 Room có contract active;
+  :Cộng tiền phòng + Σ(tiêu thụ × đơn giá)\n+ Σ dịch vụ cố định;
+  :(v1) tính theo đơn giá phẳng;
+  :(v2 - định hướng) bậc thang EVN;
+  :Insert Invoice + chiTiet[];
+repeat while (còn phòng?) is (có)
+->không;
+:Trả kết quả {success, count};
+:(Định hướng v2: cron tự động gửi email\n+ Zalo + nhắc nợ 1/3/5 ngày trước hạn);
+
+|Frontend|
+:Toast "Đã phát hành N hoá đơn";
+stop
+
+@enduml

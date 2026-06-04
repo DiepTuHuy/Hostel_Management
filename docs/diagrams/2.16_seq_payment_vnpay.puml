@@ -1,0 +1,44 @@
+@startuml Seq_Payment_VNPay
+title Hình 2.16 — Sơ đồ tuần tự UC27 Thanh toán hoá đơn qua VNPay (v1 giả lập / v2 tích hợp thật)
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam ParticipantBackgroundColor #E0F2F1
+skinparam ParticipantBorderColor #00695C
+
+actor       "Khách thuê"      as Tenant
+boundary    "InvoicesPage\n(/tenant/invoices)" as UI
+control     "PaymentCtrl\n(server.js)"        as Pay
+entity      "MongoDB"          as DB
+boundary    "VNPay Gateway\n(v2 - định hướng)" as VNP
+
+Tenant -> UI : Chọn hoá đơn pending
+UI -> Tenant : Modal "Chọn phương thức"
+Tenant -> UI : Chọn VNPay & nhấn "Thanh toán"
+UI -> Pay : POST /api/invoices/:id/pay\n{method: 'vnpay'}
+
+alt v1 (giả lập)
+    Pay -> DB : Invoice.update(trangThai='paid')
+    Pay -> DB : Payment.create({\n  phuongThuc:'vnpay', soTien, trạng thái:'success'})
+    Pay --> UI : 200 {success: true}
+    UI --> Tenant : Toast "Thanh toán thành công"
+else v2 (định hướng – tích hợp VNPay thật)
+    Pay -> DB : Invoice.lock(status='pending_payment')
+    Pay -> VNP : createOrder(amount, ref) + HMAC-SHA512
+    VNP --> Pay : returnUrl với token
+    Pay --> UI : 302 redirect VNPay
+    UI -> Tenant : Chuyển hướng cổng VNPay
+    Tenant -> VNP : Nhập thẻ ATM / quét QR + OTP ngân hàng
+    VNP -> Pay : IPN callback /api/payments/vnpay/ipn\n+ chữ ký HMAC
+    Pay -> Pay : Verify chữ ký HMAC
+    alt Giao dịch thành công
+        Pay -> DB : Invoice.update(status='paid')
+        Pay -> DB : Payment.create({success})
+        Pay --> Tenant : Trang biên lai PDF
+    else Thất bại / huỷ
+        Pay -> DB : Invoice.unlock(status='pending')
+        Pay --> Tenant : Trang lỗi + chọn lại
+    end
+end
+
+@enduml
