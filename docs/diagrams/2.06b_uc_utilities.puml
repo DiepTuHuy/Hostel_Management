@@ -5,12 +5,8 @@ left to right direction
 skinparam packageStyle rectangle
 skinparam shadowing false
 skinparam usecase {
-  BackgroundColor #E6F0FA
-  BorderColor #1976D2
-}
-skinparam actor {
-  BackgroundColor #FFFFFF
-  BorderColor #1F3864
+  BackgroundColor #F5F7FB
+  BorderColor #3A5BC7
 }
 
 actor "Chủ trọ"        as Owner
@@ -19,23 +15,20 @@ actor "Khách thuê"     as Tenant
 actor "Khách vãng lai" as Visitor
 actor "Gemini API"     as Gemini <<system>>
 
-rectangle "Tiện ích bổ trợ (Nhắc nợ, Tìm kiếm, Đặt cọc & AI Chatbot)" #FAFCFF {
+rectangle "Tiện ích bổ trợ (Nhắc nợ, Tìm kiếm, Đặt cọc & AI Chatbot)" {
   usecase "UC37 - Gửi thông báo\n& nhắc nợ"             as UT1
   usecase "UC38 - Tìm kiếm phòng\n(dạng danh sách)"      as UT2
   usecase "UC39 - Đặt cọc phòng\ntrực tuyến"            as UT3
-  usecase "UC40 - Đăng tin tuyển khách"                 as UT4
   usecase "UC41 - Trợ lý ảo AI Chatbot\n(BoardingHouse AI)" as UT5
-  
+
   usecase "Tra cứu trực tuyến\n(online LLM)"            as UT6
   usecase "Tra cứu ngoại tuyến\n(offline fallback)"     as UT7
 }
 
 Owner   -- UT1
-Owner   -- UT4
 Owner   -- UT5
 
 Manager -- UT1
-Manager -- UT4
 Manager -- UT5
 
 Tenant  -- UT2

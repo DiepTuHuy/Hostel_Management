@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>PlantUML Render Helper — Phiên bản đơn giản</title>
+<style>
+  body { font: 14px sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+  h1 { color: #1F3864; }
+  button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #3A5BC7; color: white; border: none; border-radius: 6px; }
+  button:hover { background: #2A4FBD; }
+  ul li { margin: 6px 0; }
+  .ok { color: #2E7D32; }
+  .err { color: #C62828; }
+  .progress { font-weight: bold; margin-top: 12px; color: #1F3864; }
+  .note { background: #FFF9C4; padding: 10px 14px; border-left: 4px solid #FFC107; border-radius: 4px; margin: 14px 0; }
+</style>
+</head>
+<body>
+<h1>Render 7 PNG sơ đồ Use Case (phiên bản đơn giản)</h1>
+<p>7 sơ đồ UC (Hình 2.1–2.6 + 2.6b) đã được đơn giản hoá: bỏ màu fill ở package, dùng cùng một skinparam (background #F5F7FB, border #3A5BC7), associations dùng <code>--</code>.</p>
+<div class="note">
+  <b>Cách dùng:</b><br>
+  1. Bấm nút <b>"▶ Tải xuống"</b> bên dưới — trình duyệt sẽ tự fetch 7 PNG từ plantuml.com và tải về thư mục <code>Downloads</code>.<br>
+  2. Copy 7 file PNG (image1.png ... image6.png, image55.png) từ Downloads vào <code>docs/diagrams/png/</code>.<br>
+  3. Trong file <code>.docx</code>: chuột phải lên ảnh UC cũ → <b>Change Picture → From File</b> → chọn PNG mới.
+</div>
+<button onclick="run()">▶ Tải xuống 7 PNG sơ đồ UC</button>
+<div class="progress" id="progress"></div>
+<ul id="log"></ul>
+
+<script>
+const URLS = {
+  "image1.png": "https://www.plantuml.com/plantuml/png/ZLPRQnj757xVNt7OWji-kAKj8Q2dI9lQCcsKn9PB7W9bl1fh1grcrDrP9w84KWeDfGt496sV2b5CA9IOqWiKj8G-ZCd_cFwIdjcRTwIrwJuiwDiptpddEvVHjKIHMANJ2FQ3psyUqPX4aQUuYYZqzIl1uCFtFe1_7pw3lJSBE3issLFOJoW415_AP3-8CNoHweK2Ph97eF1zZD3jr2nF14JwDOGiDTbF70PCFmSLc-onvqNqK86I4FCnKp3YCGqLby9B9bpCI4ocC2FXX8pfdffZ8FOp4UE8DWmIHaRo7aTVXoHAcb_IX8OskYyzW1xIZ6EPYb4W8nd3MrjNjgvkzUmN6OzeNA8VTQ_qWglU0yyZeKB03p2FNufeVIWVai3DUuB6bSrvZasJ6qHWtBNH9qmlGeQwfFfNlx8PKa64MZ4vqYUOJ4IuRqq-umd7hvvNvmv-tsJVm13VJmRRS7lVB5yCu5FzCmJzVPFzk0E3ldu8mrsJVUzZyfXZAIBugFsVKopmPhS3Tz1RNgVVGzY0eNxEOSAaJSNF9ODQm4Q6SF_yr5sn0SevrdWmTEoZRgfOAvLLz3lRGB5bkSNq2u7jCpVPLovDHRGtJv3dGNiolKwZgI2d-qECByj2rEPtnVlOcTmY2y7y5jUzc8YmFGjBDSkTrLeaQqeqg7Qbd5wSHj01hEd9h9Wkx84DSBlcudnOyvoDPRBMRiqu0YbKZ5rtSIpNEt0TAsJRqMGlSUwVGbzgE_Xl5YB_EMG4bu92SBrV0hDycGBBryRedCO6LX2CkLwqrvd6HpoaBjqsrYV45Bz5TRFZGkfJwvotzCivrmsgSFukbAnEfuN09TeHHt8jg4R-_uEh8Bf5vbCgBf7zumxqz492Q5yubEKMdRHKlscdcdQN1R1BPpA-nFzM1uOewYC1-XIBTe1xFH-JapNtsoOxvUXO_uL-3p0CMnR1pFAt44H-e3s2WLJySBuYfNurXGatot-cHOkOvTyAGfpEi1olDRQgMqYyEff36svUOImrHjNTWO0HTI1LgpJbGA15hWhgyZPUMaGKrrWttypsrglkEYzV_NXmSxDUS2vaLvMBb1janQpiT1Uj9zE5gmvqqRAQAmms5Q-yVPfHkb2-Yboezkt2nHYvMDN8BbhMTeKrZwUuwHpLNAZAq4KhFovQ-d71mazvNTOQv_tXWjOvTE2Ti-Eph_EPUVskvrsZOeJ_VRp_00==",
+  "image2.png": "https://www.plantuml.com/plantuml/png/ZPHRQzH05CVVvrCS8dYXxkhUjwKixGRNGh4Nwe8F1HcID1asErcJYMqHGUcpOB6leh4KKIne4SGDFisotoD-4iziBybcePY7S39dVdF-_pE7B0M2-YBikz3Ldow7mY622TU25VcDEr0kbk7lgoFO6aSmEapYTz0DBD0flaeBi1acmsCEhlm3Up8oG3X9_CE0co3aHmOznrDfGbnhHu3mm6Us8y1alcK8vd4Iz1WVK9_sOK2D7hMjBR6FbLMQSjkrCXi2XvhUBkCsx50to6R2m3AKd1S4e8t7sBuNSbFtNC-76vrQfz5fgupdcvP_iLfPhhNr1db923K4BcXhzlXx4hzdOChVtDQ01igcVvdMqTPd47uIlz407qolxtBCaokfeFrNBxI9p4l9MbU_Nu82ZDwE3j1P3z7fpTb7QIhbu78ASoSPdWws-MshJvaBSz37Ru579SCluPrpI-KSNadnFLH_8gOhPYjNScWLqSrGVkLJTMPvnLPpR6rIDXd-4k0cmuXTTuJYQpc-Zhokt9wR5k2ekGp6qKnvHTUpz9FCpQm_te1d8OK7gc7Ok9uyDHnGhOy4t4CvyYU30UuzCIxwryW9QQ2GLSUJ4Mv_bCGVrCN9Q9lFNgAYcpcwYVI68pznLB6VnAyvFASCfqoUQNaFysfMrKH2eQ2cu2eifs4b3QjfM2UJIPt4pKmyJyYjIGT6X_8O34SfEE0Gu31dnt4E_QLjk0khA_9exI4Oyeo3CZmrVAHRWcAnXNs21LXSPDnmGzDgjKYtUlrwBRTEbYnkuX-9_0C=",
+  "image3.png": "https://www.plantuml.com/plantuml/png/XLF1RjD04BtlLuoCL40Yf8cJLd0giHHnWD8sZSGX4bhPM--gzgnPRrHL28aR9mweN3ZHW10Iq0lY58kJ4VzXleInaoPEMWaVRBsPdJVlpQntKikD7SSH3Brd1rh7p2eR2NYOVqS9xRik_7tr3WP_9l3xRP6TmJ0Lu75wjU_3_hYOVaA8yb-0CZy7QuhipHtmfIhnXEet897v3mmPYyIH1Ql1g51Q29GHlbKQMNgiCE66nv1m_vY7Oc1FgNsPvXX6edOWbJpG9mf3EE9HMi-CK-6NcbumW1xHX4QFCV1qf0tSw7Vxs_rUcT4c46OUTHzqUzusUyaOzoq574yMsPUP1GU0f_3a18Mvp2wjpfAFEP9MmzX2QFtC_yRXL4flGgFH0A-OVavWTr5G1YbvQSaPUflte067ClyQDmT5Ti6Rks6HVSDmX58NqucjDlEUnhBiIYAXqddGMkLgRHBNdim_8lZvJwfvlX0zGbzgy6dJQP5zc34iQDfhD2sYgVbzL0fHStSZt813LMIl4J2KogdHk6pDzrvLSTLpgxtc-QdE9ulfNVEKx9qr3XUgDXS9JOO-jfpDT4BjBArZgVQMY1DxsZG2hGYQWKXqgcmpveemSlJ5RQUYxwxHTrPdOFDpHQCZE49hDBMv8hTasIhlN7MtA41pe0tLKNi5kMn-qQv1dHNKNK5RZEq83EYtPly0",
+  "image4.png": "https://www.plantuml.com/plantuml/png/VPJFYzD05CVlyrSy8eWUsjscJLENfQmDL67r86rX3mKPajbCQ38faua_447muC6BPVNagImUN5nGZmsUKlR_Y7-9BybsJNBO7bhUc_VvlkzxcVGeKbIgEF1XPZstGg4ajHLHdl8PF4v_20vwkmT_tts6oTKQjgiiEODPnC2Y-DKzW6TnjZaNuAT_W6V9-R8i4IxSXGLFrpO7nUFqWX2VdIfG8KZFvGeSJp9RUQ4WqS8JIoff04jgBwZB9kerziwFgN1zLYc8E7N2bnwAdr8_gfx44RDpGsy8m0XbN1d6mh52FvHmPsoCpV4eFmcbm-HrjllG65acUKi83em9xVya6kGV6i5JAj2Gt5KSLmRIYe8f4rGeGcxSLcLkNOXMUDtvrcPMnu0MJ7bw4UJS6KIuxX8exS3EbDLfW7q4dsIRosMZuSvdbTKRh8diCLgDicG5Ut22_K1m51DpKLFJ2hpRm0U8F_8eDjwi1JI0UkTU0ts0w2HBBca1VF5kfuqwhUyZRM7NRm4uMV9TrUcvs8EfnES0Ivx-tfdlDpGwgB7zj7sFgrhW2XJE482IwGQiwNvdBkxbQX_n3U1NFxFaAvQzqE-NKcPLweG5ZSrlLtWPW7jPyY46Fqj-sLfrc45-wwxl5hHQ-HEjHdejwjKYenRrQv59oki8HTIjHGD2B1tQxI4Um04S7dh2zcE73OStURF8irUA2GVJv0X_yN-1_0C=",
+  "image5.png": "https://www.plantuml.com/plantuml/png/dLHDQnDH5Ds_Nt4PeIeqqUQZQKi9DIDjGU87RSL5G1uphpD3ftVAp9lM8eAkHCH5q9shK8ee1bq8GWPNK_e_dh_4-oPDPYPjDyuYoJtlpBddtO-iHPA7CjxtOSTytl5ytqE7IK_w0ZRJx-X2hTg4lwy_mTRv0CxwAla8Ev40azD7OmNkg-IzvSAXIaxdmN4zi5oLl8D89VrvS8DKltC-G9W3wN9IamGXOxxObVGRGizn9TXUA2pf1SYYFGyFUCZtuO1RUzmHM_AOdEXZZeul2eJ8vNPmH6vXb_jHyIIEXANjlMG07P9nmY16smpy88GRwytrrdf7dmIXBS8Bj7wlsJ5Rx1LZt98462PTuml8K2KV3D0FZ-3H4OfmGdWIgz49Wf_-cPvtEPBZAUE1cmweDDADqsz6HjWMo54oDhqE6FzLFoExsaseL2fWgj5f36xMAee9drpVs35hDIWpncAEbmvwQEUfnrUOFEIqiy2c6JPAhhIJTAYTU2fvWrVahCFiEpqywnFxBGAU_rJ9PwkSRvApDYFK8A7jOgvh7HTLwhdppRn-bsqsjReQ3O92cQzMpRKRCngB-geg6Ne5ZHxE0RfgzCCgjwmWqymjRkUKAposeCm8aDPJzF3MquUF-V6TRj0DY76uG1sbQGHVZOO7juqin-ACr18Hdz50Pjw6I5xJ4psRFRmexhuQ_PQN1w4rexEiBOKSB9LyZIbZrX5gyh27rzPHwooLTUftIIVV8R3INxJ9g9AJwtgWHPRrXcPhI01LZyQq63LAqJAxMCWigfMY5XllufYvM8gM6ElKe5fjqop12gokUcZviItQRKP0XZTcySOORsQuU245sWIpDVgclrRs3m==",
+  "image6.png": "https://www.plantuml.com/plantuml/png/ZPFFYzD05CVlyrSy8eX2MzcawK9PojgiHH7MjMl1muACoMmcD9s9ayd-G0J1WuXuMDIJ5ul8WhZWmLE3fopxVyI_n9TktAQXWZdCFDwyztsVzoQp6MkgT389OUGy6R98Aarqe4C6TxFlWeFPwi3lbnzWzs8AvoTv-Xv6CGE7uc9tePzD9RZ5SXqqpzCJuSCu-mO7-UnC0Cy-2qv8oFOrQ0agyBa6Br3CrO4K91u78gAAJY2YxfZwR5SVOztYc0e_P9M0c5DF7WQela_3k7gInCmjO9uJW3xA-4ecmdDaA1LS6zY3zK6_E97AOwhqMhVjlhDENX12NOqEmq7oKz0gJzyPG6DuS2YO8kGA18p_wDEO8_p5CKQEjGPDsA8nVogfya3dwKVCUfPGiITktD-vrmLFKfomvaa3mdpsDIe6F3izRkm9D_k9iI9FlpJ0vG54F3kxEMSRhjMgc5XbWNSbYJKUyMoAAhVWOPBzmctx_DMa535h8jQI2AA-GQBqzHBMPQPLosmlPIwuBwFRjMXxERhih3f6v2v-ixVO1R_uaQUVKE_0BB7jcbm7vHudoAZXpf7BGcnoPslmJudoAvGwnVNFxncQpMAe2zkis5R5RbTiks9t21cQq6hrq8GkR6om8ys4r-kHeRNQtLxjjbUwoIRk-3x97m==",
+  "image55.png": "https://www.plantuml.com/plantuml/png/RPJDQjj04CVl-nI32Y66n3JnLnj2I2p81qtwGUoU0cKjhQN5ycoGLar3AHHowAdGqlO1Z0-b9Q6q50eMfGU5leVw91qfbYCvyK4mE__zQVwZ6My6cliw77hGDPzrjVIabY9WMcfFm6vyZYwiLfiz-FVw8np-7S7b-oJw0Dr0WCdfqLo3ZaoYDmZnXUL2Bua-WVQJQCoO9_eQj09VEgu6M_h2qb8X2mOIZxdFXt3ChG5tnA4-fNUbQOwE9mg2mEMsEf7eG9zxGJ4J1i9At_-I0RG9u_WgHDjKdlBXpdPZkxNTJZFAjuK_FQrjDTfcYxrYZ5kQ3WpJJQBFMRLl3PZ-U02FJb3ukUP9c4p625xykoWvu4XrpqGFt7X4vhKRnb-DNDCHo57FIPx7OpBZSMcaagSoa9JDDJjYA572rkEz6MHwjBuUd0PQ33Ss69lr2OpREm-B3zrayiq2f609El7v40OocVmPBi7bksJoIuD5bYrOWAqzC5skUqfNZAoLULkDhbbhmJBi9D6596FnJogx5u_K4Iu0NkDdJSaBxdPMvZ3t25Ee0OxT-0SwHxXe9vCHKMrE8nQatQaO1Spg7EO-OKhLvvpKytSBT7XAU3Hkr5ChW-ftCz3b6RrQIypkHMS8W-m3bVtC6FKvnahgAUir3GRGXAX2AybQMt7Vfh7TLNIBKXNZYjDWHL37vwcNBo6KFH10eITHmFx-GUMce-Rj47GKTLGMAVr-Xg7byNgq91NZ6f8jGZRgTBAyd7suKbWlXrJwTEfpTIcibqDINyt_zFPgEQJqTFRpT2cibKDIqmEgrOtKFApHEeWNMg1Dwt2TQCqdckdjgmLYR9DEwK-E_GS=",
+};
+
+const log = document.getElementById('log');
+const progress = document.getElementById('progress');
+async function run() {
+  const names = Object.keys(URLS);
+  let done = 0;
+  for (const name of names) {
+    try {
+      const r = await fetch(URLS[name]);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      await new Promise(r => setTimeout(r, 300));
+      URL.revokeObjectURL(url);
+      done++;
+      const li = document.createElement('li');
+      li.className = 'ok';
+      li.textContent = '✓ ' + name + ' (' + blob.size + ' bytes)';
+      log.appendChild(li);
+    } catch (e) {
+      const li = document.createElement('li');
+      li.className = 'err';
+      li.textContent = '✗ ' + name + ': ' + e.message;
+      log.appendChild(li);
+    }
+    progress.textContent = 'Đã tải ' + done + '/' + names.length;
+  }
+  progress.textContent += ' — HOÀN TẤT! Hãy mở Downloads để lấy file.';
+}
+</script>
+</body>
+</html>

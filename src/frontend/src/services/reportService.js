@@ -9,6 +9,10 @@ export const reportService = {
     const res = await api.get('/reports/revenue', { params: { propertyId, year } });
     return res.data;
   },
+  async getExpenses(propertyId, year) {
+    const res = await api.get('/reports/expenses', { params: { propertyId, year } });
+    return res.data;
+  },
   async getOccupancy() {
     const res = await api.get('/reports/occupancy');
     return res.data;

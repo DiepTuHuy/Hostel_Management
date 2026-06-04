@@ -5,14 +5,14 @@ left to right direction
 skinparam packageStyle rectangle
 skinparam shadowing false
 skinparam usecase {
-  BackgroundColor #FFF6E5
-  BorderColor #E59300
+  BackgroundColor #F5F7FB
+  BorderColor #3A5BC7
 }
 
 actor "Chủ trọ"  as Owner
 actor "Quản lý"  as Manager
 
-rectangle "Quản lý nhà trọ, chi nhánh & phòng" #FAFCFF {
+rectangle "Quản lý nhà trọ, chi nhánh & phòng" {
   ' --- Cấp Nhà trọ ---
   usecase "UC09 - Thêm/Sửa/Ngừng\nhoạt động nhà trọ"     as R1
   usecase "UC10 - Phân công quản lý\ncho cơ sở"          as R2

@@ -19,6 +19,7 @@ import { Notification } from './models/Notification.js';
 import { RoomType } from './models/RoomType.js';
 import { Service } from './models/Service.js';
 import { Reading } from './models/Reading.js';
+import { Expense } from './models/Expense.js';
 import { emailService } from './services/emailService.js';
 
 dotenv.config();
@@ -1642,6 +1643,90 @@ app.get('/api/reports/revenue', async (req, res) => {
   }
 });
 
+// H.2b Báo cáo chi phí vận hành (UC35)
+app.get('/api/reports/expenses', async (req, res) => {
+  try {
+    const { propertyId, year = 2026 } = req.query;
+    const expenseFilter = {};
+    if (propertyId) expenseFilter.maNhaTroId = propertyId;
+
+    const expenses = await Expense.find(expenseFilter).lean();
+    const monthlyExpenses = Array.from({ length: 12 }, (_, i) => ({
+      month: `Tháng ${i + 1}`,
+      expense: 0
+    }));
+
+    for (const exp of expenses) {
+      const expDate = new Date(exp.ngayChi);
+      if (expDate.getFullYear() === parseInt(year)) {
+        const monthIndex = expDate.getMonth();
+        if (monthIndex >= 0 && monthIndex < 12) {
+          monthlyExpenses[monthIndex].expense += exp.soTien;
+        }
+      }
+    }
+
+    res.json(monthlyExpenses);
+  } catch (error) {
+    console.error("Lỗi báo cáo chi phí:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống." });
+  }
+});
+
+// CRUD API Chi phí vận hành (UC35)
+app.get('/api/expenses', async (req, res) => {
+  try {
+    const { propertyId } = req.query;
+    const filter = {};
+    if (propertyId) filter.maNhaTroId = propertyId;
+    const expenses = await Expense.find(filter).populate('maNhaTroId').sort({ ngayChi: -1 });
+    res.json(expenses.map(e => ({
+      id: e._id,
+      propertyId: e.maNhaTroId?._id || e.maNhaTroId,
+      propertyName: e.maNhaTroId?.tenNhaTro || 'Không xác định',
+      description: e.tenChiPhi,
+      amount: e.soTien,
+      category: e.danhMuc,
+      date: e.ngayChi,
+      notes: e.ghiChu
+    })));
+  } catch (error) {
+    console.error("Lỗi lấy danh sách chi phí:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống." });
+  }
+});
+
+app.post('/api/expenses', async (req, res) => {
+  try {
+    const { propertyId, description, amount, category, date, notes } = req.body;
+    if (!propertyId || !description || !amount) {
+      return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin bắt buộc." });
+    }
+    const newExpense = await Expense.create({
+      maNhaTroId: propertyId,
+      tenChiPhi: description,
+      soTien: amount,
+      danhMuc: category || 'khac',
+      ngayChi: date ? new Date(date) : new Date(),
+      ghiChu: notes
+    });
+    res.status(201).json(newExpense);
+  } catch (error) {
+    console.error("Lỗi tạo chi phí:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống." });
+  }
+});
+
+app.delete('/api/expenses/:id', async (req, res) => {
+  try {
+    await Expense.findByIdAndDelete(req.params.id);
+    res.json({ message: "Xóa chi phí thành công." });
+  } catch (error) {
+    console.error("Lỗi xóa chi phí:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống." });
+  }
+});
+
 // H.3 Tỷ lệ lấp đầy từng cơ sở
 app.get('/api/reports/occupancy', async (req, res) => {
   try {
@@ -2344,8 +2429,55 @@ async function autoGenerateInvoicesForActiveContracts() {
   }
 }
 
+// TỰ ĐỘNG KHỞI TẠO CHI PHÍ MẪU CHO BÁO CÁO (UC35)
+async function autoSeedExpenses() {
+  try {
+    const count = await Expense.countDocuments();
+    if (count > 0) return;
+    
+    console.log("[Database] Khởi tạo dữ liệu chi phí mẫu cho báo cáo (UC35)...");
+    const firstProperty = await Property.findOne();
+    if (!firstProperty) {
+      console.log("[Database] Không tìm thấy nhà trọ nào để liên kết chi phí.");
+      return;
+    }
+    
+    const categories = ['sua_chua', 'bao_tri', 'dien_nuoc_chung', 'dich_vu_ngoai', 'khac'];
+    const names = [
+      'Thay máy bơm nước lầu 2',
+      'Bảo trì thang máy định kỳ',
+      'Tiền điện chiếu sáng hành lang',
+      'Dịch vụ gom rác & vệ sinh chung',
+      'Mua bóng đèn thay hành lang'
+    ];
+    const amounts = [1500000, 800000, 2300000, 1200000, 300000];
+    
+    const mockExpenses = [];
+    // Khởi tạo cho 5 tháng năm 2026
+    for (let month = 0; month < 5; month++) {
+      for (let i = 0; i < 3; i++) {
+        const catIndex = (month + i) % categories.length;
+        mockExpenses.push({
+          maNhaTroId: firstProperty._id,
+          tenChiPhi: names[catIndex] + ` (Tháng ${month + 1})`,
+          soTien: amounts[catIndex] + Math.floor(Math.random() * 200000),
+          danhMuc: categories[catIndex],
+          ngayChi: new Date(2026, month, 15),
+          ghiChu: 'Dữ liệu mẫu tự động khởi tạo khi hệ thống bắt đầu.'
+        });
+      }
+    }
+    
+    await Expense.insertMany(mockExpenses);
+    console.log(`[Database] Đã khởi tạo thành công ${mockExpenses.length} bản ghi chi phí cho nhà trọ: ${firstProperty.tenNhaTro}`);
+  } catch (error) {
+    console.error("[Database Error] Lỗi khởi tạo chi phí:", error.message);
+  }
+}
+
 // Chạy quét khi server khởi động và lặp lại sau mỗi 24 giờ
-setTimeout(() => {
+setTimeout(async () => {
+  await autoSeedExpenses();
   autoGenerateInvoicesForActiveContracts();
 }, 5000); // Sau 5 giây
 setInterval(autoGenerateInvoicesForActiveContracts, 24 * 60 * 60 * 1000); // Lặp lại mỗi 24 giờ

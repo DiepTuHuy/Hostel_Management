@@ -63,10 +63,10 @@ export default function ReportsPage() {
         }
       } else if (tab === 'cost') {
         const year = period === '2025' ? 2025 : 2026;
-        const res = await reportService.getRevenue(branch === 'all' ? undefined : branch, year);
+        const res = await reportService.getExpenses(branch === 'all' ? undefined : branch, year);
         setReportData(res.map(r => ({
           month: r.month,
-          [dataKey]: Math.round(r.revenue * 0.4)
+          [dataKey]: r.expense
         })));
       }
     } catch (err) {

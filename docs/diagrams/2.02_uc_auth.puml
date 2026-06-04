@@ -12,7 +12,7 @@ skinparam usecase {
 actor "Người dùng" as User
 actor "Chủ trọ"    as Owner
 
-rectangle "Quản lý xác thực & tài khoản" #FAFCFF {
+rectangle "Quản lý xác thực & tài khoản" {
   usecase "UC01 - Đăng ký tài khoản"             as U1
   usecase "UC02 - Đăng nhập\n(email + mật khẩu)" as U2
   usecase "UC03 - Đăng xuất"                     as U3

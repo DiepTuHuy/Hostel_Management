@@ -5,13 +5,13 @@ left to right direction
 skinparam packageStyle rectangle
 skinparam shadowing false
 skinparam usecase {
-  BackgroundColor #E0F2F1
-  BorderColor #00695C
+  BackgroundColor #F5F7FB
+  BorderColor #3A5BC7
 }
 
 actor "Chủ trọ" as Owner
 
-rectangle "Báo cáo & thống kê vận hành" #FAFCFF {
+rectangle "Báo cáo & thống kê vận hành" {
   usecase "UC31 - Dashboard tổng quan\n(KPI: doanh thu, lấp đầy,\ncông nợ, chi phí)" as R1
   usecase "UC32 - Báo cáo doanh thu\n(Tháng / Quý / Năm)" as R2
   usecase "UC33 - Báo cáo tỉ lệ lấp đầy" as R3

@@ -3,7 +3,7 @@ import { Send, FileDown, Filter, X, Check, Loader2, CreditCard, Bell, Eye, Check
 import { Button, PageHeader, Card, Tabs, Table, Badge, Toast, Loading } from '../../components/common';
 import { useInvoices } from '../../controllers/useInvoices.js';
 import { useProperties } from '../../controllers/useProperties.js';
-import { invoiceService } from '../../services/index.js';
+import { invoiceService, reportService } from '../../services/index.js';
 import { INVOICE_STATUS_META } from '../../models/Invoice.js';
 import { formatCurrency, formatDate, formatPeriod } from '../../utils/format.js';
 
@@ -221,11 +221,19 @@ export default function InvoicesPage() {
     }
   };
 
-  const handleSendReminder = (invoice) => {
-    setToast({
-      message: `Đã phát thông báo gửi nhắc thanh toán hóa đơn ${invoice.code} qua Zalo & SMS thành công!`,
-      type: 'success'
-    });
+  const handleSendReminder = async (invoice) => {
+    try {
+      await reportService.sendDebtReminder(invoice.id);
+      setToast({
+        message: `Đã gửi email nhắc thanh toán hóa đơn ${invoice.code} thành công!`,
+        type: 'success'
+      });
+    } catch (err) {
+      setToast({
+        message: `Lỗi gửi nhắc nợ: ${err?.response?.data?.message || err.message}`,
+        type: 'danger'
+      });
+    }
   };
 
   const handleToggleAdvancedFilters = () => {
