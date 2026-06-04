@@ -41,7 +41,7 @@ Dưới đây là bảng đối chiếu chi tiết từng Use Case được quy 
 > * 🟡 **Lệch pha / Giả lập**: Đã phát triển giao diện và API Backend, nhưng logic nghiệp vụ được đơn giản hóa hoặc giả lập trạng thái (ví dụ: VNPay Sandbox, Chữ ký số giả lập).
 > * ❌ **Chưa triển khai (v2)**: Tính năng định hướng tương lai, chưa được viết code trong phiên bản hiện tại (được ghi rõ trong phần Hướng phát triển của tài liệu đặc tả).
 
-### Nhóm UC-A: Quản lý xác thực & tài khoản (UC01 - UC08)
+### Nhóm UC: Quản lý xác thực & tài khoản (UC01 - UC08)
 
 | Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
 | :--- | :--- | :--- | :--- | :---: | :--- |
@@ -54,7 +54,7 @@ Dưới đây là bảng đối chiếu chi tiết từng Use Case được quy 
 | **UC07** | Khóa/Mở khóa tài khoản | `admin/UsersPage.jsx` | `PATCH /api/users/:id/status` | 🟢 | **Khớp hoàn toàn**: Admin thực hiện khóa hoặc mở khóa tài khoản, cập nhật trường `trangThai` trong DB. |
 | **UC08** | Phân quyền vai trò | Giao diện Router | Middleware phân quyền cơ bản | 🟢 | **Khớp hoàn toàn**: Áp dụng phân quyền trên Router ở frontend và middleware phân vai trò (`admin`, `manager`, `tenant`) ở backend Node.js. |
 
-### Nhóm UC-B: Quản lý nhà trọ & phòng (UC09 - UC14)
+### Nhóm UC: Quản lý nhà trọ & phòng (UC09 - UC14)
 
 | Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
 | :--- | :--- | :--- | :--- | :---: | :--- |
@@ -65,7 +65,7 @@ Dưới đây là bảng đối chiếu chi tiết từng Use Case được quy 
 | **UC13** | Cập nhật trạng thái phòng | `manager/RoomsPage.jsx` | `PATCH /api/rooms/:id/status` | 🟢 | **Khớp hoàn toàn**: Cập nhật trạng thái phòng (`empty`, `rented`, `deposit`, `maintenance`) đồng bộ trực tiếp xuống DB. |
 | **UC14** | Quản lý tài sản trong phòng | `manager/RoomsPage.jsx` | `PUT /api/rooms/:id` | 🟢 | **Khác biệt cấu trúc dữ liệu**: Tài sản được nhúng làm một mảng đối tượng `taiSan[]` bên trong Schema `Room` để tối ưu hóa truy vấn NoSQL thay vì tách bảng riêng. |
 
-### Nhóm UC-C: Quản lý hợp đồng & khách thuê (UC15 - UC21)
+### Nhóm UC: Quản lý hợp đồng & khách thuê (UC15 - UC20)
 
 | Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
 | :--- | :--- | :--- | :--- | :---: | :--- |
@@ -76,7 +76,7 @@ Dưới đây là bảng đối chiếu chi tiết từng Use Case được quy 
 | **UC19** | Sửa đổi hợp đồng | Giao diện Hợp đồng | `PUT /api/contracts/:id` | 🟢 | **Khớp hoàn toàn**: Sửa đổi các điều khoản và thông số hợp đồng thông qua API thật. |
 | **UC20** | Chấm dứt hợp đồng / trả phòng | Giao diện Hợp đồng | `PATCH /api/contracts/:id/terminate` | 🟢 | **Khớp hoàn toàn**: Chấm dứt hợp đồng sớm, tự động giải phóng trạng thái phòng trọ sang `empty` và xóa `currentTenantId`. |
 
-### Nhóm UC-D: Dịch vụ, hoá đơn & thanh toán (UC22 - UC30)
+### Nhóm UC: Dịch vụ, hoá đơn & thanh toán (UC22 - UC30)
 
 | Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
 | :--- | :--- | :--- | :--- | :---: | :--- |
@@ -90,7 +90,7 @@ Dưới đây là bảng đối chiếu chi tiết từng Use Case được quy 
 | **UC29** | Tra cứu lịch sử hoá đơn | `tenant/InvoicesPage.jsx` | `GET /api/invoices?tenantId=...` | 🟢 | **Khớp hoàn toàn**: Khách thuê truy vấn lịch sử hóa đơn thực tế tải động từ database MongoDB Atlas. |
 | **UC30** | Quản lý công nợ | `admin/DebtsPage.jsx` | `GET /api/reports/debts` | 🟢 | **Khớp hoàn toàn**: Gọi API tổng hợp danh sách khách thuê còn nợ hóa đơn trễ hạn để Admin dễ dàng theo dõi. |
 
-### Nhóm UC-E: Báo cáo & thống kê (UC31 - UC36)
+### Nhóm UC: Báo cáo & thống kê (UC31 - UC36)
 
 | Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
 | :--- | :--- | :--- | :--- | :---: | :--- |
@@ -101,7 +101,7 @@ Dưới đây là bảng đối chiếu chi tiết từng Use Case được quy 
 | **UC35** | Báo cáo chi phí vận hành | `admin/ReportsPage.jsx` | `GET /api/reports/expenses`<br>`GET /api/expenses`<br>`POST /api/expenses`<br>`DELETE /api/expenses/:id` | 🟢 | **Khớp hoàn toàn**: Đã phát triển model `Expense` lưu trữ các khoản chi phí vận hành thực tế và vẽ biểu đồ chi phí tổng hợp động theo cơ sở và năm từ DB. |
 | **UC36** | Xuất Excel / PDF | Nút bấm trên Reports | `window.print()` / csv download | 🟡 | **Giả lập (Hữu hiệu)**: Tích hợp nút Xuất báo cáo xuất file CSV chuẩn UTF-8 BOM mở bằng Excel không lỗi font, và in trực tiếp/xuất PDF chuẩn nét bằng `window.print()` của trình duyệt. |
 
-### Nhóm UC-F: Tiện ích bổ trợ (UC37 - UC41)
+### Nhóm UC: Tiện ích bổ trợ (UC37 - UC41)
 
 | Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
 | :--- | :--- | :--- | :--- | :---: | :--- |
