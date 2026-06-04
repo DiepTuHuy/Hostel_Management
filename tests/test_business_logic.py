@@ -120,11 +120,6 @@ class TenantManagement:
             return "Thiếu thông tin hồ sơ bắt buộc"
         return "TENANT_PROFILE_CREATED"
 
-    @staticmethod
-    def register_residency(room_code, name, reason):
-        if not room_code or not name:
-            return "Thông tin khai báo tạm trú không hợp lệ"
-        return "CT01_FORM_GENERATED"
 
 class ContractValidation:
     @staticmethod
@@ -243,7 +238,7 @@ class BillingManagement:
     @staticmethod
     def manage_debts(overdue_days):
         if overdue_days > 10:
-            return "WARNING_SENT_SMS_ZALO"
+            return "WARNING_SENT_TELEGRAM"
         return "NO_ACTION_REQUIRED"
 
 class ReportsManagement:
@@ -297,11 +292,6 @@ class RoomSearch:
             return "Tiền cọc giữ phòng tối thiểu là 2.000.000 VNĐ"
         return "RESERVED_SUCCESS_RECEIPT_SENT"
 
-    @staticmethod
-    def publish_room(room_code, title, images):
-        if not title or len(images) == 0:
-            return "Thiếu tiêu đề hoặc hình ảnh thực tế"
-        return "ADVERTISEMENT_PUBLISHED"
 
 
 # ==============================================================================
@@ -437,10 +427,6 @@ class TestSystemBusinessLogic(unittest.TestCase):
         res = ContractValidation.terminate_contract("contract_301", "2027-05-31", 500000)
         self.assertEqual(res, "CONTRACT_TERMINATED_ROOM_VACANT")
 
-    # UC21 - Đăng ký tạm trú
-    def test_uc21_register_residency(self):
-        res = TenantManagement.register_residency("301", "Trần Thị C", "Đi học/Đi làm")
-        self.assertEqual(res, "CT01_FORM_GENERATED")
 
     # UC22 - Cấu hình đơn giá dịch vụ
     def test_uc22_configure_services(self):
@@ -494,7 +480,7 @@ class TestSystemBusinessLogic(unittest.TestCase):
     # UC30 - Quản lý công nợ
     def test_uc30_manage_debts(self):
         res = BillingManagement.manage_debts(12)
-        self.assertEqual(res, "WARNING_SENT_SMS_ZALO")
+        self.assertEqual(res, "WARNING_SENT_TELEGRAM")
 
     # UC31 - Dashboard tổng quan
     def test_uc31_general_dashboard(self):
@@ -548,10 +534,6 @@ class TestSystemBusinessLogic(unittest.TestCase):
         err = RoomSearch.book_deposit("301", 1000000, "Nguyễn Văn E")
         self.assertEqual(err, "Tiền cọc giữ phòng tối thiểu là 2.000.000 VNĐ")
 
-    # UC40 - Đăng tin tuyển khách
-    def test_uc40_publish_room(self):
-        res = RoomSearch.publish_room("301", "Cho thuê phòng VIP", ["img1.png", "img2.png"])
-        self.assertEqual(res, "ADVERTISEMENT_PUBLISHED")
 
 
 # ==============================================================================
@@ -665,11 +647,6 @@ class CSVTestResult(unittest.TestResult):
                 "inputs": "Ngày trả: 31/05/2027, Phạt hỏng đồ: 500.000đ, Hoàn cọc: 3.000.000đ",
                 "expected": "Chấm dứt hợp đồng thành công, phòng chuyển về Trống"
             },
-            "uc21": {
-                "func": "Đăng ký tạm trú - UC21",
-                "inputs": "Nơi tạm trú: Phòng 301, Lý do: Đi học/Đi làm",
-                "expected": "Kết xuất biểu mẫu tờ khai tạm trú CT01 thành công"
-            },
             "uc22": {
                 "func": "Cấu hình đơn giá dịch vụ - UC22",
                 "inputs": "Điện: Lũy tiến EVN, Nước: 20.000đ/m3, Internet: 100.000đ/phòng",
@@ -691,9 +668,9 @@ class CSVTestResult(unittest.TestResult):
                 "expected": "Tạo thành công hóa đơn bản nháp HD-202605-301"
             },
             "uc26": {
-                "func": "Gửi hoá đơn & nhắc thanh toán - UC26",
-                "inputs": "Mã hóa đơn: HD-202605-301, Email: tranthic@gmail.com",
-                "expected": "Gửi Email/Zalo thành công, hóa đơn chuyển sang Chờ thanh toán"
+                "func": "Tự sinh hoá đơn - UC26",
+                "inputs": "Trạng thái hợp đồng: active, Kỳ thanh toán: YYYY-MM",
+                "expected": "Tự động sinh hóa đơn dịch vụ hàng tháng cho các phòng có hợp đồng active"
             },
             "uc27": {
                 "func": "Thanh toán online - UC27",
@@ -713,7 +690,7 @@ class CSVTestResult(unittest.TestResult):
             "uc30": {
                 "func": "Quản lý công nợ - UC30",
                 "inputs": "Bộ lọc: Nợ > 10 ngày. Phòng chọn: 102 (Nợ 5.200.000 VNĐ)",
-                "expected": "Tìm kiếm nợ quá hạn thành công, gửi cảnh báo nợ qua SMS/Zalo"
+                "expected": "Tìm kiếm nợ quá hạn thành công, gửi cảnh báo nợ qua Telegram"
             },
             "uc31": {
                 "func": "Dashboard tổng quan - UC31",
@@ -759,11 +736,6 @@ class CSVTestResult(unittest.TestResult):
                 "func": "Đặt cọc giữ phòng online - UC39",
                 "inputs": "Phòng: 301, Số tiền cọc: 3.500.000đ, Khách: Nguyễn Văn E",
                 "expected": "Đặt cọc giữ phòng trực tuyến thành công và gửi biên lai"
-            },
-            "uc40": {
-                "func": "Đăng tin tuyển khách - UC40",
-                "inputs": "Mã phòng: 301, Tiêu đề: Cho thuê phòng VIP gác lửng giá rẻ",
-                "expected": "Tin tuyển khách phát hành thành công, hiển thị ở trang chủ"
             }
         }
 

@@ -48,7 +48,7 @@ endswitch
 :Hiển thị Toast & biên lai điện tử;
 
 |Backend Express|
-:(Định hướng v2)\nGửi email biên lai +\nthông báo Zalo cho khách;
+:(Định hướng v2)\nGửi email biên lai +\nthông báo Telegram cho khách;
 
 stop
 

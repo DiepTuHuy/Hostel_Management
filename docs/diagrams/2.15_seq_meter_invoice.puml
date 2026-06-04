@@ -54,6 +54,6 @@ UI --> Mgr : Toast "Đã phát hành N hoá đơn"
 
 == (v2 — định hướng) Gửi & nhắc nợ tự động ==
 Bill -> Mail : (Cron 8h hàng ngày)\nsendInvoiceEmail + sendDebtReminderEmail
-Mail --> "Khách thuê" : Email + Zalo + Push
+Mail --> "Khách thuê" : Email + Telegram + Push
 
 @enduml

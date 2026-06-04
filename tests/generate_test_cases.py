@@ -157,8 +157,8 @@ def generate_csv():
         {
             "Test Case ID": "TC01_UC17",
             "Function": "Ký số / xác nhận hợp đồng - UC17",
-            "Test Steps": "1. Đăng nhập tài khoản Khách thuê (Trần Thị C)\n2. Truy cập trang 'Hợp đồng của tôi'\n3. Chọn hợp đồng đang ở trạng thái 'Chờ ký' và đọc kỹ điều khoản\n4. Click nút 'Ký số hợp đồng'\n5. Nhập mã OTP xác nhận gửi về số điện thoại và click 'Xác nhận'",
-            "Input Data": "Tài khoản: tranthic@gmail.com\nMã OTP xác thực ký số: 123456",
+            "Test Steps": "1. Đăng nhập tài khoản Khách thuê (Trần Thị C)\n2. Truy cập trang 'Hợp đồng của tôi'\n3. Chọn hợp đồng đang ở trạng thái 'Chờ ký' và đọc kỹ điều khoản\n4. Click checkbox đồng ý điều khoản hợp đồng\n5. Click nút 'Ký số điện tử'",
+            "Input Data": "Tài khoản: tranthic@gmail.com\nLựa chọn: Đồng ý với toàn bộ điều khoản hợp đồng",
             "Expected Result": "Hợp đồng chuyển sang trạng thái 'Đã ký / Hiệu lực'. Hệ thống cập nhật trạng thái phòng 301 sang 'Đã thuê' và tự động khóa tiền cọc."
         },
         # UC18
@@ -184,14 +184,6 @@ def generate_csv():
             "Test Steps": "1. Đăng nhập tài khoản Manager\n2. Truy cập trang 'Quản lý hợp đồng'\n3. Chọn hợp đồng phòng 301 và click nút 'Chấm dứt hợp đồng/Trả phòng'\n4. Nhập ngày trả phòng thực tế, tính toán tiền điện nước lẻ đến ngày trả phòng và kiểm tra hư hỏng tài sản để khấu trừ cọc\n5. Xác nhận tất toán công nợ và trả cọc\n6. Click 'Hoàn tất thanh lý hợp đồng'",
             "Input Data": "Ngày trả phòng: 31/05/2027\nKhấu trừ tài sản hỏng: 500.000 VNĐ (làm hỏng cửa tủ quần áo)\nSố tiền cọc hoàn lại: 3.000.000 VNĐ",
             "Expected Result": "Trạng thái hợp đồng chuyển thành 'Đã chấm dứt'. Phòng 301 được chuyển về trạng thái 'Trống'. Số dư cọc được hoàn trả theo biên bản thanh lý."
-        },
-        # UC21
-        {
-            "Test Case ID": "TC01_UC21",
-            "Function": "Đăng ký tạm trú - UC21",
-            "Test Steps": "1. Đăng nhập tài khoản Khách thuê\n2. Truy cập trang 'Hợp đồng của tôi' hoặc 'Hồ sơ cá nhân'\n3. Chọn nút 'Đăng ký tạm trú đi kèm'\n4. Nhập đầy đủ thông tin cư trú cũ, thông tin cá nhân và lý do tạm trú\n5. Click 'Nộp tờ khai CT01'",
-            "Input Data": "Thông tin thường trú: Xã X, Huyện Y, Tỉnh Z\nNơi tạm trú: Phòng 301, Nhà trọ Sunrise\nLý do: Đi học/Đi làm",
-            "Expected Result": "Hệ thống tự động điền và kết xuất file biểu mẫu CT01 (định dạng PDF/Word) theo chuẩn Bộ Công an và gửi yêu cầu đăng ký tạm trú cho bộ phận hành chính xử lý."
         },
         # UC22
         {
@@ -228,10 +220,10 @@ def generate_csv():
         # UC26
         {
             "Test Case ID": "TC01_UC26",
-            "Function": "Gửi hoá đơn & nhắc thanh toán - UC26",
-            "Test Steps": "1. Tại trang chi tiết hóa đơn nháp HD-202605-301\n2. Click nút 'Phát hành & Gửi thông báo'\n3. Hệ thống gửi email tự động và tin nhắn thông báo đẩy (push notification) trên app tới khách thuê Trần Thị C\n4. Hóa đơn chuyển trạng thái sang 'Chờ thanh toán'",
-            "Input Data": "Mã hóa đơn: HD-202605-301\nEmail gửi đến: tranthic@gmail.com",
-            "Expected Result": "Khách thuê nhận được email thông báo chứa link hóa đơn và file chi tiết, kèm theo thông báo nhắc nợ trên ứng dụng điện thoại."
+            "Function": "Tự sinh hoá đơn - UC26",
+            "Test Steps": "1. Trình chạy ngầm tự động quét hợp đồng ở trạng thái active\n2. Kiểm tra xem phòng đã được sinh hóa đơn cho kỳ hiện tại chưa\n3. Nếu chưa, tự động tạo hóa đơn nháp pending với tiền phòng và dịch vụ chốt điện nước",
+            "Input Data": "Kỳ thanh toán: Tháng hiện tại (YYYY-MM)\nTrạng thái hợp đồng: active",
+            "Expected Result": "Hệ thống tự động quét và sinh hóa đơn cho kỳ mới của toàn bộ các phòng đang có hợp đồng hoạt động mà chưa được tạo hóa đơn."
         },
         # UC27
         {
@@ -263,7 +255,7 @@ def generate_csv():
             "Function": "Quản lý công nợ - UC30",
             "Test Steps": "1. Đăng nhập tài khoản Admin\n2. Truy cập trang 'Quản lý công nợ' (/debts)\n3. Xem danh sách phòng nợ quá hạn thanh toán\n4. Chọn phòng nợ lâu nhất và click nút 'Gửi cảnh báo công nợ'",
             "Input Data": "Bộ lọc: Hóa đơn quá hạn > 10 ngày\nPhòng chọn: Phòng 102 (Nợ 5.200.000 VNĐ)",
-            "Expected Result": "Hệ thống tổng hợp số tiền nợ và gửi cảnh báo nợ tự động qua SMS/Zalo/Email tới khách thuê phòng 102."
+            "Expected Result": "Hệ thống tổng hợp số tiền nợ và gửi cảnh báo nợ tự động qua Telegram/Email tới khách thuê phòng 102."
         },
         # UC31
         {
@@ -337,14 +329,7 @@ def generate_csv():
             "Input Data": "Phòng đặt cọc: Phòng 301\nSố tiền cọc: 3.500.000 VNĐ\nHọ tên khách: Nguyễn Văn E",
             "Expected Result": "Giao dịch VNPay thành công. Trạng thái phòng 301 tự động chuyển sang 'Đã đặt cọc' và hệ thống gửi biên lai cọc qua email cho khách hàng."
         },
-        # UC40
-        {
-            "Test Case ID": "TC01_UC40",
-            "Function": "Đăng tin tuyển khách - UC40",
-            "Test Steps": "1. Đăng nhập tài khoản Manager\n2. Vào trang quản lý phòng hoặc danh sách tin đăng\n3. Chọn phòng trống cần cho thuê, click 'Đăng tin cho thuê'\n4. Chỉnh sửa nội dung mô tả, tải lên hình ảnh phòng thực tế và click 'Phát hành tin đăng'",
-            "Input Data": "Mã phòng: 301\nTiêu đề: Cho thuê phòng VIP gác lửng giá rẻ Đống Đa\nẢnh: 3 ảnh chụp thực tế phòng",
-            "Expected Result": "Tin tuyển khách được duyệt tự động và xuất hiện trên giao diện trang chủ tìm kiếm phòng dành cho khách vãng lai."
-        }
+
     ]
 
     # Target CSV Path

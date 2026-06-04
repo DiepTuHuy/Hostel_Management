@@ -53,7 +53,7 @@ repeat
 repeat while (còn phòng?) is (có)
 ->không;
 :Trả kết quả {success, count};
-:(Định hướng v2: cron tự động gửi email\n+ Zalo + nhắc nợ 1/3/5 ngày trước hạn);
+:(cron tự động gửi email\n+ Telegram + nhắc nợ 1/3/5 ngày trước hạn);
 
 |Frontend|
 :Toast "Đã phát hành N hoá đơn";

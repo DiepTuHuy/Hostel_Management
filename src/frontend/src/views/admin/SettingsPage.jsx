@@ -6,9 +6,9 @@ import { Button, PageHeader, Card, CardHeader, Input, Toast, Badge } from '../..
 function ConfigChannelModal({ channelName, onClose, onSave }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    server: channelName === 'Email SMTP' ? 'smtp.boardinghouse.vn' : 'https://api.zalo.me/oa',
-    port: '587',
-    username: channelName === 'Email SMTP' ? 'billing@boardinghouse.vn' : 'Zalo-OA-1025',
+    server: channelName === 'Email SMTP' ? 'smtp.boardinghouse.vn' : 'https://api.telegram.org',
+    port: channelName === 'Email SMTP' ? '587' : '443',
+    username: channelName === 'Email SMTP' ? 'billing@boardinghouse.vn' : '@BoardingHouseProBot',
     secret: '••••••••••••••••••••••••••••'
   });
 
@@ -327,12 +327,11 @@ export default function SettingsPage() {
         </Card>
 
         <Card className="border border-line rounded-3xl bg-white shadow-sm">
-          <CardHeader title="Kênh thông báo" subtitle="Cấu hình email, SMS, Zalo OA" />
+          <CardHeader title="Kênh thông báo" subtitle="Cấu hình email, Telegram Bot" />
           <div className="space-y-3">
             {[
               { name: 'Email SMTP', desc: 'smtp.boardinghouse.vn:587', status: 'Đã kết nối' },
-              { name: 'Zalo OA',    desc: 'OA: BoardingHouse Pro',     status: 'Đã kết nối' },
-              { name: 'SMS Brand',  desc: 'Brandname: BHPRO',          status: 'Chưa cấu hình' },
+              { name: 'Telegram Bot', desc: 'Bot: @BoardingHouseProBot', status: 'Đã kết nối' },
             ].map((row) => (
               <div key={row.name} className="flex items-center justify-between p-4 border border-line rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors">
                 <div>

@@ -23,7 +23,7 @@ function BatchPublishModal({ onClose, onPublish }) {
       } else if (curr === 72) {
         setStatusText('BƯỚC 3: Tạo hóa đơn nháp & thực hiện đối soát tự động...');
       } else if (curr === 88) {
-        setStatusText('BƯỚC 4: Xuất bản hàng loạt & sẵn sàng gửi SMS/Zalo Brandname...');
+        setStatusText('BƯỚC 4: Xuất bản hàng loạt & sẵn sàng gửi thông báo qua Telegram...');
       } else if (curr >= 100) {
         clearInterval(timer);
         setCompleted(true);
@@ -60,7 +60,7 @@ function BatchPublishModal({ onClose, onPublish }) {
               <Check size={24} className="stroke-[3]" />
             </div>
             <h3 className="text-lg font-bold text-ink">Phát hành lô thành công!</h3>
-            <p className="text-sm text-ink-muted">Toàn bộ hóa đơn chờ trong kỳ đã chuyển trạng thái sang "Chờ thanh toán" và gửi SMS/Zalo hóa đơn điện tử cho từng phòng.</p>
+            <p className="text-sm text-ink-muted">Toàn bộ hóa đơn chờ trong kỳ đã chuyển trạng thái sang "Chờ thanh toán" và gửi thông báo qua Telegram cho từng phòng.</p>
             <div className="pt-2">
               <Button className="w-full" onClick={onPublish}>Hoàn tất</Button>
             </div>

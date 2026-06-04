@@ -118,9 +118,9 @@ Thời hạn: 12 tháng (từ 01/06/2026 đến 01/06/2027)","Hệ thống sinh 
 TC01_UC17,Ký số / xác nhận hợp đồng - UC17,"1. Đăng nhập tài khoản Khách thuê (Trần Thị C)
 2. Truy cập trang 'Hợp đồng của tôi'
 3. Chọn hợp đồng đang ở trạng thái 'Chờ ký' và đọc kỹ điều khoản
-4. Click nút 'Ký số hợp đồng'
-5. Nhập mã OTP xác nhận gửi về số điện thoại và click 'Xác nhận'","Tài khoản: tranthic@gmail.com
-Mã OTP xác thực ký số: 123456",Hợp đồng chuyển sang trạng thái 'Đã ký / Hiệu lực'. Hệ thống cập nhật trạng thái phòng 301 sang 'Đã thuê' và tự động khóa tiền cọc.
+4. Click checkbox đồng ý điều khoản hợp đồng
+5. Click nút 'Ký số điện tử'","Tài khoản: tranthic@gmail.com
+Lựa chọn: Đồng ý với toàn bộ điều khoản hợp đồng",Hợp đồng chuyển sang trạng thái 'Đã ký / Hiệu lực'. Hệ thống cập nhật trạng thái phòng 301 sang 'Đã thuê' và tự động khóa tiền cọc.
 TC01_UC18,Gia hạn hợp đồng - UC18,"1. Đăng nhập tài khoản Manager
 2. Truy cập trang 'Quản lý hợp đồng'
 3. Tìm kiếm hợp đồng sắp hết hạn của phòng 301
@@ -143,13 +143,6 @@ TC01_UC20,Chấm dứt hợp đồng / trả phòng - UC20,"1. Đăng nhập tà
 6. Click 'Hoàn tất thanh lý hợp đồng'","Ngày trả phòng: 31/05/2027
 Khấu trừ tài sản hỏng: 500.000 VNĐ (làm hỏng cửa tủ quần áo)
 Số tiền cọc hoàn lại: 3.000.000 VNĐ",Trạng thái hợp đồng chuyển thành 'Đã chấm dứt'. Phòng 301 được chuyển về trạng thái 'Trống'. Số dư cọc được hoàn trả theo biên bản thanh lý.
-TC01_UC21,Đăng ký tạm trú - UC21,"1. Đăng nhập tài khoản Khách thuê
-2. Truy cập trang 'Hợp đồng của tôi' hoặc 'Hồ sơ cá nhân'
-3. Chọn nút 'Đăng ký tạm trú đi kèm'
-4. Nhập đầy đủ thông tin cư trú cũ, thông tin cá nhân và lý do tạm trú
-5. Click 'Nộp tờ khai CT01'","Thông tin thường trú: Xã X, Huyện Y, Tỉnh Z
-Nơi tạm trú: Phòng 301, Nhà trọ Sunrise
-Lý do: Đi học/Đi làm",Hệ thống tự động điền và kết xuất file biểu mẫu CT01 (định dạng PDF/Word) theo chuẩn Bộ Công an và gửi yêu cầu đăng ký tạm trú cho bộ phận hành chính xử lý.
 TC01_UC22,Cấu hình đơn giá dịch vụ - UC22,"1. Đăng nhập tài khoản Admin
 2. Truy cập trang 'Cấu hình & Dịch vụ'
 3. Thiết lập đơn giá dịch vụ: Điện (chọn biểu giá lũy tiến 6 bậc EVN), Nước (20.000đ/m3), Internet (100.000đ/phòng)
@@ -177,11 +170,10 @@ TC01_UC25,Tạo hoá đơn - UC25,"1. Đăng nhập tài khoản Manager hoặc 
 4. Kiểm tra thông tin các khoản tiền phòng (3.500.000), tiền điện (400.300), tiền nước (160.000) và các dịch vụ khác
 5. Click nút 'Tạo hóa đơn'","Kỳ thanh toán: Tháng 05/2026
 Tổng số tiền: 4.160.300 VNĐ (Tiền phòng + Tiền điện + Tiền nước)",Hóa đơn được tạo thành công dưới dạng bản nháp và gán mã hóa đơn duy nhất (ví dụ: HD-202605-301).
-TC01_UC26,Gửi hoá đơn & nhắc thanh toán - UC26,"1. Tại trang chi tiết hóa đơn nháp HD-202605-301
-2. Click nút 'Phát hành & Gửi thông báo'
-3. Hệ thống gửi email tự động và tin nhắn thông báo đẩy (push notification) trên app tới khách thuê Trần Thị C
-4. Hóa đơn chuyển trạng thái sang 'Chờ thanh toán'","Mã hóa đơn: HD-202605-301
-Email gửi đến: tranthic@gmail.com","Khách thuê nhận được email thông báo chứa link hóa đơn và file chi tiết, kèm theo thông báo nhắc nợ trên ứng dụng điện thoại."
+TC01_UC26,Tự sinh hoá đơn - UC26,"1. Trình chạy ngầm tự động quét hợp đồng ở trạng thái active
+2. Kiểm tra xem phòng đã được sinh hóa đơn cho kỳ hiện tại chưa
+3. Nếu chưa, tự động tạo hóa đơn nháp pending với tiền phòng và dịch vụ chốt điện nước","Kỳ thanh toán: Tháng hiện tại (YYYY-MM)
+Trạng thái hợp đồng: active",Hệ thống tự động quét và sinh hóa đơn cho kỳ mới của toàn bộ các phòng đang có hợp đồng hoạt động mà chưa được tạo hóa đơn.
 TC01_UC27,Thanh toán online - UC27,"1. Đăng nhập tài khoản Khách thuê (Trần Thị C)
 2. Truy cập trang 'Hóa đơn của tôi'
 3. Chọn hóa đơn HD-202605-301 đang 'Chờ thanh toán'
@@ -206,7 +198,7 @@ TC01_UC30,Quản lý công nợ - UC30,"1. Đăng nhập tài khoản Admin
 2. Truy cập trang 'Quản lý công nợ' (/debts)
 3. Xem danh sách phòng nợ quá hạn thanh toán
 4. Chọn phòng nợ lâu nhất và click nút 'Gửi cảnh báo công nợ'","Bộ lọc: Hóa đơn quá hạn > 10 ngày
-Phòng chọn: Phòng 102 (Nợ 5.200.000 VNĐ)",Hệ thống tổng hợp số tiền nợ và gửi cảnh báo nợ tự động qua SMS/Zalo/Email tới khách thuê phòng 102.
+Phòng chọn: Phòng 102 (Nợ 5.200.000 VNĐ)",Hệ thống tổng hợp số tiền nợ và gửi cảnh báo nợ tự động qua Telegram/Email tới khách thuê phòng 102.
 TC01_UC31,Dashboard tổng quan - UC31,"1. Đăng nhập tài khoản Admin hoặc Manager
 2. Xem trang Dashboard chính
 3. Kiểm tra sự thay đổi của các biểu đồ đường doanh thu, tỷ lệ phòng trống và số lượng khách thuê thực tế",Quyền truy cập: Admin,"Dashboard tải dữ liệu thành công, hiển thị các biểu đồ trực quan, số liệu thực tế được cập nhật theo thời gian thực từ cơ sở dữ liệu."
@@ -242,9 +234,3 @@ TC01_UC39,Đặt cọc giữ phòng online - UC39,"1. Tại trang chi tiết ph�
 4. Click 'Xác nhận và Thanh toán qua VNPay'","Phòng đặt cọc: Phòng 301
 Số tiền cọc: 3.500.000 VNĐ
 Họ tên khách: Nguyễn Văn E",Giao dịch VNPay thành công. Trạng thái phòng 301 tự động chuyển sang 'Đã đặt cọc' và hệ thống gửi biên lai cọc qua email cho khách hàng.
-TC01_UC40,Đăng tin tuyển khách - UC40,"1. Đăng nhập tài khoản Manager
-2. Vào trang quản lý phòng hoặc danh sách tin đăng
-3. Chọn phòng trống cần cho thuê, click 'Đăng tin cho thuê'
-4. Chỉnh sửa nội dung mô tả, tải lên hình ảnh phòng thực tế và click 'Phát hành tin đăng'","Mã phòng: 301
-Tiêu đề: Cho thuê phòng VIP gác lửng giá rẻ Đống Đa
-Ảnh: 3 ảnh chụp thực tế phòng",Tin tuyển khách được duyệt tự động và xuất hiện trên giao diện trang chủ tìm kiếm phòng dành cho khách vãng lai.

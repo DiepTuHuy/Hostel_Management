@@ -276,7 +276,7 @@ function CreateContractModal({ onClose, onSave }) {
                 <Sparkles className="shrink-0 text-emerald-600" size={20} />
                 <div>
                   <span className="font-semibold block">Kiểm tra thông tin trước khi xác nhận</span>
-                  Hợp đồng sau khi tạo sẽ ở trạng thái <strong>Chờ ký</strong>. Khách thuê sẽ nhận được thông báo ký số từ điện thoại qua Zalo/SMS.
+                  Hợp đồng sau khi tạo sẽ ở trạng thái <strong>Chờ ký</strong>. Khách thuê sẽ nhận được thông báo ký số từ điện thoại qua Telegram.
                 </div>
               </div>
 

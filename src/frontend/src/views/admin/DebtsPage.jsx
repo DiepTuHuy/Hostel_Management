@@ -14,9 +14,9 @@ function BatchReminderModal({ totalTenants, onClose, onFinish }) {
     const interval = setInterval(() => {
       currentProgress += 10;
       if (currentProgress === 20) {
-        setStatusText('Đang thiết lập cổng kết nối Zalo OA & SMS Brandname...');
+        setStatusText('Đang thiết lập cổng kết nối Telegram Bot...');
       } else if (currentProgress === 50) {
-        setStatusText(`Đang truyền gói tin nhắc nợ đến ${totalTenants} số điện thoại...`);
+        setStatusText(`Đang truyền gói tin nhắc nợ đến ${totalTenants} tài khoản Telegram...`);
       } else if (currentProgress === 80) {
         setStatusText('Đang ghi nhận lịch sử gửi tin vào hệ thống log...');
       } else if (currentProgress >= 100) {

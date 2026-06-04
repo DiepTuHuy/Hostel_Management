@@ -16,8 +16,7 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   
   const [notifyEmail, setNotifyEmail] = useState(true);
-  const [notifySms, setNotifySms] = useState(false);
-  const [notifyZalo, setNotifyZalo] = useState(true);
+  const [notifyTelegram, setNotifyTelegram] = useState(true);
 
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -203,21 +202,11 @@ export default function ProfilePage() {
               </label>
 
               <label className="flex items-center justify-between cursor-pointer p-2.5 bg-gray-50 border border-line rounded-xl text-xs font-semibold text-ink">
-                <span>Thông báo qua tin nhắn SMS</span>
+                <span>Thông báo qua Telegram Bot</span>
                 <input
                   type="checkbox"
-                  checked={notifySms}
-                  onChange={e => setNotifySms(e.target.checked)}
-                  className="rounded border-line text-primary focus:ring-primary/20 w-4 h-4"
-                />
-              </label>
-
-              <label className="flex items-center justify-between cursor-pointer p-2.5 bg-gray-50 border border-line rounded-xl text-xs font-semibold text-ink">
-                <span>Thông báo qua tin nhắn Zalo</span>
-                <input
-                  type="checkbox"
-                  checked={notifyZalo}
-                  onChange={e => setNotifyZalo(e.target.checked)}
+                  checked={notifyTelegram}
+                  onChange={e => setNotifyTelegram(e.target.checked)}
                   className="rounded border-line text-primary focus:ring-primary/20 w-4 h-4"
                 />
               </label>

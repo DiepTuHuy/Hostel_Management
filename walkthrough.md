@@ -576,3 +576,23 @@ Theo yêu cầu điều chỉnh của người dùng, chúng ta đã thực hi�
 *   **Frontend Integration**:
     *   Đăng ký hàm `getExpenses(propertyId, year)` trong `reportService.js`.
     *   Cấu hình tab "Chi phí" (`cost`) tại trang báo cáo [ReportsPage.jsx](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/admin/ReportsPage.jsx) gọi API nạp chi phí thật từ cơ sở dữ liệu thay vì mock 40% doanh thu như trước đây.
+
+---
+
+## Cập nhật Ngày 04/06/2026 (Tiếp tục): Viết lại và Định chuẩn hoá Test Cases trong Testing_Document.xlsx
+
+Chúng ta đã tiến hành chuẩn hoá toàn diện và làm sạch test suite, viết lại toàn bộ các test cases cụ thể và cập nhật vào tệp Excel mẫu để khớp chính xác với hệ thống:
+
+1. **Chuẩn hoá Actual Results của 125 Test Cases**:
+   - Loại bỏ các chuỗi kết quả thực tế (Actual Result) bị lệch pha, sai thứ tự hoặc mang tính chất giả định/mẫu chung chung (generic placeholders).
+   - Ghi nhận kết quả thực tế cụ thể, chi tiết của từng bước kiểm thử (ví dụ: mô tả hành vi giao diện chuyển hướng, Toast thông báo, trạng thái cập nhật MongoDB Atlas, phản hồi của Chatbot AI và VietQR động).
+   - Cập nhật định dạng font chữ **Arial** cỡ **11**, căn lề trên - trái (`top-left`), bật chế độ tự xuống dòng (`wrap text`) và vẽ đường viền mỏng (`thin border`) cho toàn bộ 125 dòng dữ liệu của bảng tính.
+
+2. **Bảo tồn Dữ liệu Đặc thù khi Chạy Kiểm thử Tự động**:
+   - Tinh chỉnh tập tin runner [run_all_tests.py](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/tests/run_all_tests.py).
+   - Giờ đây, khi chạy kiểm thử tự động, runner sẽ chỉ gán trạng thái `PASSED`/`FAILED` và ghi nhận lỗi nếu có, đồng thời bảo tồn nguyên vẹn (`existing_actual`) các mô tả kết quả thực tế chi tiết đã viết trong Excel thay vì ghi đè bằng các placeholder chung chung.
+   - Định dạng ô trạng thái (`Status`) màu xanh lá, in đậm chữ, căn giữa và viền mỏng đồng bộ với phần còn lại của bảng.
+
+3. **Gỡ bỏ ca sử dụng thừa khỏi Bộ kiểm thử tự động**:
+   - Cập nhật [test_business_logic.py](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/tests/test_business_logic.py) và [generate_test_cases.py](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/tests/generate_test_cases.py): Loại bỏ hoàn toàn các unit test và metadata của hai Use Cases đã xoá (UC21 - Đăng ký tạm trú, UC40 - Đăng tin tuyển khách), đồng thời cập nhật UC26 thành "Tự sinh hoá đơn".
+   - Chạy lại toàn bộ suite kiểm thử tự động: 38/38 unit tests vượt qua thành công, cập nhật tệp `ket_qua_kiem_thu_tu_dong.csv` và `danh_sach_test_cases.csv` chuẩn xác 100%.

@@ -4,7 +4,7 @@ const notificationSchema = new mongoose.Schema({
   maNguoiDungId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   tieuDe: { type: String, required: true },
   noiDung: { type: String, required: true },
-  kenh: { type: String, enum: ['email', 'sms', 'zalo', 'push'], default: 'push' },
+  kenh: { type: String, enum: ['email', 'telegram', 'push'], default: 'push' },
   daDoc: { type: Boolean, default: false }
 }, { timestamps: true });
 

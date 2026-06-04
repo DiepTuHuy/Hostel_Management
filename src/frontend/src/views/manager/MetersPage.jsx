@@ -48,7 +48,7 @@ export default function MetersPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [isIssuing, setIsIssuing] = useState(false);
-  const [channels, setChannels] = useState({ zalo: true, sms: true, app: true });
+  const [channels, setChannels] = useState({ telegram: true, email: true, app: true });
 
   const updateReading = (roomId, field, value) => {
     setReadings((prev) => ({
@@ -308,8 +308,8 @@ export default function MetersPage() {
             <label className="label">Kênh gửi thông báo:</label>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { key: 'zalo', label: 'Zalo OA', desc: 'Nhắn qua Zalo' },
-                { key: 'sms', label: 'SMS Brand', desc: 'Tin nhắn di động' },
+                { key: 'telegram', label: 'Telegram Bot', desc: 'Nhắn qua Telegram' },
+                { key: 'email', label: 'Email SMTP', desc: 'Thư điện tử' },
                 { key: 'app', label: 'In-app Notification', desc: 'Thông báo app' },
               ].map((c) => (
                 <div
@@ -361,7 +361,7 @@ export default function MetersPage() {
           <div className="p-3 bg-blue-50/40 border border-blue-100 text-blue-800 rounded-xl text-xs leading-relaxed flex gap-2">
             <Check className="shrink-0 text-info mt-0.5" size={16} />
             <div>
-              Khi xác nhận phát hành, hệ thống sẽ tạo hoá đơn nháp dịch vụ, lập bảng kê chi tiết điện nước và tự động thông báo cho khách thuê đóng phí qua các kênh Zalo/SMS/Email cùng đường dẫn thanh toán.
+              Khi xác nhận phát hành, hệ thống sẽ tạo hoá đơn nháp dịch vụ, lập bảng kê chi tiết điện nước và tự động thông báo cho khách thuê đóng phí qua các kênh Telegram/Email cùng đường dẫn thanh toán.
             </div>
           </div>
         </div>

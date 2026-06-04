@@ -177,7 +177,7 @@ package "5. Thông báo" #E6F0FA {
     + maNguoiDungId : ObjectId  <<→ User>>
     + tieuDe : String
     + noiDung : String
-    + kenh : enum {email, sms, zalo, push}
+    + kenh : enum {email, telegram, push}
     + daDoc : Boolean
   }
 

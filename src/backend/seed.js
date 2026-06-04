@@ -671,7 +671,7 @@ const seedDatabase = async () => {
           maNguoiDungId: tenantRepair._id,
           tieuDe: "Nhắc lịch bảo trì thiết bị phòng",
           noiDung: "Vui lòng chuẩn bị người ở phòng hoặc bàn giao chìa khóa cho quản lý trước thời điểm thợ đến kiểm tra sửa chữa điều hòa.",
-          kenh: "zalo",
+          kenh: "telegram",
           daDoc: false
         });
       }
