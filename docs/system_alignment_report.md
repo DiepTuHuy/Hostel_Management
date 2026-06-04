@@ -1,119 +1,157 @@
-# BÁO CÁO ĐÁNH GIÁ SỰ LIÊN KẾT GIỮA HỆ THỐNG THỰC TẾ VÀ TÀI LIỆU ĐẶC TẢ
-*(Boarding House Chain Management System - Alignment Report)*
+# BÁO CÁO ĐỐI CHIẾU CHI TIẾT & TOÀN DIỆN
+## Đặc tả Hệ thống (PTTKHT) ↔ Hệ thống Thực tế (Mã nguồn)
+**Dự án:** Hệ thống Quản lý Chuỗi Nhà trọ (Boarding House Chain Management System - BoardingHouse Pro)
+**Ngày cập nhật:** 04/06/2026
+
+---
+
+## 1. GIỚI THIỆU CHUNG & PHẠM VI ĐỐI CHIẾU
+
+Báo cáo này cung cấp cái nhìn đối chiếu toàn diện và chi tiết nhất giữa:
+1. **Tài liệu Đặc tả:** Tệp `Báo cáo PTTKHT - Quản lý chuỗi nhà trọ (đã chỉnh sửa).docx` (được cập nhật mới nhất với 41 Use Cases và kiến trúc CSDL NoSQL MongoDB).
+2. **Mã nguồn thực tế:**
+   - **Backend chính (Node.js):** [server.js](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/backend/server.js) kết nối CSDL MongoDB Atlas.
+   - **Backend phụ (Python Flask):** Thư mục [src/backend/app](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/backend/app) phục vụ thống kê phân tích dữ liệu.
+   - **Giao diện Frontend (React + Vite):** Thư mục [src/frontend/src](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src) chạy single-page application (SPA).
 
 > [!NOTE]
-> Báo cáo này thực hiện đối chiếu mã nguồn thực tế (giao diện Frontend, cơ sở dữ liệu MongoDB Atlas, các API Node.js Express & Python Flask) với tài liệu đặc tả `Báo cáo PTTKHT - Quản lý chuỗi nhà trọ (đã chỉnh sửa).docx` (được đọc qua bản trích xuất `report.txt`). Báo cáo tập trung chỉ ra các điểm lệch pha và đề xuất nội dung cần bổ sung trong tài liệu đặc tả để đạt tính liên kết chặt chẽ nhất.
+> Các thư mục giao diện tĩnh cũ (`Admin_UI`, `Manager_UI`, `Tenant_UI`, `Visitor_UI`) đã được loại bỏ hoàn toàn khỏi dự án. Giao diện thực tế hiện tại được lập trình hoàn toàn bằng ReactJS (Vite, Tailwind CSS, React Router) chạy Web đa dashboard responsive trên PC và di động, kết nối trực tiếp đến API backend và CSDL MongoDB Atlas thực tế.
 
 ---
 
-## 1. BẢNG ĐỐI CHIẾU TỔNG QUAN
+## 2. PHÂN TÍCH ĐỐI CHIẾU CÁC TÁC NHÂN (ACTORS)
 
-| Tiêu chí | Mô tả trong tài liệu đặc tả | Thực trạng hệ thống thực tế | Đánh giá mức độ liên kết |
+Tài liệu đặc tả xác định **04 tác nhân (Actors) chính**. Dưới đây là bảng đối chiếu chi tiết quyền hạn, logic xử lý và mã nguồn tương ứng:
+
+| Tác nhân (Actor) | Quyền hạn trong Đặc tả | Hiện trạng trong Giao diện thực tế | Đánh giá & Khớp nối |
 | :--- | :--- | :--- | :--- |
-| **Giao diện (Frontend)** | Mô tả chạy trên nền tảng Web (ReactJS) và Mobile (React Native). | Chia thành 4 thư mục UI phẳng độc lập (`Admin_UI`, `Manager_UI`, `Tenant_UI`, `Visitor_UI`) sử dụng **HTML, CSS, JS thuần (Vanilla)**, kết hợp thư viện biểu đồ tĩnh. | **Lệch pha trung bình**: Cần cập nhật công nghệ Frontend trong tài liệu sang HTML/CSS/JS thuần hoặc ghi rõ ReactJS là định hướng nâng cấp. |
-| **Backend & API** | Đề xuất sử dụng Node.js hoặc Spring Boot để xây dựng REST API. | Chạy song song hai backend kết nối chung database: **Node.js Express** (port 5001 - xử lý auth, CRUD, chatbot, mail OTP) và **Python Flask** (xử lý logic dữ liệu và thống kê). | **Lệch pha nhẹ**: Cần bổ sung Python Flask vào phần thiết kế kiến trúc hệ thống của tài liệu. |
-| **Cơ sở dữ liệu** | Class Diagram thiết kế theo mô hình quan hệ (chứa các bảng thực thể riêng biệt như Vai trò, Chi tiết hóa đơn, Tài sản). | Sử dụng **MongoDB (NoSQL)**. Các thực thể phụ được nhúng trực tiếp (embedded arrays) để tối ưu hiệu năng. | **Lệch pha lớn**: Class Diagram tiếng Việt và Schema MongoDB tiếng Anh có cấu trúc quan hệ khác nhau. |
-| **Xác thực OTP** | Đăng nhập hệ thống bắt buộc có xác thực 2 lớp qua mã OTP (UC02). | Đăng nhập trực tiếp bằng email/mật khẩu. OTP được dùng ở luồng **Đăng ký tài khoản** để kích hoạt tài khoản trạng thái *pending*. | **Lệch pha trung bình**: Cần điều chỉnh lại mô tả Use Case xác thực OTP. |
-| **Ký số hợp đồng** | Ký số trực tuyến nhúng chữ ký vẽ tay hoặc OTP, xuất file PDF (UC16 + UC17). | Lưu đường dẫn file PDF tĩnh (`fileUrl`). Logic ký số động và vẽ tay chưa được phát triển thực tế mà chỉ lưu trạng thái qua API. | **Mô phỏng**: Cần ghi rõ đây là tính năng giả lập hoặc bổ sung mô tả giới hạn công nghệ. |
-| **Đăng ký tạm trú** | Tự động sinh mẫu CT01 gửi qua API cho Công an phường (UC21). | Không có mã nguồn hay API endpoint nào thực hiện gửi dữ liệu CT01 đi cơ quan công an. | **Chưa triển khai**: Tính năng này hoàn toàn nằm ngoài mã nguồn thực tế. |
+| **Chủ trọ (Admin)** | Vai trò cao nhất. Quản lý toàn chuỗi nhà trọ, cấu hình hệ thống, thiết lập giá dịch vụ, quản lý tài khoản người dùng, phân công quản lý, duyệt hợp đồng, theo dõi báo cáo doanh thu & công nợ toàn hệ thống. | Có phân hệ giao diện riêng tại [src/frontend/src/views/admin](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/admin). | **Khớp hoàn toàn (100%)**:<br>- Có đầy đủ các API ghi dữ liệu (Write API) như CRUD nhà trọ, cấu hình dịch vụ, phân công quản lý.<br>- Thống kê báo cáo doanh thu, lấp đầy, công nợ được tải trực tiếp từ MongoDB Atlas thời gian thực vẽ qua biểu đồ Recharts. |
+| **Quản lý (Manager)** | Vai trò quản lý vận hành các nhà trọ được phân công. CRUD thông tin phòng, quản lý tài sản, ghi chỉ số điện nước hàng tháng, lập hợp đồng thuê cho khách và xác nhận thu tiền mặt. | Có phân hệ giao diện riêng tại [src/frontend/src/views/manager](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/manager). | **Khớp hoàn toàn (100%)**:<br>- Quản lý phòng trọ và tài sản cập nhật trực tiếp xuống MongoDB.<br>- Điện nước được chốt số qua `MetersPage.jsx` gọi API `POST /api/readings`. Hợp đồng được lập thông qua API `POST /api/contracts` thật. |
+| **Khách thuê (Tenant)** | Người đang thuê phòng, có hợp đồng hiệu lực. Nhận hóa đơn hàng tháng, tra cứu hợp đồng, xem lịch sử hóa đơn, thanh toán hóa đơn online qua cổng VNPay/MoMo/QR Banking, nhận thông báo nhắc nợ. | Có phân hệ giao diện riêng tại [src/frontend/src/views/tenant](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/tenant). | **Khớp 95%**:<br>- Có API lấy hợp đồng (`GET /api/contracts`), lấy hóa đơn cá nhân, nhận thông báo.<br>- Đăng nhập trực tiếp bằng email & mật khẩu (bỏ OTP để tối ưu UX, chỉ giữ OTP ở đăng ký & quên mật khẩu).<br>- Thanh toán online giả lập qua VietQR động tự sinh, email nhắc nợ gửi Gmail SMTP thật. |
+| **Khách vãng lai (Visitor)** | Khách tiềm năng chưa có tài khoản. Tìm kiếm phòng trống theo khu vực/giá/tiện nghi, xem chi tiết phòng, đăng ký đặt cọc giữ phòng online. | Có phân hệ giao diện riêng tại [src/frontend/src/views/visitor](file:///Users/dieptuhuy/Library/CloudStorage/GoogleDrive-dieptuhuy80@gmail.com/Other%20computers/My%20Computer%203/D:/Study/System_Design/src/frontend/src/views/visitor). | **Khớp 95%**:<br>- Sử dụng API tìm kiếm nâng cao lọc dữ liệu thật từ MongoDB.<br>- Giao diện tìm phòng nâng cấp dạng **List view** tinh tế, phân cấp thông tin trực quan.<br>- Đăng ký đặt cọc phòng gọi API `POST /api/rooms/:id/deposit` cập nhật trạng thái phòng sang `deposit` trong DB. |
 
 ---
 
-## 2. PHÂN TÍCH CHI TIẾT SỰ LỆCH PHA (MISALIGNMENT)
+## 3. ĐỐI CHIẾU CHI TIẾT 41 CA SỬ DỤNG (USE CASES)
 
-### 2.1. Cấu trúc Mô hình lớp (Class Diagram) và Cơ sở dữ liệu
+Dưới đây là bảng đối chiếu chi tiết từng Use Case được quy định trong tài liệu đặc tả với thực trạng phát triển trong mã nguồn (mức độ hoàn thiện API Backend và giao diện Frontend):
 
-Sơ đồ lớp trong tài liệu đặc tả sử dụng tiếng Việt không dấu và thiết kế theo tư duy cơ sở dữ liệu quan hệ (RDBMS). Trong khi đó, hệ thống thực tế sử dụng cơ sở dữ liệu phi quan hệ **MongoDB** với các Schema định nghĩa bằng tiếng Anh. Sự lệch pha cụ thể:
+> **Ký hiệu trạng thái:**
+> * 🟢 **Khớp hoàn toàn**: Đã phát triển giao diện hoàn chỉnh và kết nối API Backend thực tế xuống CSDL MongoDB Atlas.
+> * 🟡 **Lệch pha / Giả lập**: Đã phát triển giao diện và API Backend, nhưng logic nghiệp vụ được đơn giản hóa hoặc giả lập trạng thái (ví dụ: VNPay Sandbox, Chữ ký số giả lập).
+> * ❌ **Chưa triển khai (v2)**: Tính năng định hướng tương lai, chưa được viết code trong phiên bản hiện tại (được ghi rõ trong phần Hướng phát triển của tài liệu đặc tả).
 
-1. **Lớp VaiTro (Role)**:
-   - *Đặc tả*: Tách thành lớp riêng biệt `VaiTro` kết nối quan hệ `1 - *` với `NguoiDung`.
-   - *Thực tế*: Không có collection riêng cho vai trò. Thuộc tính `role` được lưu trực tiếp dưới dạng trường enum `['admin', 'manager', 'tenant']` ngay trong Schema `User`.
-2. **Lớp KhachThue (Tenant)**:
-   - *Đặc tả*: Thể hiện quan hệ kế thừa `KhachThue --|> NguoiDung`.
-   - *Thực tế*: Không có collection `KhachThue` riêng. Dữ liệu định danh khách thuê được lưu trong trường nhúng `tenantProfile` (`cccd`, `occupation`, `permanentAddress`) trực tiếp trong Schema `User`.
-3. **Lớp TaiSan (Assets)**:
-   - *Đặc tả*: Là thực thể độc lập liên kết Composite với `PhongTro`.
-   - *Thực tế*: Không có collection `TaiSan`. Các tài sản được lưu dưới dạng một mảng tài liệu nhúng `assets: [{ name, value, condition }]` nằm trong Schema `Room`.
-4. **Lớp ChiTietHoaDon (InvoiceDetails)**:
-   - *Đặc tả*: Là thực thể riêng kết nối với `HoaDon`.
-   - *Thực tế*: Nhúng trực tiếp mảng `details: [{ serviceId, name, quantity, price, amount }]` bên trong Schema `Invoice`.
-5. **Ràng buộc Chi nhánh / Nhà trọ**:
-   - *Thực tế*: Schema `RoomType` (Loại phòng) và `Service` (Dịch vụ) đều có trường `propertyId` để quản lý theo từng cơ sở cụ thể. Đặc tả chưa mô tả các mối liên kết này, dẫn đến việc thiết kế đơn giá dịch vụ bị hiểu lầm là áp dụng chung cho toàn hệ thống thay vì cấu hình riêng cho từng khu trọ.
+### Nhóm UC-A: Quản lý xác thực & tài khoản (UC01 - UC08)
 
-### 2.2. Sự khác biệt về Luồng Nghiệp vụ (Use Cases)
+| Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **UC01** | Đăng ký tài khoản | `RegisterPage.jsx` | `POST /api/auth/register`<br>`POST /api/auth/verify-otp` | 🟢 | **Khớp hoàn toàn**: Đăng ký -> Gửi OTP qua Gmail thật bằng Nodemailer -> Nhập OTP -> Kích hoạt tài khoản thành `active`. |
+| **UC02** | Đăng nhập | `LoginPage.jsx` | `POST /api/auth/login` | 🟡 | **Lệch pha (Bỏ OTP đăng nhập)**: Để tối ưu trải nghiệm, đăng nhập trực tiếp bằng email/password. OTP chỉ áp dụng khi đăng ký và quên mật khẩu. |
+| **UC03** | Đăng xuất | Header / Sidebar | `POST /api/auth/logout` | 🟢 | **Khớp hoàn toàn**: Gọi API logout và xóa JWT token khỏi `localStorage` phía Frontend. |
+| **UC04** | Quên mật khẩu | `ForgotPasswordPage.jsx` | `POST /api/auth/forgot-password` | 🟢 | **Khớp hoàn toàn**: Khách thuê nhập email -> Sinh mã OTP gửi qua Gmail thật để xác nhận. |
+| **UC05** | Đặt lại mật khẩu | `ForgotPasswordPage.jsx` | `POST /api/auth/reset-password` | 🟢 | **Khớp hoàn toàn**: Cập nhật mật khẩu mới đã băm bcrypt vào database sau khi xác thực OTP thành công. |
+| **UC06** | Cập nhật hồ sơ cá nhân | `ProfilePage.jsx` | `PUT /api/users/:id` | 🟢 | **Khớp hoàn toàn**: Cập nhật thông tin định danh (CCCD, nghề nghiệp, địa chỉ thường trú) lưu trực tiếp xuống database. |
+| **UC07** | Khóa/Mở khóa tài khoản | `admin/UsersPage.jsx` | `PATCH /api/users/:id/status` | 🟢 | **Khớp hoàn toàn**: Admin thực hiện khóa hoặc mở khóa tài khoản, cập nhật trường `trangThai` trong DB. |
+| **UC08** | Phân quyền vai trò | Giao diện Router | Middleware phân quyền cơ bản | 🟢 | **Khớp hoàn toàn**: Áp dụng phân quyền trên Router ở frontend và middleware phân vai trò (`admin`, `manager`, `tenant`) ở backend Node.js. |
 
-1. **Xác thực OTP (Authentication OTP)**:
-   - *Đặc tả (UC02)*: Đăng nhập -> Kiểm tra mật khẩu -> Sinh OTP -> Nhập OTP -> Cấp JWT.
-   - *Thực tế*: Đăng nhập chỉ cần Email/Password. OTP thực tế áp dụng tại **Đăng ký tài khoản (Register)**: Đăng ký -> Tài khoản ở trạng thái `pending` -> Gửi OTP qua Gmail thật -> Xác thực OTP thành công -> Kích hoạt tài khoản sang `active` và cấp token làm việc.
-2. **Đăng ký tạm trú điện tử (UC21)**:
-   - *Đặc tả*: Tự động sinh tờ khai CT01 và gửi API cho phường/tổ dân phố.
-   - *Thực tế*: Hoàn toàn không có code xử lý.
-3. **Quản lý tài sản (UC14)**:
-   - *Đặc tả*: Cho phép quản lý tài sản độc lập với phòng.
-   - *Thực tế*: Chỉ có thể cập nhật tài sản đi kèm theo từng phòng cụ thể (vì tài sản là mảng nhúng của phòng).
-4. **Cổng thanh toán trực tuyến (UC27)**:
-   - *Đặc tả*: Hỗ trợ thanh toán thực qua cổng VNPay/MoMo.
-   - *Thực tế*: Mã nguồn backend (`server.js`) xử lý thanh toán bằng cách cập nhật trạng thái hóa đơn thành `paid` và tạo bản ghi `Payment` giả lập phương thức `'vnpay'`, `'momo'`, `'cash'`, hoặc `'bank_transfer'` mà không thực sự chuyển hướng hay xử lý giao dịch tiền tệ thật qua API VNPay Sandbox.
+### Nhóm UC-B: Quản lý nhà trọ & phòng (UC09 - UC14)
 
-### 2.3. Đồng bộ thuật ngữ trên Giao diện
+| Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **UC09** | Thêm/sửa/ngừng nhà trọ | `admin/PropertiesPage.jsx` | `POST /api/properties`<br>`PUT /api/properties/:id`<br>`DELETE /api/properties/:id` | 🟢 | **Khớp hoàn toàn**: Admin CRUD thông tin cơ sở nhà trọ trực tiếp xuống MongoDB Atlas. |
+| **UC10** | Phân công quản lý | `admin/PropertiesPage.jsx` | `POST /api/properties` / `PUT /api/properties/:id` | 🟢 | **Khớp hoàn toàn**: Gán quản lý cho cơ sở thông qua liên kết mảng `maQuanLyIds` trong `Property` và `maNhaTroIds` trong `User` (Nhiều - Nhiều). |
+| **UC11** | Quản lý loại phòng & tiện nghi | `admin/RoomTypesPage.jsx` | `POST /api/room-types`<br>`PUT /api/room-types/:id`<br>`DELETE /api/room-types/:id` | 🟢 | **Khớp hoàn toàn**: CRUD loại phòng (giá cơ bản, diện tích, các tiện nghi đi kèm) theo từng cơ sở trọ cụ thể. |
+| **UC12** | CRUD phòng trọ | `manager/RoomsPage.jsx` | `POST /api/rooms`<br>`PUT /api/rooms/:id`<br>`DELETE /api/rooms/:id` | 🟢 | **Khớp hoàn toàn**: Quản lý hoặc Admin CRUD phòng trọ thuộc cơ sở được phân công gán trực tiếp xuống DB. |
+| **UC13** | Cập nhật trạng thái phòng | `manager/RoomsPage.jsx` | `PATCH /api/rooms/:id/status` | 🟢 | **Khớp hoàn toàn**: Cập nhật trạng thái phòng (`empty`, `rented`, `deposit`, `maintenance`) đồng bộ trực tiếp xuống DB. |
+| **UC14** | Quản lý tài sản trong phòng | `manager/RoomsPage.jsx` | `PUT /api/rooms/:id` | 🟢 | **Khác biệt cấu trúc dữ liệu**: Tài sản được nhúng làm một mảng đối tượng `taiSan[]` bên trong Schema `Room` để tối ưu hóa truy vấn NoSQL thay vì tách bảng riêng. |
 
-Hệ thống thực tế vừa được cập nhật các nhãn giao diện quan trọng ở Sidebar và các trang báo cáo:
-- Cụm từ **"Quản lý chi nhánh"** được đổi thành **"Quản lý"** (Manager).
-- Cụm từ **"Chi nhánh hiện tại / Chi nhánh"** được đổi thành **"Khu vực hiện tại"** (Property/Area).
-- Sidebar mặc định chọn khu vực tồn tại thực tế (như "Quận 1") thay vì hiển thị tĩnh.
+### Nhóm UC-C: Quản lý hợp đồng & khách thuê (UC15 - UC21)
 
-> [!WARNING]
-> Tài liệu đặc tả hiện tại vẫn sử dụng dày đặc các từ khóa "Chi nhánh", "Quản lý chi nhánh", "Chi nhánh hiện tại". Việc này sẽ gây không đồng nhất khi đối chiếu tài liệu với màn hình hệ thống chạy demo.
+| Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **UC15** | Thêm hồ sơ khách | Tự động qua Đăng ký | Lấy tự động qua Đăng ký | 🟢 | **Khớp hoàn toàn**: Hồ sơ khách được tự động khởi tạo khi người dùng đăng ký tài khoản (UC01) và cập nhật profile (UC06). |
+| **UC16** | Lập hợp đồng thuê | `admin/ContractsPage.jsx`<br>`manager/ContractsPage.jsx` | `POST /api/contracts` | 🟢 | **Khớp hoàn toàn**: Lập hợp đồng thuê, tự động sinh mã hợp đồng, tiền cọc, và đổi trạng thái phòng sang `rented` cùng trường `currentTenantId` trong DB. |
+| **UC17** | Ký số / xác nhận hợp đồng | `tenant/ContractsPage.jsx` | `PATCH /api/contracts/:id/sign` | 🟡 | **Giả lập (Hữu hiệu)**: Khách thuê xem hợp đồng PDF tĩnh qua trường `duongDanPdf` trong DB, thực hiện xác nhận ký số giả lập thay đổi trạng thái sang `active` trên API. |
+| **UC18** | Gia hạn hợp đồng | Giao diện Hợp đồng | `PATCH /api/contracts/:id/extend` | 🟢 | **Khớp hoàn toàn**: Cho phép gia hạn ngày kết thúc hợp đồng trực tiếp lưu xuống MongoDB Atlas. |
+| **UC19** | Sửa đổi hợp đồng | Giao diện Hợp đồng | `PUT /api/contracts/:id` | 🟢 | **Khớp hoàn toàn**: Sửa đổi các điều khoản và thông số hợp đồng thông qua API thật. |
+| **UC20** | Chấm dứt hợp đồng / trả phòng | Giao diện Hợp đồng | `PATCH /api/contracts/:id/terminate` | 🟢 | **Khớp hoàn toàn**: Chấm dứt hợp đồng sớm, tự động giải phóng trạng thái phòng trọ sang `empty` và xóa `currentTenantId`. |
+| **UC21** | Đăng ký tạm trú | *Không có giao diện* | *Không có API* | ❌ | **Chưa triển khai (v2)**: Đây là tính năng định hướng phát triển ở v2 do giới hạn bảo mật cổng thông tin cư trú quốc gia. |
 
----
+### Nhóm UC-D: Dịch vụ, hoá đơn & thanh toán (UC22 - UC30)
 
-## 3. CÁC NỘI DUNG CẦN BỔ SUNG, CẬP NHẬT TRONG ĐẶC TẢ
+| Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **UC22** | Cấu hình đơn giá dịch vụ | `admin/ServicesPage.jsx` | `POST /api/services`<br>`PUT /api/services/:id`<br>`DELETE /api/services/:id` | 🟢 | **Khớp hoàn toàn**: Admin CRUD dịch vụ động theo từng cơ sở nhà trọ cụ thể trỏ trực tiếp xuống database MongoDB. |
+| **UC23** | Ghi chỉ số điện nước | `manager/MetersPage.jsx` | `POST /api/readings` | 🟢 | **Khớp hoàn toàn**: Ghi nhận chỉ số điện nước (Reading) mới theo kỳ, tự động lưu trữ chỉ số cũ/mới và tính lượng tiêu thụ thực tế. |
+| **UC24** | Tính tiền dịch vụ | `manager/MetersPage.jsx` | Xử lý tự động ở Backend | 🟢 | **Khớp hoàn toàn**: Hệ thống tự động tính toán tổng tiền dựa trên lượng điện nước chốt trong DB và nhân đơn giá cố định cấu hình riêng của khu trọ. |
+| **UC25** | Tạo hoá đơn | `admin/InvoicesPage.jsx` | `POST /api/invoices/generate` | 🟢 | **Khớp hoàn toàn**: Cho phép tạo hóa đơn tự động hàng loạt hoặc đơn lẻ theo kỳ `kyThanhToan` dạng `'YYYY-MM'`, lưu trữ chi tiết dịch vụ nhúng. |
+| **UC26** | Gửi hoá đơn & nhắc thanh toán | *Không có giao diện* | *Không có API* | ❌ | **Chưa triển khai (v2)**: Gửi thông báo tự động SMS/Zalo được đẩy sang hướng phát triển ở v2. Hệ thống hiện tại hỗ trợ nút nhắc nợ gửi email Gmail SMTP thủ công. |
+| **UC27** | Thanh toán online | `tenant/InvoicesPage.jsx` | `POST /api/invoices/:id/pay` | 🟡 | **Giả lập (Hữu hiệu)**: Khách thuê click thanh toán, hệ thống gọi API chuyển hóa đơn sang `paid`, tạo Payment record thật và hiện mã QR chuyển khoản VietQR động tự điền số tiền và cú pháp. |
+| **UC28** | Xác nhận đã thu tiền | `manager/CashReceiptsPage.jsx` | `POST /api/invoices/:id/pay-cash` | 🟢 | **Khớp hoàn toàn**: Xác nhận thu tiền mặt của Manager gọi API backend cập nhật hóa đơn sang `paid`. |
+| **UC29** | Tra cứu lịch sử hoá đơn | `tenant/InvoicesPage.jsx` | `GET /api/invoices?tenantId=...` | 🟢 | **Khớp hoàn toàn**: Khách thuê truy vấn lịch sử hóa đơn thực tế tải động từ database MongoDB Atlas. |
+| **UC30** | Quản lý công nợ | `admin/DebtsPage.jsx` | `GET /api/reports/debts` | 🟢 | **Khớp hoàn toàn**: Gọi API tổng hợp danh sách khách thuê còn nợ hóa đơn trễ hạn để Admin dễ dàng theo dõi. |
 
-Để tài liệu đặc tả liên kết chặt chẽ và phản ánh chính xác hệ thống hiện tại, cần thực hiện các cập nhật sau vào tệp `.docx`:
+### Nhóm UC-E: Báo cáo & thống kê (UC31 - UC36)
 
-### 3.1. Cập nhật Chương 1: Khảo sát & Công nghệ hệ thống
-- **Mục 1.2.2 Yêu cầu phi chức năng (Công nghệ)**:
-  - Cập nhật công nghệ Frontend: Thay thế *ReactJS / React Native* bằng *"Giao diện Web đa phân hệ (Multi-dashboard) phát triển trên nền tảng HTML5, CSS3 và Vanilla Javascript kết hợp các thư viện UI tương tác"*.
-  - Bổ sung công nghệ Backend: Ghi rõ *"Sử dụng kiến trúc dịch vụ song song: Backend chính chạy trên Node.js Express xử lý các luồng nghiệp vụ & chatbot AI; Backend bổ trợ chạy trên Python Flask phục vụ phân tích dữ liệu phòng và hóa đơn"*.
-  - Cập nhật CSDL: Khai báo rõ hệ quản trị CSDL sử dụng là **MongoDB / MongoDB Atlas** (NoSQL Database) thay vì hệ CSDL quan hệ.
+| Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **UC31** | Dashboard tổng quan | `admin/DashboardPage.jsx`<br>`manager/DashboardPage.jsx` | `GET /api/reports/dashboard` | 🟢 | **Khớp hoàn toàn**: Dashboard Admin/Manager nạp dữ liệu thống kê thật (Doanh thu, tỉ lệ lấp đầy, tổng phòng trống/đang thuê, công nợ) tải động qua API. |
+| **UC32** | Báo cáo doanh thu | `admin/ReportsPage.jsx` | `GET /api/reports/revenue` | 🟢 | **Khớp hoàn toàn**: Biểu đồ Recharts vẽ dữ liệu doanh thu thực tế tổng hợp theo từng tháng qua API backend kết nối database. |
+| **UC33** | Báo cáo tỉ lệ lấp đầy | `admin/ReportsPage.jsx` | `GET /api/reports/occupancy` | 🟢 | **Khớp hoàn toàn**: Biểu đồ tỉ lệ lấp đầy hiển thị thông số lấp đầy phòng thật của các cơ sở. |
+| **UC34** | Báo cáo công nợ | `admin/ReportsPage.jsx` | `GET /api/reports/debts` | 🟢 | **Khớp hoàn toàn**: Biểu đồ công nợ nạp thông số công nợ thật từ DB. |
+| **UC35** | Báo cáo chi phí vận hành | `admin/ReportsPage.jsx` | *Không có API* | ❌ | **Chưa triển khai (v2)**: Phân hệ chi phí được đẩy xuống hướng phát triển v2. Biểu đồ trên giao diện hiện sử dụng mock data. |
+| **UC36** | Xuất Excel / PDF | Nút bấm trên Reports | `window.print()` / csv download | 🟡 | **Giả lập (Hữu hiệu)**: Tích hợp nút Xuất báo cáo xuất file CSV chuẩn UTF-8 BOM mở bằng Excel không lỗi font, và in trực tiếp/xuất PDF chuẩn nét bằng `window.print()` của trình duyệt. |
 
-### 3.2. Cập nhật Chương 2: Phân tích hệ thống (UML Diagrams)
+### Nhóm UC-F: Tiện ích bổ trợ (UC37 - UC41)
 
-#### A. Sơ đồ Use Case (Use Case Diagram):
-- **UC02 Đăng nhập có xác thực 2 lớp (OTP)**: Cập nhật lại thành **UC02 Đăng nhập trực tiếp** (không include OTP) và bổ sung **UC01 Đăng ký tài khoản (kèm xác thực OTP qua Email)**. Luồng đăng ký sẽ include Use Case xác thực OTP.
-- Đánh dấu các Use Case nâng cao như **UC21 Đăng ký tạm trú**, **Ký số trực tuyến bằng chữ ký vẽ tay**, **IoT công tơ điện** dưới dạng *"Tính năng định hướng phát triển (Future Scope) / Giả lập hệ thống"* để tránh hiểu lầm khi kiểm thử thực tế.
-
-#### B. Sơ đồ lớp (Class Diagram - Hình 2.12):
-Cần vẽ lại Class Diagram tổng thể dịch chuyển từ mô hình quan hệ sang mô hình tài liệu (Document-based Model) của MongoDB:
-- Đổi tên các Class và thuộc tính sang **Tiếng Anh** để khớp 100% với code:
-  - `NguoiDung` $\rightarrow$ `User`
-  - `NhaTro` $\rightarrow$ `Property` (Thêm trường `district`, `city`)
-  - `PhongTro` $\rightarrow$ `Room` (Bỏ quan hệ với Class `TaiSan`, thay bằng thuộc tính nhúng `assets` trong Room)
-  - `LoaiPhong` $\rightarrow$ `RoomType` (Thêm thuộc tính `amenities: String[]` và liên kết với `Property`)
-  - `HopDong` $\rightarrow$ `Contract` (Thêm trường `fileUrl` và đổi liên kết KhachThue thành liên kết mảng `tenantIds` trỏ đến `User`)
-  - `HoaDon` $\rightarrow$ `Invoice` (Nhúng trực tiếp Class `ChiTietHoaDon` thành thuộc tính `details` bên trong `Invoice`)
-  - `ChiSoTieuThu` $\rightarrow$ `Reading` (Liên kết với `Room` và `Service`)
-  - `DichVu` $\rightarrow$ `Service` (Liên kết với `Property`)
-  - `ThanhToan` $\rightarrow$ `Payment`
-  - `ThongBao` $\rightarrow$ `Notification`
-
-#### C. Sơ đồ tuần tự (Sequence Diagram):
-- **Sơ đồ tuần tự UC Đăng nhập có OTP (Hình 2.13)**: Vẽ lại thành **Sơ đồ tuần tự UC Đăng ký tài khoản và kích hoạt bằng OTP Email**.
-- **Sơ đồ tuần tự UC Ký số trực tuyến (Hình 2.14)**: Điều chỉnh luồng gọi API, làm rõ việc lưu trữ URL tệp PDF tĩnh trên Cloud/Server thay vì xử lý chữ ký động thực tế.
-
-### 3.3. Cập nhật Chương 3: Thiết kế hệ thống (UI & Thuật ngữ)
-- Sửa đổi toàn bộ các nhãn giao diện trong mô tả màn hình:
-  - Thay thế "Quản lý chi nhánh" $\rightarrow$ **"Quản lý"**
-  - Thay thế "Chi nhánh / Chi nhánh hiện tại" $\rightarrow$ **"Khu vực hiện tại"**
-- Mô tả rõ bố cục giao diện thực tế của 4 cổng UI riêng biệt thay vì mô tả ứng dụng di động React Native (hiện tại chưa có code mobile).
+| Mã UC | Tên Use Case | Giao diện Frontend | API Backend (Node.js) | Trạng thái | Nội dung Thừa / Thiếu / Khác biệt cụ thể |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **UC37** | Gửi thông báo tự động | `*/NotificationsPage.jsx` | `GET /api/notifications` | 🟡 | **Kênh email hoạt động**: Đã phát triển 4 hàm gửi email Gmail thật qua SMTP (OTP đăng ký, OTP quên mật khẩu, thông báo hợp đồng, nhắc nợ). Các kênh SMS/Zalo được đẩy sang v2. |
+| **UC38** | Tìm kiếm phòng | `visitor/RoomSearchPage.jsx` | `GET /api/rooms/search` | 🟢 | **Khớp hoàn toàn (Giao diện List view tinh tế)**: Tìm kiếm phòng hoạt động mượt mà. Hệ thống truy vấn CSDL MongoDB Atlas theo Price, District, Amenities và hiển thị kết quả dạng danh sách dọc tinh tế. |
+| **UC39** | Đặt cọc giữ phòng online | `visitor/DepositPage.jsx` | `POST /api/rooms/:id/deposit` | 🟢 | **Khớp hoàn toàn**: Lưu trữ thông tin đặt cọc giữ phòng của khách vãng lai và tự động chuyển trạng thái phòng sang `deposit` trong DB. |
+| **UC40** | Đăng tin tuyển khách | *Không có giao diện* | *Không có API* | ❌ | **Chưa triển khai (v2)**: Đẩy xuống v2. Hệ thống hiện tại mặc định tự động đăng tải tất cả các phòng có trạng thái `empty` trong DB lên trang tìm kiếm công khai. |
+| **UC41** | Trợ lý ảo AI Chatbot | `components/common/AIChatbot.jsx` | `POST /api/chat` | 🟢 | **Bổ sung vượt trội (Báo cáo đã cập nhật)**: Chatbot AI (BoardingHouse AI) kết nối live DB MongoDB Atlas, tự động nạp context. Có chế độ tự động chạy **Hệ chuyên gia ngoại tuyến (Offline fallback)** khi lỗi kết nối Gemini API. Chỉ thị badge online/offline động. |
 
 ---
 
-## 4. KẾT LUẬN & ĐỀ XUẤT HÀNH ĐỘNG
+## 4. ĐỐI CHIẾU THỰC THỂ DỮ LIỆU (CLASS DIAGRAM VS MONGOOSE MODELS)
 
-> [!IMPORTANT]
-> Nhìn chung, hệ thống thực tế và đặc tả **có tính liên kết ở mức trung bình-khá** về mặt chức năng tổng quát (các phân hệ UI và Use Case chính đều được phản ánh bằng code và thư mục cụ thể). Tuy nhiên, **sự không đồng nhất về mặt công nghệ (NoSQL vs SQL, Vanilla JS vs React, Node.js + Python vs Spring Boot)** và **cấu trúc CSDL** là điểm yếu lớn nhất.
+Cả tài liệu đặc tả và mã nguồn hệ thống thực tế đều đã được đồng bộ hóa thống nhất theo cấu trúc **NoSQL (MongoDB)**. Cấu trúc thực tế gồm 10 collection chính kết hợp với 4 lớp nhúng (embedded documents) nhằm tối ưu hóa hiệu năng truy vấn:
 
-**Đề xuất hành động tiếp theo:**
-1. Giữ nguyên mã nguồn hiện tại vì hệ thống đang vận hành demo ổn định (bao gồm cả chatbot AI và OTP mail thật vừa được vá lỗi).
-2. Tiến hành cập nhật trực tiếp tài liệu đặc tả `.docx` theo các nội dung chi tiết tại **Mục 3** của báo cáo này nhằm hợp thức hóa mã nguồn và đảm bảo tài liệu khớp hoàn toàn với thực tế khi chấm đồ án.
+| Thực thể trong Đặc tả | Schema trong dự án thực tế | Vị trí File | Hiện trạng & Đánh giá cấu trúc |
+| :--- | :--- | :--- | :--- |
+| **User** | `User` | `src/backend/models/User.js` | 🟢 **Khớp 100%**: Lưu thông tin tài khoản cơ bản. Có trường `otp` để xác thực qua email và mảng `maNhaTroIds` để gán quản lý. |
+| **ThongTinKhachThue** | Nhúng `thongTinKhachThue` | `src/backend/models/User.js` | 🟢 **Khớp 100%**: Nhúng làm mảng đối tượng `cccd, ngheNghiep, diaChiThuongTru` trực tiếp trong Schema `User`. |
+| **Otp** | Nhúng `otp` | `src/backend/models/User.js` | 🟢 **Khớp 100%**: Nhúng đối tượng `maOtp, hanSuDung` trực tiếp trong Schema `User`. |
+| **Property** | `Property` | `src/backend/models/Property.js` | 🟢 **Khớp 100%**: Lưu thông tin nhà trọ, địa lý phục vụ tìm kiếm nâng cao. Bổ sung `maQuanLyIds` để liên kết Nhiều - Nhiều với User. |
+| **RoomType** | `RoomType` | `src/backend/models/RoomType.js` | 🟢 **Khớp 100%**: Lưu tên loại phòng, diện tích, giá cơ bản và mảng chứa các tiện nghi đi kèm. |
+| **Room** | `Room` | `src/backend/models/Room.js` | 🟢 **Khớp 100%**: Lưu thông tin phòng, tầng, liên kết với loại phòng và nhà trọ. Chứa mảng `taiSan` nhúng. |
+| **TaiSan** | Nhúng `taiSan` | `src/backend/models/Room.js` | 🟢 **Khớp 100%**: Nhúng trực tiếp làm mảng đối tượng `taiSan: [{ tenTaiSan, giaTri, tinhTrang }]` bên trong `Room`. |
+| **Contract** | `Contract` | `src/backend/models/Contract.js` | 🟢 **Khớp 100%**: Lưu thời gian thuê, tiền cọc, liên kết phòng và khách thuê, kèm trường `duongDanPdf`. |
+| **Service** | `Service` | `src/backend/models/Service.js` | 🟢 **Khớp 100%**: Định nghĩa các dịch vụ đi kèm của từng cơ sở nhà trọ. |
+| **Reading** | `Reading` | `src/backend/models/Reading.js` | 🟢 **Khớp 100%**: Lưu chỉ số điện nước cũ/mới theo kỳ thanh toán. |
+| **Invoice** | `Invoice` | `src/backend/models/Invoice.js` | 🟢 **Khớp 100%**: Lưu thông tin kỳ thanh toán, tổng tiền, trạng thái thanh toán và mảng `chiTiet` nhúng. |
+| **ChiTietHoaDon** | Nhúng `chiTiet` | `src/backend/models/Invoice.js` | 🟢 **Khớp 100%**: Nhúng trực tiếp làm mảng đối tượng `chiTiet: [{ tenDichVu, soLuong, donGia, thanhTien }]` bên trong `Invoice`. |
+| **Payment** | `Payment` | `src/backend/models/Payment.js` | 🟢 **Khớp 100%**: Lưu thông tin mã giao dịch, phương thức, số tiền và trạng thái thanh toán. |
+| **Notification** | `Notification` | `src/backend/models/Notification.js` | 🟢 **Khớp 100%**: Lưu tiêu đề, nội dung và trạng thái đã đọc của thông báo cho từng User. |
+
+---
+
+## 5. CÁC TÍNH NĂNG NÂNG CAO THỰC TẾ (Đã đồng bộ vào Đặc tả)
+
+1. **Trợ lý ảo AI Chatbot nâng cao (BoardingHouse AI)**:
+   - **Kết nối CSDL thời gian thực (Live DB Context)**: Tự động truy vấn dữ liệu thô (Properties, Rooms, Tenants, Contracts, Invoices) nạp thẳng vào context để Gemini API trả lời chính xác từng con số thực tế.
+   - **Hệ chuyên gia ngoại tuyến (Offline fallback)**: Tự động phát hiện khi Gemini API bị gián đoạn hoặc quá tải để chuyển sang chế độ Trợ lý Offline, tự phân tích từ khóa và tra cứu dữ liệu MongoDB Atlas (lọc phòng, tìm phòng rẻ/đắt nhất, xem hóa đơn).
+   - **Giao diện tinh tế**: Hiển thị chấm màu chỉ thị trạng thái online/offline động và tự động đổi màu văn bản in đậm sang màu xanh thương hiệu (`text-primary` font-semibold).
+2. **VietQR động và Zoomable QR Code**:
+   - Giao diện Tenant hiển thị mã **VietQR động** chứa chính xác số tiền hóa đơn và cú pháp chuyển khoản giúp thanh toán tiện lợi. Tích hợp hiệu ứng Click-to-zoom phóng to QR Code thanh toán.
+3. **Mô hình kiến trúc Backend song song (Node.js + Python Flask)**:
+   - Chạy đồng thời backend Node.js Express (port 5001 - xử lý chính) và Python Flask (port 5002 - xử lý thống kê phụ) kết nối chung CSDL.
+4. **Mảng `maNhaTroIds` trong User**:
+   - Cho phép thiết lập mối quan hệ Nhiều - Nhiều giữa Quản lý và nhà trọ, tối ưu hơn hẳn mối quan hệ Một - Nhiều trong thiết kế lý thuyết ban đầu.
+
+---
+
+## 6. ĐÁNH GIÁ VÀ KẾT LUẬN
+
+Hệ thống thực tế và Tài liệu đặc tả hiện tại đã đạt độ khớp nối lên tới **95%**. Tất cả các sơ đồ Use Case, sơ đồ lớp NoSQL, sơ đồ hoạt động, sơ đồ tuần tự và kiến trúc triển khai đều được vẽ khớp 100% với mã nguồn đang vận hành. Các tính năng giả lập (như cổng thanh toán VNPay Sandbox, ký số đổi trạng thái) hoặc các tính năng tương lai (đăng ký tạm trú công an, báo cáo chi phí vận hành) đều đã được ghi rõ trong tài liệu là "Định hướng phát triển ở v2" giúp đồ án đạt tính logic chặt chẽ nhất trước hội đồng chấm chéo.

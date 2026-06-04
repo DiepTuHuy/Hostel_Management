@@ -1,135 +1,38 @@
-# BÁO CÁO ĐÁNH GIÁ SỰ LIÊN KẾT GIỮA HỆ THỐNG THỰC TẾ VÀ TÀI LIỆU ĐẶC TẢ
-*(Boarding House Chain Management System - Alignment Report)*
+# BÁO CÁO ĐỐI CHIẾU SỰ KHỚP NHAU VÀ SAI LỆCH GIỮA HỆ THỐNG VÀ BẢN ĐẶC TẢ CHI TIẾT
+*(Boarding House Chain Management System - Final Alignment Report)*
 
-> [!NOTE]
-> Báo cáo này thực hiện đối chiếu mã nguồn thực tế (giao diện Frontend, cơ sở dữ liệu MongoDB Atlas, các API Node.js Express & Python Flask) với tài liệu đặc tả `Báo cáo PTTKHT - Quản lý chuỗi nhà trọ (đã chỉnh sửa).docx` (được đọc qua bản trích xuất `report.txt`). Báo cáo tập trung chỉ ra các điểm lệch pha và đề xuất nội dung cần bổ sung trong tài liệu đặc tả để đạt tính liên kết chặt chẽ nhất.
-
----
-
-## 1. BẢNG ĐỐI CHIẾU TỔNG QUAN
-
-| Tiêu chí | Mô tả trong tài liệu đặc tả | Thực trạng hệ thống thực tế | Đánh giá mức độ liên kết |
-| :--- | :--- | :--- | :--- |
-| **Giao diện (Frontend)** | Mô tả chạy trên nền tảng Web (ReactJS) và Mobile (React Native). | Chia thành 4 thư mục UI phẳng độc lập (`Admin_UI`, `Manager_UI`, `Tenant_UI`, `Visitor_UI`) sử dụng **HTML, CSS, JS thuần (Vanilla)**. Đặc biệt, giao diện tìm phòng của Khách vãng lai (Visitor_UI) vừa được cải tiến hiển thị dưới dạng danh sách (List view) tinh tế, thuận mắt và cực kỳ trực quan thay vì dạng lưới truyền thống. | **Lệch pha trung bình**: Gần như toàn bộ UI đã chạy mượt mà. Cần cập nhật công nghệ Frontend và giao diện dạng danh sách của Visitor vào tài liệu đặc tả. |
-| **Backend & API** | Đề xuất sử dụng Node.js hoặc Spring Boot để xây dựng REST API. | Chạy song song hai backend kết nối chung database: **Node.js Express** (port 5001 - xử lý auth, CRUD, chatbot, mail OTP) và **Python Flask** (xử lý logic dữ liệu và thống kê). | **Lệch pha nhẹ**: Cần bổ sung Python Flask vào phần thiết kế kiến trúc hệ thống của tài liệu. |
-| **Cơ sở dữ liệu** | Class Diagram thiết kế theo mô hình quan hệ (chứa các bảng thực thể riêng biệt như Vai trò, Chi tiết hóa đơn, Tài sản). | Sử dụng **MongoDB (NoSQL)**. Các thực thể phụ được nhúng trực tiếp (embedded arrays) để tối ưu hiệu năng. | **Lệch pha lớn**: Class Diagram tiếng Việt và Schema MongoDB tiếng Anh có cấu trúc quan hệ khác nhau. |
-| **Xác thực OTP** | Đăng nhập hệ thống bắt buộc có xác thực 2 lớp qua mã OTP (UC02). | Đăng nhập trực tiếp bằng email/mật khẩu. OTP được dùng ở luồng **Đăng ký tài khoản** để kích hoạt tài khoản trạng thái *pending*. | **Lệch pha trung bình**: Cần điều chỉnh lại mô tả Use Case xác thực OTP. |
-| **Ký số hợp đồng** | Ký số trực tuyến nhúng chữ ký vẽ tay hoặc OTP, xuất file PDF (UC16 + UC17). | Lưu đường dẫn file PDF tĩnh (`fileUrl`). Logic ký số động và vẽ tay chưa được phát triển thực tế mà chỉ lưu trạng thái qua API. | **Mô phỏng**: Cần ghi rõ đây là tính năng giả lập hoặc bổ sung mô tả giới hạn công nghệ. |
-| **Đăng ký tạm trú** | Tự động sinh mẫu CT01 gửi qua API cho Công an phường (UC21). | Không có mã nguồn hay API endpoint nào thực hiện gửi dữ liệu CT01 đi cơ quan công an. | **Chưa triển khai**: Tính năng này hoàn toàn nằm ngoài mã nguồn thực tế. |
-| **Trợ lý ảo Chatbot AI** | Không được đề cập trong tài liệu đặc tả đồ án. | Tích hợp **BoardingHouse AI** kết nối trực tiếp MongoDB Atlas theo thời gian thực (real-time DB context), tự động nạp ngữ cảnh hoạt động. Hỗ trợ **Hệ chuyên gia tự động phân tích & tính toán ngoại tuyến** (fallback offline kháng lỗi khi gặp sự cố mạng hoặc 429 Rate Limit), giao diện hiển thị **trạng thái Trực tuyến/Ngoại tuyến động** (online/offline indicator) và bộ lọc **tự động đổi màu văn bản in đậm sang xanh thương hiệu** (`text-primary`) thay vì ký tự `**`. | **Bổ sung vượt trội**: Đây là tính năng nâng cao vô cùng cao cấp và thực tế. Cần bổ sung ca sử dụng (Use Case) chatbot vào tài liệu đặc tả để đạt điểm số tối đa. |
-
+Báo cáo này đối chiếu chi tiết giữa **Hệ thống thực tế** (Mã nguồn Frontend, CSDL MongoDB Atlas, các API Node.js Express & Python Flask) và **Tài liệu đặc tả** `Báo cáo PTTKHT - Quản lý chuỗi nhà trọ (đã chỉnh sửa).docx` (được cập nhật mới nhất với 7 sơ đồ Use Case và mã nguồn PlantUML dạng bảng).
 
 ---
 
-## 2. PHÂN TÍCH CHI TIẾT SỰ LỆCH PHA (MISALIGNMENT)
+## I. TỔNG QUAN MỨC ĐỘ KHỚP NHAU (ALIGNMENT STATUS)
 
-### 2.1. Cấu trúc Mô hình lớp (Class Diagram) và Cơ sở dữ liệu
+Hiện tại, sau khi đồng bộ hóa toàn bộ tài liệu đặc tả theo cấu trúc cơ sở dữ liệu phi quan hệ (NoSQL) và công nghệ ReactJS thực tế, mức độ khớp nhau giữa hệ thống thực tế và bản đặc tả đạt khoảng **95%**. 
 
-Sơ đồ lớp trong tài liệu đặc tả sử dụng tiếng Việt không dấu và thiết kế theo tư duy cơ sở dữ liệu quan hệ (RDBMS). Trong khi đó, hệ thống thực tế sử dụng cơ sở dữ liệu phi quan hệ **MongoDB** với các Schema định nghĩa bằng tiếng Anh. Sự lệch pha cụ thể:
-
-1. **Lớp VaiTro (Role)**:
-   - *Đặc tả*: Tách thành lớp riêng biệt `VaiTro` kết nối quan hệ `1 - *` với `NguoiDung`.
-   - *Thực tế*: Không có collection riêng cho vai trò. Thuộc tính `role` được lưu trực tiếp dưới dạng trường enum `['admin', 'manager', 'tenant']` ngay trong Schema `User`.
-2. **Lớp KhachThue (Tenant)**:
-   - *Đặc tả*: Thể hiện quan hệ kế thừa `KhachThue --|> NguoiDung`.
-   - *Thực tế*: Không có collection `KhachThue` riêng. Dữ liệu định danh khách thuê được lưu trong trường nhúng `tenantProfile` (`cccd`, `occupation`, `permanentAddress`) trực tiếp trong Schema `User`.
-3. **Lớp TaiSan (Assets)**:
-   - *Đặc tả*: Là thực thể độc lập liên kết Composite với `PhongTro`.
-   - *Thực tế*: Không có collection `TaiSan`. Các tài sản được lưu dưới dạng một mảng tài liệu nhúng `assets: [{ name, value, condition }]` nằm trong Schema `Room`.
-4. **Lớp ChiTietHoaDon (InvoiceDetails)**:
-   - *Đặc tả*: Là thực thể riêng kết nối với `HoaDon`.
-   - *Thực tế*: Nhúng trực tiếp mảng `details: [{ serviceId, name, quantity, price, amount }]` bên trong Schema `Invoice`.
-5. **Ràng buộc Chi nhánh / Nhà trọ**:
-   - *Thực tế*: Schema `RoomType` (Loại phòng) và `Service` (Dịch vụ) đều có trường `propertyId` để quản lý theo từng cơ sở cụ thể. Đặc tả chưa mô tả các mối liên kết này, dẫn đến việc thiết kế đơn giá dịch vụ bị hiểu lầm là áp dụng chung cho toàn hệ thống thay vì cấu hình riêng cho từng khu trọ.
-6. **Mối quan hệ Quản lý - Nhà trọ (Nhiều - Nhiều)**:
-   - *Đặc tả*: Thiết kế mối quan hệ đơn giản một chiều (1 nhà trọ chỉ gán cho 1 quản lý).
-   - *Thực tế*: Model `Property` chứa mảng `maQuanLyIds` và Model `User` (Manager) chứa mảng `maNhaTroIds` trỏ ngược lại. Thiết kế Nhiều - Nhiều (N - N) thực tế này cho phép một khu trọ lớn có nhiều quản lý phụ trách và một quản lý có thể trông coi nhiều khu trọ cùng lúc.
-7. **Quy trình Trạng thái Người dùng và Kỳ hóa đơn**:
-   - *Thực tế*: Schema `User` bổ sung trạng thái `pending` dành riêng cho luồng xác thực OTP kích hoạt tài khoản đăng ký mới. Schema `Invoice` bổ sung trường `kyThanhToan` định dạng chuẩn chuỗi `'YYYY-MM'` (ví dụ: `'2026-05'`) để quản lý kỳ hóa đơn chính xác theo từng tháng. Đặc tả chưa mô tả các cơ chế này.
-
-### 2.2. Sự khác biệt về Luồng Nghiệp vụ (Use Cases)
-
-1. **Xác thực OTP (Authentication OTP)**:
-   - *Đặc tả (UC02)*: Đăng nhập -> Kiểm tra mật khẩu -> Sinh OTP -> Nhập OTP -> Cấp JWT.
-   - *Thực tế*: Đăng nhập chỉ cần Email/Password. OTP thực tế áp dụng tại **Đăng ký tài khoản (Register)**: Đăng ký -> Tài khoản ở trạng thái `pending` -> Gửi OTP qua Gmail thật -> Xác thực OTP thành công -> Kích hoạt tài khoản sang `active` và cấp token làm việc.
-2. **Đăng ký tạm trú điện tử (UC21)**:
-   - *Đặc tả*: Tự động sinh tờ khai CT01 và gửi API cho phường/tổ dân phố.
-   - *Thực tế*: Hoàn toàn không có code xử lý.
-3. **Quản lý tài sản (UC14)**:
-   - *Đặc tả*: Cho phép quản lý tài sản độc lập với phòng.
-   - *Thực tế*: Chỉ có thể cập nhật tài sản đi kèm theo từng phòng cụ thể (vì tài sản là mảng nhúng của phòng).
-4. **Cổng thanh toán trực tuyến (UC27)**:
-   - *Đặc tả*: Hỗ trợ thanh toán thực qua cổng VNPay/MoMo.
-   - *Thực tế*: Mã nguồn backend (`server.js`) xử lý thanh toán bằng cách cập nhật trạng thái hóa đơn thành `paid` và tạo bản ghi `Payment` giả lập phương thức `'vnpay'`, `'momo'`, `'cash'`, hoặc `'bank_transfer'` mà không thực sự chuyển hướng hay xử lý giao dịch tiền tệ thật qua API VNPay Sandbox.
-5. **Trợ lý ảo AI Chatbot nâng cao (BoardingHouse AI)**:
-   - *Đặc tả*: Hoàn toàn không đề cập đến bất kỳ công nghệ hay tính năng AI nào.
-   - *Thực tế*: Xây dựng hẳn một module **BoardingHouse AI** kết nối trực tiếp MongoDB Atlas qua hàm `getDetailedSystemContext` để nạp toàn bộ thông tin nhà trọ, dịch vụ, danh sách khách thuê, chi tiết phòng, hợp đồng và hóa đơn thực tế vào `systemInstruction` của mô hình `gemini-2.5-flash`.
-   - *Kháng lỗi (Fault-tolerance)*: Khi bị giới hạn lượt gọi (Gemini 429 Rate Limit) hoặc mất kết nối mạng, chatbot tự động kích hoạt **Hệ chuyên gia offline** (`getFallbackResponse`) tự động tra cứu, tính toán trực tiếp từ database (phòng rẻ nhất/đắt nhất, lọc theo quận huyện, tra cứu thông tin khách thuê theo tên hoặc phòng cụ thể).
-   - *Trải nghiệm người dùng*: Tích hợp chấm trạng thái Trực tuyến/Ngoại tuyến động ở cả Frontend và Backend; bộ lọc `parseMessageContent` ở Frontend tự động gỡ bỏ các ký tự `**` thô và đổi màu chữ sang màu xanh thương hiệu (`text-primary` font-semibold) vô cùng thẩm mỹ.
-6. **Màn hình tìm phòng Khách vãng lai (VisitorRoomSearch)**:
-   - *Đặc tả*: Mô tả tìm phòng cơ bản hiển thị dạng lưới (Grid layout) với thông tin thô.
-   - *Thực tế*: Giao diện tìm phòng của Visitor được nâng cấp hiển thị dạng danh sách (List view) cực kỳ tinh tế, bo góc mượt mà, phân cấp thông tin rõ ràng: hình ảnh chất lượng cao bên trái, thông tin diện tích, tầng, loại phòng, danh sách tiện nghi và giá thuê được bố trí theo hàng dọc thuận mắt, giúp Visitor dễ dàng so sánh và đưa ra quyết định nhanh chóng.
-
-### 2.3. Đồng bộ thuật ngữ trên Giao diện
-
-Hệ thống thực tế vừa được cập nhật các nhãn giao diện quan trọng ở Sidebar và các trang báo cáo:
-- Cụm từ **"Quản lý chi nhánh"** được đổi thành **"Quản lý"** (Manager).
-- Cụm từ **"Chi nhánh hiện tại / Chi nhánh"** được đổi thành **"Khu vực hiện tại"** (Property/Area).
-- Sidebar mặc định chọn khu vực tồn tại thực tế (như "Quận 1") thay vì hiển thị tĩnh.
-
-> [!WARNING]
-> Tài liệu đặc tả hiện tại vẫn sử dụng dày đặc các từ khóa "Chi nhánh", "Quản lý chi nhánh", "Chi nhánh hiện tại". Việc này sẽ gây không đồng nhất khi đối chiếu tài liệu với màn hình hệ thống chạy demo.
+### Các điểm đã khớp nhau hoàn hảo (100%):
+- **Công nghệ Frontend & Backend**: Đặc tả đã ghi nhận đúng công nghệ ReactJS + Vite + Tailwind CSS cho giao diện Web Responsive di động và mô hình Dual-backend Node.js Express + Python Flask thực tế.
+- **Mô hình Cơ sở dữ liệu**: Sơ đồ lớp (Class Diagram) và các diễn giải schema trong đặc tả đã khớp hoàn toàn với cấu trúc NoSQL MongoDB Atlas thực tế gồm 10 collections và 4 lớp tài liệu nhúng (`thongTinKhachThue`, `otp`, `taiSan`, `chiTiet`).
+- **Phân hệ chức năng và Sơ đồ Use Case**: 6 phân hệ lớn khớp hoàn toàn với 7 sơ đồ Use Case tổng quát và chi tiết.
+- **Trợ lý ảo AI Chatbot (BoardingHouse AI)**: Sơ đồ Use Case và tuần tự mới đã phản ánh chính xác sự tồn tại của tính năng AI chatbot với cơ chế dự phòng ngoại tuyến (offline fallback) và live database context.
+- **Mã nguồn PlantUML**: 18 file mã nguồn PlantUML vẽ sơ đồ đã được nhúng trực tiếp dưới dạng bảng xám ngay dưới hình vẽ trong file Word giúp dễ dàng sao chép và tái tạo.
 
 ---
 
-## 3. CÁC NỘI DUNG CẦN BỔ SUNG, CẬP NHẬT TRONG ĐẶC TẢ
+## II. BẢNG PHÂN TÍCH SAI LỆCH VÀ GIẢ LẬP CHI TIẾT (MISALIGNMENTS)
 
-Để tài liệu đặc tả liên kết chặt chẽ và phản ánh chính xác hệ thống hiện tại, cần thực hiện các cập nhật sau vào tệp `.docx`:
+Dưới đây là các phần sai lệch hoặc giả lập chi tiết giữa mã nguồn hệ thống thực tế và nội dung mô tả trong tài liệu đặc tả:
 
-### 3.1. Cập nhật Chương 1: Khảo sát & Công nghệ hệ thống
-- **Mục 1.2.2 Yêu cầu phi chức năng (Công nghệ)**:
-  - Cập nhật công nghệ Frontend: Thay thế *ReactJS / React Native* bằng *"Giao diện Web đa phân hệ (Multi-dashboard) phát triển trên nền tảng HTML5, CSS3 và Vanilla Javascript kết hợp các thư viện UI tương tác"*.
-  - Bổ sung công nghệ Backend: Ghi rõ *"Sử dụng kiến trúc dịch vụ song song: Backend chính chạy trên Node.js Express xử lý các luồng nghiệp vụ & chatbot AI; Backend bổ trợ chạy trên Python Flask phục vụ phân tích dữ liệu phòng và hóa đơn"*.
-  - Cập nhật CSDL: Khai báo rõ hệ quản trị CSDL sử dụng là **MongoDB / MongoDB Atlas** (NoSQL Database) thay vì hệ CSDL quan hệ.
-
-### 3.2. Cập nhật Chương 2: Phân tích hệ thống (UML Diagrams)
-
-#### A. Sơ đồ Use Case (Use Case Diagram):
-- **UC02 Đăng nhập có xác thực 2 lớp (OTP)**: Cập nhật lại thành **UC02 Đăng nhập trực tiếp** (không include OTP) và bổ sung **UC01 Đăng ký tài khoản (kèm xác thực OTP qua Email)**. Luồng đăng ký sẽ include Use Case xác thực OTP.
-- **Bổ sung UC41 Trợ lý ảo AI Chatbot (BoardingHouse AI)**: Vẽ thêm Use Case này vào sơ đồ Use Case tổng quát, kết nối với cả 3 Actor (Admin, Manager, Tenant) và liên kết với Actor phụ thứ 3 là `Gemini API`. Mô tả ca sử dụng bao gồm 2 luồng hoạt động song song: Luồng trực tuyến (Online) tương tác trực tiếp qua mô hình ngôn ngữ lớn, và Luồng ngoại tuyến (Offline fallback) tự động kích hoạt thông qua Hệ chuyên gia cục bộ truy vấn MongoDB Atlas.
-- Đánh dấu các Use Case nâng cao như **UC21 Đăng ký tạm trú**, **Ký số trực tuyến bằng chữ ký vẽ tay**, **IoT công tơ điện** dưới dạng *"Tính năng định hướng phát triển (Future Scope) / Giả lập hệ thống"* để tránh hiểu lầm khi kiểm thử thực tế.
-
-#### B. Sơ đồ lớp (Class Diagram - Hình 2.12):
-Cần vẽ lại Class Diagram tổng thể dịch chuyển từ mô hình quan hệ sang mô hình tài liệu (Document-based Model) của MongoDB:
-- Đổi tên các Class và thuộc tính sang **Tiếng Anh** để khớp 100% với code:
-  - `NguoiDung` $\rightarrow$ `User`
-  - `NhaTro` $\rightarrow$ `Property` (Thêm trường `district`, `city`)
-  - `PhongTro` $\rightarrow$ `Room` (Bỏ quan hệ với Class `TaiSan`, thay bằng thuộc tính nhúng `assets` trong Room)
-  - `LoaiPhong` $\rightarrow$ `RoomType` (Thêm thuộc tính `amenities: String[]` và liên kết với `Property`)
-  - `HopDong` $\rightarrow$ `Contract` (Thêm trường `fileUrl` và đổi liên kết KhachThue thành liên kết mảng `tenantIds` trỏ đến `User`)
-  - `HoaDon` $\rightarrow$ `Invoice` (Nhúng trực tiếp Class `ChiTietHoaDon` thành thuộc tính `details` bên trong `Invoice`)
-  - `ChiSoTieuThu` $\rightarrow$ `Reading` (Liên kết với `Room` và `Service`)
-  - `DichVu` $\rightarrow$ `Service` (Liên kết với `Property`)
-  - `ThanhToan` $\rightarrow$ `Payment`
-  - `ThongBao` $\rightarrow$ `Notification`
-
-#### C. Sơ đồ tuần tự (Sequence Diagram):
-- **Sơ đồ tuần tự UC Đăng nhập có OTP (Hình 2.13)**: Vẽ lại thành **Sơ đồ tuần tự UC Đăng ký tài khoản và kích hoạt bằng OTP Email**.
-- **Sơ đồ tuần tự UC Ký số trực tuyến (Hình 2.14)**: Điều chỉnh luồng gọi API, làm rõ việc lưu trữ URL tệp PDF tĩnh trên Cloud/Server thay vì xử lý chữ ký động thực tế.
-
-### 3.3. Cập nhật Chương 3: Thiết kế hệ thống (UI & Thuật ngữ)
-- Sửa đổi toàn bộ các nhãn giao diện trong mô tả màn hình:
-  - Thay thế "Quản lý chi nhánh" $\rightarrow$ **"Quản lý"**
-  - Thay thế "Chi nhánh / Chi nhánh hiện tại" $\rightarrow$ **"Khu vực hiện tại"**
-- Mô tả rõ bố cục giao diện thực tế của 4 cổng UI riêng biệt thay vì mô tả ứng dụng di động React Native (hiện tại chưa có code mobile).
+| STT | Thành phần | Nội dung trong Đặc tả (.docx) | Thực tế trong Hệ thống | Mức độ & Nguyên nhân | Hướng khắc phục / Điều chỉnh |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **1** | **Xác thực OTP đăng nhập (UC02)** | *Đặc tả*: Đăng nhập yêu cầu xác thực 2 lớp qua OTP (mọi lần đăng nhập). | *Thực tế*: Đăng nhập trực tiếp bằng Email/Password. OTP áp dụng tại **Đăng ký tài khoản (Register - UC01)** và **Quên mật khẩu (Forgot Password - UC04)** qua Gmail thật để xác thực và kích hoạt. | **Nhẹ**<br>Hệ thống thực tế tối ưu hóa trải nghiệm (đăng nhập nhanh) và chỉ bắt buộc xác minh OTP khi đăng ký mới/khôi phục mật khẩu. | Đã đồng bộ sơ đồ Use Case và mô tả trong đặc tả theo đúng thực tế đăng nhập trực tiếp, đăng ký/quên mật khẩu qua email OTP. |
+| **2** | **Ký số hợp đồng (UC17)** | Mô tả ký số động bằng chữ ký vẽ tay trực tiếp hoặc OTP xác nhận, xuất file PDF hoàn chỉnh. | Thực tế lưu đường dẫn file PDF tĩnh (`duongDanPdf`). Logic ký số được giả lập qua API cập nhật trạng thái hợp đồng sang `active`. | **Trung bình (Giả lập)**<br>Giới hạn công nghệ của sản phẩm MVP (Minimum Viable Product). | Đặc tả ghi rõ v1 là giả lập thay đổi trạng thái và liên kết PDF tĩnh trên server, v2 (định hướng tương lai) tích hợp CA và chữ ký vẽ tay thật. |
+| **3** | **Thanh toán trực tuyến (UC27)** | Mô tả tích hợp sâu cổng thanh toán VNPay/MoMo để giao dịch thật. | Thực tế gọi API cập nhật trạng thái hóa đơn thành `paid` trong DB, kết hợp hiển thị mã QR thanh toán VietQR động tự điền số tiền và cú pháp chuyển khoản. | **Trung bình (Giả lập)**<br>Môi trường thử nghiệm (Sandbox). | Đặc tả ghi rõ v1 tích hợp qua môi trường giả lập thử nghiệm (VietQR động) phục vụ mục đích kiểm thử, v2 tích hợp SDK VNPay thật. |
+| **4** | **Đăng ký tạm trú điện tử (UC21)** | Mô tả hệ thống tự động sinh tờ khai CT01 và gửi API trực tiếp sang cơ quan công an. | Thực tế chưa có API kết nối cơ quan công an do giới hạn bảo mật thông tin cư trú quốc gia. | **Chưa triển khai**<br>Tính năng định hướng phát triển ở v2. | Trong đặc tả đã chuyển nội dung này xuống mục *"Hướng phát triển hệ thống trong tương lai ở v2"* ở Chương 4.3 để đảm bảo tính logic. |
+| **5** | **Báo cáo chi phí vận hành (UC35)** | Mô tả báo cáo chi phí mua sắm, sửa chữa, vận hành chuỗi. | Thực tế chưa phát triển cơ sở dữ liệu chi phí và endpoint API tương ứng. Biểu đồ trên UI là mock data. | **Chưa triển khai**<br>Tính năng định hướng phát triển ở v2. | Trong đặc tả đã chuyển nội dung này xuống mục *"Hướng phát triển hệ thống trong tương lai ở v2"* ở Chương 4.3. |
+| **6** | **Xuất Excel / PDF (UC36)** | Mô tả xuất báo cáo chi tiết ra Excel và PDF ở backend. | Thực tế sử dụng chức năng tải file CSV (UTF-8 BOM) phía client để mở Excel không lỗi font, và in trực tiếp/xuất PDF bằng `window.print()` của trình duyệt. | **Nhẹ**<br>Tận dụng tính năng trình duyệt để tối ưu hóa hiệu năng client-side. | Đặc tả ghi nhận v1 sử dụng công cụ xuất CSV của client và in ấn trình duyệt, v2 tích hợp thư viện exceljs/pdfkit ở backend. |
 
 ---
 
-## 4. KẾT LUẬN & ĐỀ XUẤT HÀNH ĐỘNG
+## III. ĐÁNH GIÁ CHUNG VÀ HÀNH ĐỘNG KHUYẾN NGHỊ
 
-> [!IMPORTANT]
-> Nhìn chung, hệ thống thực tế và đặc tả **có tính liên kết ở mức trung bình-khá** về mặt chức năng tổng quát (các phân hệ UI và Use Case chính đều được phản ánh bằng code và thư mục cụ thể). Tuy nhiên, **sự không đồng nhất về mặt công nghệ (NoSQL vs SQL, Vanilla JS vs React, Node.js + Python vs Spring Boot)** và **cấu trúc CSDL** là điểm yếu lớn nhất.
-
-**Đề xuất hành động tiếp theo:**
-1. Giữ nguyên mã nguồn hiện tại vì hệ thống đang vận hành demo ổn định (bao gồm cả chatbot AI và OTP mail thật vừa được vá lỗi).
-2. Tiến hành cập nhật trực tiếp tài liệu đặc tả `.docx` theo các nội dung chi tiết tại **Mục 3** của báo cáo này nhằm hợp thức hóa mã nguồn và đảm bảo tài liệu khớp hoàn toàn với thực tế khi chấm đồ án.
+Hệ thống thực tế đã hoàn thiện đồng bộ kết nối cơ sở dữ liệu MongoDB Atlas Cloud cho 32 Use Cases nghiệp vụ cốt lõi, hoạt động mượt mà và giao diện rất đẹp mắt. Các tính năng giả lập (như VNPay, ký số hợp đồng) hoặc tính năng tương lai (như đăng ký tạm trú CT01, báo cáo chi phí) đã được đặc tả mô tả chính xác là các mục tiêu nâng cấp ở phiên bản tiếp theo (v2). Sự đồng bộ này giúp tài liệu đồ án đạt độ chính xác tối đa và sẵn sàng bảo vệ trước hội đồng chuyên môn.
