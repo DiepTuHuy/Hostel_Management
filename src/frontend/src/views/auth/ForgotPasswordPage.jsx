@@ -166,7 +166,7 @@ export default function ForgotPasswordPage() {
             </Link>
           </div>
 
-          <Card tilt={true} className="w-full">
+          <Card className="w-full">
             {!isOtpStep ? (
               <form onSubmit={handleSubmitEmail}>
                 <div className="text-center mb-6">
