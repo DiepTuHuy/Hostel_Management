@@ -1,0 +1,41 @@
+# Render Blueprint — Cấu hình triển khai tự động cho backend
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: boardinghouse-api
+    runtime: node
+    region: singapore
+    plan: free
+    rootDir: src/backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: MONGODB_URI
+        sync: false  # Nhập thủ công trên Render Dashboard
+      - key: JWT_SECRET
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: VNP_TMNCODE
+        sync: false
+      - key: VNP_HASHSECRET
+        sync: false
+      - key: VNP_URL
+        value: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+      - key: VNP_RETURNURL
+        value: https://boardinghouse.systems/tenant/payment-return

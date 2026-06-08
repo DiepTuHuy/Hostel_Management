@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../controllers/useAuth.jsx';
 import { contractService } from '../../services/contractService.js';
+import { API_HOST } from '../../services/api.js';
 import { formatCurrency, formatDate } from '../../utils/format.js';
 import { FileText, Eye, Info, Sparkles, RefreshCcw, X, Download } from 'lucide-react';
 
@@ -215,7 +216,7 @@ export default function ContractsPage() {
 
 // Handle real PDF download from backend API
 const handleDownloadPdf = (contract) => {
-  const url = `http://localhost:5001/api/contracts/${contract.id}/pdf`;
+  const url = `${API_HOST}/api/contracts/${contract.id}/pdf`;
   window.open(url, '_blank');
 };
 

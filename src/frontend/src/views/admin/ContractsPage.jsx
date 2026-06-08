@@ -6,6 +6,7 @@ import { useProperties } from '../../controllers/useProperties.js';
 import { CONTRACT_STATUS_META, Contract } from '../../models/Contract.js';
 import { formatDate, formatCurrency } from '../../utils/format.js';
 import { contractService, roomService } from '../../services/index.js';
+import { API_HOST } from '../../services/api.js';
 
 // Multi-step Create Contract Wizard component
 function CreateContractModal({ onClose, onSave }) {
@@ -543,7 +544,7 @@ export default function ContractsPage() {
 
   // Handle real PDF download from backend API
   const handleDownloadPdf = (contract) => {
-    const url = `http://localhost:5001/api/contracts/${contract.id}/pdf`;
+    const url = `${API_HOST}/api/contracts/${contract.id}/pdf`;
     window.open(url, '_blank');
 
     setToast({

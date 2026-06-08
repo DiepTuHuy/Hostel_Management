@@ -6,6 +6,7 @@ import { propertyService } from '../../services/propertyService.js';
 import { Invoice } from '../../models/Invoice.js';
 import { formatCurrency, formatPeriod, formatDate } from '../../utils/format.js';
 import { FileText, ChevronRight, Zap, CheckCircle2, AlertCircle, Calendar, CreditCard, ChevronDown, Check } from 'lucide-react';
+import { API_HOST } from '../../services/api.js';
 
 export default function InvoicesPage() {
   const { user } = useAuth();
@@ -241,7 +242,7 @@ export default function InvoicesPage() {
                 ) : (
                   <div className="flex gap-2">
                     <a
-                      href={`http://localhost:5001/api/invoices/${selectedInvoice.id}/pdf`}
+                      href={`${API_HOST}/api/invoices/${selectedInvoice.id}/pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-secondary btn-md rounded-xl font-bold px-4 py-2 flex items-center justify-center gap-1.5 hover:bg-gray-100 transition-colors border border-line text-ink"

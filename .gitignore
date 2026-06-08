@@ -8,6 +8,7 @@
 # 2. Allow only specified directories and README at the root
 !/.gitignore
 !/README.md
+!/render.yaml
 !/src/
 !/tests/
 !/docs/
@@ -27,10 +28,11 @@
 **/__pycache__/
 **/*.pyc
 
-# Local environment variables
+# Local environment variables (nhưng KHÔNG ignore .env.production — chỉ chứa URL công khai)
 **/.env
 **/.env.local
 **/.env.*.local
+!**/.env.production
 
 # IDE, OS, Temp and lock files
 **/.DS_Store

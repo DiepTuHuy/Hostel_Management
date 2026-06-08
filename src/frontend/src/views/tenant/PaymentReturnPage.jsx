@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle2, XCircle, AlertCircle, Calendar, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Card, Button } from '../../components/common';
 import { formatCurrency } from '../../utils/format.js';
+import { API_HOST } from '../../services/api.js';
 
 export default function PaymentReturnPage() {
   const [searchParams] = useSearchParams();
@@ -91,7 +92,7 @@ export default function PaymentReturnPage() {
                 </Button>
                 {invoiceId && (
                   <a
-                    href={`http://localhost:5001/api/invoices/${invoiceId}/pdf`}
+                    href={`${API_HOST}/api/invoices/${invoiceId}/pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 bg-gray-50 hover:bg-gray-100 border border-line rounded-xl font-bold flex items-center justify-center gap-1.5 text-xs text-ink transition-colors h-11"

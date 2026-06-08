@@ -6,6 +6,7 @@ import {
 import { Button, PageHeader, Card, CardHeader, Tabs, Toast } from '../../components/common';
 import { useProperties } from '../../controllers/useProperties.js';
 import { reportService } from '../../services/index.js';
+import { API_HOST } from '../../services/api.js';
 import { formatCurrency } from '../../utils/format.js';
 
 export default function ReportsPage() {
@@ -123,7 +124,7 @@ export default function ReportsPage() {
     setExportingPdf(true);
     try {
       const year = period === '2025' ? 2025 : 2026;
-      const url = `http://localhost:5001/api/reports/pdf?type=${tab}&branch=${branch}&period=${year}`;
+      const url = `${API_HOST}/api/reports/pdf?type=${tab}&branch=${branch}&period=${year}`;
       window.open(url, '_blank');
       setToast({ message: 'Đang tải báo cáo PDF...', type: 'success' });
     } catch (err) {

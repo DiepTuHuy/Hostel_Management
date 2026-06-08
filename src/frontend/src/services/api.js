@@ -7,6 +7,9 @@ import axios from 'axios';
 
 export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
+// API_HOST — base URL không có hậu tố /api, dùng cho PDF download URLs
+export const API_HOST = BASE_URL.replace(/\/api\/?$/, '');
+
 export const api = axios.create({
   baseURL: BASE_URL,
   timeout: 15000,
