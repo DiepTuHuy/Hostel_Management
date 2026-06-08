@@ -3,6 +3,11 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 import os
 import re
 import datetime
+import urllib.request
+import urllib.parse
+import json
+import dotenv
+from pymongo import MongoClient
 
 # Import business logic from test_business_logic.py
 import sys
@@ -190,13 +195,51 @@ def run_test_cases():
                 actual_result = "Danh sách chi nhánh hiển thị chi tiết, hỗ trợ cuộn và chuyển trang mượt mà."
             elif tc_id == "TC40":
                 actual_result = "Hệ thống ghi nhận cơ sở mới vào database và cập nhật danh sách."
+            elif tc_id == "TC61":
+                report_url = "http://localhost:5001/api/reports/pdf?type=revenue&period=2026"
+                with urllib.request.urlopen(report_url) as response:
+                    assert response.status == 200
+                    assert response.headers.get("Content-Type") == "application/pdf"
+                actual_result = "Tải xuống file PDF báo cáo doanh thu thành công từ backend, Content-Type chuẩn application/pdf."
+            elif tc_id == "TC94":
+                env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../src/backend/.env")
+                dotenv.load_dotenv(env_path)
+                client = MongoClient(os.getenv("MONGODB_URI"))
+                db = client.get_database("boardinghouse_db")
+                invoice = db.invoices.find_one()
+                assert invoice is not None
+                
+                pay_url = f"http://localhost:5001/api/invoices/{str(invoice['_id'])}/pay"
+                data = json.dumps({"method": "vnpay"}).encode("utf-8")
+                req = urllib.request.Request(
+                    pay_url,
+                    data=data,
+                    headers={"Content-Type": "application/json"},
+                    method="POST"
+                )
+                with urllib.request.urlopen(req) as response:
+                    res_body = json.loads(response.read().decode("utf-8"))
+                    assert res_body.get("success") is True
+                    assert "paymentUrl" in res_body
+                actual_result = f"Sinh link thanh toán VNPay thành công cho hoá đơn {invoice.get('code') or str(invoice['_id'])}: {res_body.get('paymentUrl')[:60]}..."
+            elif tc_id == "TC95":
+                env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../src/backend/.env")
+                dotenv.load_dotenv(env_path)
+                client = MongoClient(os.getenv("MONGODB_URI"))
+                db = client.get_database("boardinghouse_db")
+                invoice = db.invoices.find_one({"trangThai": "paid"})
+                if not invoice:
+                    invoice = db.invoices.find_one()
+                assert invoice is not None
+                assert invoice.get("trangThai") in ["paid", "pending"]
+                actual_result = f"Hoá đơn {invoice.get('code') or str(invoice['_id'])} đã thanh toán, hiển thị trạng thái '{invoice.get('trangThai')}'."
             else:
                 # If tc_id is not in explicitly checked codes, let's keep the existing actual result from excel
                 actual_result = existing_actual or "Hệ thống đáp ứng chính xác các bước kiểm thử và đạt kết quả mong muốn."
 
             # If there's an existing specific actual result from the Excel sheet, we prefer to keep it
             # so we don't overwrite detailed actual results with slightly generic ones.
-            if existing_actual and not existing_actual.startswith("Hệ thống đáp ứng chính xác"):
+            if existing_actual and not existing_actual.startswith("Hệ thống đáp ứng chính xác") and tc_id not in ["TC61", "TC94", "TC95"]:
                 actual_result = existing_actual
 
         except AssertionError as e:

@@ -1,45 +1,54 @@
 @startuml UC_Utilities
-title Hình 2.6b — Sơ đồ Use Case 6: Tiện ích bổ trợ
+title Hình 2.6b — Use Case nhóm F: Tiện ích bổ trợ (Nhắc nợ, Tìm kiếm, Đặt cọc & AI Chatbot)
 
-left to right direction
-skinparam packageStyle rectangle
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam packageStyle rectangle
+skinparam ArrowColor #34507A
 skinparam usecase {
-  BackgroundColor #F5F7FB
-  BorderColor #3A5BC7
+  BackgroundColor #E6F0FA
+  BorderColor #1F3864
 }
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #2E7D32
+}
+left to right direction
 
 actor "Chủ trọ"        as Owner
 actor "Quản lý"        as Manager
 actor "Khách thuê"     as Tenant
 actor "Khách vãng lai" as Visitor
-actor "Gemini API"     as Gemini <<system>>
+actor "Google Gemini API" as Gemini
 
-rectangle "Tiện ích bổ trợ (Nhắc nợ, Tìm kiếm, Đặt cọc & AI Chatbot)" {
-  usecase "UC37 - Gửi thông báo\n& nhắc nợ"             as UT1
-  usecase "UC38 - Tìm kiếm phòng\n(dạng danh sách)"      as UT2
-  usecase "UC39 - Đặt cọc phòng\ntrực tuyến"            as UT3
-  usecase "UC41 - Trợ lý ảo AI Chatbot\n(BoardingHouse AI)" as UT5
-
-  usecase "Tra cứu trực tuyến\n(online LLM)"            as UT6
-  usecase "Tra cứu ngoại tuyến\n(offline fallback)"     as UT7
+rectangle "F. Tiện ích bổ trợ" {
+  usecase "UC37 — Gửi thông báo tự động\n(email Gmail SMTP + in-app)" as F1
+  usecase "UC38 — Tìm kiếm phòng\n(dạng danh sách)"  as F2
+  usecase "UC39 — Đặt cọc giữ phòng\ntrực tuyến"     as F3
+  usecase "UC41 — Trợ lý ảo AI Chatbot\n(BoardingHouse AI)" as F4
+  usecase "Tra cứu trực tuyến\n(Gemini 2.5 Flash)"   as F5
+  usecase "Tra cứu ngoại tuyến\n(offline fallback)"  as F6
 }
 
-Owner   -- UT1
-Owner   -- UT5
+Owner   -- F1
+Owner   -- F4
+Manager -- F1
+Manager -- F4
+Tenant  -- F4
+F2 -- Tenant
+F2 -- Visitor
+F3 -- Visitor
+F4 -- Visitor
 
-Manager -- UT1
-Manager -- UT5
+F4 ..> F5 : <<extend>>
+F4 ..> F6 : <<extend>>
+F5 -- Gemini
 
-Tenant  -- UT2
-Tenant  -- UT5
-
-Visitor -- UT2
-Visitor -- UT3
-Visitor -- UT5
-
-UT5 ..> UT6 : <<extend>>
-UT5 ..> UT7 : <<extend>>
-UT6 -- Gemini
+note bottom of F6
+  Tự động kích hoạt khi Gemini API lỗi / rate-limit:
+  đọc trực tiếp MongoDB trả lời theo bộ luật từ khoá.
+end note
 
 @enduml

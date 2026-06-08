@@ -1,59 +1,59 @@
 @startuml Act_Contract_Sign
-title Hình 2.9 — Sơ đồ hoạt động UC Lập hợp đồng & Ký số
+title Hình 2.9 — Hoạt động: Lập hợp đồng & Ký số (giả lập)
 
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam ArrowColor #34507A
 skinparam activity {
   BackgroundColor #E6F5EA
   BorderColor #2E7D32
   DiamondBackgroundColor #FFF6E5
   DiamondBorderColor #E59300
+  StartColor #2E7D32
+  EndColor #AD1457
 }
 
-|Quản lý|
+|#ECF7EF|Quản lý|
 start
-:Vào /manager/contracts;
-:Nhấn "Tạo hợp đồng mới";
-:Chọn phòng trống (Room.trangThai='empty');
+:Vào /manager/contracts → "Tạo hợp đồng";
+:Chọn phòng trống (trangThai='empty');
 
-|Frontend|
-if (Khách thuê đã có hồ sơ?) then (Có)
+|#EAF1FB|Frontend|
+if (Khách đã có hồ sơ?) then (có)
   :Chọn từ danh sách khách thuê;
-else (Chưa)
-  :Nhập thông tin mới\n(họ tên, email, SĐT, CCCD);
+else (chưa)
+  :Nhập khách mới\n(họ tên, email, SĐT, CCCD);
 endif
-:Nhập điều khoản:\nNgày bắt đầu/kết thúc, tiền cọc, giá thuê,\ndịch vụ kèm theo;
+:Nhập điều khoản\n(ngày bắt đầu/kết thúc, cọc, giá, dịch vụ);
 :Nhấn "Tạo hợp đồng";
 
-|Backend Express|
+|#EAF1FB|Backend Express|
 :POST /api/contracts;
-if (Khách chưa có User trong DB?) then (Có)
-  :Tạo User mới với\nmật khẩu mặc định "123456";
+if (Khách chưa có User?) then (có)
+  :Tạo User mới\n(mật khẩu mặc định "123456");
 endif
-:Tạo Contract\n(trạng thái = "active",\nduongDanPdf = URL PDF);
-:Cập nhật Room.trangThai = "rented"\n+ currentTenantId = tenantId;
-:Tăng Property.soPhongDaThue +1;
-:Gửi email\nsendContractNotificationEmail()\nvới chi tiết hợp đồng cho khách;
+:Tạo Contract (trangThai="active",\nduongDanPdf = URL PDF);
+:Room.trangThai="rented"\n+ currentTenantId;
+:Property.soPhongDaThue +1;
+:Gửi email thông báo hợp đồng\n(sendContractNotificationEmail);
 
-|Khách thuê|
-:Nhận email + link;
+|#ECF7EF|Khách thuê|
 :Đăng nhập /tenant/contract;
 :Xem PDF + điều khoản;
-if (Đồng ý?) then (Có)
+if (Đồng ý?) then (có)
   :Nhấn "Ký số";
   :PATCH /api/contracts/:id/sign;
-
-  |Backend Express|
-  :Cập nhật Contract = "active";
-  :(v1) Lưu duongDanPdf tĩnh;
-  :(v2 - định hướng) Nhúng chữ ký\nvẽ tay hoặc CA vào PDF;
-  :Sinh biên lai cọc;
-
-  |Quản lý|
-  :Nhận thông báo đã ký;
+  |#EAF1FB|Backend Express|
+  :Contract.trangThai = "active"\n(v1: chỉ đổi trạng thái,\nKHÔNG yêu cầu OTP);
+  note right
+    v2 (định hướng): nhúng chữ ký
+    vẽ tay / CA vào file PDF.
+  end note
   stop
-else (Từ chối)
-  :Contract → "cancelled";
-  :Room → "empty";
+else (từ chối)
+  :Contract → "cancelled"\nRoom → "empty";
   stop
 endif
 

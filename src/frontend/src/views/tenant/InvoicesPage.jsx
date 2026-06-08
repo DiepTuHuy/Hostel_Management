@@ -74,6 +74,10 @@ export default function InvoicesPage() {
     try {
       const response = await invoiceService.pay(selectedInvoice.id, payMethod);
       setPaying(false);
+      if (response && response.paymentUrl) {
+        window.location.href = response.paymentUrl;
+        return;
+      }
       if (response && response.invoice) {
         const updatedInvoice = new Invoice(response.invoice);
         setSelectedInvoice(updatedInvoice);
@@ -235,9 +239,19 @@ export default function InvoicesPage() {
                     Đang chờ xác nhận
                   </span>
                 ) : (
-                  <span className="text-xs text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200 font-semibold">
-                    Đã thanh toán
-                  </span>
+                  <div className="flex gap-2">
+                    <a
+                      href={`http://localhost:5001/api/invoices/${selectedInvoice.id}/pdf`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-secondary btn-md rounded-xl font-bold px-4 py-2 flex items-center justify-center gap-1.5 hover:bg-gray-100 transition-colors border border-line text-ink"
+                    >
+                      Tải PDF Hóa đơn
+                    </a>
+                    <span className="text-xs text-green-600 bg-green-50 px-3 py-2 rounded-lg border border-green-200 font-semibold flex items-center justify-center">
+                      Đã thanh toán
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
@@ -322,6 +336,16 @@ export default function InvoicesPage() {
                       <div className="flex justify-between"><span className="text-ink-muted">Tổng cộng:</span> <span className="font-bold text-primary">{formatCurrency(selectedInvoice.total)}</span></div>
                     </div>
                   </>
+                ) : payMethod === 'vnpay' ? (
+                  <>
+                    <p className="text-xs text-ink-muted leading-relaxed">
+                      Hệ thống sẽ chuyển hướng bạn sang cổng thanh toán VNPay Sandbox để thanh toán hóa đơn an toàn.
+                    </p>
+                    <div className="border border-line rounded-xl p-3 bg-gray-50 text-xs space-y-2">
+                      <div className="flex justify-between"><span className="text-ink-muted">Hoá đơn kỳ:</span> <span className="font-semibold text-ink">{formatPeriod(selectedInvoice.period)}</span></div>
+                      <div className="flex justify-between"><span className="text-ink-muted">Tổng cộng:</span> <span className="font-bold text-primary">{formatCurrency(selectedInvoice.total)}</span></div>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <p className="text-xs text-ink-muted leading-relaxed">
@@ -329,12 +353,12 @@ export default function InvoicesPage() {
                     </p>
                     <div className="flex flex-col items-center justify-center p-3 bg-gray-50 border border-line rounded-2xl space-y-2">
                       <img
-                        src={
-                          properties.find(p => p.id === selectedInvoice.propertyId)?.qrCodeUrl ||
-                          `https://img.vietqr.io/image/970422-000000000000-compact.jpg?amount=${selectedInvoice.total}&addInfo=${encodeURIComponent(`Thanh toan hoa don ${selectedInvoice.code}`)}`
-                        }
-                        alt="QR Thanh toán"
-                        className="max-h-44 object-contain rounded-xl border border-line shadow-sm bg-white p-2"
+                         src={
+                           properties.find(p => p.id === selectedInvoice.propertyId)?.qrCodeUrl ||
+                           `https://img.vietqr.io/image/970422-000000000000-compact.jpg?amount=${selectedInvoice.total}&addInfo=${encodeURIComponent(`Thanh toan hoa don ${selectedInvoice.code}`)}`
+                         }
+                         alt="QR Thanh toán"
+                         className="max-h-44 object-contain rounded-xl border border-line shadow-sm bg-white p-2"
                       />
                       <div className="text-center text-[10px] space-y-1 text-ink-muted">
                         <div>Ngân hàng: <strong className="text-ink">MB Bank</strong></div>
@@ -355,6 +379,8 @@ export default function InvoicesPage() {
                     <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : payMethod === 'cash' ? (
                     'Xác nhận thanh toán tiền mặt'
+                  ) : payMethod === 'vnpay' ? (
+                    'Chuyển sang thanh toán VNPay'
                   ) : (
                     <>
                       <Check size={16} /> Tôi đã chuyển khoản thành công

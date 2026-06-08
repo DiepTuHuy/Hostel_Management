@@ -1,55 +1,54 @@
 @startuml Act_Payment
-title Hình 2.11 — Sơ đồ hoạt động UC Thanh toán hoá đơn
+title Hình 2.11 — Hoạt động: Thanh toán hoá đơn (Online giả lập / Chuyển khoản / Tiền mặt)
 
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam ArrowColor #34507A
 skinparam activity {
   BackgroundColor #E0F2F1
   BorderColor #00695C
   DiamondBackgroundColor #FFF6E5
   DiamondBorderColor #E59300
+  StartColor #2E7D32
+  EndColor #AD1457
 }
 
-|Khách thuê|
+|#E8F6F5|Khách thuê|
 start
 :Đăng nhập /tenant/invoices;
 :Chọn hoá đơn cần thanh toán;
-:Mở modal "Chọn phương thức thanh toán";
+:Mở modal "Chọn phương thức";
 
 switch (Phương thức?)
-case (VNPay / MoMo - Online)
-  |Frontend|
-  :POST /api/invoices/:id/pay\nbody = {method: 'vnpay'};
-  |Backend Express|
+case (Online — giả lập)
+  |#EAF1FB|Frontend|
+  :Hiển thị VietQR động\n(số tiền + nội dung CK);
+  :POST /api/invoices/:id/pay\n{method:'vnpay'};
+  |#E6F2F1|Backend Express|
+  :Invoice.trangThai = 'paid';
+  :Tạo Payment {phuongThuc:'vnpay',\nsoTien, trangThai:'success'};
   note right
-    v1 (giả lập): chỉ cập nhật
-    Invoice.trangThai = 'paid'
-    + tạo Payment record.
-    v2 (định hướng): chuyển hướng
-    VNPay HMAC-SHA512 + IPN.
+    v1 (giả lập): chỉ đánh dấu đã thanh toán
+    + ghi Payment. v2: tích hợp VNPay/MoMo
+    thật (HMAC-SHA512 + IPN callback).
   end note
-  :Cập nhật Invoice = paid;
-  :Tạo Payment {phuongThuc, soTien, success};
-  :Trả {success: true};
-case (Bank Transfer)
-  :Khách quét QR Property.qrCodeUrl;
-  :Khách gửi biên lai cho Quản lý;
+case (Chuyển khoản — VietQR)
+  |#E8F6F5|Khách thuê|
+  :Quét VietQR, chuyển khoản\nqua app ngân hàng;
+  :Báo Quản lý đối soát;
 case (Tiền mặt)
-  |Quản lý|
+  |#FFF9EC|Quản lý|
   :Vào /manager/cash-receipts;
-  :Chọn hoá đơn pending;
-  :Nhấn "Xác nhận thu";
-  |Backend Express|
+  :Chọn hoá đơn → "Xác nhận thu";
+  |#E6F2F1|Backend Express|
   :POST /api/invoices/:id/pay-cash;
-  :Cập nhật Invoice = paid;
-  :Tạo Payment {phuongThuc: 'cash'};
+  :Invoice = 'paid'\n+ Payment {phuongThuc:'cash'};
 endswitch
 
-|Frontend|
-:Hiển thị Toast & biên lai điện tử;
-
-|Backend Express|
-:(Định hướng v2)\nGửi email biên lai +\nthông báo Telegram cho khách;
-
+|#EAF1FB|Frontend|
+:Hiển thị Toast + biên lai điện tử;
 stop
 
 @enduml

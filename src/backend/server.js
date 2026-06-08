@@ -21,6 +21,8 @@ import { Service } from './models/Service.js';
 import { Reading } from './models/Reading.js';
 import { Expense } from './models/Expense.js';
 import { emailService } from './services/emailService.js';
+import vnpayService from './services/vnpayService.js';
+import pdfReportService from './services/pdfReportService.js';
 
 dotenv.config();
 
@@ -814,12 +816,21 @@ app.post('/api/invoices/:id/pay', async (req, res) => {
       return res.json({ success: true, message: "Yêu cầu thanh toán tiền mặt đã được gửi lên hệ thống. Đang chờ Quản lý xác nhận.", status: 'pending_cash' });
     }
 
+    if (method === 'vnpay') {
+      const paymentUrl = vnpayService.createPaymentUrl(req, {
+        orderId: invoice._id.toString(),
+        amount: invoice.tongTien,
+        orderInfo: `Thanh toan hoa don phong tro ky ${invoice.kyThanhToan}`
+      });
+      return res.json({ success: true, paymentUrl, message: "Tạo link thanh toán VNPay thành công!" });
+    }
+
     invoice.trangThai = 'paid';
     await invoice.save();
 
     await Payment.create({
       maHoaDonId: invoice._id,
-      phuongThuc: method || 'vnpay',
+      phuongThuc: method || 'bank_transfer',
       soTien: invoice.tongTien,
       trangThai: 'success'
     });
@@ -830,6 +841,101 @@ app.post('/api/invoices/:id/pay', async (req, res) => {
     res.status(500).json({ message: "Lỗi hệ thống." });
   }
 });
+
+// 6.3. VNPay Return Callback
+app.get('/api/payments/vnpay-return', async (req, res) => {
+  try {
+    const queryParams = req.query;
+    const isValid = vnpayService.verifyCallback(queryParams);
+    if (!isValid) {
+      return res.redirect(`${process.env.VNP_RETURNURL}?status=error&message=Chu%20ky%20khong%20hop%20le`);
+    }
+
+    const orderId = queryParams['vnp_TxnRef'];
+    const responseCode = queryParams['vnp_ResponseCode'];
+    const amount = Number(queryParams['vnp_Amount']) / 100;
+
+    if (responseCode === '00') {
+      if (mongoose.Types.ObjectId.isValid(orderId)) {
+        const invoice = await Invoice.findById(orderId);
+        if (invoice) {
+          if (invoice.trangThai !== 'paid') {
+            invoice.trangThai = 'paid';
+            invoice.paymentMethod = 'vnpay';
+            await invoice.save();
+
+            await Payment.create({
+              maHoaDonId: invoice._id,
+              phuongThuc: 'vnpay',
+              soTien: amount,
+              trangThai: 'success'
+            });
+            console.log(`[VNPay] Thanh toan thanh cong hoa don: ${invoice.code || orderId}`);
+          }
+          return res.redirect(`${process.env.VNP_RETURNURL}?status=success&amount=${amount}&invoiceId=${invoice._id}&invoiceCode=${invoice.code || orderId}`);
+        }
+      }
+      return res.redirect(`${process.env.VNP_RETURNURL}?status=error&message=Khong%20tim%20thay%20hoa%20don`);
+    } else {
+      return res.redirect(`${process.env.VNP_RETURNURL}?status=cancel&code=${responseCode}`);
+    }
+  } catch (error) {
+    console.error("Lỗi callback VNPay Return:", error.message);
+    res.redirect(`${process.env.VNP_RETURNURL}?status=error&message=Loi%20he%20thong`);
+  }
+});
+
+// 6.4. VNPay IPN Callback (Bất đồng bộ server-to-server)
+app.get('/api/payments/vnpay-ipn', async (req, res) => {
+  try {
+    const queryParams = req.query;
+    const isValid = vnpayService.verifyCallback(queryParams);
+    if (!isValid) {
+      return res.status(200).json({ RspCode: '97', Message: 'Fail checksum' });
+    }
+
+    const orderId = queryParams['vnp_TxnRef'];
+    const responseCode = queryParams['vnp_ResponseCode'];
+    const amount = Number(queryParams['vnp_Amount']) / 100;
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(200).json({ RspCode: '01', Message: 'Order not found' });
+    }
+
+    const invoice = await Invoice.findById(orderId);
+    if (!invoice) {
+      return res.status(200).json({ RspCode: '01', Message: 'Order not found' });
+    }
+
+    if (invoice.tongTien !== amount) {
+      return res.status(200).json({ RspCode: '04', Message: 'Invalid amount' });
+    }
+
+    if (invoice.trangThai === 'paid') {
+      return res.status(200).json({ RspCode: '02', Message: 'Order already confirmed' });
+    }
+
+    if (responseCode === '00') {
+      invoice.trangThai = 'paid';
+      invoice.paymentMethod = 'vnpay';
+      await invoice.save();
+
+      await Payment.create({
+        maHoaDonId: invoice._id,
+        phuongThuc: 'vnpay',
+        soTien: amount,
+        trangThai: 'success'
+      });
+      return res.status(200).json({ RspCode: '00', Message: 'Confirm success' });
+    } else {
+      return res.status(200).json({ RspCode: '00', Message: 'Confirm success (Transaction failed)' });
+    }
+  } catch (error) {
+    console.error("Lỗi callback VNPay IPN:", error.message);
+    res.status(200).json({ RspCode: '99', Message: 'System Error' });
+  }
+});
+
 
 // 7. Lấy danh sách thông báo
 app.get('/api/notifications', async (req, res) => {
@@ -2481,6 +2587,300 @@ setTimeout(async () => {
   autoGenerateInvoicesForActiveContracts();
 }, 5000); // Sau 5 giây
 setInterval(autoGenerateInvoicesForActiveContracts, 24 * 60 * 60 * 1000); // Lặp lại mỗi 24 giờ
+
+// Endpoint xuất PDF Hợp đồng thật
+app.get('/api/contracts/:id/pdf', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
+    }
+    const contractDoc = await Contract.findById(req.params.id).populate('maPhongId').populate('maKhachThueIds');
+    if (!contractDoc) return res.status(404).json({ message: "Không tìm thấy hợp đồng." });
+    const contract = mapContract(contractDoc);
+    pdfReportService.streamContractPdf(res, contract);
+  } catch (error) {
+    console.error("Lỗi xuất PDF hợp đồng:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi xuất PDF hợp đồng." });
+  }
+});
+
+// Endpoint xuất PDF Hóa đơn thật
+app.get('/api/invoices/:id/pdf', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy hóa đơn." });
+    }
+    const invoiceDoc = await Invoice.findById(req.params.id)
+      .populate({
+        path: 'maHopDongId',
+        populate: {
+          path: 'maKhachThueIds',
+          select: 'hoTen'
+        }
+      })
+      .populate('maPhongId');
+    if (!invoiceDoc) return res.status(404).json({ message: "Không tìm thấy hóa đơn." });
+    const invoice = mapInvoice(invoiceDoc);
+    pdfReportService.streamInvoicePdf(res, invoice);
+  } catch (error) {
+    console.error("Lỗi xuất PDF hóa đơn:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi xuất PDF hóa đơn." });
+  }
+});
+
+// Endpoint xuất PDF Báo cáo thống kê thật (Doanh thu, Lấp đầy, Công nợ, Chi phí)
+app.get('/api/reports/pdf', async (req, res) => {
+  try {
+    const { type, branch, period = '2026' } = req.query;
+    if (!type) {
+      return res.status(400).json({ message: "Thiếu loại báo cáo (type)." });
+    }
+
+    let subtitle = '';
+    if (branch && mongoose.Types.ObjectId.isValid(branch)) {
+      const prop = await Property.findById(branch);
+      if (prop) subtitle += `Cơ sở: ${prop.tenNhaTro} | `;
+    } else {
+      subtitle += 'Tất cả chi nhánh | ';
+    }
+    subtitle += `Kỳ thống kê: ${period === '12 tháng gần nhất' ? '12 tháng gần nhất' : 'Năm ' + period}`;
+
+    if (type === 'revenue') {
+      const roomFilter = {};
+      if (branch && mongoose.Types.ObjectId.isValid(branch)) roomFilter.maNhaTroId = branch;
+
+      const invoicesQuery = { trangThai: 'paid' };
+      if (branch && mongoose.Types.ObjectId.isValid(branch)) {
+        const roomIds = await Room.find(roomFilter).distinct('_id');
+        invoicesQuery.maPhongId = { $in: roomIds };
+      }
+      const invoices = await Invoice.find(invoicesQuery).lean();
+      
+      const pendingQuery = { trangThai: { $in: ['pending', 'overdue'] } };
+      if (branch && mongoose.Types.ObjectId.isValid(branch)) {
+        const roomIds = await Room.find(roomFilter).distinct('_id');
+        pendingQuery.maPhongId = { $in: roomIds };
+      }
+      const pendingInvoices = await Invoice.find(pendingQuery).lean();
+
+      const monthlyRevenue = Array.from({ length: 12 }, (_, i) => ({
+        month: `Tháng ${i + 1}`,
+        revenue: 0,
+        debt: 0
+      }));
+
+      const filterYear = period === '2025' ? '2025' : '2026';
+
+      for (const inv of invoices) {
+        if (inv.kyThanhToan && inv.kyThanhToan.startsWith(filterYear)) {
+          const monthIndex = parseInt(inv.kyThanhToan.split('-')[1]) - 1;
+          if (monthIndex >= 0 && monthIndex < 12) {
+            monthlyRevenue[monthIndex].revenue += inv.tongTien;
+          }
+        }
+      }
+
+      for (const inv of pendingInvoices) {
+        if (inv.kyThanhToan && inv.kyThanhToan.startsWith(filterYear)) {
+          const monthIndex = parseInt(inv.kyThanhToan.split('-')[1]) - 1;
+          if (monthIndex >= 0 && monthIndex < 12) {
+            monthlyRevenue[monthIndex].debt += inv.tongTien;
+          }
+        }
+      }
+
+      const columns = [
+        { header: 'Tháng', key: 'month', width: 2 },
+        { header: 'Doanh thu đã thu', key: 'revenueText', width: 5, align: 'right' },
+        { header: 'Công nợ quá hạn', key: 'debtText', width: 5, align: 'right' }
+      ];
+
+      const rows = monthlyRevenue.map(r => ({
+        month: r.month,
+        revenueText: pdfReportService.formatVnd(r.revenue),
+        debtText: pdfReportService.formatVnd(r.debt),
+        revenue: r.revenue,
+        debt: r.debt
+      }));
+
+      const totalRevenue = monthlyRevenue.reduce((s, r) => s + r.revenue, 0);
+      const totalDebt = monthlyRevenue.reduce((s, r) => s + r.debt, 0);
+
+      const summary = [
+        { label: 'Tổng doanh thu đã thu:', value: pdfReportService.formatVnd(totalRevenue) },
+        { label: 'Tổng công nợ quá hạn:', value: pdfReportService.formatVnd(totalDebt) }
+      ];
+
+      pdfReportService.streamReportPdf(res, {
+        title: 'BÁO CÁO DOANH THU & CÔNG NỢ',
+        subtitle,
+        columns,
+        rows,
+        summary,
+        filename: `Bao_Cao_Doanh_Thu_${period}.pdf`
+      });
+
+    } else if (type === 'occupancy') {
+      const properties = await Property.find({ trangThai: 'active' }).lean();
+      const rows = [];
+      for (const p of properties) {
+        const total = await Room.countDocuments({ maNhaTroId: p._id });
+        const occupied = await Room.countDocuments({ maNhaTroId: p._id, trangThai: 'rented' });
+        const empty = total - occupied;
+        const rate = total > 0 ? Math.round((occupied / total) * 100) : 0;
+        rows.push({
+          name: p.tenNhaTro,
+          occupied: `${occupied} phòng`,
+          empty: `${empty} phòng`,
+          rateText: `${rate}%`,
+          rate
+        });
+      }
+
+      const columns = [
+        { header: 'Cơ sở chi nhánh', key: 'name', width: 6 },
+        { header: 'Phòng đã thuê', key: 'occupied', width: 2.5, align: 'center' },
+        { header: 'Phòng trống', key: 'empty', width: 2.5, align: 'center' },
+        { header: 'Tỷ lệ lấp đầy', key: 'rateText', width: 2.5, align: 'center' }
+      ];
+
+      const totalRooms = await Room.countDocuments();
+      const totalOccupied = await Room.countDocuments({ trangThai: 'rented' });
+      const avgRate = totalRooms > 0 ? Math.round((totalOccupied / totalRooms) * 100) : 0;
+
+      const summary = [
+        { label: 'Tổng số phòng toàn chuỗi:', value: `${totalRooms} phòng` },
+        { label: 'Số phòng đã thuê:', value: `${totalOccupied} phòng` },
+        { label: 'Tỷ lệ lấp đầy trung bình:', value: `${avgRate}%` }
+      ];
+
+      pdfReportService.streamReportPdf(res, {
+        title: 'BÁO CÁO TỶ LỆ LẤP ĐẦY PHÒNG',
+        subtitle,
+        columns,
+        rows,
+        summary,
+        filename: 'Bao_Cao_Lap_Day.pdf'
+      });
+
+    } else if (type === 'debt') {
+      const filter = { trangThai: { $in: ['pending', 'overdue'] } };
+      const invoices = await Invoice.find(filter)
+        .populate({
+          path: 'maHopDongId',
+          populate: {
+            path: 'maKhachThueIds',
+            select: 'hoTen sdt email'
+          }
+        })
+        .populate('maPhongId');
+
+      let results = invoices;
+      if (branch && mongoose.Types.ObjectId.isValid(branch)) {
+        results = invoices.filter(inv => inv.maPhongId?.maNhaTroId?.toString() === branch);
+      }
+
+      const rows = results.map((inv, idx) => {
+        const contract = inv.maHopDongId || {};
+        const tenant = contract.maKhachThueIds?.[0] || {};
+        const room = inv.maPhongId || {};
+        const daysOverdue = Math.max(0, Math.floor((Date.now() - new Date(inv.hanThanhToan).getTime()) / (24 * 60 * 60 * 1000)));
+
+        return {
+          invoiceCode: inv.code || `HD-${inv._id.toString().substring(18).toUpperCase()}`,
+          roomNumber: `Phòng ${room.soPhong || '?'}`,
+          tenantName: tenant.hoTen || 'Chưa rõ',
+          dueDateText: formatDate(inv.hanThanhToan),
+          overdueText: `${daysOverdue} ngày`,
+          amountText: pdfReportService.formatVnd(inv.tongTien),
+          amount: inv.tongTien
+        };
+      });
+
+      const columns = [
+        { header: 'Mã HĐ', key: 'invoiceCode', width: 2 },
+        { header: 'Phòng', key: 'roomNumber', width: 1.5, align: 'center' },
+        { header: 'Khách thuê', key: 'tenantName', width: 3 },
+        { header: 'Hạn thanh toán', key: 'dueDateText', width: 2.5, align: 'center' },
+        { header: 'Quá hạn', key: 'overdueText', width: 2, align: 'center' },
+        { header: 'Số tiền nợ', key: 'amountText', width: 2.5, align: 'right' }
+      ];
+
+      const totalDebt = results.reduce((s, r) => s + r.tongTien, 0);
+      const summary = [
+        { label: 'Tổng số lượng hóa đơn nợ:', value: `${results.length} hóa đơn` },
+        { label: 'Tổng cộng dư nợ quá hạn:', value: pdfReportService.formatVnd(totalDebt) }
+      ];
+
+      pdfReportService.streamReportPdf(res, {
+        title: 'BÁO CÁO CÔNG NỢ CHI TIẾT',
+        subtitle,
+        columns,
+        rows,
+        summary,
+        filename: 'Bao_Cao_Cong_No.pdf'
+      });
+
+    } else if (type === 'cost') {
+      const expenseFilter = {};
+      if (branch && mongoose.Types.ObjectId.isValid(branch)) expenseFilter.maNhaTroId = branch;
+
+      const expenses = await Expense.find(expenseFilter).lean();
+      const filterYear = period === '2025' ? 2025 : 2026;
+
+      const monthlyExpenses = Array.from({ length: 12 }, (_, i) => ({
+        month: `Tháng ${i + 1}`,
+        expense: 0
+      }));
+
+      for (const exp of expenses) {
+        const expDate = new Date(exp.ngayChi);
+        if (expDate.getFullYear() === filterYear) {
+          const monthIndex = expDate.getMonth();
+          if (monthIndex >= 0 && monthIndex < 12) {
+            monthlyExpenses[monthIndex].expense += exp.soTien;
+          }
+        }
+      }
+
+      const columns = [
+        { header: 'Tháng', key: 'month', width: 3 },
+        { header: 'Chi phí vận hành', key: 'expenseText', width: 7, align: 'right' }
+      ];
+
+      const rows = monthlyExpenses.map(r => ({
+        month: r.month,
+        expenseText: pdfReportService.formatVnd(r.expense),
+        expense: r.expense
+      }));
+
+      const totalExpenses = monthlyExpenses.reduce((s, r) => s + r.expense, 0);
+      const summary = [
+        { label: 'Tổng chi phí vận hành:', value: pdfReportService.formatVnd(totalExpenses) }
+      ];
+
+      pdfReportService.streamReportPdf(res, {
+        title: 'BÁO CÁO CHI PHÍ VẬN HÀNH',
+        subtitle,
+        columns,
+        rows,
+        summary,
+        filename: `Bao_Cao_Chi_Phi_${period}.pdf`
+      });
+    } else {
+      res.status(400).json({ message: "Loại báo cáo không hợp lệ." });
+    }
+  } catch (error) {
+    console.error("Lỗi xuất PDF báo cáo:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi xuất PDF báo cáo." });
+  }
+});
+
+function formatDate(d) {
+  if (!d) return 'Chưa xác định';
+  const date = new Date(d);
+  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+}
 
 // Khởi chạy Server
 const server = app.listen(PORT, () => {

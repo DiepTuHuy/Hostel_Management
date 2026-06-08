@@ -1,91 +1,82 @@
 @startuml UC_Overall
-title Hình 2.1 — Sơ đồ Use Case tổng quát hệ thống Quản lý chuỗi Nhà trọ
+title Hình 2.1 — Sơ đồ Use Case tổng quát: Hệ thống Quản lý chuỗi Nhà trọ
 
-left to right direction
-scale 1.5
-skinparam packageStyle rectangle
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam packageStyle rectangle
+skinparam ArrowColor #34507A
+skinparam packageBackgroundColor #FFFFFF
+skinparam packageBorderColor #9DB2D6
 skinparam usecase {
-  BackgroundColor #F5F7FB
+  BackgroundColor #EEF3FC
   BorderColor #3A5BC7
+  FontColor #1F2D3D
 }
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #2E7D32
+}
+left to right direction
 
-actor "Chủ trọ"        as Owner
-actor "Quản lý"        as Manager
-actor "Khách thuê"     as Tenant
-actor "Khách vãng lai" as Visitor
-
-' Sắp xếp dọc các Actor ở bên trái và bên phải
-Owner -[hidden]right-> Manager
-Tenant -[hidden]right-> Visitor
+actor "Chủ trọ\n(Admin)"        as Owner
+actor "Quản lý\n(Manager)"      as Manager
+actor "Khách thuê\n(Tenant)"    as Tenant
+actor "Khách vãng lai\n(Visitor)" as Visitor
 
 rectangle "HỆ THỐNG QUẢN LÝ CHUỖI NHÀ TRỌ" {
 
-  package "Nhóm UC: Xác thực & Tài khoản" as pkg_A {
-    usecase "Quản lý xác thực\n& tài khoản"            as UC_Auth
-    usecase "Quản trị User\n& Phân quyền"              as UC_Sys
+  package "A. Xác thực & Tài khoản" {
+    usecase "Xác thực\n& tài khoản"        as UC_Auth
+    usecase "Quản trị user\n& phân quyền"  as UC_Sys
   }
-
-  package "Nhóm UC: Nhà trọ & Phòng" as pkg_B {
-    usecase "Quản lý nhà trọ\n/ chi nhánh"             as UC_Branch
-    usecase "Quản lý phòng\n& tài sản"                 as UC_Room
+  package "B. Nhà trọ & Phòng" {
+    usecase "Quản lý nhà trọ\n/ chi nhánh"  as UC_Branch
+    usecase "Quản lý phòng\n& tài sản"      as UC_Room
   }
-
-  package "Nhóm UC: Hợp đồng & Khách thuê" as pkg_C {
-    usecase "Quản lý hợp đồng\n& khách thuê"           as UC_Contract
+  package "C. Hợp đồng & Khách thuê" {
+    usecase "Quản lý hợp đồng\n& khách thuê" as UC_Contract
   }
-
-  package "Nhóm UC: Dịch vụ, Hoá đơn & Thanh toán" as pkg_D {
-    usecase "Cấu hình dịch vụ\n& đơn giá"              as UC_Service
-    usecase "Ghi chỉ số\n& tính tiền"                  as UC_Meter
-    usecase "Quản lý hoá đơn"                          as UC_Invoice
-    usecase "Thanh toán hoá đơn"                       as UC_Payment
+  package "D. Dịch vụ, Hoá đơn & Thanh toán" {
+    usecase "Cấu hình dịch vụ\n& đơn giá"  as UC_Service
+    usecase "Ghi chỉ số\n& tính tiền"      as UC_Meter
+    usecase "Quản lý hoá đơn"              as UC_Invoice
+    usecase "Thanh toán\nhoá đơn"          as UC_Payment
   }
-
-  package "Nhóm UC: Báo cáo & Thống kê" as pkg_E {
-    usecase "Báo cáo & thống kê"                       as UC_Report
+  package "E. Báo cáo & Thống kê" {
+    usecase "Báo cáo\n& thống kê"          as UC_Report
   }
-
-  package "Nhóm UC: Tiện ích bổ trợ" as pkg_F {
-    usecase "Gửi thông báo\n& nhắc nợ"                 as UC_Notify
-    usecase "Tìm kiếm\n& đặt cọc phòng"                as UC_Search
-    usecase "Trợ lý ảo\nAI Chatbot"                    as UC_Chat
+  package "F. Tiện ích bổ trợ" {
+    usecase "Thông báo\n& nhắc nợ"         as UC_Notify
+    usecase "Tìm kiếm\n& đặt cọc phòng"    as UC_Search
+    usecase "Trợ lý ảo\nAI Chatbot"        as UC_Chat
   }
-
-  ' Sắp xếp dọc các gói từ trên xuống dưới
-  pkg_A -[hidden]right-> pkg_B
-  pkg_B -[hidden]right-> pkg_C
-  pkg_C -[hidden]right-> pkg_D
-  pkg_D -[hidden]right-> pkg_E
-  pkg_E -[hidden]right-> pkg_F
 }
 
-' Mối quan hệ giữa Actor bên trái (Owner, Manager) với Use Case
-Owner -- UC_Auth
-Owner -- UC_Sys
-Owner -- UC_Branch
-Owner -- UC_Contract
-Owner -- UC_Service
-Owner -- UC_Invoice
-Owner -- UC_Report
-Owner -- UC_Chat
+Owner   -- UC_Auth
+Owner   -- UC_Sys
+Owner   -- UC_Branch
+Owner   -- UC_Service
+Owner   -- UC_Invoice
+Owner   -- UC_Report
+Owner   -- UC_Chat
 
 Manager -- UC_Auth
 Manager -- UC_Room
 Manager -- UC_Contract
 Manager -- UC_Meter
-Manager -- UC_Payment
 Manager -- UC_Notify
 Manager -- UC_Chat
 
-' Mối quan hệ giữa Use Case với Actor bên phải (Tenant, Visitor)
-UC_Auth -- Tenant
 UC_Invoice -- Tenant
 UC_Payment -- Tenant
-UC_Notify -- Tenant
-UC_Chat -- Tenant
+UC_Contract -- Tenant
+UC_Notify  -- Tenant
+UC_Chat    -- Tenant
 
 UC_Search -- Visitor
-UC_Auth -- Visitor : (đăng ký)
+UC_Auth   -- Visitor
+UC_Chat   -- Visitor
 
 @enduml

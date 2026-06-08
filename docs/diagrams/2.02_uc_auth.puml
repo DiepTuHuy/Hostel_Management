@@ -1,27 +1,35 @@
 @startuml UC_Auth
-title Hình 2.2 — Sơ đồ Use Case 1: Quản lý xác thực & tài khoản
+title Hình 2.2 — Use Case nhóm A: Quản lý xác thực & tài khoản
 
-left to right direction
-skinparam packageStyle rectangle
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam packageStyle rectangle
+skinparam ArrowColor #34507A
 skinparam usecase {
-  BackgroundColor #F5F7FB
+  BackgroundColor #EEF3FC
   BorderColor #3A5BC7
 }
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #2E7D32
+}
+left to right direction
 
 actor "Người dùng" as User
 actor "Chủ trọ"    as Owner
 
-rectangle "Quản lý xác thực & tài khoản" {
-  usecase "UC01 - Đăng ký tài khoản"             as U1
-  usecase "UC02 - Đăng nhập\n(email + mật khẩu)" as U2
-  usecase "UC03 - Đăng xuất"                     as U3
-  usecase "UC04 - Quên mật khẩu"                 as U4
-  usecase "UC05 - Đặt lại mật khẩu"              as U5
-  usecase "UC06 - Cập nhật hồ sơ"                as U6
-  usecase "Xác thực OTP qua Email\n(kích hoạt / khôi phục)" as U7
-  usecase "UC07 - Khoá / Mở khoá\ntài khoản"     as U8
-  usecase "UC08 - Phân quyền vai trò"            as U9
+rectangle "A. Xác thực & Tài khoản" {
+  usecase "UC01 — Đăng ký tài khoản"            as U1
+  usecase "UC02 — Đăng nhập\n(email + mật khẩu)" as U2
+  usecase "UC03 — Đăng xuất"                     as U3
+  usecase "UC04 — Quên mật khẩu"                 as U4
+  usecase "UC05 — Đặt lại mật khẩu"              as U5
+  usecase "UC06 — Cập nhật hồ sơ"                as U6
+  usecase "UC07 — Khoá / Mở khoá\ntài khoản"     as U7
+  usecase "UC08 — Phân quyền vai trò"            as U8
+  usecase "Xác thực OTP qua Email\n(kích hoạt / khôi phục)" as OTP
 }
 
 User -- U1
@@ -29,12 +37,16 @@ User -- U2
 User -- U3
 User -- U4
 User -- U6
+Owner -- U7
 Owner -- U8
-Owner -- U9
 
-' OTP đã chuyển sang Đăng ký + Khôi phục, KHÔNG còn ở Đăng nhập
-U1 ..> U7 : <<include>>
-U4 ..> U7 : <<include>>
-U4 ..> U5 : <<include>>
+note bottom of OTP
+  OTP chỉ dùng khi **Đăng ký** và **Quên mật khẩu**.
+  Đăng nhập (UC02) KHÔNG dùng OTP — chỉ email + mật khẩu.
+end note
+
+U1 ..> OTP : <<include>>
+U4 ..> OTP : <<include>>
+U4 ..> U5  : <<include>>
 
 @enduml

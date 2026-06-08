@@ -17,9 +17,9 @@ Hệ thống được thiết kế theo kiến trúc hướng dịch vụ với 
     *   Xử lý toàn bộ logic nghiệp vụ (Auth, CRUD Properties, Rooms, Contracts, Invoices, Services, Meters).
     *   Tích hợp dịch vụ gửi Email OTP thực tế thông qua SMTP Google.
     *   Tích hợp API Gemini (Google AI SDK) xử lý Chatbot thông minh.
-*   **Backend Python Flask (Cổng API Thống Kê/Thay Thế - Port 5002)**:
+*   **Backend Python Flask (Module thống kê phụ trợ — TUỲ CHỌN, Port 5002)**:
     *   Nằm tại thư mục `src/backend/app/` và chạy qua `run.py`.
-    *   Đóng vai trò làm backend thay thế và xử lý dữ liệu, phục vụ các truy vấn thống kê dữ liệu.
+    *   Đây là module phụ trợ **tuỳ chọn** — không bắt buộc để chạy hệ thống. Frontend SPA chỉ gọi Backend Node.js (Port 5001); Flask chỉ phục vụ một số truy vấn thống kê khi cần.
 *   **Cơ sở dữ liệu (MongoDB Atlas)**:
     *   Cơ sở dữ liệu phi quan hệ (NoSQL) lưu trữ dữ liệu tập trung qua MongoDB Atlas Cloud.
     *   Dữ liệu được chuẩn hóa tiếng Việt không dấu để đảm bảo tương thích tốt nhất.
@@ -29,10 +29,6 @@ Hệ thống được thiết kế theo kiến trúc hướng dịch vụ với 
 ## 2. CẤU TRÚC THƯ MỤC CHÍNH
 
 ```text
-├── Admin_UI/                   # Giao diện tĩnh & ảnh mockup phân hệ Chủ trọ
-├── Manager_UI/                 # Giao diện tĩnh & ảnh mockup phân hệ Quản lý
-├── Tenant_UI/                  # Giao diện tĩnh & ảnh mockup phân hệ Khách thuê
-├── Visitor_UI/                 # Giao diện tĩnh & ảnh mockup phân hệ Khách vãng lai
 ├── docs/                       # Tài liệu thiết kế hệ thống
 ├── system_alignment_report.md  # Báo cáo đánh giá sự liên kết giữa code thực tế và đặc tả
 ├── src/

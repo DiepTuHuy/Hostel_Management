@@ -1,167 +1,155 @@
-@startuml ClassDiagram_Vietnamese_MongoDB
+@startuml ClassDiagram
+title Sơ đồ lớp (NoSQL — MongoDB Atlas): 10 collection + 4 lớp nhúng
 
+skinparam dpi 150
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
 skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #3A5BC7
+  HeaderBackgroundColor #EEF3FC
+}
+skinparam package {
+  BackgroundColor #FBFCFE
+  BorderColor #9DB2D6
+}
 
-package "Phân hệ Người dùng & Vai trò" #E8EEF9 {
-  class NguoiDung {
-    + _id : ObjectId
-    + hoTen : String
-    + email : String
-    + matKhau : String
-    + sdt : String
-    + vaiTro : String {admin, manager, tenant}
-    + trangThai : String {active, inactive, locked, pending}
-    + maNhaTroIds : ObjectId[]
-    + thongTinKhachThue : ThongTinKhachThue
-    + otp : Otp
+package "1 · Người dùng & Vai trò" {
+  class User {
+    +_id : ObjectId
+    +hoTen : String
+    +email : String <<unique>>
+    +matKhau : String <<bcrypt>>
+    +sdt : String
+    +vaiTro : {admin, manager, tenant}
+    +trangThai : {active, inactive, locked, pending}
+    +maNhaTroIds : ObjectId[] <<N–N Property>>
+    --
+    +register() +login() +updateProfile()
   }
-
   class ThongTinKhachThue <<Embedded>> {
-    + cccd : String
-    + ngheNghiep : String
-    + diaChiThuongTru : String
+    +cccd : String
+    +ngheNghiep : String
+    +diaChiThuongTru : String
   }
-
   class Otp <<Embedded>> {
-    + maOtp : String
-    + hanSuDung : Date
+    +maOtp : String
+    +hanSuDung : Date
   }
-
-  NguoiDung *-- ThongTinKhachThue
-  NguoiDung *-- Otp
+  User *-- "0..1" ThongTinKhachThue
+  User *-- "0..1" Otp
 }
 
-package "Phân hệ Nhà trọ & Phòng" #FFF6E5 {
-  class NhaTro {
-    + _id : ObjectId
-    + maNhaTro : String
-    + tenNhaTro : String
-    + diaChi : String
-    + quanHuyen : String
-    + thanhPho : String
-    + hinhAnh : String
-    + tongSoPhong : Number
-    + soPhongDaThue : Number
-    + maQuanLyIds : ObjectId[]
-    + maChuTroId : ObjectId
-    + trangThai : String {active, inactive}
+package "2 · Nhà trọ & Phòng" {
+  class Property {
+    +_id : ObjectId
+    +maNhaTro : String <<unique>>
+    +tenNhaTro : String
+    +diaChi, quanHuyen, thanhPho : String
+    +qrCodeUrl : String
+    +tongSoPhong, soPhongDaThue : Number
+    +maQuanLyIds : ObjectId[] <<N–N User>>
+    +maChuTroId : ObjectId
+    +trangThai : {active, inactive}
   }
-
-  class LoaiPhong {
-    + _id : ObjectId
-    + maNhaTroId : ObjectId
-    + tenLoai : String
-    + dienTich : Number
-    + giaCoBan : Number
-    + tienNghi : String[]
+  class RoomType {
+    +_id : ObjectId
+    +maNhaTroId : ObjectId
+    +tenLoai : String
+    +dienTich, giaCoBan : Number
+    +tienNghi : String[]
   }
-
-  class PhongTro {
-    + _id : ObjectId
-    + maNhaTroId : ObjectId
-    + maLoaiPhongId : ObjectId
-    + soPhong : String
-    + tang : Number
-    + giaThueHienTai : Number
-    + giaThue : Number
-    + dienTich : Number
-    + maPhong : String
-    + trangThai : String {empty, rented, deposit, maintenance}
-    + hinhAnh : String[]
-    + moTa : String
-    + taiSan : TaiSan[]
+  class Room {
+    +_id : ObjectId
+    +maNhaTroId, maLoaiPhongId : ObjectId
+    +soPhong : String
+    +tang : Number
+    +giaThueHienTai : Number
+    +trangThai : {empty, rented, deposit, maintenance}
+    +currentTenantId : ObjectId
   }
-
   class TaiSan <<Embedded>> {
-    + tenTaiSan : String
-    + giaTri : Number
-    + tinhTrang : String
+    +tenTaiSan : String
+    +giaTri : Number
+    +tinhTrang : String
   }
-
-  NhaTro "1" *-- "*" PhongTro
-  LoaiPhong "1" -- "*" PhongTro
-  PhongTro *-- TaiSan
+  Property *-- "*" Room
+  Property o-- "*" RoomType
+  RoomType o-- "*" Room
+  Room *-- "*" TaiSan
 }
 
-package "Phân hệ Hợp đồng & Hóa đơn" #E6F5EA {
-  class HopDong {
-    + _id : ObjectId
-    + maPhongId : ObjectId
-    + maKhachThueIds : ObjectId[]
-    + ngayBatDau : Date
-    + ngayKetThuc : Date
-    + tienCoc : Number
-    + trangThai : String {draft, active, expired, terminated}
-    + duongDanPdf : String
+package "3 · Hợp đồng" {
+  class Contract {
+    +_id : ObjectId
+    +maPhongId : ObjectId
+    +maKhachThueIds : ObjectId[]
+    +ngayBatDau, ngayKetThuc : Date
+    +tienCoc : Number
+    +trangThai : {draft, active, expired, terminated}
+    +duongDanPdf : String
   }
+  Contract o-- "1" Room
+}
 
-  class HoaDon {
-    + _id : ObjectId
-    + maHopDongId : ObjectId
-    + maPhongId : ObjectId
-    + kyThanhToan : String
-    + tongTien : Number
-    + hanThanhToan : Date
-    + trangThai : String {pending, paid, overdue, cancelled}
-    + chiTiet : ChiTietHoaDon[]
+package "4 · Dịch vụ & Hoá đơn" {
+  class Service {
+    +_id : ObjectId
+    +maNhaTroId : ObjectId
+    +tenDichVu, donVi : String
+    +donGia : Number
+    +loaiTinh : {metered, fixed}
   }
-
+  class Reading {
+    +_id : ObjectId
+    +maPhongId, maDichVuId : ObjectId
+    +kyThanhToan : String <<YYYY-MM>>
+    +chiSoCu, chiSoMoi, tieuThu : Number
+  }
+  class Invoice {
+    +_id : ObjectId
+    +maHopDongId, maPhongId : ObjectId
+    +kyThanhToan : String
+    +tongTien : Number
+    +hanThanhToan : Date
+    +trangThai : {pending, paid, overdue, cancelled}
+  }
   class ChiTietHoaDon <<Embedded>> {
-    + maDichVuId : ObjectId
-    + tenDichVu : String
-    + soLuong : Number
-    + donGia : Number
-    + thanhTien : Number
+    +tenDichVu : String
+    +soLuong, donGia, thanhTien : Number
   }
-
-  class ThanhToan {
-    + _id : ObjectId
-    + maHoaDonId : ObjectId
-    + phuongThuc : String {vnpay, momo, cash, bank_transfer}
-    + soTien : Number
-    + ngayGiaoDich : Date
-    + trangThai : String {pending, success, failed}
+  class Payment {
+    +_id : ObjectId
+    +maHoaDonId : ObjectId
+    +phuongThuc : {vnpay, momo, cash, bank_transfer}
+    +soTien : Number
+    +trangThai : {pending, success, failed}
   }
-
-  class ChiSoTieuThu {
-    + _id : ObjectId
-    + maPhongId : ObjectId
-    + maDichVuId : ObjectId
-    + kyThanhToan : String
-    + chiSoCu : Number
-    + chiSoMoi : Number
-    + tieuThu : Number
-  }
-
-  class DichVu {
-    + _id : ObjectId
-    + maNhaTroId : ObjectId
-    + tenDichVu : String
-    + donVi : String
-    + donGia : Number
-    + loaiTinh : String {metered, fixed}
-  }
-
-  PhongTro "1" -- "*" ChiSoTieuThu
-  ChiSoTieuThu "*" -- "1" DichVu
-  HopDong "1" -- "*" HoaDon
-  HoaDon *-- ChiTietHoaDon
-  HoaDon "1" -- "*" ThanhToan
-  DichVu "1" -- "*" ChiTietHoaDon
+  Property o-- "*" Service
+  Room o-- "*" Reading
+  Reading o-- "1" Service
+  Contract o-- "*" Invoice
+  Invoice *-- "*" ChiTietHoaDon
+  Invoice o-- "*" Payment
 }
 
-package "Phân hệ Thông báo" #E6F0FA {
-  class ThongBao {
-    + _id : ObjectId
-    + maNguoiDungId : ObjectId
-    + tieuDe : String
-    + noiDung : String
-    + kenh : String
-    + daDoc : Boolean
+package "5 · Thông báo" {
+  class Notification {
+    +_id : ObjectId
+    +maNguoiDungId : ObjectId
+    +tieuDe, noiDung : String
+    +kenh : {email, telegram, push}
+    +daDoc : Boolean
   }
-
-  NguoiDung "1" -- "*" ThongBao
+  User o-- "*" Notification
 }
+
+note bottom of Notification
+  v1 dùng kênh **email** (Gmail SMTP) và **in-app** (push = thông báo trong app);
+  giá trị enum 'telegram' để dành cho v2.
+end note
 
 @enduml

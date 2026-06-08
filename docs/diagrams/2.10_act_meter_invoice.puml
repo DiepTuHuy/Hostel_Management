@@ -1,59 +1,66 @@
 @startuml Act_Meter_Invoice
-title Hình 2.10 — Sơ đồ hoạt động UC Ghi chỉ số & Tạo hoá đơn lô
+title Hình 2.10 — Hoạt động: Ghi chỉ số & Tạo hoá đơn theo lô
 
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam ArrowColor #34507A
 skinparam activity {
   BackgroundColor #FBE6F1
   BorderColor #AD1457
   DiamondBackgroundColor #FFF6E5
   DiamondBorderColor #E59300
+  StartColor #2E7D32
+  EndColor #AD1457
 }
 
-|Quản lý|
+|#FCEEF5|Quản lý|
 start
-:Đến kỳ chốt số (vd: ngày 1 hàng tháng);
-:Vào /manager/meters;
+:Đến kỳ chốt số → vào /manager/meters;
 :Chọn cơ sở (Branch Switcher);
 
-|Frontend|
+|#EAF1FB|Frontend|
 :GET /api/rooms?propertyId&status=rented;
-:GET /api/readings?period=YYYY-MM\n(kỳ trước);
-:Hiển thị bảng inline-editable 8 cột\n(Phòng, Khách, Điện cũ/mới, Tiêu thụ điện,\nNước cũ/mới, Tổng dự kiến);
+:GET /api/readings?period=YYYY-MM (kỳ trước);
+:Hiển thị bảng nhập chỉ số\n(điện/nước cũ · mới · tiêu thụ · tạm tính);
 
 |Quản lý|
-:Nhập chỉ số mới cho từng phòng;
+:Nhập chỉ số mới từng phòng;
 
-|Frontend|
+|#EAF1FB|Frontend|
 :Tự tính tiêu thụ = mới − cũ;
-if (Chỉ số mới < cũ?) then (Có)
-  :Hiển thị cảnh báo bất thường;
-else (Không)
-  if (Tiêu thụ > 200% kỳ trước?) then (Có)
+if (Chỉ số mới < cũ?) then (có)
+  :Cảnh báo số liệu bất thường;
+else (không)
+  if (Tiêu thụ > 200% kỳ trước?) then (có)
     :Cảnh báo "có thể rò rỉ";
   endif
 endif
 
 |Quản lý|
-:Nhấn "Lưu nháp";
-
-|Backend Express|
+:Nhấn "Lưu chỉ số";
+|#EAF1FB|Backend Express|
 :POST /api/readings (batch insert);
 
 |Quản lý|
 :Nhấn "Phát hành hoá đơn lô";
-
-|Backend Express|
+|#EAF1FB|Backend Express|
 :POST /api/invoices/generate?propertyId&period;
 repeat
-  :Lấy 1 Room có contract active;
-  :Cộng tiền phòng + Σ(tiêu thụ × đơn giá)\n+ Σ dịch vụ cố định;
-  :(v1) tính theo đơn giá phẳng;
-  :(v2 - định hướng) bậc thang EVN;
-  :Insert Invoice + chiTiet[];
+  :Lấy 1 phòng có hợp đồng active;
+  :Tiền phòng + Σ(tiêu thụ × đơn giá)\n+ Σ phí cố định  (đơn giá phẳng);
+  :Insert Invoice + chiTiet[] (pending);
 repeat while (còn phòng?) is (có)
 ->không;
-:Trả kết quả {success, count};
-:(cron tự động gửi email\n+ Telegram + nhắc nợ 1/3/5 ngày trước hạn);
+:Trả {success, count};
+
+|Quản lý|
+:(Tuỳ chọn) Nhấn "Nhắc nợ" trên hoá đơn quá hạn\n→ POST /api/reports/debts/:id/remind\n→ gửi email nhắc nợ (Gmail SMTP);
+note right
+  v2 (định hướng): cron 8h sáng tự động
+  nhắc nợ + kênh Telegram, đơn giá bậc thang EVN.
+end note
 
 |Frontend|
 :Toast "Đã phát hành N hoá đơn";

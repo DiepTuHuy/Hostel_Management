@@ -1,58 +1,61 @@
 @startuml Act_Room
-title Hình 2.8 — Sơ đồ hoạt động UC Quản lý phòng
+title Hình 2.8 — Hoạt động: Quản lý phòng (Thêm / Sửa / Trạng thái / Tài sản / Xoá)
 
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam ArrowColor #34507A
 skinparam activity {
   BackgroundColor #FFF6E5
   BorderColor #E59300
-  DiamondBackgroundColor #E8EEF9
+  DiamondBackgroundColor #EAF1FB
   DiamondBorderColor #3A5BC7
+  StartColor #2E7D32
+  EndColor #AD1457
 }
 
-|Quản lý|
+|#FFF9EC|Quản lý|
 start
-:Đăng nhập vào /manager;
+:Đăng nhập /manager;
 :Chọn cơ sở từ dropdown\n(Branch Switcher);
 
-|Frontend React|
-:Lưu propertyId vào localStorage\nbhpro_selected_property_id;
-:Gọi GET /api/rooms?propertyId=...;
-:Hiển thị sơ đồ phòng theo tầng\n(5 thẻ KPI + Card 3D Tilt);
+|#EAF1FB|Frontend React|
+:Lưu propertyId vào localStorage;
+:GET /api/rooms?propertyId=...;
+:Hiển thị sơ đồ phòng theo tầng\n(thẻ KPI + lưới phòng);
 
 |Quản lý|
 :Chọn thao tác;
-switch (Loại thao tác)
+switch (Loại thao tác?)
 case (Thêm phòng)
-  :Mở modal "Thêm phòng";
-  :Nhập số phòng, tầng, loại phòng,\ngiá thuê, mô tả;
-  :Gọi POST /api/rooms;
+  :Nhập số phòng, tầng,\nloại phòng, giá thuê;
+  :POST /api/rooms;
 case (Sửa phòng)
-  :Chọn phòng → modal "Sửa";
-  :Gọi PUT /api/rooms/:id;
+  :Chỉnh thông tin phòng;
+  :PUT /api/rooms/:id;
 case (Đổi trạng thái)
   :Chọn trạng thái mới\n(empty/rented/deposit/maintenance);
-  :Gọi PATCH /api/rooms/:id/status;
+  :PATCH /api/rooms/:id/status;
 case (Quản lý tài sản)
-  :Mở tab Tài sản;
-  :Thêm/sửa Asset embedded;
-  :Gọi PUT /api/rooms/:id\n(với taiSan[] mới);
+  :Thêm/sửa taiSan[] (embedded);
+  :PUT /api/rooms/:id;
 case (Xoá phòng)
   :Xác nhận xoá;
-  :Gọi DELETE /api/rooms/:id;
+  :DELETE /api/rooms/:id;
 endswitch
 
-|Backend Express|
-:Validate dữ liệu;
-if (Hợp lệ?) then (Có)
+|#EAF1FB|Backend Express|
+if (Dữ liệu hợp lệ?) then (có)
   :Cập nhật MongoDB;
-  :Cập nhật Property.tongSoPhong\n+ soPhongDaThue nếu cần;
-  :Trả về Room đã mapRoom();
-else (Không)
+  :Cập nhật Property.tongSoPhong\n/ soPhongDaThue nếu cần;
+  :Trả Room đã mapRoom();
+else (không)
   :Trả lỗi 400 + thông báo;
 endif
 
 |Frontend React|
-:Hiển thị Toast thông báo;
+:Hiển thị Toast;
 :Reload danh sách phòng;
 stop
 

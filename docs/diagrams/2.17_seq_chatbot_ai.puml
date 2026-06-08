@@ -1,47 +1,49 @@
 @startuml Seq_Chatbot_AI
-title Hình 2.17 — Sơ đồ tuần tự UC41 Trợ lý ảo AI Chatbot (Online Gemini + Offline Fallback)
+title Hình 2.17 — Tuần tự: UC41 Trợ lý ảo AI Chatbot (Online Gemini + Offline Fallback)
 
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
 skinparam sequenceMessageAlign center
 skinparam ParticipantBackgroundColor #E6F0FA
 skinparam ParticipantBorderColor #1F3864
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ActorBorderColor #2E7D32
 
-actor       "Người dùng"            as User
-boundary    "AIChatbot.jsx\n(floating widget)" as UI
-control     "ChatController\n(server.js)"  as Ctrl
-control     "FallbackEngine\n(getFallbackResponse)" as FB
-entity      "MongoDB\n(Properties, Rooms,\nUsers, Contracts, Invoices)" as DB
-control     "Google Gemini\n2.5 Flash API"   as Gem
+actor    "Người dùng"   as User
+boundary "AIChatbot.jsx" as UI
+control  "ChatController\n(server.js)" as Ctrl
+control  "FallbackEngine\n(getFallbackResponse)" as FB
+entity   "MongoDB"       as DB
+control  "Google Gemini\n2.5 Flash" as Gem
 
-User -> UI : Mở chat (click biểu tượng tròn nổi)
-UI -> User : Hiển thị welcome + badge online/offline
-User -> UI : Nhập câu hỏi + nhấn Gửi
-UI -> Ctrl : POST /api/chat\n{message, history[]}
+User -> UI : Mở chat + nhập câu hỏi
+UI -> Ctrl : POST /api/chat {message, history[]}
 
-== Bước 1: Tải context động ==
-Ctrl -> DB : countDocuments(Property, Room, User, Invoice)
-DB --> Ctrl : Thống kê {N cơ sở, M phòng, K tenant}
+== Bước 1 · Tải context động ==
+Ctrl -> DB : Truy vấn Properties/Rooms/Users/Invoices
+DB --> Ctrl : Thống kê + dữ liệu thô (context)
 
-== Bước 2: Gọi Gemini (3 lần retry) ==
-loop tối đa 3 lần
-    Ctrl -> Gem : POST contents + systemInstruction\n(kèm context thống kê)
-    alt 200 OK
-        Gem --> Ctrl : reply text
-        Ctrl --> UI : {reply, isOnline: true}
-        UI -> User : Hiển thị bubble + badge xanh
-        note right of UI : KẾT THÚC
-    else 429 (Rate limit) hoặc 5xx
-        Ctrl -> Ctrl : delay 600ms × n + retry
-    end
+== Bước 2 · Gọi Gemini (tối đa 3 lần) ==
+loop tối đa 3 lần, backoff 600ms
+  Ctrl -> Gem : generateContent(context + câu hỏi)
+  alt 200 OK
+    Gem --> Ctrl : reply
+    Ctrl --> UI : {reply, isOnline:true}
+    UI --> User : Bubble + badge xanh (Online)
+  else 429 / 5xx / lỗi mạng
+    Ctrl -> Ctrl : delay rồi retry
+  end
 end
 
-== Bước 3: Fallback Offline (khi Gemini fail) ==
+== Bước 3 · Offline Fallback (khi Gemini fail) ==
 Ctrl -> FB : getFallbackResponse(message, dbData)
-FB -> DB : Property.find() + Room.find()\n+ User.find() + Contract.find()\n+ Invoice.find()
-DB --> FB : Toàn bộ dữ liệu hiện hành
-FB -> FB : Phân tích từ khoá:\n• "rẻ nhất / đắt nhất"\n• "phòng <số>"\n• "khách thuê / hợp đồng"\n• "hoá đơn / công nợ"
+FB -> DB : Property/Room/User/Contract/Invoice.find()
+DB --> FB : Dữ liệu hiện hành
+FB -> FB : Phân tích từ khoá\n(rẻ/đắt nhất · phòng <số> · công nợ · khách)
 FB --> Ctrl : reply tổng hợp từ MongoDB
-Ctrl --> UI : {reply, isOnline: false}
-UI -> User : Hiển thị bubble + badge đỏ\n("Trợ lý Offline – Dữ liệu thực tế")
+Ctrl --> UI : {reply, isOnline:false}
+UI --> User : Bubble + badge đỏ (Offline — dữ liệu thực)
 
 @enduml

@@ -121,10 +121,17 @@ export default function ReportsPage() {
 
   const handleExportPdf = () => {
     setExportingPdf(true);
-    setTimeout(() => {
+    try {
+      const year = period === '2025' ? 2025 : 2026;
+      const url = `http://localhost:5001/api/reports/pdf?type=${tab}&branch=${branch}&period=${year}`;
+      window.open(url, '_blank');
+      setToast({ message: 'Đang tải báo cáo PDF...', type: 'success' });
+    } catch (err) {
+      console.error(err);
+      setToast({ message: 'Lỗi khi xuất PDF', type: 'error' });
+    } finally {
       setExportingPdf(false);
-      window.print();
-    }, 300);
+    }
   };
 
   return (

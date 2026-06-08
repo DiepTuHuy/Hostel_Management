@@ -32,6 +32,7 @@ const TenantContracts = lazy(() => import('../views/tenant/ContractsPage.jsx'));
 const TenantInvoices = lazy(() => import('../views/tenant/InvoicesPage.jsx'));
 const TenantProfile = lazy(() => import('../views/tenant/ProfilePage.jsx'));
 const TenantNotifications = lazy(() => import('../views/tenant/NotificationsPage.jsx'));
+const TenantPaymentReturn = lazy(() => import('../views/tenant/PaymentReturnPage.jsx'));
 
 const VisitorLayout = lazy(() => import('../layouts/VisitorLayout.jsx'));
 const VisitorHome = lazy(() => import('../views/visitor/HomePage.jsx'));
@@ -112,6 +113,7 @@ export function AppRouter() {
           <Route path="contract" element={<TenantContracts />} />
           <Route path="contracts" element={<TenantContracts />} />
           <Route path="invoices" element={<TenantInvoices />} />
+          <Route path="payment-return" element={<TenantPaymentReturn />} />
           <Route path="profile" element={<TenantProfile />} />
           <Route path="notifications" element={<TenantNotifications />} />
         </Route>

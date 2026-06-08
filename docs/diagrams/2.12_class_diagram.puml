@@ -1,187 +1,155 @@
 @startuml ClassDiagram
-title Hình 2.12 — Sơ đồ lớp tổng thể (Phiên bản triển khai NoSQL — MongoDB Atlas)
+title Hình 2.12 — Sơ đồ lớp (NoSQL — MongoDB Atlas): 10 collection + 4 lớp nhúng
 
-skinparam classAttributeIconSize 0
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
 skinparam linetype ortho
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #3A5BC7
+  HeaderBackgroundColor #EEF3FC
+}
+skinparam package {
+  BackgroundColor #FBFCFE
+  BorderColor #9DB2D6
+}
 
-' ========== PACKAGE 1: NGƯỜI DÙNG & VAI TRÒ ==========
-package "1. Người dùng & Vai trò" #E8EEF9 {
-
+package "1 · Người dùng & Vai trò" {
   class User {
-    + _id : ObjectId
-    + hoTen : String
-    + email : String  <<unique>>
-    + matKhau : String  <<bcrypt>>
-    + sdt : String
-    + vaiTro : enum {admin, manager, tenant}
-    + trangThai : enum {active, inactive, locked, pending}
-    + maNhaTroIds : ObjectId[]   <<N–N với Property>>
-    + createdAt : Date
+    +_id : ObjectId
+    +hoTen : String
+    +email : String <<unique>>
+    +matKhau : String <<bcrypt>>
+    +sdt : String
+    +vaiTro : {admin, manager, tenant}
+    +trangThai : {active, inactive, locked, pending}
+    +maNhaTroIds : ObjectId[] <<N–N Property>>
     --
-    + register()
-    + login()
-    + updateProfile()
+    +register() +login() +updateProfile()
   }
-
   class ThongTinKhachThue <<Embedded>> {
-    + cccd : String
-    + ngheNghiep : String
-    + diaChiThuongTru : String
+    +cccd : String
+    +ngheNghiep : String
+    +diaChiThuongTru : String
   }
-
   class Otp <<Embedded>> {
-    + maOtp : String
-    + hanSuDung : Date
+    +maOtp : String
+    +hanSuDung : Date
   }
-
-  User "1" *-- "0..1" ThongTinKhachThue : embedded
-  User "1" *-- "0..1" Otp : embedded
+  User *-- "0..1" ThongTinKhachThue
+  User *-- "0..1" Otp
 }
 
-' ========== PACKAGE 2: NHÀ TRỌ & PHÒNG ==========
-package "2. Nhà trọ & Phòng" #FFF6E5 {
-
+package "2 · Nhà trọ & Phòng" {
   class Property {
-    + _id : ObjectId
-    + maNhaTro : String  <<unique>>
-    + tenNhaTro : String
-    + diaChi : String
-    + quanHuyen : String
-    + thanhPho : String
-    + hinhAnh : String
-    + qrCodeUrl : String
-    + tongSoPhong : Number
-    + soPhongDaThue : Number
-    + maQuanLyIds : ObjectId[]   <<N–N với User>>
-    + maChuTroId : ObjectId       <<→ User>>
-    + trangThai : enum {active, inactive}
+    +_id : ObjectId
+    +maNhaTro : String <<unique>>
+    +tenNhaTro : String
+    +diaChi, quanHuyen, thanhPho : String
+    +qrCodeUrl : String
+    +tongSoPhong, soPhongDaThue : Number
+    +maQuanLyIds : ObjectId[] <<N–N User>>
+    +maChuTroId : ObjectId
+    +trangThai : {active, inactive}
   }
-
   class RoomType {
-    + _id : ObjectId
-    + maNhaTroId : ObjectId  <<→ Property>>
-    + tenLoai : String
-    + dienTich : Number
-    + giaCoBan : Number
-    + tienNghi : String[]
+    +_id : ObjectId
+    +maNhaTroId : ObjectId
+    +tenLoai : String
+    +dienTich, giaCoBan : Number
+    +tienNghi : String[]
   }
-
   class Room {
-    + _id : ObjectId
-    + maNhaTroId : ObjectId  <<→ Property>>
-    + maLoaiPhongId : ObjectId  <<→ RoomType>>
-    + soPhong : String
-    + tang : Number
-    + giaThueHienTai : Number
-    + dienTich : Number
-    + trangThai : enum {empty, rented, deposit, maintenance}
-    + hinhAnh : String[]
-    + moTa : String
-    + currentTenantId : ObjectId
+    +_id : ObjectId
+    +maNhaTroId, maLoaiPhongId : ObjectId
+    +soPhong : String
+    +tang : Number
+    +giaThueHienTai : Number
+    +trangThai : {empty, rented, deposit, maintenance}
+    +currentTenantId : ObjectId
   }
-
   class TaiSan <<Embedded>> {
-    + tenTaiSan : String
-    + giaTri : Number
-    + tinhTrang : String
+    +tenTaiSan : String
+    +giaTri : Number
+    +tinhTrang : String
   }
-
-  Property "1" *-- "*" Room
-  RoomType "1" -- "*" Room
-  Property "1" -- "*" RoomType
-  Room "1" *-- "*" TaiSan : embedded
-  Property "*" -- "*" User : (Manager phụ trách)
+  Property *-- "*" Room
+  Property o-- "*" RoomType
+  RoomType o-- "*" Room
+  Room *-- "*" TaiSan
 }
 
-' ========== PACKAGE 3: HỢP ĐỒNG ==========
-package "3. Hợp đồng & Khách thuê" #E6F5EA {
-
+package "3 · Hợp đồng" {
   class Contract {
-    + _id : ObjectId
-    + maPhongId : ObjectId  <<→ Room>>
-    + maKhachThueIds : ObjectId[]  <<→ User>>
-    + ngayBatDau : Date
-    + ngayKetThuc : Date
-    + tienCoc : Number
-    + trangThai : enum {draft, active, expired, terminated}
-    + duongDanPdf : String
+    +_id : ObjectId
+    +maPhongId : ObjectId
+    +maKhachThueIds : ObjectId[]
+    +ngayBatDau, ngayKetThuc : Date
+    +tienCoc : Number
+    +trangThai : {draft, active, expired, terminated}
+    +duongDanPdf : String
   }
-
-  Contract "*" -- "1" Room
-  Contract "*" -- "*" User : (khách thuê)
+  Contract o-- "1" Room
 }
 
-' ========== PACKAGE 4: DỊCH VỤ & HOÁ ĐƠN ==========
-package "4. Dịch vụ & Hoá đơn" #FBE6F1 {
-
+package "4 · Dịch vụ & Hoá đơn" {
   class Service {
-    + _id : ObjectId
-    + maNhaTroId : ObjectId  <<→ Property>>
-    + tenDichVu : String
-    + donVi : String
-    + donGia : Number
-    + loaiTinh : enum {metered, fixed}
+    +_id : ObjectId
+    +maNhaTroId : ObjectId
+    +tenDichVu, donVi : String
+    +donGia : Number
+    +loaiTinh : {metered, fixed}
   }
-
   class Reading {
-    + _id : ObjectId
-    + maPhongId : ObjectId  <<→ Room>>
-    + maDichVuId : ObjectId  <<→ Service>>
-    + kyThanhToan : String  <<YYYY-MM>>
-    + chiSoCu : Number
-    + chiSoMoi : Number
-    + tieuThu : Number
+    +_id : ObjectId
+    +maPhongId, maDichVuId : ObjectId
+    +kyThanhToan : String <<YYYY-MM>>
+    +chiSoCu, chiSoMoi, tieuThu : Number
   }
-
   class Invoice {
-    + _id : ObjectId
-    + maHopDongId : ObjectId  <<→ Contract>>
-    + maPhongId : ObjectId  <<→ Room>>
-    + kyThanhToan : String
-    + tongTien : Number
-    + hanThanhToan : Date
-    + trangThai : enum {pending, paid, overdue, cancelled}
+    +_id : ObjectId
+    +maHopDongId, maPhongId : ObjectId
+    +kyThanhToan : String
+    +tongTien : Number
+    +hanThanhToan : Date
+    +trangThai : {pending, paid, overdue, cancelled}
   }
-
   class ChiTietHoaDon <<Embedded>> {
-    + maDichVuId : ObjectId
-    + tenDichVu : String
-    + soLuong : Number
-    + donGia : Number
-    + thanhTien : Number
+    +tenDichVu : String
+    +soLuong, donGia, thanhTien : Number
   }
-
   class Payment {
-    + _id : ObjectId
-    + maHoaDonId : ObjectId  <<→ Invoice>>
-    + phuongThuc : enum {vnpay, momo, cash, bank_transfer}
-    + soTien : Number
-    + ngayGiaoDich : Date
-    + trangThai : enum {pending, success, failed}
+    +_id : ObjectId
+    +maHoaDonId : ObjectId
+    +phuongThuc : {vnpay, momo, cash, bank_transfer}
+    +soTien : Number
+    +trangThai : {pending, success, failed}
   }
-
-  Property "1" -- "*" Service
-  Room "1" -- "*" Reading
-  Reading "*" -- "1" Service
-  Contract "1" -- "*" Invoice
-  Invoice "1" *-- "*" ChiTietHoaDon : embedded
-  Invoice "1" -- "*" Payment
+  Property o-- "*" Service
+  Room o-- "*" Reading
+  Reading o-- "1" Service
+  Contract o-- "*" Invoice
+  Invoice *-- "*" ChiTietHoaDon
+  Invoice o-- "*" Payment
 }
 
-' ========== PACKAGE 5: THÔNG BÁO ==========
-package "5. Thông báo" #E6F0FA {
-
+package "5 · Thông báo" {
   class Notification {
-    + _id : ObjectId
-    + maNguoiDungId : ObjectId  <<→ User>>
-    + tieuDe : String
-    + noiDung : String
-    + kenh : enum {email, telegram, push}
-    + daDoc : Boolean
+    +_id : ObjectId
+    +maNguoiDungId : ObjectId
+    +tieuDe, noiDung : String
+    +kenh : {email, telegram, push}
+    +daDoc : Boolean
   }
-
-  User "1" -- "*" Notification
+  User o-- "*" Notification
 }
+
+note bottom of Notification
+  v1 dùng kênh **email** (Gmail SMTP) và **in-app** (push = thông báo trong app);
+  giá trị enum 'telegram' để dành cho v2.
+end note
 
 @enduml

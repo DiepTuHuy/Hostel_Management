@@ -1,35 +1,43 @@
 @startuml UC_Report
-title Hình 2.6 — Sơ đồ Use Case 5: Báo cáo & thống kê vận hành
+title Hình 2.6 — Use Case nhóm E: Báo cáo & thống kê vận hành
 
-left to right direction
-skinparam packageStyle rectangle
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam packageStyle rectangle
+skinparam ArrowColor #34507A
 skinparam usecase {
-  BackgroundColor #F5F7FB
+  BackgroundColor #EEF3FC
   BorderColor #3A5BC7
 }
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #2E7D32
+}
+left to right direction
 
 actor "Chủ trọ" as Owner
 
-rectangle "Báo cáo & thống kê vận hành" {
-  usecase "UC31 - Dashboard tổng quan\n(KPI: doanh thu, lấp đầy,\ncông nợ, chi phí)" as R1
-  usecase "UC32 - Báo cáo doanh thu\n(Tháng / Quý / Năm)" as R2
-  usecase "UC33 - Báo cáo tỉ lệ lấp đầy" as R3
-  usecase "UC34 - Báo cáo công nợ" as R4
-  usecase "UC35 - Báo cáo chi phí vận hành" as R5
-  usecase "UC36 - Xuất Excel / PDF\n(định hướng v2)"        as R6
+rectangle "E. Báo cáo & thống kê vận hành" {
+  usecase "UC31 — Dashboard tổng quan\n(doanh thu · lấp đầy · công nợ)" as E1
+  usecase "UC32 — Báo cáo doanh thu\n(tháng / quý / năm)"  as E2
+  usecase "UC33 — Báo cáo tỉ lệ lấp đầy" as E3
+  usecase "UC34 — Báo cáo công nợ"        as E4
+  usecase "UC35 — Báo cáo chi phí vận hành" as E5
+  usecase "UC36 — Xuất Excel / PDF\n(CSV + window.print)" as E6
 }
 
-Owner -- R1
-Owner -- R2
-Owner -- R3
-Owner -- R4
-Owner -- R5
-Owner -- R6
+Owner -- E1
+Owner -- E2
+Owner -- E3
+Owner -- E4
+Owner -- E5
+Owner -- E6
 
-R2 ..> R6 : <<extend>>
-R3 ..> R6 : <<extend>>
-R4 ..> R6 : <<extend>>
-R5 ..> R6 : <<extend>>
+E2 ..> E6 : <<extend>>
+E3 ..> E6 : <<extend>>
+E4 ..> E6 : <<extend>>
+E5 ..> E6 : <<extend>>
 
 @enduml

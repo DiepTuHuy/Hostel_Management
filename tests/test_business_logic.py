@@ -2,6 +2,26 @@ import unittest
 import csv
 import os
 import re
+import urllib.request
+import urllib.parse
+import json
+import hmac
+import hashlib
+from pymongo import MongoClient
+import dotenv
+
+def calculate_vnpay_signature_python(params, secret_key):
+    sorted_params = sorted(params.items())
+    query_parts = []
+    for k, v in sorted_params:
+        if k in ['vnp_SecureHash', 'vnp_SecureHashType']:
+            continue
+        if v is not None and v != '':
+            query_parts.append(f"{urllib.parse.quote(k, safe='')}={urllib.parse.quote(str(v), safe='')}")
+    query_string = '&'.join(query_parts)
+    hashed = hmac.new(secret_key.encode('utf-8'), query_string.encode('utf-8'), hashlib.sha512).hexdigest()
+    return hashed
+
 
 # ==============================================================================
 # MOCK SYSTEM IMPLEMENTATION TO BE TESTED FOR ALL 40 USE CASES (UC01 - UC40)
@@ -464,8 +484,76 @@ class TestSystemBusinessLogic(unittest.TestCase):
 
     # UC27 - Thanh toán online
     def test_uc27_pay_online(self):
-        res = BillingManagement.pay_online("HD-202605-301", "97041985261377022", "123456")
-        self.assertEqual(res, "PAID_ONLINE_VNPAY")
+        env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src/backend/.env")
+        dotenv.load_dotenv(env_path)
+        mongo_uri = os.getenv("MONGODB_URI")
+        client = MongoClient(mongo_uri)
+        db = client.get_database("boardinghouse_db")
+        invoice = db.invoices.find_one()
+        self.assertIsNotNone(invoice, "Should find at least one invoice in database")
+        invoice_id = str(invoice["_id"])
+        
+        pay_url = f"http://localhost:5001/api/invoices/{invoice_id}/pay"
+        data = json.dumps({"method": "vnpay"}).encode("utf-8")
+        req = urllib.request.Request(
+            pay_url,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        
+        try:
+            with urllib.request.urlopen(req) as response:
+                res_body = json.loads(response.read().decode("utf-8"))
+                self.assertTrue(res_body.get("success"), "API call should return success=True")
+                vnpay_url = res_body.get("paymentUrl")
+                self.assertIsNotNone(vnpay_url, "API call should return paymentUrl")
+                
+                self.assertTrue(vnpay_url.startswith("https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"), "Should target VNPay Sandbox")
+                
+                parsed_url = urllib.parse.urlparse(vnpay_url)
+                query_params = urllib.parse.parse_qs(parsed_url.query)
+                params = {k: v[0] for k, v in query_params.items()}
+                
+                self.assertIn("vnp_SecureHash", params)
+                self.assertIn("vnp_TxnRef", params)
+                self.assertIn("vnp_Amount", params)
+                self.assertIn("vnp_TmnCode", params)
+                
+                secret_key = os.getenv("VNP_HASHSECRET", "83f5647a98db2cf984aef5476a21cf92")
+                computed_hash = calculate_vnpay_signature_python(params, secret_key)
+                self.assertEqual(params["vnp_SecureHash"].lower(), computed_hash.lower(), "Secure hash mismatch!")
+                
+                mock_ipn_params = {
+                    "vnp_TxnRef": invoice_id,
+                    "vnp_Amount": str(int(invoice["tongTien"] * 100)),
+                    "vnp_ResponseCode": "00",
+                    "vnp_TransactionNo": "12345678",
+                    "vnp_BankCode": "NCB",
+                    "vnp_PayDate": "20260608235959",
+                    "vnp_OrderInfo": f"Thanh toan hoa don phong tro ky {invoice['kyThanhToan']}"
+                }
+                mock_hash = calculate_vnpay_signature_python(mock_ipn_params, secret_key)
+                mock_ipn_params["vnp_SecureHash"] = mock_hash
+                
+                query_string = urllib.parse.urlencode(mock_ipn_params)
+                ipn_url = f"http://localhost:5001/api/payments/vnpay-ipn?{query_string}"
+                
+                with urllib.request.urlopen(ipn_url) as ipn_response:
+                    ipn_body = json.loads(ipn_response.read().decode("utf-8"))
+                    self.assertEqual(ipn_body.get("RspCode"), "00", "IPN should return RspCode=00")
+                
+                mock_ipn_params_fail = mock_ipn_params.copy()
+                mock_ipn_params_fail["vnp_SecureHash"] = "invalid_hash_value_123"
+                query_string_fail = urllib.parse.urlencode(mock_ipn_params_fail)
+                ipn_url_fail = f"http://localhost:5001/api/payments/vnpay-ipn?{query_string_fail}"
+                
+                with urllib.request.urlopen(ipn_url_fail) as ipn_response_fail:
+                    ipn_body_fail = json.loads(ipn_response_fail.read().decode("utf-8"))
+                    self.assertEqual(ipn_body_fail.get("RspCode"), "97", "IPN should return RspCode=97")
+                    
+        except Exception as e:
+            self.fail(f"Failed to test real online payment and signature verification: {str(e)}")
 
     # UC28 - Xác nhận thu tiền mặt
     def test_uc28_record_cash(self):
@@ -512,8 +600,45 @@ class TestSystemBusinessLogic(unittest.TestCase):
 
     # UC36 - Xuất Excel/PDF
     def test_uc36_export_report(self):
-        res = ReportsManagement.export_report("REVENUE_2026", "EXCEL")
-        self.assertEqual(res, "FILE_DOWNLOADED_SUCCESS")
+        env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src/backend/.env")
+        dotenv.load_dotenv(env_path)
+        mongo_uri = os.getenv("MONGODB_URI")
+        client = MongoClient(mongo_uri)
+        db = client.get_database("boardinghouse_db")
+        
+        invoice = db.invoices.find_one()
+        contract = db.contracts.find_one()
+        self.assertIsNotNone(invoice, "Should find at least one invoice in database")
+        self.assertIsNotNone(contract, "Should find at least one contract in database")
+        invoice_id = str(invoice["_id"])
+        contract_id = str(contract["_id"])
+        
+        report_url = "http://localhost:5001/api/reports/pdf?type=revenue&period=2026"
+        try:
+            with urllib.request.urlopen(report_url) as response:
+                self.assertEqual(response.status, 200, "Report PDF download should return status 200")
+                content_type = response.headers.get("Content-Type")
+                self.assertEqual(content_type, "application/pdf", "Content-Type must be application/pdf")
+        except Exception as e:
+            self.fail(f"Failed to download report PDF: {str(e)}")
+            
+        contract_pdf_url = f"http://localhost:5001/api/contracts/{contract_id}/pdf"
+        try:
+            with urllib.request.urlopen(contract_pdf_url) as response:
+                self.assertEqual(response.status, 200, "Contract PDF download should return status 200")
+                content_type = response.headers.get("Content-Type")
+                self.assertEqual(content_type, "application/pdf", "Content-Type must be application/pdf")
+        except Exception as e:
+            self.fail(f"Failed to download contract PDF: {str(e)}")
+            
+        invoice_pdf_url = f"http://localhost:5001/api/invoices/{invoice_id}/pdf"
+        try:
+            with urllib.request.urlopen(invoice_pdf_url) as response:
+                self.assertEqual(response.status, 200, "Invoice PDF download should return status 200")
+                content_type = response.headers.get("Content-Type")
+                self.assertEqual(content_type, "application/pdf", "Content-Type must be application/pdf")
+        except Exception as e:
+            self.fail(f"Failed to download invoice PDF: {str(e)}")
 
     # UC37 - Gửi thông báo tự động
     def test_uc37_automated_notification(self):

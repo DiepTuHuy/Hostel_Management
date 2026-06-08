@@ -45,3 +45,7 @@
 src/frontend/start-vite.js
 src/frontend/strip-comments.js
 
+# Backup directories
+docs/backup_original_*/
+
+

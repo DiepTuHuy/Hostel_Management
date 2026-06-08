@@ -1,76 +1,56 @@
 @startuml Architecture_Deployment
-title Hình 2.18 — Sơ đồ kiến trúc triển khai hệ thống thực tế (3 tầng)
+title Hình 2.18 — Kiến trúc triển khai thực tế (3 tầng)
 
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
 skinparam componentStyle rectangle
-skinparam linetype ortho
+skinparam ArrowColor #34507A
 skinparam component {
   BackgroundColor #FAFCFF
   BorderColor #3A5BC7
 }
 skinparam node {
-  BackgroundColor #F5F7FB
+  BackgroundColor #EEF3FC
   BorderColor #1F3864
 }
-
-actor "Người dùng\n(Admin/Manager/Tenant/Visitor)" as User
-
-cloud "Internet" {
+skinparam cloud {
+  BackgroundColor #FFF6E5
+  BorderColor #E59300
+}
+skinparam database {
+  BackgroundColor #E6F5EA
+  BorderColor #2E7D32
 }
 
-node "Trình duyệt (Chrome/Edge/Safari)" #FFFFFF {
-  component "React 18 SPA\n(Vite Dev Server)\nport 5173" as Frontend {
-    [Layout 4 phân hệ:\nAdmin/Manager/Tenant/Visitor]
-    [26 Pages]
-    [AIChatbot Widget]
-    [3D Tilt + Apple-style UX]
-  }
+actor "Người dùng\n(Admin · Manager · Tenant · Visitor)" as User
+
+node "Tầng Giao diện — Trình duyệt" as N1 {
+  component "React 18 SPA  ·  Vite (port 5173)\n4 phân hệ dashboard · AIChatbot widget\nReact Router · Tailwind · Recharts" as FE
 }
 
-node "Máy chủ Backend (Node.js 18)" #E8EEF9 {
-  component "Express Server\nport 5001" as Backend {
-    [54 REST API Endpoints]
-    [JWT Auth Middleware]
-    [Mongoose ODM]
-    [Fallback Engine\n(getFallbackResponse)]
-  }
+node "Tầng API — Node.js" as N2 {
+  component "Express Server (port 5001)\n58 REST endpoints · JWT middleware\nMongoose ODM · Fallback Engine" as BE
+  component "Python Flask (port 5002)\nmodule thống kê — tuỳ chọn,\nKHÔNG được frontend gọi" as FL
 }
 
-cloud "MongoDB Atlas Cloud" #FFF6E5 {
-  database "boardinghouse_db" as DB {
-    folder "10 Collections" {
-      [User]
-      [Property]
-      [RoomType]
-      [Room]
-      [Contract]
-      [Service]
-      [Reading]
-      [Invoice]
-      [Payment]
-      [Notification]
-    }
-  }
-}
+database "MongoDB Atlas\nboardinghouse_db\n10 collections" as DB
 
-cloud "Google Gemini API" #E6F5EA {
-  component "gemini-2.5-flash" as Gemini
-}
+cloud "Google Gemini\n2.5 Flash API" as GEM
+cloud "Gmail SMTP\nsmtp.gmail.com:587" as SMTP
 
-cloud "Gmail SMTP" #FBE6F1 {
-  component "smtp.gmail.com:587\n(Nodemailer)" as SMTP
-}
+User --> FE : HTTPS
+FE --> BE : REST API (axios)
+BE --> DB : Mongoose driver\n(DNS 8.8.8.8 — bypass IPv6 SRV)
+BE --> GEM : POST generateContent\n(3 lần retry · backoff 600ms)
+BE --> SMTP : 4 luồng email\n(OTP đăng ký/quên MK · hợp đồng · nhắc nợ)
+FL ..> DB : (tuỳ chọn)
 
-User --> Frontend : HTTPS\n(localhost dev /\nVercel-Cloudflare prod)
-Frontend --> Backend : REST API\n(axios)
-Backend --> DB : Mongoose driver\nDNS: 8.8.8.8 (bypass IPv6 SRV)
-Backend --> Gemini : POST generateContent\n(3-retry with 600ms backoff)
-Backend --> SMTP : sendOtpEmail / sendForgotPasswordOtpEmail /\nsendContractNotificationEmail / sendDebtReminderEmail
-
-note bottom of Backend
-  Khởi chạy 1 lệnh: ./start.sh
-  - Express 5001 (Node + Mongoose)
-  - Vite 5173 (React Dev)
+note bottom of N2
+  Khởi chạy 3 tiến trình riêng:
+  npm start (Express 5001) · npm run dev (Vite 5173)
+  · python run.py (Flask 5002 — tuỳ chọn).
 end note
 
 @enduml

@@ -1,59 +1,59 @@
 @startuml Seq_Meter_Invoice
-title Hình 2.15 — Sơ đồ tuần tự UC23+UC25 Ghi chỉ số & Tạo hoá đơn lô
+title Hình 2.15 — Tuần tự: UC23 + UC25 Ghi chỉ số & Tạo hoá đơn lô
 
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
 skinparam sequenceMessageAlign center
 skinparam ParticipantBackgroundColor #FBE6F1
 skinparam ParticipantBorderColor #AD1457
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ActorBorderColor #3A5BC7
 
-actor       "Quản lý"            as Mgr
-boundary    "MetersPage"         as UI
-control     "ReadingCtrl"        as Meter
-control     "InvoiceCtrl"        as Bill
-entity      "MongoDB"            as DB
-control     "EmailService\n(định hướng v2)" as Mail
+actor    "Quản lý"      as Mgr
+boundary "MetersPage"   as UI
+control  "ReadingCtrl"  as Meter
+control  "InvoiceCtrl"  as Bill
+entity   "MongoDB"      as DB
+control  "EmailService" as Mail
 
 == Mở phiên ghi chỉ số ==
-Mgr -> UI : Vào /manager/meters\n+ chọn cơ sở (Branch Switcher)
+Mgr -> UI : Vào /manager/meters + chọn cơ sở
 UI -> Meter : GET /api/rooms?propertyId&status=rented
 Meter -> DB : Room.find()
 DB --> Meter : Rooms[]
-Meter --> UI : Hiển thị bảng inline editable
 UI -> Meter : GET /api/readings?period=YYYY-MM (kỳ trước)
 Meter -> DB : Reading.find()
-DB --> Meter : Readings cũ
-Meter --> UI : Điền cột "Điện cũ", "Nước cũ"
+DB --> Meter : Chỉ số cũ
+Meter --> UI : Bảng nhập inline (điện/nước cũ)
 
-== Nhập chỉ số mới ==
-Mgr -> UI : Nhập chỉ số mới cho từng phòng
-UI -> UI : Tự tính tiêu thụ + tổng dự kiến\n+ cảnh báo nếu mới < cũ hoặc >200%
-
-== Lưu nháp ==
-Mgr -> UI : Nhấn "Lưu nháp"
-UI -> Meter : POST /api/readings\n{readings: [...]}
+== Nhập & Lưu chỉ số ==
+Mgr -> UI : Nhập chỉ số mới
+UI -> UI : Tính tiêu thụ + cảnh báo (mới<cũ / >200%)
+Mgr -> UI : Nhấn "Lưu chỉ số"
+UI -> Meter : POST /api/readings {readings:[...]}
 Meter -> DB : Reading.insertMany()
 Meter --> UI : 200 {success}
 
-== Phát hành hoá đơn lô ==
+== Phát hành hoá đơn lô (UC25) ==
 Mgr -> UI : Nhấn "Phát hành hoá đơn"
-UI -> Bill : POST /api/invoices/generate\n{propertyId, period}
-Bill -> DB : Room.find(maNhaTroId, trangThai:'rented')
-DB --> Bill : Rooms đang thuê
-loop Mỗi phòng
-    Bill -> DB : Contract.findOne(maPhongId, active)
-    Bill -> DB : Reading.find(maPhongId, period) + Service.find(maNhaTroId, fixed)
-    Bill -> Bill : Tính chiTiet = tiền phòng\n+ Σ (tiêu thụ × đơn giá)\n+ Σ phí cố định
-    note right of Bill
-      v1: đơn giá phẳng.
-      v2: bậc thang EVN.
-    end note
-    Bill -> DB : Invoice.deleteMany cũ\n+ Invoice.create mới (pending)
+UI -> Bill : POST /api/invoices/generate {propertyId, period}
+Bill -> DB : Room.find(trangThai:'rented')
+loop Mỗi phòng có hợp đồng active
+  Bill -> DB : Reading.find + Service.find(fixed)
+  Bill -> Bill : Tiền phòng + Σ(tiêu thụ×đơn giá)\n+ Σ phí cố định  (đơn giá phẳng)
+  Bill -> DB : Invoice.create (pending) + chiTiet[]
 end
-Bill --> UI : 200 {count: N}
+Bill --> UI : 200 {count:N}
 UI --> Mgr : Toast "Đã phát hành N hoá đơn"
 
-== (v2 — định hướng) Gửi & nhắc nợ tự động ==
-Bill -> Mail : (Cron 8h hàng ngày)\nsendInvoiceEmail + sendDebtReminderEmail
-Mail --> "Khách thuê" : Email + Telegram + Push
+== Nhắc nợ (UC26) ==
+Mgr -> Bill : (thủ công) POST /api/reports/debts/:id/remind
+Bill -> Mail : sendDebtReminderEmail()
+Mail --> "Khách thuê" : Email nhắc nợ (Gmail SMTP)
+note over Bill, Mail
+  v2 (định hướng): cron tự động + kênh Telegram.
+end note
 
 @enduml

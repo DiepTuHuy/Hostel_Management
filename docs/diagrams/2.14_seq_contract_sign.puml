@@ -1,33 +1,36 @@
 @startuml Seq_Contract_Sign
-title Hình 2.14 — Sơ đồ tuần tự UC16+UC17 Tạo & Ký số hợp đồng
+title Hình 2.14 — Tuần tự: UC16 + UC17 Tạo & Ký số hợp đồng (giả lập)
 
+skinparam dpi 150
 skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
 skinparam sequenceMessageAlign center
 skinparam ParticipantBackgroundColor #E6F5EA
 skinparam ParticipantBorderColor #2E7D32
+skinparam ActorBackgroundColor #FFFFFF
+skinparam ActorBorderColor #3A5BC7
 
-actor       "Quản lý"        as Mgr
-boundary    "ContractsPage\n(admin/manager)"  as UI
-control     "ContractCtrl\n(server.js)"        as Ctrl
-entity      "MongoDB"        as DB
-control     "EmailService"   as Mail
-actor       "Khách thuê"     as Tenant
-boundary    "Tenant Portal\n(/tenant/contract)" as TUI
+actor    "Quản lý"        as Mgr
+boundary "ContractsPage"  as UI
+control  "ContractCtrl\n(server.js)" as Ctrl
+entity   "MongoDB"        as DB
+control  "EmailService"   as Mail
+actor    "Khách thuê"     as Tenant
+boundary "Tenant Portal"  as TUI
 
-== Tạo hợp đồng ==
-Mgr -> UI : Nhấn "Tạo hợp đồng mới"
-UI -> Mgr : Wizard chọn phòng trống + khách thuê + điều khoản
-Mgr -> UI : Submit
+== Tạo hợp đồng (UC16) ==
+Mgr -> UI : Chọn phòng trống + khách + điều khoản
 UI -> Ctrl : POST /api/contracts
 alt Khách chưa có User
-    Ctrl -> DB : User.create(mặc định mật khẩu "123456")
+  Ctrl -> DB : User.create(mật khẩu mặc định "123456")
 end
-Ctrl -> DB : Contract.create({\n  maPhongId, maKhachThueIds,\n  ngayBatDau/KetThuc, tienCoc,\n  trangThai: 'active',\n  duongDanPdf: URL })
-Ctrl -> DB : Room.update({trangThai:'rented',\n  currentTenantId})
+Ctrl -> DB : Contract.create(trangThai:'active',\nduongDanPdf:URL)
+Ctrl -> DB : Room.update(trangThai:'rented', currentTenantId)
 Ctrl -> DB : Property.$inc soPhongDaThue
 Ctrl -> Mail : sendContractNotificationEmail()
-Mail --> Tenant : Email "Hợp đồng HD-xxxxxx" + link xem
-Ctrl --> UI : 201 mapContract(populated)
+Mail --> Tenant : Email "Hợp đồng HD-xxxxxx" + link
+Ctrl --> UI : 201 mapContract()
 UI --> Mgr : Toast "Đã tạo hợp đồng"
 
 == Ký số (UC17) ==
@@ -35,20 +38,17 @@ Tenant -> TUI : Đăng nhập + xem hợp đồng
 TUI -> Ctrl : GET /api/contracts/:id
 Ctrl -> DB : findById + populate
 DB --> Ctrl : Contract (duongDanPdf)
-Ctrl --> TUI : Hiển thị PDF + tóm tắt điều khoản
+Ctrl --> TUI : Hiển thị PDF + điều khoản
 Tenant -> TUI : Nhấn "Ký số / Đồng ý"
 TUI -> Ctrl : PATCH /api/contracts/:id/sign
 note right of Ctrl
-  v1 (giả lập): chỉ
-  cập nhật trạng thái.
-  v2 (định hướng):
-  nhúng chữ ký vẽ tay
-  hoặc OTP CA vào PDF.
+  v1 (giả lập): chỉ đổi trạng thái,
+  KHÔNG yêu cầu OTP.
+  v2: nhúng chữ ký vẽ tay / CA vào PDF.
 end note
-Ctrl -> DB : Contract.update(trạng thái = active)
-Ctrl -> DB : Room.update(trangThai = 'rented')
+Ctrl -> DB : Contract.update(trangThai:'active')
+Ctrl -> DB : Room.update(trangThai:'rented')
 Ctrl --> TUI : 200 mapContract
 TUI --> Tenant : Toast "Đã ký thành công"
-TUI -> Mgr : (Notification) Hợp đồng đã ký
 
 @enduml
