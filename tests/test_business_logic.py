@@ -493,12 +493,19 @@ class TestSystemBusinessLogic(unittest.TestCase):
         self.assertIsNotNone(invoice, "Should find at least one invoice in database")
         invoice_id = str(invoice["_id"])
         
+        user = db.users.find_one({"trangThai": "active"})
+        user_id = str(user["_id"]) if user else "66589cf8b190f05bc0d11001"
+        token = f"jwt.{user_id}.123456789"
+
         pay_url = f"http://localhost:5001/api/invoices/{invoice_id}/pay"
         data = json.dumps({"method": "vnpay"}).encode("utf-8")
         req = urllib.request.Request(
             pay_url,
             data=data,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {token}"
+            },
             method="POST"
         )
         
@@ -613,9 +620,27 @@ class TestSystemBusinessLogic(unittest.TestCase):
         invoice_id = str(invoice["_id"])
         contract_id = str(contract["_id"])
         
+        # Lấy admin token
+        admin = db.users.find_one({"vaiTro": "admin", "trangThai": "active"})
+        if not admin:
+            admin = db.users.find_one({"trangThai": "active"})
+        admin_id = str(admin["_id"]) if admin else "66589cf8b190f05bc0d11001"
+        admin_token = f"jwt.{admin_id}.123456789"
+
+        # Lấy tenant token
+        tenant = db.users.find_one({"vaiTro": "tenant", "trangThai": "active"})
+        if not tenant:
+            tenant = db.users.find_one({"trangThai": "active"})
+        tenant_id = str(tenant["_id"]) if tenant else "66589cf8b190f05bc0d11001"
+        tenant_token = f"jwt.{tenant_id}.123456789"
+
         report_url = "http://localhost:5001/api/reports/pdf?type=revenue&period=2026"
         try:
-            with urllib.request.urlopen(report_url) as response:
+            req = urllib.request.Request(
+                report_url,
+                headers={"Authorization": f"Bearer {admin_token}"}
+            )
+            with urllib.request.urlopen(req) as response:
                 self.assertEqual(response.status, 200, "Report PDF download should return status 200")
                 content_type = response.headers.get("Content-Type")
                 self.assertEqual(content_type, "application/pdf", "Content-Type must be application/pdf")
@@ -624,7 +649,11 @@ class TestSystemBusinessLogic(unittest.TestCase):
             
         contract_pdf_url = f"http://localhost:5001/api/contracts/{contract_id}/pdf"
         try:
-            with urllib.request.urlopen(contract_pdf_url) as response:
+            req = urllib.request.Request(
+                contract_pdf_url,
+                headers={"Authorization": f"Bearer {tenant_token}"}
+            )
+            with urllib.request.urlopen(req) as response:
                 self.assertEqual(response.status, 200, "Contract PDF download should return status 200")
                 content_type = response.headers.get("Content-Type")
                 self.assertEqual(content_type, "application/pdf", "Content-Type must be application/pdf")
@@ -633,7 +662,11 @@ class TestSystemBusinessLogic(unittest.TestCase):
             
         invoice_pdf_url = f"http://localhost:5001/api/invoices/{invoice_id}/pdf"
         try:
-            with urllib.request.urlopen(invoice_pdf_url) as response:
+            req = urllib.request.Request(
+                invoice_pdf_url,
+                headers={"Authorization": f"Bearer {tenant_token}"}
+            )
+            with urllib.request.urlopen(req) as response:
                 self.assertEqual(response.status, 200, "Invoice PDF download should return status 200")
                 content_type = response.headers.get("Content-Type")
                 self.assertEqual(content_type, "application/pdf", "Content-Type must be application/pdf")

@@ -41,6 +41,9 @@ def run_test_cases():
     fail_fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid") # light red
     fail_font = Font(name="Arial", size=11, bold=True, color="9C0006") # dark red text
 
+    skipped_fill = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid") # light yellow
+    skipped_font = Font(name="Arial", size=11, bold=True, color="9C6500") # dark yellow text
+
     data_font = Font(name="Arial", size=11, bold=False)
 
     # Add headers for Status and Actual Result if not present
@@ -61,6 +64,7 @@ def run_test_cases():
 
     total_passed = 0
     total_failed = 0
+    total_skipped = 0
 
     print(f"Starting test execution of {sheet.max_row - 1} test cases...")
 
@@ -196,8 +200,22 @@ def run_test_cases():
             elif tc_id == "TC40":
                 actual_result = "Hệ thống ghi nhận cơ sở mới vào database và cập nhật danh sách."
             elif tc_id == "TC61":
+                env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../src/backend/.env")
+                dotenv.load_dotenv(env_path)
+                client = MongoClient(os.getenv("MONGODB_URI"))
+                db = client.get_database("boardinghouse_db")
+                admin = db.users.find_one({"vaiTro": "admin", "trangThai": "active"})
+                if not admin:
+                    admin = db.users.find_one({"trangThai": "active"})
+                user_id = str(admin["_id"]) if admin else "66589cf8b190f05bc0d11001"
+                token = f"jwt.{user_id}.123456789"
+
                 report_url = "http://localhost:5001/api/reports/pdf?type=revenue&period=2026"
-                with urllib.request.urlopen(report_url) as response:
+                req = urllib.request.Request(
+                    report_url,
+                    headers={"Authorization": f"Bearer {token}"}
+                )
+                with urllib.request.urlopen(req) as response:
                     assert response.status == 200
                     assert response.headers.get("Content-Type") == "application/pdf"
                 actual_result = "Tải xuống file PDF báo cáo doanh thu thành công từ backend, Content-Type chuẩn application/pdf."
@@ -209,12 +227,21 @@ def run_test_cases():
                 invoice = db.invoices.find_one()
                 assert invoice is not None
                 
+                tenant = db.users.find_one({"vaiTro": "tenant", "trangThai": "active"})
+                if not tenant:
+                    tenant = db.users.find_one({"trangThai": "active"})
+                user_id = str(tenant["_id"]) if tenant else "66589cf8b190f05bc0d11001"
+                token = f"jwt.{user_id}.123456789"
+                
                 pay_url = f"http://localhost:5001/api/invoices/{str(invoice['_id'])}/pay"
                 data = json.dumps({"method": "vnpay"}).encode("utf-8")
                 req = urllib.request.Request(
                     pay_url,
                     data=data,
-                    headers={"Content-Type": "application/json"},
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {token}"
+                    },
                     method="POST"
                 )
                 with urllib.request.urlopen(req) as response:
@@ -234,11 +261,11 @@ def run_test_cases():
                 assert invoice.get("trangThai") in ["paid", "pending"]
                 actual_result = f"Hoá đơn {invoice.get('code') or str(invoice['_id'])} đã thanh toán, hiển thị trạng thái '{invoice.get('trangThai')}'."
             else:
-                # If tc_id is not in explicitly checked codes, let's keep the existing actual result from excel
-                actual_result = existing_actual or "Hệ thống đáp ứng chính xác các bước kiểm thử và đạt kết quả mong muốn."
+                # Nếu không có logic test thực thụ thì đánh dấu SKIPPED để tránh tỷ lệ pass ảo 100%
+                status = "SKIPPED"
+                actual_result = existing_actual or "Bỏ qua kiểm thử tự động (Chưa cấu hình kiểm thử tự động cho ca này)."
 
-            # If there's an existing specific actual result from the Excel sheet, we prefer to keep it
-            # so we don't overwrite detailed actual results with slightly generic ones.
+            # Nếu có kết quả cũ trong Excel, giữ lại làm mô tả nhưng vẫn đánh dấu SKIPPED
             if existing_actual and not existing_actual.startswith("Hệ thống đáp ứng chính xác") and tc_id not in ["TC61", "TC94", "TC95"]:
                 actual_result = existing_actual
 
@@ -253,6 +280,8 @@ def run_test_cases():
 
         if status == "PASSED":
             total_passed += 1
+        elif status == "SKIPPED":
+            total_skipped += 1
 
         # Write result cells with correct font (Arial 11)
         cell_actual = sheet.cell(row=r, column=6, value=actual_result)
@@ -261,8 +290,15 @@ def run_test_cases():
         cell_actual.border = thin_border
 
         cell_status = sheet.cell(row=r, column=7, value=status)
-        cell_status.font = pass_font if status == "PASSED" else fail_font
-        cell_status.fill = pass_fill if status == "PASSED" else fail_fill
+        if status == "PASSED":
+            cell_status.font = pass_font
+            cell_status.fill = pass_fill
+        elif status == "FAILED":
+            cell_status.font = fail_font
+            cell_status.fill = fail_fill
+        else:
+            cell_status.font = skipped_font
+            cell_status.fill = skipped_fill
         cell_status.alignment = align_center
         cell_status.border = thin_border
 
@@ -281,6 +317,7 @@ def run_test_cases():
     print(f"Total Test Cases: {sheet.max_row - 1}")
     print(f"PASSED: {total_passed}")
     print(f"FAILED: {total_failed}")
+    print(f"SKIPPED: {total_skipped}")
     print(f"Saved results directly to: {excel_path}")
 
 if __name__ == "__main__":
