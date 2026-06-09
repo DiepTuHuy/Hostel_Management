@@ -23,7 +23,7 @@ import { mapDocument, mapRoom, mapContract, mapInvoice, mapNotification, mapUser
 import { verifyToken, requireRole } from '../middlewares/auth.js';
 
 const router = express.Router();
-router.get('/api/rooms', verifyToken, async (req, res) => {
+router.get('/api/rooms', async (req, res) => {
   try {
     const { propertyId, status } = req.query;
     const filter = {};

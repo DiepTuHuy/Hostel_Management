@@ -24,7 +24,7 @@ import { verifyToken, requireRole } from '../middlewares/auth.js';
 
 const router = express.Router();
 // 3. Lấy danh sách các cơ sở nhà trọ (220 cơ sở đã seed ở TP.HCM)
-router.get('/api/properties', verifyToken, async (req, res) => {
+router.get('/api/properties', async (req, res) => {
   try {
     const properties = await Property.find().lean();
     res.json(properties.map(p => {
@@ -51,7 +51,7 @@ router.get('/api/properties', verifyToken, async (req, res) => {
 });
 
 // 3.1. Lấy chi tiết cơ sở nhà trọ
-router.get('/api/properties/:id', verifyToken, async (req, res) => {
+router.get('/api/properties/:id', async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Không tìm thấy cơ sở." });
