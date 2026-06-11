@@ -23,6 +23,59 @@ import { mapDocument, mapRoom, mapContract, mapInvoice, mapNotification, mapUser
 import { verifyToken, requireRole } from '../middlewares/auth.js';
 
 const router = express.Router();
+
+// Route chẩn đoán lỗi kết nối MongoDB và SMTP trên production
+router.get('/api/diagnose', async (req, res) => {
+  const diagnosis = {
+    mongodb: {
+      status: "unknown",
+      error: null
+    },
+    smtp: {
+      status: "unknown",
+      error: null,
+      config: {
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: process.env.SMTP_SECURE,
+        user: process.env.SMTP_USER ? `${process.env.SMTP_USER.slice(0, 3)}...` : null
+      }
+    }
+  };
+
+  // Kiểm tra trạng thái MongoDB
+  try {
+    const state = mongoose.connection.readyState;
+    const states = ["disconnected", "connected", "connecting", "disconnecting"];
+    diagnosis.mongodb.status = states[state] || "unknown";
+  } catch (err) {
+    diagnosis.mongodb.status = "error";
+    diagnosis.mongodb.error = err.message;
+  }
+
+  // Kiểm tra SMTP bằng cách thử verify kết nối trong tối đa 5 giây
+  try {
+    const testTransporter = (await import('nodemailer')).default.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+      connectionTimeout: 5000,
+      greetingTimeout: 5000
+    });
+    await testTransporter.verify();
+    diagnosis.smtp.status = "connected";
+  } catch (err) {
+    diagnosis.smtp.status = "failed";
+    diagnosis.smtp.error = err.message;
+  }
+
+  res.json(diagnosis);
+});
+
 // 1. Đăng ký tài khoản (Trực tiếp lưu tài khoản mới vào database MongoDB Atlas)
 router.post('/api/auth/register', async (req, res) => {
   try {
