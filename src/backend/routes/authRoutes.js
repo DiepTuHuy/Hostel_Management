@@ -24,10 +24,14 @@ import { verifyToken, requireRole } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Route chẩn đoán lỗi kết nối MongoDB và SMTP trên production
+// Route chẩn đoán lỗi kết nối MongoDB, SMTP và Brevo API trên production
 router.get('/api/diagnose', async (req, res) => {
   const diagnosis = {
     mongodb: {
+      status: "unknown",
+      error: null
+    },
+    brevo: {
       status: "unknown",
       error: null
     },
@@ -43,7 +47,7 @@ router.get('/api/diagnose', async (req, res) => {
     }
   };
 
-  // Kiểm tra trạng thái MongoDB
+  // 1. Kiểm tra trạng thái MongoDB
   try {
     const state = mongoose.connection.readyState;
     const states = ["disconnected", "connected", "connecting", "disconnecting"];
@@ -53,7 +57,43 @@ router.get('/api/diagnose', async (req, res) => {
     diagnosis.mongodb.error = err.message;
   }
 
-  // Kiểm tra SMTP bằng cách thử verify kết nối trong tối đa 5 giây
+  // 2. Kiểm tra Brevo API
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const https = (await import('https')).default;
+      diagnosis.brevo = await new Promise((resolve) => {
+        const options = {
+          hostname: 'api.brevo.com',
+          port: 443,
+          path: '/v3/account',
+          method: 'GET',
+          headers: {
+            'accept': 'application/json',
+            'api-key': process.env.BREVO_API_KEY
+          }
+        };
+        const req = https.request(options, (res) => {
+          let body = '';
+          res.on('data', chunk => body += chunk);
+          res.on('end', () => {
+            if (res.statusCode >= 200 && res.statusCode < 300) {
+              resolve({ status: "connected", error: null });
+            } else {
+              resolve({ status: "failed", error: `Brevo API status ${res.statusCode}: ${body}` });
+            }
+          });
+        });
+        req.on('error', err => resolve({ status: "failed", error: err.message }));
+        req.end();
+      });
+    } catch (err) {
+      diagnosis.brevo = { status: "failed", error: err.message };
+    }
+  } else {
+    diagnosis.brevo = { status: "not_configured", error: "BREVO_API_KEY is not defined" };
+  }
+
+  // 3. Kiểm tra SMTP bằng cách thử verify kết nối trong tối đa 5 giây
   try {
     const testTransporter = (await import('nodemailer')).default.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',

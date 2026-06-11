@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import https from 'https';
 
 dotenv.config();
 
@@ -13,6 +14,62 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
 });
+
+// Hàm hỗ trợ gửi mail qua Brevo HTTP API (Tránh việc bị chặn SMTP trên Render Free)
+function sendBrevoEmail(toEmail, toName, subject, htmlContent) {
+  return new Promise((resolve, reject) => {
+    const apiKey = process.env.BREVO_API_KEY;
+    if (!apiKey) {
+      return reject(new Error("BREVO_API_KEY is not defined"));
+    }
+
+    const data = JSON.stringify({
+      sender: {
+        name: "BoardingHouse Pro",
+        email: process.env.SMTP_USER || "dieptuhuy80@gmail.com"
+      },
+      to: [{ email: toEmail, name: toName }],
+      subject: subject,
+      htmlContent: htmlContent
+    });
+
+    const options = {
+      hostname: 'api.brevo.com',
+      port: 443,
+      path: '/v3/smtp/email',
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': apiKey,
+        'content-type': 'application/json',
+        'content-length': Buffer.byteLength(data)
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let responseBody = '';
+      res.on('data', (chunk) => {
+        responseBody += chunk;
+      });
+
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(JSON.parse(responseBody));
+        } else {
+          reject(new Error(`Brevo API responded with status ${res.statusCode}: ${responseBody}`));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    req.write(data);
+    req.end();
+  });
+}
+
 
 export const emailService = {
   /**
@@ -158,32 +215,49 @@ export const emailService = {
     `;
 
     const hasConfig = process.env.SMTP_USER && process.env.SMTP_PASS;
+    const hasBrevo = process.env.BREVO_API_KEY;
 
-    if (!hasConfig) {
+    if (!hasConfig && !hasBrevo) {
       console.log(`\n==================================================`);
       console.log(`[Email Service - MOCK LOG]`);
-      console.log(`SMTP chưa được cấu hình đầy đủ trong tệp .env!`);
+      console.log(`SMTP và Brevo chưa được cấu hình đầy đủ!`);
       console.log(`Đang giả lập gửi mã OTP 6 chữ số đến email: ${email}`);
       console.log(`MÃ OTP CỦA BẠN LÀ: ${otp}`);
       console.log(`==================================================\n`);
       return true;
     }
 
-    try {
-      const mailOptions = {
-        from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
-        to: email,
-        subject: `[BoardingHouse Pro] Mã OTP xác thực tài khoản: ${otp}`,
-        html: htmlContent,
-      };
+    if (hasBrevo) {
+      try {
+        await sendBrevoEmail(email, fullName, `[BoardingHouse Pro] Mã OTP xác thực tài khoản: ${otp}`, htmlContent);
+        console.log(`[Email Service - BREVO] Đã gửi thành công OTP email đến: ${email}`);
+        return true;
+      } catch (error) {
+        console.error(`[Email Service - LỖI GỬI EMAIL QUA BREVO]:`, error.message);
+        if (!hasConfig) {
+          console.log(`[Email Service - FALLBACK] Mã OTP của bạn là: ${otp}`);
+          return false;
+        }
+      }
+    }
 
-      const info = await transporter.sendMail(mailOptions);
-      console.log(`[Email Service] Đã gửi thành công OTP email đến: ${email}. MessageId: ${info.messageId}`);
-      return true;
-    } catch (error) {
-      console.error(`[Email Service - LỖI GỬI EMAIL]:`, error.message);
-      console.log(`[Email Service - FALLBACK] Mã OTP của bạn là: ${otp}`);
-      return false;
+    if (hasConfig) {
+      try {
+        const mailOptions = {
+          from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
+          to: email,
+          subject: `[BoardingHouse Pro] Mã OTP xác thực tài khoản: ${otp}`,
+          html: htmlContent,
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`[Email Service - SMTP] Đã gửi thành công OTP email đến: ${email}. MessageId: ${info.messageId}`);
+        return true;
+      } catch (error) {
+        console.error(`[Email Service - LỖI GỬI EMAIL QUA SMTP]:`, error.message);
+        console.log(`[Email Service - FALLBACK] Mã OTP của bạn là: ${otp}`);
+        return false;
+      }
     }
   },
 
@@ -324,32 +398,49 @@ export const emailService = {
     `;
 
     const hasConfig = process.env.SMTP_USER && process.env.SMTP_PASS;
+    const hasBrevo = process.env.BREVO_API_KEY;
 
-    if (!hasConfig) {
+    if (!hasConfig && !hasBrevo) {
       console.log(`\n==================================================`);
       console.log(`[Email Service - MOCK LOG]`);
-      console.log(`SMTP chưa được cấu hình đầy đủ trong tệp .env!`);
+      console.log(`SMTP và Brevo chưa được cấu hình đầy đủ!`);
       console.log(`Đang giả lập gửi mã OTP quên mật khẩu đến email: ${email}`);
       console.log(`MÃ OTP QUÊN MẬT KHẨU CỦA BẠN LÀ: ${otp}`);
       console.log(`==================================================\n`);
       return true;
     }
 
-    try {
-      const mailOptions = {
-        from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
-        to: email,
-        subject: `[BoardingHouse Pro] Mã OTP khôi phục mật khẩu: ${otp}`,
-        html: htmlContent,
-      };
+    if (hasBrevo) {
+      try {
+        await sendBrevoEmail(email, fullName, `[BoardingHouse Pro] Mã OTP khôi phục mật khẩu: ${otp}`, htmlContent);
+        console.log(`[Email Service - BREVO] Đã gửi thành công OTP email quên mật khẩu đến: ${email}`);
+        return true;
+      } catch (error) {
+        console.error(`[Email Service - LỖI GỬI EMAIL QUA BREVO]:`, error.message);
+        if (!hasConfig) {
+          console.log(`[Email Service - FALLBACK] Mã OTP quên mật khẩu của bạn là: ${otp}`);
+          return false;
+        }
+      }
+    }
 
-      const info = await transporter.sendMail(mailOptions);
-      console.log(`[Email Service] Đã gửi thành công OTP email quên mật khẩu đến: ${email}. MessageId: ${info.messageId}`);
-      return true;
-    } catch (error) {
-      console.error(`[Email Service - LỖI GỬI EMAIL]:`, error.message);
-      console.log(`[Email Service - FALLBACK] Mã OTP quên mật khẩu của bạn là: ${otp}`);
-      return false;
+    if (hasConfig) {
+      try {
+        const mailOptions = {
+          from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
+          to: email,
+          subject: `[BoardingHouse Pro] Mã OTP khôi phục mật khẩu: ${otp}`,
+          html: htmlContent,
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`[Email Service - SMTP] Đã gửi thành công OTP email quên mật khẩu đến: ${email}. MessageId: ${info.messageId}`);
+        return true;
+      } catch (error) {
+        console.error(`[Email Service - LỖI GỬI EMAIL QUA SMTP]:`, error.message);
+        console.log(`[Email Service - FALLBACK] Mã OTP quên mật khẩu của bạn là: ${otp}`);
+        return false;
+      }
     }
   },
 
@@ -434,7 +525,9 @@ export const emailService = {
     `;
 
     const hasConfig = process.env.SMTP_USER && process.env.SMTP_PASS;
-    if (!hasConfig) {
+    const hasBrevo = process.env.BREVO_API_KEY;
+
+    if (!hasConfig && !hasBrevo) {
       console.log(`\n==================================================`);
       console.log(`[Email Service - MOCK LOG] Gửi thông báo hợp đồng mới`);
       console.log(`Đang giả lập gửi mail hợp đồng ${contractCode} đến email: ${email}`);
@@ -442,20 +535,33 @@ export const emailService = {
       return true;
     }
 
-    try {
-      const mailOptions = {
-        from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
-        to: email,
-        subject: `[BoardingHouse Pro] Thông báo ký số hợp đồng thuê phòng trọ mới: ${contractCode}`,
-        html: htmlContent,
-      };
+    if (hasBrevo) {
+      try {
+        await sendBrevoEmail(email, fullName, `[BoardingHouse Pro] Thông báo ký số hợp đồng thuê phòng trọ mới: ${contractCode}`, htmlContent);
+        console.log(`[Email Service - BREVO] Đã gửi thành công email hợp đồng đến: ${email}`);
+        return true;
+      } catch (error) {
+        console.error(`[Email Service - LỖI GỬI EMAIL HỢP ĐỒNG QUA BREVO]:`, error.message);
+        if (!hasConfig) return false;
+      }
+    }
 
-      const info = await transporter.sendMail(mailOptions);
-      console.log(`[Email Service] Đã gửi thành công email hợp đồng đến: ${email}. MessageId: ${info.messageId}`);
-      return true;
-    } catch (error) {
-      console.error(`[Email Service - LỖI GỬI EMAIL HỢP ĐỒNG]:`, error.message);
-      return false;
+    if (hasConfig) {
+      try {
+        const mailOptions = {
+          from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
+          to: email,
+          subject: `[BoardingHouse Pro] Thông báo ký số hợp đồng thuê phòng trọ mới: ${contractCode}`,
+          html: htmlContent,
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`[Email Service - SMTP] Đã gửi thành công email hợp đồng đến: ${email}. MessageId: ${info.messageId}`);
+        return true;
+      } catch (error) {
+        console.error(`[Email Service - LỖI GỬI EMAIL HỢP ĐỒNG QUA SMTP]:`, error.message);
+        return false;
+      }
     }
   },
 
@@ -538,7 +644,9 @@ export const emailService = {
     `;
 
     const hasConfig = process.env.SMTP_USER && process.env.SMTP_PASS;
-    if (!hasConfig) {
+    const hasBrevo = process.env.BREVO_API_KEY;
+
+    if (!hasConfig && !hasBrevo) {
       console.log(`\n==================================================`);
       console.log(`[Email Service - MOCK LOG] Nhắc nợ công nợ hóa đơn`);
       console.log(`Đang giả lập gửi email nhắc nợ ${invoiceCode} trị giá ${formattedAmount} đến email: ${email}`);
@@ -546,20 +654,33 @@ export const emailService = {
       return true;
     }
 
-    try {
-      const mailOptions = {
-        from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
-        to: email,
-        subject: `[CẢNH BÁO QUÁ HẠN] Nhắc đóng tiền phòng trọ kỳ ${period} - Mã hóa đơn: ${invoiceCode}`,
-        html: htmlContent,
-      };
+    if (hasBrevo) {
+      try {
+        await sendBrevoEmail(email, fullName, `[CẢNH BÁO QUÁ HẠN] Nhắc đóng tiền phòng trọ kỳ ${period} - Mã hóa đơn: ${invoiceCode}`, htmlContent);
+        console.log(`[Email Service - BREVO] Đã gửi thành công email nhắc nợ đến: ${email}`);
+        return true;
+      } catch (error) {
+        console.error(`[Email Service - LỖI GỬI EMAIL NHẮC NỢ QUA BREVO]:`, error.message);
+        if (!hasConfig) return false;
+      }
+    }
 
-      const info = await transporter.sendMail(mailOptions);
-      console.log(`[Email Service] Đã gửi thành công email nhắc nợ đến: ${email}. MessageId: ${info.messageId}`);
-      return true;
-    } catch (error) {
-      console.error(`[Email Service - LỖI GỬI EMAIL NHẮC NỢ]:`, error.message);
-      return false;
+    if (hasConfig) {
+      try {
+        const mailOptions = {
+          from: `"BoardingHouse Pro" <${process.env.SMTP_USER}>`,
+          to: email,
+          subject: `[CẢNH BÁO QUÁ HẠN] Nhắc đóng tiền phòng trọ kỳ ${period} - Mã hóa đơn: ${invoiceCode}`,
+          html: htmlContent,
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`[Email Service - SMTP] Đã gửi thành công email nhắc nợ đến: ${email}. MessageId: ${info.messageId}`);
+        return true;
+      } catch (error) {
+        console.error(`[Email Service - LỖI GỬI EMAIL NHẮC NỢ QUA SMTP]:`, error.message);
+        return false;
+      }
     }
   }
 };

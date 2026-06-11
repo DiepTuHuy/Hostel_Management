@@ -31,6 +31,8 @@ services:
         value: lmcn edcn rjqw wxwx
       - key: GEMINI_API_KEY
         sync: false
+      - key: BREVO_API_KEY
+        sync: false
       - key: VNP_TMNCODE
         sync: false
       - key: VNP_HASHSECRET
