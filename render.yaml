@@ -26,9 +26,9 @@ services:
       - key: SMTP_SECURE
         value: false
       - key: SMTP_USER
-        sync: false
+        value: dieptuhuy80@gmail.com
       - key: SMTP_PASS
-        sync: false
+        value: lmcn edcn rjqw wxwx
       - key: GEMINI_API_KEY
         sync: false
       - key: VNP_TMNCODE
