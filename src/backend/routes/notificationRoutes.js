@@ -42,7 +42,37 @@ router.get('/api/notifications', verifyToken, async (req, res) => {
   }
 });
 
-// 8. Lấy danh sách người dùng
+// Đánh dấu một thông báo đã đọc
+router.patch('/api/notifications/:id/read', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "ID thông báo không hợp lệ." });
+    }
+    const notification = await Notification.findByIdAndUpdate(id, { daDoc: true }, { new: true });
+    if (!notification) {
+      return res.status(404).json({ message: "Không tìm thấy thông báo." });
+    }
+    res.json(mapNotification(notification));
+  } catch (error) {
+    console.error("Lỗi đánh dấu đã đọc thông báo:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống." });
+  }
+});
 
+// Đánh dấu tất cả thông báo của một user đã đọc
+router.post('/api/notifications/read-all', verifyToken, async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "userId không hợp lệ hoặc thiếu." });
+    }
+    await Notification.updateMany({ maNguoiDungId: userId }, { daDoc: true });
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Lỗi đánh dấu tất cả thông báo đã đọc:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống." });
+  }
+});
 
 export default router;

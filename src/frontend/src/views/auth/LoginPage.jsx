@@ -30,7 +30,7 @@ export default function LoginPage() {
       {/* Back to Home Button */}
       <Link 
         to="/" 
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 bg-white/80 border border-zinc-200/50 px-3 py-2 rounded-full backdrop-blur-sm active:scale-95 transition-transform"
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-zinc-100 px-3 py-2 rounded-full backdrop-blur-sm active:scale-95 transition-transform"
       >
         <ArrowLeft size={14} /> Quay về Trang chủ
       </Link>

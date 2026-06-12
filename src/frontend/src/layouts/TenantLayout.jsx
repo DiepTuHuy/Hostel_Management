@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Home, FileText, Receipt, User, Bell, Menu, X, LogOut, HelpCircle, Info, PhoneCall } from 'lucide-react';
+import { Home, FileText, Receipt, User, Bell, Menu, X, LogOut, HelpCircle, Info, PhoneCall, Shield } from 'lucide-react';
 import { useAuth } from '../controllers/useAuth.jsx';
 import { cn } from '../utils/cn.js';
 import { Avatar, AIChatbot } from '../components/common';
+import { notificationService } from '../services/notificationService.js';
 
 const BOTTOM_NAV = [
   { to: '/tenant',           label: 'Trang chủ',   icon: Home, end: true },
@@ -81,6 +82,59 @@ export default function TenantLayout() {
   }, [location.pathname]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  const loadNotifications = () => {
+    if (!user) return;
+    notificationService.list(user.id).then(res => {
+      setNotifications(res);
+    }).catch(err => {
+      console.error('Lỗi khi tải danh sách thông báo trong Layout:', err);
+    });
+  };
+
+  useEffect(() => {
+    loadNotifications();
+    const handleUpdate = () => {
+      loadNotifications();
+    };
+    window.addEventListener('notifications-update', handleUpdate);
+    return () => {
+      window.removeEventListener('notifications-update', handleUpdate);
+    };
+  }, [user]);
+
+  const handleMarkAsRead = async (id) => {
+    try {
+      await notificationService.markAsRead(id);
+      window.dispatchEvent(new Event('notifications-update'));
+    } catch (err) {
+      console.error('Lỗi khi đánh dấu đã đọc thông báo:', err);
+    }
+  };
+
+  const handleMarkAllAsRead = async (e) => {
+    e.stopPropagation();
+    if (!user) return;
+    try {
+      await notificationService.markAllAsRead(user.id);
+      window.dispatchEvent(new Event('notifications-update'));
+    } catch (err) {
+      console.error('Lỗi khi đánh dấu tất cả đã đọc:', err);
+    }
+  };
+
+  const getIcon = (type) => {
+    switch (type) {
+      case 'invoice': return <Receipt size={16} />;
+      case 'contract': return <FileText size={16} />;
+      case 'system': return <Shield size={16} />;
+      default: return <Bell size={16} />;
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleLogout = async () => {
     setIsDrawerOpen(false);
@@ -212,10 +266,89 @@ export default function TenantLayout() {
           <span className="hidden lg:inline text-zinc-400">Cổng thông tin khách thuê</span>
         </div>
         <div className="flex items-center gap-3">
-          <button className="p-2 text-zinc-500 relative hover:bg-zinc-50 rounded-xl transition-colors active:scale-95" onClick={() => navigate('/tenant/notifications')}>
-            <Bell size={18} />
-            <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 bg-danger rounded-full" />
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setIsNotifOpen(!isNotifOpen)}
+              className={cn(
+                "p-2 rounded-md hover:bg-gray-100 text-ink-muted relative transition-colors apple-press",
+                isNotifOpen && "bg-gray-100 text-primary"
+              )}
+            >
+              <Bell size={18} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 h-2 w-2 bg-danger rounded-full ring-2 ring-surface animate-pulse" />
+              )}
+            </button>
+
+            {isNotifOpen && (
+              <>
+                <div className="fixed inset-0 z-40 cursor-default" onClick={() => setIsNotifOpen(false)} />
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-surface border border-line rounded-2xl shadow-xl z-50 py-3 overflow-hidden animate-[fadeInScale_0.2s_ease-out] text-ink">
+                  <div className="px-4 pb-2.5 border-b border-line flex justify-between items-center">
+                    <span className="font-bold text-sm">Thông báo mới ({unreadCount})</span>
+                    {unreadCount > 0 && (
+                      <button 
+                        onClick={handleMarkAllAsRead}
+                        className="text-xs text-primary font-bold hover:underline"
+                      >
+                        Đọc tất cả
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="max-h-72 overflow-y-auto divide-y divide-line">
+                    {notifications.slice(0, 5).map((n) => (
+                      <div 
+                        key={n.id} 
+                        onClick={() => {
+                          handleMarkAsRead(n.id);
+                          setIsNotifOpen(false);
+                          navigate('/tenant/notifications');
+                        }}
+                        className={cn(
+                          "px-4 py-3 flex gap-3 hover:bg-gray-50/80 cursor-pointer transition-colors items-start",
+                          !n.read && "bg-primary-soft/5"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5",
+                          n.type === 'system' && "bg-red-50 text-danger",
+                          n.type === 'contract' && "bg-amber-50 text-warning",
+                          n.type === 'invoice' && "bg-sky-50 text-info"
+                        )}>
+                          {getIcon(n.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn("text-xs leading-normal", !n.read ? "font-bold text-ink" : "text-ink-muted")}>
+                            {n.title}
+                          </p>
+                          <p className="text-[10px] text-ink-muted mt-0.5 truncate">{n.body}</p>
+                        </div>
+                        {!n.read && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 self-center" />
+                        )}
+                      </div>
+                    ))}
+                    {notifications.length === 0 && (
+                      <div className="py-8 text-center text-xs text-ink-muted">Không có thông báo nào</div>
+                    )}
+                  </div>
+                  
+                  <div className="px-4 pt-2.5 border-t border-line text-center">
+                    <button 
+                      onClick={() => {
+                        setIsNotifOpen(false);
+                        navigate('/tenant/notifications');
+                      }}
+                      className="text-xs text-primary font-bold hover:underline w-full block py-1"
+                    >
+                      Xem tất cả thông báo
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           <div className="hidden lg:flex items-center gap-2.5 pl-3 ml-2 border-l border-zinc-200/60 select-none">
             <Avatar name={user?.fullName || 'Tenant'} size="sm" className="rounded-lg" />
             <div className="text-left text-xs">

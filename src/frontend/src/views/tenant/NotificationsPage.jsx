@@ -9,21 +9,44 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      notificationService.list(user.id).then(res => {
-        setNotifications(res);
-        setLoading(false);
-      }).catch(err => {
-        console.error('Lỗi khi tải danh sách thông báo:', err);
-        setLoading(false);
-      });
+  const handleMarkAsRead = async (id) => {
+    try {
+      await notificationService.markAsRead(id);
+      window.dispatchEvent(new Event('notifications-update'));
+    } catch (err) {
+      console.error('Lỗi khi đánh dấu đã đọc thông báo:', err);
     }
-  }, [user]);
-
-  const handleMarkAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
+
+  const handleMarkAllRead = async () => {
+    if (!user) return;
+    try {
+      await notificationService.markAllAsRead(user.id);
+      window.dispatchEvent(new Event('notifications-update'));
+    } catch (err) {
+      console.error('Lỗi khi đánh dấu tất cả đã đọc:', err);
+    }
+  };
+
+  useEffect(() => {
+    const load = () => {
+      if (user) {
+        notificationService.list(user.id).then(res => {
+          setNotifications(res);
+          setLoading(false);
+        }).catch(err => {
+          console.error('Lỗi khi tải danh sách thông báo:', err);
+          setLoading(false);
+        });
+      }
+    };
+
+    load();
+    window.addEventListener('notifications-update', load);
+    return () => {
+      window.removeEventListener('notifications-update', load);
+    };
+  }, [user]);
 
   const getIcon = (type) => {
     switch (type) {
@@ -65,7 +88,8 @@ export default function NotificationsPage() {
         {notifications.map(n => (
           <div
             key={n.id}
-            className={`p-4 bg-white border rounded-2xl flex gap-3.5 shadow-card transition-all relative ${n.read ? 'border-line opacity-80' : 'border-primary ring-1 ring-primary/5'}`}
+            onClick={() => handleMarkAsRead(n.id)}
+            className={`p-4 bg-white border rounded-2xl flex gap-3.5 shadow-card transition-all relative cursor-pointer apple-press hover:bg-gray-50/80 ${n.read ? 'border-line opacity-80' : 'border-primary ring-1 ring-primary/5'}`}
           >
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${n.read ? 'bg-gray-50' : 'bg-primary-soft'}`}>
               {getIcon(n.type)}
