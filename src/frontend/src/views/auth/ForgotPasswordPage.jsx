@@ -185,7 +185,11 @@ export default function ForgotPasswordPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-zinc-950 text-white flex-col justify-between p-16 relative overflow-hidden select-none">
         <div className="z-10">
           <Link to="/" className="flex items-center gap-3 active:scale-95 transition-transform duration-200 w-fit">
-            <div className="h-9 w-9 bg-primary rounded-lg flex items-center justify-center text-white font-extrabold">B</div>
+            <div className="h-9 w-9 bg-primary rounded-lg flex items-center justify-center text-white font-extrabold">
+              <svg className="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+              </svg>
+            </div>
             <div>
               <div className="font-extrabold text-white leading-tight tracking-tight text-sm">BoardingHouse Pro</div>
               <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest leading-none mt-0.5">Premium Living</div>

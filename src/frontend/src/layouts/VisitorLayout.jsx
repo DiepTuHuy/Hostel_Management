@@ -199,7 +199,11 @@ export default function VisitorLayout() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div>
             <div className="flex items-center gap-3 text-white font-extrabold mb-4 text-base">
-              <div className="h-8 w-8 bg-zinc-800 rounded-lg flex items-center justify-center text-white text-sm">B</div>
+              <div className="h-8 w-8 bg-zinc-800 rounded-lg flex items-center justify-center text-white">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                </svg>
+              </div>
               BoardingHouse Pro
             </div>
             <p className="text-xs text-zinc-500 leading-relaxed max-w-[30ch]">
