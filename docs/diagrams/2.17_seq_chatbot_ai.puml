@@ -1,5 +1,5 @@
 @startuml Seq_Chatbot_AI
-title Hình 2.17 — Tuần tự: UC41 Trợ lý ảo AI Chatbot (Online Gemini + Offline Fallback)
+title Hình 2.17 — Tuần tự: UC39 Trợ lý ảo AI Chatbot (Online Gemini + Offline Fallback)
 
 skinparam dpi 150
 skinparam shadowing false

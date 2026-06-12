@@ -22,15 +22,15 @@ actor "Quản lý"     as Manager
 actor "Khách thuê"  as Tenant
 
 rectangle "D. Dịch vụ, ghi chỉ số, hoá đơn & thanh toán" {
-  usecase "UC22 — Cấu hình đơn giá\ndịch vụ"      as B1
-  usecase "UC23 — Ghi chỉ số\nđiện nước"          as B2
-  usecase "UC24 — Tính tiền dịch vụ\n(tự động)"   as B3
-  usecase "UC25 — Tạo hoá đơn"                    as B4
-  usecase "UC26 — Gửi hoá đơn\n& nhắc thanh toán" as B5
-  usecase "UC27 — Thanh toán online\n(giả lập VietQR)" as B6
-  usecase "UC28 — Xác nhận\nthu tiền mặt"         as B7
-  usecase "UC29 — Tra cứu\nlịch sử hoá đơn"       as B8
-  usecase "UC30 — Quản lý công nợ"                as B9
+  usecase "UC21 — Cấu hình đơn giá\ndịch vụ"      as B1
+  usecase "UC22 — Ghi chỉ số\nđiện nước"          as B2
+  usecase "UC23 — Tính tiền dịch vụ\n(tự động)"   as B3
+  usecase "UC24 — Tạo hoá đơn"                    as B4
+  usecase "UC25 — Gửi hoá đơn\n& nhắc thanh toán" as B5
+  usecase "UC26 — Thanh toán online\n(VNPay Sandbox + VietQR)" as B6
+  usecase "UC27 — Xác nhận\nthu tiền mặt"         as B7
+  usecase "UC28 — Tra cứu\nlịch sử hoá đơn"       as B8
+  usecase "UC29 — Quản lý công nợ"                as B9
 }
 
 Owner   -- B1

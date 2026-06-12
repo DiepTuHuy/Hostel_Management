@@ -20,12 +20,12 @@ left to right direction
 actor "Chủ trọ" as Owner
 
 rectangle "E. Báo cáo & thống kê vận hành" {
-  usecase "UC31 — Dashboard tổng quan\n(doanh thu · lấp đầy · công nợ)" as E1
-  usecase "UC32 — Báo cáo doanh thu\n(tháng / quý / năm)"  as E2
-  usecase "UC33 — Báo cáo tỉ lệ lấp đầy" as E3
-  usecase "UC34 — Báo cáo công nợ"        as E4
-  usecase "UC35 — Báo cáo chi phí vận hành" as E5
-  usecase "UC36 — Xuất Excel / PDF\n(CSV + window.print)" as E6
+  usecase "UC30 — Dashboard tổng quan\n(doanh thu · lấp đầy · công nợ)" as E1
+  usecase "UC31 — Báo cáo doanh thu\n(tháng / quý / năm)"  as E2
+  usecase "UC32 — Báo cáo tỉ lệ lấp đầy" as E3
+  usecase "UC33 — Báo cáo công nợ"        as E4
+  usecase "UC34 — Báo cáo chi phí vận hành" as E5
+  usecase "UC35 — Xuất Excel / PDF\n(CSV UTF-8 + PDF pdfkit)" as E6
 }
 
 Owner -- E1

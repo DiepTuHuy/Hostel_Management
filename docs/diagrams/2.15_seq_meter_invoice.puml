@@ -1,5 +1,5 @@
 @startuml Seq_Meter_Invoice
-title Hình 2.15 — Tuần tự: UC23 + UC25 Ghi chỉ số & Tạo hoá đơn lô
+title Hình 2.15 — Tuần tự: UC22 + UC24 Ghi chỉ số & Tạo hoá đơn lô
 
 skinparam dpi 150
 skinparam shadowing false
@@ -36,7 +36,7 @@ UI -> Meter : POST /api/readings {readings:[...]}
 Meter -> DB : Reading.insertMany()
 Meter --> UI : 200 {success}
 
-== Phát hành hoá đơn lô (UC25) ==
+== Phát hành hoá đơn lô (UC24) ==
 Mgr -> UI : Nhấn "Phát hành hoá đơn"
 UI -> Bill : POST /api/invoices/generate {propertyId, period}
 Bill -> DB : Room.find(trangThai:'rented')
@@ -48,7 +48,7 @@ end
 Bill --> UI : 200 {count:N}
 UI --> Mgr : Toast "Đã phát hành N hoá đơn"
 
-== Nhắc nợ (UC26) ==
+== Nhắc nợ (UC25) ==
 Mgr -> Bill : (thủ công) POST /api/reports/debts/:id/remind
 Bill -> Mail : sendDebtReminderEmail()
 Mail --> "Khách thuê" : Email nhắc nợ (Gmail SMTP)

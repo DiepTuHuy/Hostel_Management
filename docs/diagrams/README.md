@@ -30,13 +30,13 @@ java -jar plantuml.jar *.puml -o ./png/
 
 | File | Hình trong đặc tả | Mô tả |
 |---|---|---|
-| `2.01_uc_overall.puml` | Hình 2.1 | Sơ đồ Use Case tổng quát (4 actor + 12 nhóm UC + UC41 Chatbot) |
+| `2.01_uc_overall.puml` | Hình 2.1 | Sơ đồ Use Case tổng quát (4 actor + 12 nhóm UC + UC39 Chatbot) |
 | `2.02_uc_auth.puml` | Hình 2.2 | UC nhóm A: Xác thực & tài khoản (đã bỏ OTP login) |
 | `2.03_uc_room.puml` | Hình 2.3 | UC nhóm B: Nhà trọ, chi nhánh & phòng |
 | `2.04_uc_contract.puml` | Hình 2.4 | UC nhóm C: Hợp đồng & khách thuê |
 | `2.05_uc_billing.puml` | Hình 2.5 | UC nhóm D: Dịch vụ, ghi chỉ số, hoá đơn & thanh toán |
 | `2.06_uc_report.puml` | Hình 2.6 | UC nhóm E: Báo cáo & thống kê |
-| `2.06b_uc_utilities.puml` | Hình 2.6b | UC nhóm F: Tiện ích bổ trợ (UC37-UC41 — bao gồm Chatbot AI với extend Online/Offline) |
+| `2.06b_uc_utilities.puml` | Hình 2.6b | UC nhóm F: Tiện ích bổ trợ (UC36-UC39 — bao gồm Chatbot AI với extend Online/Offline) |
 | `2.07_act_register_otp.puml` | Hình 2.7 | Activity: Đăng ký + Kích hoạt OTP (đã đổi tên từ "Đăng nhập OTP") |
 | `2.08_act_room.puml` | Hình 2.8 | Activity: Quản lý phòng |
 | `2.09_act_contract_sign.puml` | Hình 2.9 | Activity: Lập hợp đồng & ký số |
@@ -52,13 +52,13 @@ java -jar plantuml.jar *.puml -o ./png/
 
 ## Các sửa đổi so với sơ đồ gốc
 
-- **Hình 2.1**: Thêm UC41 Chatbot, gỡ Owner→UC_Search (Visitor mới search), nhóm các UC theo 6 package.
+- **Hình 2.1**: Thêm UC39 Chatbot, gỡ Owner→UC_Search (Visitor mới search), nhóm các UC theo 6 package.
 - **Hình 2.2**: Đổi UC02 thành "Đăng nhập (email + mật khẩu)", bỏ relationship `U2 .> U7 <<include>>`, thêm `U1 .> U7 <<include>>` (đăng ký mới có OTP) và `U4 .> U7 <<include>>` (quên mật khẩu có OTP).
 - **Hình 2.3**: Tách 2 cấp Nhà trọ và Phòng, đánh số UC09–UC14 rõ ràng.
-- **Hình 2.4**: Quản lý nhóm UC-C: Hợp đồng & khách thuê (bỏ UC21 đăng ký tạm trú).
-- **Hình 2.5**: Đánh dấu UC27 VNPay là "v1 giả lập".
-- **Hình 2.6**: Đánh dấu UC35 (chi phí), UC36 (xuất Excel/PDF) là "định hướng v2".
-- **Hình 2.6b (MỚI)**: Tách riêng nhóm UC-F Tiện ích bổ trợ (UC37 nhắc nợ, UC38 tìm phòng, UC39 đặt cọc, UC41 Chatbot AI). UC41 có quan hệ `<<extend>>` với 2 use case con "Tra cứu trực tuyến (online LLM)" và "Tra cứu ngoại tuyến (offline fallback)"; gắn external actor `Gemini API` để thể hiện tích hợp bên thứ ba.
+- **Hình 2.4**: Quản lý nhóm UC-C: Hợp đồng & khách thuê (đã đánh số lại liên tục UC01–UC39 sau khi loại bỏ UC đăng ký tạm trú).
+- **Hình 2.5**: Đánh dấu UC26 VNPay là "v1 giả lập".
+- **Hình 2.6**: Đánh dấu UC34 (chi phí), UC35 (xuất Excel/PDF) là "định hướng v2".
+- **Hình 2.6b (MỚI)**: Tách riêng nhóm UC-F Tiện ích bổ trợ (UC36 nhắc nợ, UC37 tìm phòng, UC38 đặt cọc, UC39 Chatbot AI). UC39 có quan hệ `<<extend>>` với 2 use case con "Tra cứu trực tuyến (online LLM)" và "Tra cứu ngoại tuyến (offline fallback)"; gắn external actor `Gemini API` để thể hiện tích hợp bên thứ ba.
 - **Cập nhật style UC (2.1–2.6, 2.6b)**: Đổi từ `-->` sang `--` để tuân thủ UML chuẩn (liên kết Actor–UseCase là association không định hướng).
 - **Hình 2.7**: Đổi tên thành "Đăng ký + Kích hoạt OTP" (không còn login OTP).
 - **Hình 2.8–2.11**: Bổ sung tên endpoint REST API cụ thể (POST /api/rooms, PATCH /:id/status…) cho từng bước.

@@ -31,26 +31,26 @@ node "Tầng Giao diện — Trình duyệt" as N1 {
 }
 
 node "Tầng API — Node.js" as N2 {
-  component "Express Server (port 5001)\n58 REST endpoints · JWT middleware\nMongoose ODM · Fallback Engine" as BE
-  component "Python Flask (port 5002)\nmodule thống kê — tuỳ chọn,\nKHÔNG được frontend gọi" as FL
+  component "Express Server (port 5001)\n58+ REST endpoints · JWT middleware\nMongoose ODM · pdfkit · Fallback Engine" as BE
 }
 
-database "MongoDB Atlas\nboardinghouse_db\n10 collections" as DB
+database "MongoDB Atlas\nboardinghouse_db\n11 collections" as DB
 
 cloud "Google Gemini\n2.5 Flash API" as GEM
 cloud "Gmail SMTP\nsmtp.gmail.com:587" as SMTP
+cloud "VNPay Gateway\n(Sandbox · HMAC-SHA512)" as VNP
 
 User --> FE : HTTPS
 FE --> BE : REST API (axios)
 BE --> DB : Mongoose driver\n(DNS 8.8.8.8 — bypass IPv6 SRV)
 BE --> GEM : POST generateContent\n(3 lần retry · backoff 600ms)
 BE --> SMTP : 4 luồng email\n(OTP đăng ký/quên MK · hợp đồng · nhắc nợ)
-FL ..> DB : (tuỳ chọn)
+BE <--> VNP : paymentUrl ký HMAC\ncallback vnpay-return · IPN vnpay-ipn
 
 note bottom of N2
-  Khởi chạy 3 tiến trình riêng:
+  Khởi chạy 2 tiến trình:
   npm start (Express 5001) · npm run dev (Vite 5173)
-  · python run.py (Flask 5002 — tuỳ chọn).
+  — hoặc ./start.sh khởi chạy đồng thời.
 end note
 
 @enduml
