@@ -182,7 +182,13 @@ export default function ForgotPasswordPage() {
       </Link>
 
       {/* Left Panel: Dark Brand Showcase */}
-      <div className="hidden lg:flex lg:w-1/2 bg-zinc-950 text-white flex-col justify-between p-16 relative overflow-hidden select-none">
+      <div 
+        className="hidden lg:flex lg:w-1/2 text-white flex-col justify-between p-16 relative overflow-hidden select-none bg-cover bg-center" 
+        style={{ backgroundImage: "url('/premium_minimal_room.png')" }}
+      >
+        {/* Dark overlay for text contrast */}
+        <div className="absolute inset-0 bg-zinc-950/85 z-0 pointer-events-none" />
+
         <div className="z-10">
           <Link to="/" className="flex items-center gap-3 active:scale-95 transition-transform duration-200 w-fit">
             <div className="h-9 w-9 bg-primary rounded-lg flex items-center justify-center text-white">
@@ -196,7 +202,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="z-10">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-zinc-800 text-zinc-300 mb-6 border border-zinc-700/50">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-zinc-800 text-zinc-350 mb-6 border border-zinc-700/50">
             <Compass size={10} /> Khôi phục mật khẩu
           </span>
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tighter leading-tight text-white max-w-[20ch]">
@@ -207,13 +213,13 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
 
-        <div className="z-10 text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+        <div className="z-10 text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
           © 2026 BoardingHouse Pro. Mọi quyền được bảo lưu.
         </div>
 
         {/* Ambient glow overlays */}
-        <div className="absolute top-1/4 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-10 w-80 h-80 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-1/4 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+        <div className="absolute bottom-0 left-10 w-80 h-80 bg-primary/5 rounded-full blur-[80px] pointer-events-none z-0" />
       </div>
 
       {/* Right Panel: Forgot Password Form Card */}
