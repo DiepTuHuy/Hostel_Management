@@ -187,33 +187,34 @@ export default function ForgotPasswordPage() {
         style={{ backgroundImage: "url('/premium_minimal_room.png')" }}
       >
         {/* Dark overlay for text contrast */}
-        <div className="absolute inset-0 bg-zinc-950/85 z-0 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/90 via-zinc-950/60 to-zinc-950/20 z-0 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-zinc-950/40 to-transparent z-0 pointer-events-none" />
 
         <div className="z-10">
           <Link to="/" className="flex items-center gap-3 active:scale-95 transition-transform duration-200 w-fit">
-            <div className="h-9 w-9 bg-primary rounded-lg flex items-center justify-center text-white">
+            <div className="h-9 w-9 bg-primary rounded-xl flex items-center justify-center text-white shadow-sm">
               <Home size={18} strokeWidth={2.5} className="text-white" />
             </div>
             <div>
               <div className="font-extrabold text-white leading-tight tracking-tight text-sm">BoardingHouse Pro</div>
-              <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest leading-none mt-0.5">Premium Living</div>
+              <div className="text-[10px] font-bold text-white/50 uppercase tracking-widest leading-none mt-0.5">Premium Living</div>
             </div>
           </Link>
         </div>
 
-        <div className="z-10">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-zinc-800 text-zinc-350 mb-6 border border-zinc-700/50">
+        <div className="z-10 max-w-lg">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-white/10 text-white/90 mb-4 border border-white/10 backdrop-blur-sm">
             <Compass size={10} /> Khôi phục mật khẩu
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tighter leading-tight text-white max-w-[20ch]">
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
             An tâm trải nghiệm, bảo mật tuyệt đối tài khoản.
           </h2>
-          <p className="mt-4 text-zinc-400 text-xs leading-relaxed max-w-[45ch]">
+          <p className="mt-4 text-zinc-250 text-xs md:text-[13px] leading-relaxed font-medium drop-shadow-sm max-w-[45ch]">
             Hệ thống xác thực mã khóa OTP 2 lớp qua email giúp bạn dễ dàng thiết lập lại mật khẩu mới chỉ trong vài bước đơn giản.
           </p>
         </div>
 
-        <div className="z-10 text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+        <div className="z-10 text-[10px] text-white/55 font-bold uppercase tracking-widest drop-shadow-sm">
           © 2026 BoardingHouse Pro. Mọi quyền được bảo lưu.
         </div>
 

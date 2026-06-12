@@ -184,33 +184,34 @@ export default function RegisterPage() {
         style={{ backgroundImage: "url('/premium_minimal_room.png')" }}
       >
         {/* Dark overlay for text contrast */}
-        <div className="absolute inset-0 bg-zinc-950/50 z-0 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/90 via-zinc-950/60 to-zinc-950/20 z-0 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-zinc-950/40 to-transparent z-0 pointer-events-none" />
 
         <div className="z-10">
           <Link to="/" className="flex items-center gap-3 active:scale-95 transition-transform duration-200 w-fit">
-            <div className="h-9 w-9 bg-primary rounded-lg flex items-center justify-center text-white">
+            <div className="h-9 w-9 bg-primary rounded-xl flex items-center justify-center text-white shadow-sm">
               <Home size={18} strokeWidth={2.5} className="text-white" />
             </div>
             <div>
               <div className="font-extrabold text-white leading-tight tracking-tight text-sm">BoardingHouse Pro</div>
-              <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest leading-none mt-0.5">Premium Living</div>
+              <div className="text-[10px] font-bold text-white/50 uppercase tracking-widest leading-none mt-0.5">Premium Living</div>
             </div>
           </Link>
         </div>
 
-        <div className="z-10 bg-zinc-950/40 backdrop-blur-md border border-white/10 rounded-3xl p-8 max-w-lg shadow-xl">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-white/10 text-zinc-250 mb-4 border border-white/10">
+        <div className="z-10 max-w-lg">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-white/10 text-white/90 mb-4 border border-white/10 backdrop-blur-sm">
             <Compass size={10} /> Trở thành cư dân
           </span>
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-snug text-white">
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
             Khởi đầu phong cách sống hiện đại và minh bạch.
           </h2>
-          <p className="mt-3.5 text-zinc-300 text-xs leading-relaxed">
+          <p className="mt-4 text-zinc-250 text-xs md:text-[13px] leading-relaxed font-medium drop-shadow-sm max-w-[45ch]">
             Trực tiếp xem thông tin phòng trống, ký hợp đồng điện tử tiện lợi và giao tiếp trực tiếp với quản lý cơ sở mọi lúc mọi nơi.
           </p>
         </div>
 
-        <div className="z-10 text-[10px] text-zinc-400 font-bold uppercase tracking-widest bg-zinc-950/30 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/5 w-fit">
+        <div className="z-10 text-[10px] text-white/55 font-bold uppercase tracking-widest drop-shadow-sm">
           © 2026 BoardingHouse Pro. Mọi quyền được bảo lưu.
         </div>
 
