@@ -55,19 +55,19 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <div className="z-10">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-zinc-800 text-zinc-350 mb-6 border border-zinc-700/50">
+        <div className="z-10 bg-zinc-950/40 backdrop-blur-md border border-white/10 rounded-3xl p-8 max-w-lg shadow-xl">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-white/10 text-zinc-250 mb-4 border border-white/10">
             <Compass size={10} /> Quản lý chuỗi nhà trọ
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tighter leading-tight text-white max-w-[20ch]">
+          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-snug text-white">
             Giải pháp vận hành & kết nối cư dân thông minh thế hệ mới.
           </h2>
-          <p className="mt-4 text-zinc-400 text-xs leading-relaxed max-w-[45ch]">
+          <p className="mt-3.5 text-zinc-300 text-xs leading-relaxed">
             Bảo mật tối đa, quản lý số điện nước trực quan, xuất báo cáo PDF tự động và hỗ trợ thanh toán online tiện ích.
           </p>
         </div>
 
-        <div className="z-10 text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+        <div className="z-10 text-[10px] text-zinc-400 font-bold uppercase tracking-widest bg-zinc-950/30 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/5 w-fit">
           © 2026 BoardingHouse Pro. Mọi quyền được bảo lưu.
         </div>
 
