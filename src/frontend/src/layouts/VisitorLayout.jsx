@@ -80,11 +80,9 @@ export default function VisitorLayout() {
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-zinc-200/50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" onClick={(e) => handleNavClick('/', e)} className="flex items-center gap-3 active:scale-95 transition-transform duration-200">
-            {/* Elegant Monogram Logo */}
-            <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center text-white font-extrabold shadow-sm shadow-primary/20">
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-              </svg>
+            {/* Elegant House Logo */}
+            <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-sm shadow-primary/20">
+              <Home size={20} strokeWidth={2.5} className="text-white" />
             </div>
             <div>
               <div className="font-extrabold text-zinc-900 leading-tight tracking-tight text-[15px]">BoardingHouse Pro</div>
@@ -200,9 +198,7 @@ export default function VisitorLayout() {
           <div>
             <div className="flex items-center gap-3 text-white font-extrabold mb-4 text-base">
               <div className="h-8 w-8 bg-zinc-800 rounded-lg flex items-center justify-center text-white">
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-                </svg>
+                <Home size={16} strokeWidth={2.5} className="text-white" />
               </div>
               BoardingHouse Pro
             </div>
