@@ -251,20 +251,44 @@ router.patch('/api/rooms/:id/status', verifyToken, requireRole('admin', 'manager
   }
 });
 
-// C.5 Đặt cọc phòng (Cho Visitor)
+// C.5 Đặt cọc phòng (Cho Visitor — không yêu cầu đăng nhập nhưng kiểm tra dữ liệu chặt chẽ)
 router.post('/api/rooms/:id/deposit', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: "Không tìm thấy phòng." });
+    }
     const { fullName, phone, cccd, depositAmount } = req.body;
+
+    // Validate dữ liệu khách vãng lai bắt buộc
+    if (!fullName || !String(fullName).trim()) {
+      return res.status(400).json({ message: "Vui lòng nhập họ tên người đặt cọc." });
+    }
+    if (!phone || !/^(0|\+84)\d{8,10}$/.test(String(phone).replace(/[\s.-]/g, ''))) {
+      return res.status(400).json({ message: "Số điện thoại không hợp lệ." });
+    }
+    const amount = Number(depositAmount);
+    if (depositAmount !== undefined && (Number.isNaN(amount) || amount <= 0)) {
+      return res.status(400).json({ message: "Số tiền đặt cọc không hợp lệ." });
+    }
+
     const room = await Room.findById(req.params.id);
     if (!room) return res.status(404).json({ message: "Không tìm thấy phòng." });
+
+    // Chỉ cho phép đặt cọc phòng đang trống
+    if (room.trangThai !== 'empty') {
+      return res.status(409).json({ message: "Phòng này hiện không còn trống để đặt cọc." });
+    }
 
     room.trangThai = 'deposit';
     await room.save();
 
+    // Bản ghi Payment gắn với phòng + thông tin người cọc để đối soát (không còn bản ghi 'mồ côi')
     await Payment.create({
+      maPhongId: room._id,
       phuongThuc: 'bank_transfer',
-      soTien: Number(depositAmount) || room.giaThueHienTai || 1000000,
-      trangThai: 'success'
+      soTien: amount || room.giaThueHienTai || 1000000,
+      trangThai: 'success',
+      ghiChu: `Đặt cọc giữ phòng ${room.soPhong || ''} — ${String(fullName).trim()} (SĐT: ${phone}${cccd ? `, CCCD: ${cccd}` : ''})`
     });
 
     const populatedRoom = await Room.findById(room._id).populate('maLoaiPhongId');
