@@ -17,9 +17,6 @@ Hệ thống được thiết kế theo kiến trúc hướng dịch vụ với 
     *   Xử lý toàn bộ logic nghiệp vụ (Auth, CRUD Properties, Rooms, Contracts, Invoices, Services, Meters).
     *   Tích hợp dịch vụ gửi Email OTP thực tế thông qua SMTP Google.
     *   Tích hợp API Gemini (Google AI SDK) xử lý Chatbot thông minh.
-*   **Backend Python Flask (Module thống kê phụ trợ — TUỲ CHỌN, Port 5002)**:
-    *   Nằm tại thư mục `src/backend/app/` và chạy qua `run.py`.
-    *   Đây là module phụ trợ **tuỳ chọn** — không bắt buộc để chạy hệ thống. Frontend SPA chỉ gọi Backend Node.js (Port 5001); Flask chỉ phục vụ một số truy vấn thống kê khi cần.
 *   **Cơ sở dữ liệu (MongoDB Atlas)**:
     *   Cơ sở dữ liệu phi quan hệ (NoSQL) lưu trữ dữ liệu tập trung qua MongoDB Atlas Cloud.
     *   Dữ liệu được chuẩn hóa tiếng Việt không dấu để đảm bảo tương thích tốt nhất.
@@ -32,14 +29,12 @@ Hệ thống được thiết kế theo kiến trúc hướng dịch vụ với 
 ├── docs/                       # Tài liệu thiết kế hệ thống
 ├── system_alignment_report.md  # Báo cáo đánh giá sự liên kết giữa code thực tế và đặc tả
 ├── src/
-│   ├── backend/                # Backend Node.js Express + Python Flask
-│   │   ├── app/                # Thư mục ứng dụng Python Flask (Models, Routes, Controllers)
+│   ├── backend/                # Backend Node.js Express
 │   │   ├── models/             # Định nghĩa Mongoose Schemas cho Node.js
-│   │   ├── services/           # Services hỗ trợ (AI Chatbot, SendMail OTP)
+│   │   ├── routes/             # Các nhóm REST API (auth, rooms, contracts, invoices...)
+│   │   ├── services/           # Services hỗ trợ (AI Chatbot, SendMail OTP, VNPay, PDF)
 │   │   ├── server.js           # Mã nguồn khởi chạy Express API chính (Port 5001)
-│   │   ├── run.py              # Mã nguồn khởi chạy Flask API phụ (Port 5002)
-│   │   ├── seed.js             # Script khởi tạo 220 khu trọ mẫu cho MongoDB (tiếng Việt không dấu)
-│   │   └── requirements.txt    # Các thư viện Python cần thiết
+│   │   └── seed.js             # Script khởi tạo 220 khu trọ mẫu cho MongoDB (tiếng Việt không dấu)
 │   └── frontend/               # Frontend ReactJS + Vite
 │       ├── src/
 │       │   ├── components/     # UI Components chung (Sidebar, Navbar, Chatbot AI)
@@ -78,7 +73,7 @@ GEMINI_API_KEY=AIzaSyDBgVXlA-rS0puux3vY1LA-q799qb2IDQc
 
 ## 4. HƯỚNG DẪN KHỞI CHẠY HỆ THỐNG CHI TIẾT
 
-Để hệ thống hoạt động đầy đủ tính năng, bạn cần khởi chạy song song 3 dịch vụ: **Express Backend (Port 5001)**, **Flask Chatbot (Port 5002)** và **Vite Frontend (Port 5173)**.
+Để hệ thống hoạt động đầy đủ tính năng, bạn cần khởi chạy song song 2 dịch vụ: **Express Backend (Port 5001)** và **Vite Frontend (Port 5173)** (hoặc chạy nhanh bằng `./start.sh` trên macOS/Linux).
 
 Vui lòng chọn hướng dẫn phù hợp với hệ điều hành của bạn dưới đây:
 
@@ -96,30 +91,8 @@ npm start
 ```
 *Backend chính sẽ chạy tại: `http://localhost:5001`*
 
-#### 2. Khởi chạy Python Flask Backend (Port 5002)
-Mở cửa sổ Command Prompt (CMD) hoặc PowerShell thứ hai:
-*   **Nếu dùng Command Prompt (CMD):**
-    ```cmd
-    cd src\backend
-    python -m venv .venv
-    call .venv\Scripts\activate
-    pip install -r requirements.txt
-    set PORT=5002
-    python run.py
-    ```
-*   **Nếu dùng PowerShell:**
-    ```powershell
-    cd src\backend
-    python -m venv .venv
-    .venv\Scripts\Activate.ps1
-    pip install -r requirements.txt
-    $env:PORT="5002"
-    python run.py
-    ```
-*Backend Flask phụ trợ sẽ chạy tại: `http://localhost:5002`*
-
-#### 3. Khởi chạy Vite Frontend (Port 5173)
-Mở cửa sổ Command Prompt (CMD) thứ ba:
+#### 2. Khởi chạy Vite Frontend (Port 5173)
+Mở cửa sổ Command Prompt (CMD) thứ hai:
 ```cmd
 cd src\frontend
 npm install
@@ -143,19 +116,8 @@ npm start
 ```
 *Backend chính sẽ chạy tại: `http://localhost:5001`*
 
-#### 2. Khởi chạy Python Flask Backend (Port 5002)
+#### 2. Khởi chạy Vite Frontend (Port 5173)
 Mở cửa sổ Terminal thứ hai:
-```bash
-cd src/backend
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-PORT=5002 python run.py
-```
-*Backend Flask phụ trợ sẽ chạy tại: `http://localhost:5002`*
-
-#### 3. Khởi chạy Vite Frontend (Port 5173)
-Mở cửa sổ Terminal thứ ba:
 ```bash
 cd src/frontend
 npm install
