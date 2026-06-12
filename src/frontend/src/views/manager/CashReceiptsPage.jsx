@@ -110,15 +110,15 @@ export default function CashReceiptsPage() {
   return (
     <>
       <PageHeader
-        title="Xác nhận thu tiền mặt"
-        subtitle="Các khoản tiền mặt đang chờ Quản lý xác nhận đã thu"
+        title="Xác nhận thu tiền & đối soát chuyển khoản"
+        subtitle="Các khoản tiền mặt và chuyển khoản VietQR đang chờ Quản lý xác nhận / đối soát sao kê"
       />
 
       <div className="space-y-3">
         {loading && invoices.length === 0 ? (
           <Card><p className="text-center text-ink-muted py-8">Đang tải danh sách hoá đơn...</p></Card>
         ) : invoices.length === 0 ? (
-          <Card><p className="text-center text-ink-muted py-8">Hiện chưa có hoá đơn nào chờ xác nhận tiền mặt</p></Card>
+          <Card><p className="text-center text-ink-muted py-8">Hiện chưa có hoá đơn nào chờ xác nhận thanh toán</p></Card>
         ) : (
           invoices.map((inv) => (
             <Card key={inv.id} className="transition-all duration-300 hover:shadow-md apple-card-hover">
@@ -128,12 +128,14 @@ export default function CashReceiptsPage() {
                   <div>
                     <div className="font-semibold text-ink">{inv.code}</div>
                     <div className="text-sm text-ink-muted">Khách: {inv.tenantId} · Phòng {inv.roomId} · {formatPeriod(inv.period)}</div>
-                    <Badge color="warning" className="mt-1">Chờ xác nhận tiền mặt</Badge>
+                    <Badge color="warning" className="mt-1">
+                      {inv.paymentMethod === 'bank_transfer' ? 'Chờ đối soát chuyển khoản' : 'Chờ xác nhận tiền mặt'}
+                    </Badge>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-ink">{formatCurrency(inv.total)}</div>
-                  <div className="text-xs text-ink-muted">Phương thức: {inv.paymentMethod}</div>
+                  <div className="text-xs text-ink-muted">Phương thức: {inv.paymentMethod === 'bank_transfer' ? 'Chuyển khoản VietQR' : 'Tiền mặt'}</div>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
                   <Button 

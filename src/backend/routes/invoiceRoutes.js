@@ -96,12 +96,19 @@ router.post('/api/invoices/:id/pay', verifyToken, async (req, res) => {
     const invoice = await Invoice.findById(req.params.id);
     if (!invoice) return res.status(404).json({ message: "Không tìm thấy hoá đơn." });
 
+    if (invoice.trangThai === 'paid') {
+      return res.status(400).json({ message: "Hoá đơn đã được thanh toán trước đó." });
+    }
+
+    // Tiền mặt: chuyển sang chờ Quản lý xác nhận thu (2 bước)
     if (method === 'cash') {
       invoice.trangThai = 'pending_cash';
+      invoice.paymentMethod = 'cash';
       await invoice.save();
       return res.json({ success: true, message: "Yêu cầu thanh toán tiền mặt đã được gửi lên hệ thống. Đang chờ Quản lý xác nhận.", status: 'pending_cash' });
     }
 
+    // VNPay Sandbox: sinh paymentUrl ký HMAC-SHA512, đối soát qua callback vnpay-return / vnpay-ipn
     if (method === 'vnpay') {
       const paymentUrl = vnpayService.createPaymentUrl(req, {
         orderId: invoice._id.toString(),
@@ -111,17 +118,16 @@ router.post('/api/invoices/:id/pay', verifyToken, async (req, res) => {
       return res.json({ success: true, paymentUrl, message: "Tạo link thanh toán VNPay thành công!" });
     }
 
-    invoice.trangThai = 'paid';
-    await invoice.save();
+    // Chuyển khoản VietQR: KHÔNG tin tưởng xác nhận từ client — chuyển sang
+    // trạng thái chờ Quản lý đối soát sao kê rồi mới chuyển 'paid' (2 bước, giống tiền mặt)
+    if (method === 'bank_transfer') {
+      invoice.trangThai = 'pending_cash';
+      invoice.paymentMethod = 'bank_transfer';
+      await invoice.save();
+      return res.json({ success: true, message: "Đã ghi nhận chuyển khoản. Hoá đơn chuyển sang chờ Quản lý đối soát sao kê và xác nhận.", status: 'pending_cash' });
+    }
 
-    await Payment.create({
-      maHoaDonId: invoice._id,
-      phuongThuc: method || 'bank_transfer',
-      soTien: invoice.tongTien,
-      trangThai: 'success'
-    });
-
-    res.json({ success: true, message: "Thanh toán hoá đơn thành công!", status: 'paid' });
+    return res.status(400).json({ message: "Phương thức thanh toán không hợp lệ." });
   } catch (error) {
     console.error("Lỗi thanh toán hoá đơn:", error.message);
     res.status(500).json({ message: "Lỗi hệ thống." });
@@ -204,16 +210,17 @@ router.post('/api/invoices/:id/pay-cash', verifyToken, requireRole('admin', 'man
     const invoice = await Invoice.findById(req.params.id);
     if (!invoice) return res.status(404).json({ message: "Không tìm thấy hóa đơn." });
 
+    const confirmedMethod = invoice.paymentMethod === 'bank_transfer' ? 'bank_transfer' : 'cash';
     invoice.trangThai = 'paid';
     await invoice.save();
 
     await Payment.create({
       maHoaDonId: invoice._id,
-      phuongThuc: 'cash',
+      phuongThuc: confirmedMethod,
       soTien: invoice.tongTien,
       trangThai: 'success'
     });
-    res.json({ success: true, message: "Xác nhận thu tiền mặt thành công!" });
+    res.json({ success: true, message: confirmedMethod === 'cash' ? "Xác nhận thu tiền mặt thành công!" : "Đối soát chuyển khoản thành công, hoá đơn đã được thanh toán!" });
   } catch (error) {
     console.error("Lỗi xác nhận thu tiền mặt:", error.message);
     res.status(500).json({ message: "Lỗi hệ thống." });
@@ -227,8 +234,9 @@ router.post('/api/invoices/:id/reject-cash', verifyToken, requireRole('admin', '
     if (!invoice) return res.status(404).json({ message: "Không tìm thấy hóa đơn." });
 
     invoice.trangThai = 'pending';
+    invoice.paymentMethod = undefined;
     await invoice.save();
-    res.json({ success: true, message: "Đã từ chối xác nhận tiền mặt, hoá đơn chuyển về chưa thanh toán." });
+    res.json({ success: true, message: "Đã từ chối xác nhận thanh toán, hoá đơn chuyển về chưa thanh toán." });
   } catch (error) {
     console.error("Lỗi từ chối thu tiền mặt:", error.message);
     res.status(500).json({ message: "Lỗi hệ thống." });

@@ -7,6 +7,8 @@ const invoiceSchema = new mongoose.Schema({
   tongTien: { type: Number, required: true },
   hanThanhToan: { type: Date, required: true },
   trangThai: { type: String, enum: ['pending', 'pending_cash', 'paid', 'overdue', 'cancelled'], default: 'pending' },
+  // Phương thức khách chọn khi thanh toán (phục vụ đối soát 2 bước & ghi Payment đúng kênh)
+  paymentMethod: { type: String, enum: ['vnpay', 'cash', 'bank_transfer'] },
   chiTiet: [{
     maDichVuId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
     tenDichVu: { type: String, required: true },

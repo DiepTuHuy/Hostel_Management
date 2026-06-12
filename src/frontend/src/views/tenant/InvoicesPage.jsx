@@ -86,7 +86,8 @@ export default function InvoicesPage() {
         setPayStep(3);
       } else {
         // Fallback mapping if response is not standard
-        const fallbackStatus = payMethod === 'cash' ? 'pending_cash' : 'paid';
+        // Tiền mặt & chuyển khoản VietQR đều chờ Quản lý xác nhận/đối soát (2 bước)
+        const fallbackStatus = (payMethod === 'cash' || payMethod === 'bank_transfer') ? 'pending_cash' : 'paid';
         setSelectedInvoice(prev => ({ ...prev, status: fallbackStatus, paidAt: new Date().toISOString(), paymentMethod: payMethod }));
         setInvoices(prev => prev.map(inv => inv.id === selectedInvoice.id ? { ...inv, status: fallbackStatus, paidAt: new Date().toISOString(), paymentMethod: payMethod } : inv));
         setPayStep(3);
@@ -95,7 +96,7 @@ export default function InvoicesPage() {
       console.error('Lỗi khi thanh toán hoá đơn:', err);
       setPaying(false);
       // Fallback update on error so frontend behaves nicely
-      const fallbackStatus = payMethod === 'cash' ? 'pending_cash' : 'paid';
+      const fallbackStatus = (payMethod === 'cash' || payMethod === 'bank_transfer') ? 'pending_cash' : 'paid';
       setSelectedInvoice(prev => ({ ...prev, status: fallbackStatus, paidAt: new Date().toISOString(), paymentMethod: payMethod }));
       setInvoices(prev => prev.map(inv => inv.id === selectedInvoice.id ? { ...inv, status: fallbackStatus, paidAt: new Date().toISOString(), paymentMethod: payMethod } : inv));
       setPayStep(3);
@@ -286,15 +287,15 @@ export default function InvoicesPage() {
                     {payMethod === 'vnpay' && <Check size={14} />}
                   </button>
 
-                  <button onClick={() => setPayMethod('momo')} className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${payMethod === 'momo' ? 'bg-primary-soft text-primary border-primary' : 'bg-gray-50 text-ink border-line hover:bg-gray-100'}`}>
+                  <button onClick={() => setPayMethod('bank_transfer')} className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${payMethod === 'bank_transfer' ? 'bg-primary-soft text-primary border-primary' : 'bg-gray-50 text-ink border-line hover:bg-gray-100'}`}>
                     <div className="flex items-center gap-2.5">
                       <CreditCard size={18} />
                       <div>
-                        <div className="text-xs font-bold">Thanh toán ví MoMo</div>
-                        <div className="text-[9px] text-ink-muted">Xử lý nhanh chóng bảo mật</div>
+                        <div className="text-xs font-bold">Chuyển khoản VietQR</div>
+                        <div className="text-[9px] text-ink-muted">Quét QR — Quản lý đối soát sao kê xác nhận</div>
                       </div>
                     </div>
-                    {payMethod === 'momo' && <Check size={14} />}
+                    {payMethod === 'bank_transfer' && <Check size={14} />}
                   </button>
 
                   <button onClick={() => setPayMethod('cash')} className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${payMethod === 'cash' ? 'bg-primary-soft text-primary border-primary' : 'bg-gray-50 text-ink border-line hover:bg-gray-100'}`}>
@@ -350,7 +351,7 @@ export default function InvoicesPage() {
                 ) : (
                   <>
                     <p className="text-xs text-ink-muted leading-relaxed">
-                      Vui lòng quét mã QR chuyển khoản dưới đây để thanh toán hóa đơn. Hệ thống tự động thiết lập số tiền và nội dung đối soát.
+                      Vui lòng quét mã QR chuyển khoản dưới đây để thanh toán hóa đơn. Sau khi bạn xác nhận đã chuyển khoản, hoá đơn sẽ chuyển sang <strong>chờ Quản lý đối soát sao kê</strong> rồi mới được ghi nhận hoàn tất.
                     </p>
                     <div className="flex flex-col items-center justify-center p-3 bg-gray-50 border border-line rounded-2xl space-y-2">
                       <img
@@ -408,6 +409,8 @@ export default function InvoicesPage() {
                   <p className="text-xs text-ink-muted mt-1">
                     {payMethod === 'cash'
                       ? 'Vui lòng bàn giao tiền mặt trực tiếp cho quản lý cơ sở để xác nhận hoàn tất thanh toán trên hệ thống.'
+                      : payMethod === 'bank_transfer'
+                      ? 'Đã ghi nhận thông tin chuyển khoản của bạn. Quản lý sẽ đối soát sao kê và xác nhận hoàn tất thanh toán trong thời gian sớm nhất.'
                       : 'Giao dịch qua ví điện tử đã được đối soát thành công. Cảm ơn bạn!'}
                   </p>
                 </div>

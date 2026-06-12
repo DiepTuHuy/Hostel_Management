@@ -151,7 +151,7 @@ export default function DashboardPage() {
                     </button>
                   ) : invoice.status === 'pending_cash' ? (
                     <div className="w-full h-11 bg-amber-50 text-amber-700 border border-amber-100 rounded-2xl font-bold flex items-center justify-center gap-1.5 text-xs">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" /> Chờ Quản lý xác nhận thanh toán tiền mặt...
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" /> Chờ Quản lý xác nhận / đối soát thanh toán...
                     </div>
                   ) : (
                     <div className="w-full h-11 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-2xl font-bold flex items-center justify-center gap-1.5 text-xs">

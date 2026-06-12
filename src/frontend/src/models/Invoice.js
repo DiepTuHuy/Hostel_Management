@@ -12,7 +12,7 @@ export const INVOICE_STATUS = {
 export const INVOICE_STATUS_META = {
   draft:        { label: 'Bản nháp',          color: 'neutral' },
   pending:      { label: 'Đang chờ',          color: 'info'    },
-  pending_cash: { label: 'Chờ xác nhận tiền mặt', color: 'warning' },
+  pending_cash: { label: 'Chờ xác nhận thanh toán', color: 'warning' },
   paid:         { label: 'Đã thanh toán',     color: 'success' },
   overdue:      { label: 'Quá hạn',           color: 'danger'  },
 };
