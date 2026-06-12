@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, MapPin, Users, X, Home, Phone, Mail, Calendar, Edit, DoorOpen, TrendingUp, Save, Upload } from 'lucide-react';
-import { Button, PageHeader, Card, Badge, Loading, Toast } from '../../components/common';
+import { Plus, MapPin, Users, X, Home, Phone, Mail, Calendar, Edit, DoorOpen, TrendingUp, Save, Upload, ArrowUpRight } from 'lucide-react';
+import { Button, PageHeader, Badge, Loading, Toast } from '../../components/common';
 import { useProperties } from '../../controllers/useProperties.js';
 import { propertyService } from '../../services/index.js';
 
@@ -48,222 +48,245 @@ function PropertyDetailModal({ property, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
-      <div className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-[fadeInScale_0.3s_ease-out]">
-        <div className="h-44 relative overflow-hidden bg-gray-100">
-          {property.image && (
+      <div className="absolute inset-0 bg-zinc-950/40 backdrop-blur-md animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
+      <div className="relative bg-white border border-zinc-200/80 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-[fadeInScale_0.3s_ease-out]">
+        
+        {/* Cover image header with contrast overlay */}
+        <div className="h-48 relative overflow-hidden bg-zinc-900 select-none">
+          {property.image ? (
             <img src={property.image} alt={formData.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">
+              <Home size={40} />
+            </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+          
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors"
+            className="absolute top-4 right-4 p-2 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/25 transition-colors active:scale-90"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
-          <div className="absolute bottom-4 left-5 right-5">
-            <Badge color="success" className="mb-2">Hoạt động</Badge>
-            <h2 className="text-xl font-bold text-white leading-tight">{formData.name}</h2>
-            <p className="text-white/80 text-sm mt-1 flex items-center gap-1.5">
-              <MapPin size={14} />
+          
+          <div className="absolute bottom-4 left-6 right-6">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-100 uppercase tracking-wider mb-2">
+              <span className="w-1 h-1 bg-emerald-500 rounded-full animate-ping" /> Hoạt động
+            </span>
+            <h2 className="text-lg font-extrabold text-white leading-tight">{formData.name}</h2>
+            <p className="text-white/80 text-xs mt-1 flex items-center gap-1.5">
+              <MapPin size={13} className="text-zinc-400" />
               {formData.address}, {formData.district}
             </p>
           </div>
         </div>
 
-        <div className="p-5 overflow-y-auto max-h-[calc(90vh-11rem)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-12rem)] space-y-6">
           {!isEditing ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                <div className="bg-blue-50 rounded-xl p-3.5 text-center">
-                  <DoorOpen size={20} className="mx-auto text-blue-500 mb-1" />
-                  <div className="text-lg font-bold text-blue-700">{formData.totalRooms}</div>
-                  <div className="text-xs text-blue-500 font-medium">Tổng phòng</div>
+              {/* Stat Bento capsules */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-zinc-50 border border-zinc-200/50 rounded-2xl p-3.5 text-center">
+                  <DoorOpen size={16} className="mx-auto text-blue-600 mb-1" />
+                  <div className="text-base font-extrabold text-zinc-900">{formData.totalRooms}</div>
+                  <div className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Tổng số phòng</div>
                 </div>
-                <div className="bg-emerald-50 rounded-xl p-3.5 text-center">
-                  <Home size={20} className="mx-auto text-emerald-500 mb-1" />
-                  <div className="text-lg font-bold text-emerald-700">{formData.occupiedRooms}</div>
-                  <div className="text-xs text-emerald-500 font-medium">Đã thuê</div>
+                <div className="bg-zinc-50 border border-zinc-200/50 rounded-2xl p-3.5 text-center">
+                  <Home size={16} className="mx-auto text-emerald-600 mb-1" />
+                  <div className="text-base font-extrabold text-zinc-900">{formData.occupiedRooms}</div>
+                  <div className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Đã cho thuê</div>
                 </div>
-                <div className="bg-amber-50 rounded-xl p-3.5 text-center">
-                  <DoorOpen size={20} className="mx-auto text-amber-500 mb-1" />
-                  <div className="text-lg font-bold text-amber-700">{emptyRooms}</div>
-                  <div className="text-xs text-amber-500 font-medium">Trống</div>
+                <div className="bg-zinc-50 border border-zinc-200/50 rounded-2xl p-3.5 text-center">
+                  <DoorOpen size={16} className="mx-auto text-amber-600 mb-1" />
+                  <div className="text-base font-extrabold text-zinc-900">{emptyRooms}</div>
+                  <div className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Còn trống</div>
                 </div>
-                <div className="bg-violet-50 rounded-xl p-3.5 text-center">
-                  <TrendingUp size={20} className="mx-auto text-violet-500 mb-1" />
-                  <div className="text-lg font-bold text-violet-700">{occupancyRate}%</div>
-                  <div className="text-xs text-violet-500 font-medium">Tỷ lệ lấp</div>
+                <div className="bg-zinc-50 border border-zinc-200/50 rounded-2xl p-3.5 text-center">
+                  <TrendingUp size={16} className="mx-auto text-violet-600 mb-1" />
+                  <div className="text-base font-extrabold text-zinc-900">{occupancyRate}%</div>
+                  <div className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Tỷ lệ lấp đầy</div>
                 </div>
               </div>
 
               <div className="space-y-4">
+                {/* Details Section */}
                 <div>
-                  <h4 className="text-sm font-semibold text-ink mb-2.5">Thông tin chi tiết</h4>
-                  <div className="bg-gray-50 rounded-xl divide-y divide-line">
+                  <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Thông tin vận hành</h4>
+                  <div className="bg-white border border-zinc-200/50 rounded-2xl divide-y divide-zinc-100 text-xs">
                     <div className="flex items-center justify-between px-4 py-3">
-                      <span className="text-sm text-ink-muted">Mã chi nhánh</span>
-                      <span className="text-sm font-semibold text-ink">{property.code}</span>
+                      <span className="text-zinc-500 font-semibold">Mã chi nhánh</span>
+                      <span className="font-bold text-zinc-800">{property.code}</span>
                     </div>
                     <div className="flex items-center justify-between px-4 py-3">
-                      <span className="text-sm text-ink-muted">Khu vực</span>
-                      <span className="text-sm font-semibold text-ink">{formData.district}, {formData.city || 'TP. HCM'}</span>
+                      <span className="text-zinc-500 font-semibold">Thành phố</span>
+                      <span className="font-bold text-zinc-800">{formData.district}, {formData.city || 'TP. HCM'}</span>
                     </div>
                     <div className="flex items-center justify-between px-4 py-3">
-                      <span className="text-sm text-ink-muted flex items-center gap-1.5"><Calendar size={14} /> Ngày tạo</span>
-                      <span className="text-sm font-semibold text-ink">{new Date(property.createdAt).toLocaleDateString('vi-VN')}</span>
+                      <span className="text-zinc-500 font-semibold flex items-center gap-1.5"><Calendar size={13} /> Ngày thành lập</span>
+                      <span className="font-bold text-zinc-800">{new Date(property.createdAt).toLocaleDateString('vi-VN')}</span>
                     </div>
                     <div className="flex items-center justify-between px-4 py-3">
-                      <span className="text-sm text-ink-muted flex items-center gap-1.5"><Users size={14} /> Quản lý</span>
-                      <span className="text-sm font-semibold text-ink">{property.managerIds && property.managerIds.length > 0 ? `${property.managerIds.length} người` : 'Chưa phân công'}</span>
+                      <span className="text-zinc-500 font-semibold flex items-center gap-1.5"><Users size={13} /> Người quản lý</span>
+                      <span className="font-bold text-zinc-800">
+                        {property.managerIds && property.managerIds.length > 0 ? `${property.managerIds.length} người phụ trách` : 'Chưa phân công'}
+                      </span>
                     </div>
                   </div>
                 </div>
 
+                {/* Contact Section */}
                 <div>
-                  <h4 className="text-sm font-semibold text-ink mb-2.5">Liên hệ chi nhánh</h4>
-                  <div className="bg-gray-50 rounded-xl divide-y divide-line">
+                  <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Thông tin liên hệ</h4>
+                  <div className="bg-white border border-zinc-200/50 rounded-2xl divide-y divide-zinc-100 text-xs">
                     <div className="flex items-center justify-between px-4 py-3">
-                      <span className="text-sm text-ink-muted flex items-center gap-1.5"><Phone size={14} /> Điện thoại</span>
-                      <span className="text-sm font-semibold text-ink">{formData.phone}</span>
+                      <span className="text-zinc-500 font-semibold flex items-center gap-1.5"><Phone size={13} /> Điện thoại liên hệ</span>
+                      <span className="font-bold text-zinc-800">{formData.phone}</span>
                     </div>
                     <div className="flex items-center justify-between px-4 py-3">
-                      <span className="text-sm text-ink-muted flex items-center gap-1.5"><Mail size={14} /> Email</span>
-                      <span className="text-sm font-semibold text-ink">{formData.email}</span>
+                      <span className="text-zinc-500 font-semibold flex items-center gap-1.5"><Mail size={13} /> Hộp thư email</span>
+                      <span className="font-bold text-zinc-800">{formData.email}</span>
                     </div>
                   </div>
                 </div>
 
+                {/* QR Code section */}
                 {formData.qrCodeUrl && (
                   <div>
-                    <h4 className="text-sm font-semibold text-ink mb-2.5">QR thanh toán chi nhánh</h4>
-                    <div className="bg-gray-50 rounded-xl p-4 flex justify-center border border-line">
-                      <img src={formData.qrCodeUrl} alt="Mã QR chi nhánh" className="max-h-48 object-contain rounded-lg" />
+                    <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Mã QR thanh toán</h4>
+                    <div className="bg-zinc-50 rounded-2xl p-4 flex justify-center border border-zinc-200/50">
+                      <img src={formData.qrCodeUrl} alt="QR thanh toán chi nhánh" className="max-h-40 object-contain rounded-lg shadow-sm" />
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center gap-3 mt-6 pt-4 border-t border-line">
-                <Button className="flex-1" icon={<Edit size={16} />} onClick={() => setIsEditing(true)}>Chỉnh sửa</Button>
+              <div className="flex items-center gap-3 pt-4 border-t border-zinc-100 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="flex-1 h-10 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+                >
+                  <Edit size={14} /> Chỉnh sửa thông tin
+                </button>
                 <button
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-xl border border-line text-sm font-medium text-ink-muted hover:bg-gray-50 transition-colors"
+                  className="px-5 h-10 rounded-xl border border-zinc-200 text-xs font-bold text-zinc-500 hover:bg-zinc-50 transition-colors active:scale-95"
                 >
                   Đóng
                 </button>
               </div>
             </>
           ) : (
-            <form onSubmit={handleEditSubmit} className="space-y-4">
+            <form onSubmit={handleEditSubmit} className="space-y-4 text-xs">
               {validationError && (
-                <div className="p-3 bg-red-50 text-danger text-sm rounded-xl font-medium animate-[fadeIn_0.2s_ease-out]">
+                <div className="p-3 bg-red-50 text-danger text-xs rounded-xl font-bold animate-[fadeIn_0.2s_ease-out]">
                   {validationError}
                 </div>
               )}
+              
               <div>
-                <label className="block text-sm font-medium text-ink mb-1.5">Tên nhà trọ <span className="text-danger">*</span></label>
+                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Tên chi nhánh nhà trọ <span className="text-danger">*</span></label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleChange('name', e.target.value)}
-                  className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                  className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-ink mb-1.5">Địa chỉ <span className="text-danger">*</span></label>
+                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Địa chỉ <span className="text-danger">*</span></label>
                 <input
                   type="text"
                   value={formData.address}
                   onChange={(e) => handleChange('address', e.target.value)}
-                  className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                  className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-ink mb-1.5">Quận / Huyện <span className="text-danger">*</span></label>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Quận / Huyện <span className="text-danger">*</span></label>
                   <input
                     type="text"
                     value={formData.district}
                     onChange={(e) => handleChange('district', e.target.value)}
-                    className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                    className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-ink mb-1.5">Thành phố</label>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Thành phố</label>
                   <input
                     type="text"
                     value={formData.city}
                     onChange={(e) => handleChange('city', e.target.value)}
-                    className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                    className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-ink mb-1.5">Số lượng phòng <span className="text-danger">*</span></label>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Tổng số phòng <span className="text-danger">*</span></label>
                   <input
                     type="number"
                     min="1"
                     value={formData.totalRooms}
                     onChange={(e) => handleChange('totalRooms', e.target.value)}
-                    className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                    className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-ink mb-1.5">Đã thuê</label>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Đã cho thuê</label>
                   <input
                     type="number"
                     min="0"
                     max={formData.totalRooms}
                     value={formData.occupiedRooms}
                     onChange={(e) => handleChange('occupiedRooms', e.target.value)}
-                    className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                    className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white font-semibold"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-ink mb-1.5 flex items-center gap-1"><Phone size={14} /> Số điện thoại</label>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><Phone size={12} /> Số điện thoại</label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleChange('phone', e.target.value)}
-                    className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                    className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-ink mb-1.5 flex items-center gap-1"><Mail size={14} /> Email</label>
+                  <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><Mail size={12} /> Email liên hệ</label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                    className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                   />
                 </div>
               </div>
 
-               <div>
-                <label className="block text-sm font-medium text-ink mb-1.5">Ảnh mã QR thanh toán chi nhánh</label>
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Ảnh mã QR thanh toán</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={formData.qrCodeUrl}
                     onChange={(e) => handleChange('qrCodeUrl', e.target.value)}
-                    className="flex-1 h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-                    placeholder="VD: Dán link ảnh QR hoặc click tải lên bên phải"
+                    className="flex-1 h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
+                    placeholder="VD: Dán link ảnh QR..."
                   />
-                  <label className="h-10 px-4 bg-primary hover:bg-primary/95 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0">
-                    <Upload size={14} />
-                    Tải ảnh lên
+                  <label className="h-10 px-4 bg-primary hover:bg-primary-dark text-white text-[11px] font-bold rounded-xl flex items-center justify-center gap-1 cursor-pointer shrink-0 transition-colors active:scale-95">
+                    <Upload size={13} />
+                    Tải lên
                     <input
                       type="file"
                       accept="image/*"
@@ -282,13 +305,13 @@ function PropertyDetailModal({ property, onClose, onSave }) {
                   </label>
                 </div>
                 {formData.qrCodeUrl && (
-                  <div className="mt-2.5 relative inline-block group border border-line rounded-xl p-1.5 bg-white">
-                    <img src={formData.qrCodeUrl} alt="Preview QR" className="max-h-36 object-contain rounded-lg" />
+                  <div className="mt-3 relative inline-block border border-zinc-200/60 rounded-2xl p-1.5 bg-white">
+                    <img src={formData.qrCodeUrl} alt="Preview QR" className="max-h-28 object-contain rounded-lg" />
                     <button
                       type="button"
                       onClick={() => handleChange('qrCodeUrl', '')}
                       className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors"
-                      title="Xoá ảnh QR"
+                      title="Xoá"
                     >
                       <X size={10} />
                     </button>
@@ -296,12 +319,17 @@ function PropertyDetailModal({ property, onClose, onSave }) {
                 )}
               </div>
 
-              <div className="flex items-center gap-3 pt-4 border-t border-line">
-                <Button type="submit" className="flex-1" icon={<Save size={16} />}>Lưu thay đổi</Button>
+              <div className="flex items-center gap-3 pt-4 border-t border-zinc-100">
+                <button
+                  type="submit"
+                  className="flex-1 h-10 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+                >
+                  <Save size={14} /> Lưu thay đổi
+                </button>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-5 py-2.5 rounded-xl border border-line text-sm font-medium text-ink hover:bg-gray-50 transition-colors"
+                  className="px-5 h-10 rounded-xl border border-zinc-200 text-zinc-500 font-bold hover:bg-zinc-50 transition-colors active:scale-95"
                 >
                   Huỷ
                 </button>
@@ -345,132 +373,133 @@ function AddPropertyModal({ onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
-      <div className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden animate-[fadeInScale_0.3s_ease-out]">
-        <div className="flex items-center justify-between p-5 border-b border-line">
+      <div className="absolute inset-0 bg-zinc-950/40 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
+      <div className="relative bg-white border border-zinc-200/80 rounded-3xl shadow-2xl w-full max-w-lg p-6 flex flex-col gap-4 animate-[fadeInScale_0.3s_ease-out]">
+        <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
           <div>
-            <h2 className="text-lg font-bold text-ink">Thêm nhà trọ mới</h2>
-            <p className="text-sm text-ink-muted mt-0.5">Nhập thông tin chi nhánh mới</p>
+            <h2 className="text-sm font-extrabold text-zinc-950">Thêm nhà trọ mới</h2>
+            <p className="text-xs text-zinc-400 mt-0.5 font-semibold">Tạo thêm cơ sở mới vào mạng lưới</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl text-ink-muted transition-colors">
-            <X size={18} />
+          <button onClick={onClose} className="p-1.5 hover:bg-zinc-50 rounded-xl text-zinc-400 transition-colors">
+            <X size={16} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto max-h-[calc(90vh-10rem)]">
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs overflow-y-auto max-h-[70vh]">
           {validationError && (
-            <div className="p-3 bg-red-50 text-danger text-sm rounded-xl font-medium animate-[fadeIn_0.2s_ease-out]">
+            <div className="p-3 bg-red-50 text-danger text-xs rounded-xl font-bold animate-[fadeIn_0.2s_ease-out]">
               {validationError}
             </div>
           )}
+          
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Tên nhà trọ <span className="text-danger">*</span></label>
+            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Tên chi nhánh nhà trọ <span className="text-danger">*</span></label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-              placeholder="VD: Nhà trọ Sunrise"
+              className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
+              placeholder="VD: Nhà trọ Sunrise Q7"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Địa chỉ <span className="text-danger">*</span></label>
+            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Địa chỉ cụ thể <span className="text-danger">*</span></label>
             <input
               type="text"
               value={formData.address}
               onChange={(e) => handleChange('address', e.target.value)}
-              className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-              placeholder="VD: 123 Đường Láng, P. ABC"
+              className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
+              placeholder="VD: 546 Huỳnh Tấn Phát, P. Tân Thuận"
               required
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Quận / Huyện <span className="text-danger">*</span></label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Quận / Huyện <span className="text-danger">*</span></label>
               <input
                 type="text"
                 value={formData.district}
                 onChange={(e) => handleChange('district', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-                placeholder="VD: Đống Đa"
+                className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
+                placeholder="VD: Quận 7"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Thành phố</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Thành phố</label>
               <input
                 type="text"
                 value={formData.city}
                 onChange={(e) => handleChange('city', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Số lượng phòng <span className="text-danger">*</span></label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Quy mô (Số lượng phòng) <span className="text-danger">*</span></label>
               <input
                 type="number"
                 min="1"
                 value={formData.totalRooms}
                 onChange={(e) => handleChange('totalRooms', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-                placeholder="VD: 24"
+                className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
+                placeholder="VD: 32"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Quản lý phụ trách</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Quản lý phụ trách</label>
               <input
                 type="text"
                 value={formData.managerName}
                 onChange={(e) => handleChange('managerName', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-                placeholder="Họ tên quản lý"
+                className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
+                placeholder="Nhập tên người quản lý"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5 flex items-center gap-1"><Phone size={14} /> Số điện thoại</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><Phone size={12} /> Số điện thoại</label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => handleChange('phone', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                 placeholder="0912345678"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5 flex items-center gap-1"><Mail size={14} /> Email</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><Mail size={12} /> Email liên hệ</label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange('email', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
                 placeholder="email@example.com"
               />
             </div>
           </div>
 
-           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Ảnh mã QR thanh toán chi nhánh</label>
+          <div>
+            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Ảnh mã QR thanh toán</label>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={formData.qrCodeUrl}
                 onChange={(e) => handleChange('qrCodeUrl', e.target.value)}
-                className="flex-1 h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
-                placeholder="VD: Dán link ảnh QR hoặc click tải lên bên phải"
+                className="flex-1 h-10 px-3 bg-zinc-50 border border-zinc-200/60 rounded-xl focus:outline-none focus:border-primary focus:bg-white"
+                placeholder="VD: Dán link ảnh QR..."
               />
-              <label className="h-10 px-4 bg-primary hover:bg-primary/95 text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors shrink-0">
-                <Upload size={14} />
-                Tải ảnh lên
+              <label className="h-10 px-4 bg-primary hover:bg-primary-dark text-white text-[11px] font-bold rounded-xl flex items-center justify-center gap-1 cursor-pointer shrink-0 transition-colors active:scale-95">
+                <Upload size={13} />
+                Tải lên
                 <input
                   type="file"
                   accept="image/*"
@@ -489,13 +518,13 @@ function AddPropertyModal({ onClose, onSave }) {
               </label>
             </div>
             {formData.qrCodeUrl && (
-              <div className="mt-2.5 relative inline-block group border border-line rounded-xl p-1.5 bg-white">
-                <img src={formData.qrCodeUrl} alt="Preview QR" className="max-h-36 object-contain rounded-lg" />
+              <div className="mt-3 relative inline-block border border-zinc-200/60 rounded-2xl p-1.5 bg-white">
+                <img src={formData.qrCodeUrl} alt="Preview QR" className="max-h-28 object-contain rounded-lg" />
                 <button
                   type="button"
                   onClick={() => handleChange('qrCodeUrl', '')}
                   className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors"
-                  title="Xoá ảnh QR"
+                  title="Xoá"
                 >
                   <X size={10} />
                 </button>
@@ -503,12 +532,17 @@ function AddPropertyModal({ onClose, onSave }) {
             )}
           </div>
 
-          <div className="flex items-center gap-3 pt-3 border-t border-line">
-            <Button type="submit" className="flex-1" icon={<Plus size={16} />}>Thêm nhà trọ</Button>
+          <div className="flex items-center gap-3 pt-4 border-t border-zinc-100">
+            <button
+              type="submit"
+              className="flex-1 h-10 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+            >
+              <Plus size={14} /> Thêm nhà trọ
+            </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl border border-line text-sm font-medium text-ink-muted hover:bg-gray-50 transition-colors"
+              className="px-5 h-10 rounded-xl border border-zinc-200 text-zinc-500 font-bold hover:bg-zinc-50 transition-colors active:scale-95"
             >
               Huỷ
             </button>
@@ -592,49 +626,88 @@ export default function PropertiesPage() {
       />
 
       {loading && properties.length === 0 ? <Loading /> : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter animate-[fadeIn_0.3s_ease-out]">
-          {properties.map((p) => (
-            <Card
-              key={p.id}
-              tilt={true}
-              padded={false}
-              className="group overflow-hidden apple-press cursor-pointer border border-line rounded-3xl"
-              onClick={() => handleViewDetail(p)}
-            >
-              <div className="h-44 bg-gray-100 relative overflow-hidden">
-                {p.image && <img src={p.image} alt={p.name} className="h-full w-full object-cover transition-apple-bouncy duration-700 group-hover:scale-105" />}
-                <Badge color="success" className="absolute top-3 left-3">Hoạt động</Badge>
-              </div>
-              <div className="p-5">
-                <div className="flex items-baseline justify-between gap-2">
-                  <h3 className="font-semibold text-ink line-clamp-1 group-hover:text-primary transition-colors duration-200">{p.name}</h3>
-                  <span className="text-xs text-ink-muted">{p.code}</span>
-                </div>
-                <p className="text-sm text-ink-muted mt-1 flex items-start gap-1.5">
-                  <MapPin size={14} className="mt-0.5 shrink-0" />
-                  <span className="line-clamp-1">{p.address}, {p.district}</span>
-                </p>
-                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <div className="text-xs text-ink-muted uppercase">Phòng</div>
-                    <div className="font-semibold text-ink">{p.occupiedRooms} / {p.totalRooms}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-ink-muted uppercase">Tỉ lệ lấp</div>
-                    <div className="font-semibold text-success">{p.occupancyRate}%</div>
-                  </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-line flex items-center justify-between text-xs text-ink-muted">
-                  <span className="flex items-center gap-1">
-                    <Users size={14} /> {p.managerIds ? p.managerIds.length : 0} quản lý
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-[fadeIn_0.3s_ease-out]">
+          {properties.map((p) => {
+            const occRate = p.occupancyRate || Math.round(((p.occupiedRooms || 0) / (p.totalRooms || 10)) * 100);
+            return (
+              <div
+                key={p.id}
+                className="group relative overflow-hidden bg-white border border-zinc-200/50 rounded-3xl cursor-pointer hover:shadow-md transition-all duration-300 active:scale-[0.99] flex flex-col justify-between"
+                onClick={() => handleViewDetail(p)}
+              >
+                {/* Cover Photo with Contrast Gradient Overlay */}
+                <div className="h-48 bg-zinc-900 relative overflow-hidden select-none">
+                  {p.image ? (
+                    <img 
+                      src={p.image} 
+                      alt={p.name} 
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">
+                      <Home size={32} />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+                  
+                  <span className="absolute top-4 left-4 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold text-emerald-600 bg-white border border-emerald-100 uppercase tracking-wider select-none shadow-sm">
+                    <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" /> Hoạt động
                   </span>
-                  <span className="text-primary font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform duration-300">
-                    Xem chi tiết →
+                  
+                  <span className="absolute top-4 right-4 text-[10px] text-white/90 font-extrabold uppercase bg-black/30 backdrop-blur-md px-2 py-0.5 rounded-lg border border-white/5 tracking-wider select-none">
+                    {p.code}
                   </span>
+
+                  {/* Header overlay text */}
+                  <div className="absolute bottom-4 left-5 right-5">
+                    <h3 className="font-extrabold text-base text-white tracking-tight leading-snug line-clamp-1 group-hover:text-primary-soft transition-colors">{p.name}</h3>
+                    <p className="text-white/85 text-xs mt-1 flex items-center gap-1 font-semibold">
+                      <MapPin size={12} className="text-zinc-400 shrink-0" />
+                      <span className="truncate">{p.address}, {p.district}</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Details under cover */}
+                <div className="p-5 flex-1 flex flex-col justify-between select-none">
+                  
+                  {/* Occupancy Progress Bar */}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between items-center text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                      <span>Hiệu suất lấp đầy</span>
+                      <span className="text-zinc-900 font-extrabold">{occRate}%</span>
+                    </div>
+                    <div className="w-full bg-zinc-100 h-2 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-blue-500 to-primary h-full transition-all duration-500" 
+                        style={{ width: `${occRate}%` }} 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 text-xs border-t border-zinc-100 pt-4">
+                    <div>
+                      <div className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Số phòng cho thuê</div>
+                      <div className="font-extrabold text-zinc-800 mt-0.5">{p.occupiedRooms || 0} / {p.totalRooms} Phòng</div>
+                    </div>
+                    <div className="border-l border-zinc-100 pl-3">
+                      <div className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Phân công quản lý</div>
+                      <div className="font-extrabold text-zinc-800 mt-0.5">{p.managerIds ? p.managerIds.length : 0} Manager</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-400 font-bold">
+                    <span className="flex items-center gap-1">
+                      <Calendar size={13} className="text-zinc-400" /> {new Date(p.createdAt).toLocaleDateString('vi-VN')}
+                    </span>
+                    <span className="text-primary font-extrabold flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
+                      Xem chi tiết <ArrowUpRight size={14} />
+                    </span>
+                  </div>
                 </div>
               </div>
-            </Card>
-          ))}
+            );
+          })}
         </div>
       )}
 

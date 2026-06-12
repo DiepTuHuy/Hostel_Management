@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Home, FileText, Receipt, User, Bell, Menu, X, LogOut, HelpCircle, Info } from 'lucide-react';
+import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Home, FileText, Receipt, User, Bell, Menu, X, LogOut, HelpCircle, Info, PhoneCall } from 'lucide-react';
 import { useAuth } from '../controllers/useAuth.jsx';
 import { cn } from '../utils/cn.js';
 import { Avatar, AIChatbot } from '../components/common';
@@ -13,11 +13,11 @@ const BOTTOM_NAV = [
 ];
 
 const SIDEBAR_NAV = [
-  { to: '/tenant',             label: 'Trang chủ',      icon: Home, end: true },
-  { to: '/tenant/contracts',   label: 'Hợp đồng của tôi', icon: FileText },
-  { to: '/tenant/invoices',    label: 'Lịch sử hoá đơn',  icon: Receipt },
-  { to: '/tenant/profile',     label: 'Hồ sơ cá nhân',  icon: User },
-  { to: '/tenant/notifications', label: 'Thông báo',      icon: Bell },
+  { to: '/tenant',             label: 'Trang chủ tổng quan', icon: Home, end: true },
+  { to: '/tenant/contracts',   label: 'Hợp đồng thuê phòng', icon: FileText },
+  { to: '/tenant/invoices',    label: 'Hóa đơn dịch vụ',     icon: Receipt },
+  { to: '/tenant/profile',     label: 'Thông tin cá nhân',   icon: User },
+  { to: '/tenant/notifications', label: 'Hộp thư thông báo',   icon: Bell },
 ];
 
 export default function TenantLayout() {
@@ -79,6 +79,7 @@ export default function TenantLayout() {
       window.removeEventListener('resize', updateIndicator);
     };
   }, [location.pathname]);
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -93,42 +94,48 @@ export default function TenantLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col lg:block relative overflow-x-hidden lg:overflow-x-visible max-w-screen-sm lg:max-w-none mx-auto lg:mx-0 shadow-elevated lg:shadow-none">
+    <div className="min-h-screen bg-canvas-light text-zinc-900 font-sans antialiased relative overflow-x-hidden lg:overflow-x-visible max-w-screen-sm lg:max-w-none mx-auto lg:mx-0 shadow-sm lg:shadow-none">
       {isDrawerOpen && (
         <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity max-w-screen-sm mx-auto lg:hidden"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity max-w-screen-sm mx-auto lg:hidden"
           onClick={() => setIsDrawerOpen(false)}
         />
       )}
 
-      <div 
+      {/* Floating Premium Sidebar */}
+      <aside
         className={cn(
-          "fixed top-0 bottom-0 left-0 w-64 lg:w-[240px] bg-surface border-r border-line z-50 lg:z-20 transition-transform duration-500 [transition-timing-function:var(--ease-apple-spring)] transform lg:transform-none lg:transition-none lg:translate-x-0",
-          isDrawerOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          "fixed top-4 bottom-4 w-60 bg-white border border-zinc-200/50 flex flex-col z-50 rounded-3xl shadow-sm transition-transform duration-500 lg:transform-none lg:translate-x-0 lg:left-4",
+          isDrawerOpen ? "left-4 translate-x-0" : "left-0 -translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="flex flex-col h-full">
-          <div className="px-5 py-4 border-b border-line flex items-center justify-between">
-            <div>
-              <h2 className="text-headline-sm text-primary font-bold">BoardingHouse</h2>
-              <p className="text-xs text-ink-muted mt-0.5">Cổng thông tin khách thuê</p>
-            </div>
-            <button className="p-1.5 hover:bg-gray-100 rounded-lg text-ink-muted lg:hidden apple-press" onClick={() => setIsDrawerOpen(false)}>
-              <X size={18} />
+        <div className="flex flex-col h-full select-none">
+          <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2.5 active:scale-95 transition-transform duration-200">
+              <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-sm shadow-primary/20">
+                <Home size={16} strokeWidth={2.5} className="text-white" />
+              </div>
+              <div>
+                <h1 className="text-sm font-extrabold text-zinc-950 leading-tight">BoardingHouse</h1>
+                <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest leading-none mt-0.5">Khách thuê</p>
+              </div>
+            </Link>
+            <button className="p-1.5 hover:bg-zinc-50 rounded-lg text-zinc-400 lg:hidden active:scale-95 transition-transform" onClick={() => setIsDrawerOpen(false)}>
+              <X size={16} />
             </button>
           </div>
 
-          <div className="px-5 py-4 border-b border-line bg-gray-50 flex items-center gap-3">
-            <Avatar name={user?.fullName || 'Tenant'} size="md" />
+          <div className="px-5 py-4 border-b border-zinc-100 bg-zinc-50/50 flex items-center gap-3">
+            <Avatar name={user?.fullName || 'Tenant'} size="md" className="rounded-lg" />
             <div>
-              <div className="font-semibold text-ink text-sm leading-snug">{user?.fullName || 'Khách thuê'}</div>
-              <div className="text-xs text-ink-muted">Phòng r-301 · An Phú Q1</div>
+              <div className="font-extrabold text-zinc-900 text-xs leading-snug">{user?.fullName || 'Khách thuê'}</div>
+              <div className="text-[10px] text-zinc-400 font-bold mt-0.5">Phòng 301 · An Phú Q1</div>
             </div>
           </div>
 
-          <nav ref={navRef} className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto relative">
+          <nav ref={navRef} className="flex-1 px-3 py-5 space-y-1 overflow-y-auto relative">
             <div
-              className="absolute bg-primary-soft rounded-xl transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none z-0 shadow-[0_4px_12px_-2px_rgba(58,91,199,0.12)] [will-change:transform,opacity]"
+              className="absolute bg-primary-soft rounded-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none z-0 shadow-sm border border-primary/5"
               style={{
                 transform: `translate3d(${indicatorStyle.left}px, ${indicatorStyle.top}px, 0)`,
                 width: `${indicatorStyle.width}px`,
@@ -146,79 +153,91 @@ export default function TenantLayout() {
                 onClick={() => setIsDrawerOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold relative apple-press transition-apple duration-200 z-10',
+                    'flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold relative transition-colors duration-250 z-10 active:scale-[0.98]',
                     isActive
                       ? 'active text-primary'
-                      : 'text-ink-muted hover:bg-gray-100/70 hover:text-ink hover:translate-x-1'
+                      : 'text-zinc-500 hover:text-zinc-900'
                   )
                 }
               >
-                <item.icon size={18} />
+                <item.icon size={16} />
                 <span>{item.label}</span>
               </NavLink>
             ))}
-            <div className="border-t border-line my-3" />
+            <div className="border-t border-zinc-100 my-4" />
             <button
               onClick={() => handleNavClick('/')}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-ink-muted hover:bg-gray-100/70 hover:translate-x-1 apple-press transition-apple duration-200 text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-zinc-500 hover:text-zinc-900 active:scale-95 transition-all duration-200 text-left"
             >
-              <HelpCircle size={18} />
+              <HelpCircle size={16} />
               <span>Trung tâm hỗ trợ</span>
             </button>
             <button
               onClick={() => handleNavClick('/')}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-ink-muted hover:bg-gray-100/70 hover:translate-x-1 apple-press transition-apple duration-200 text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-zinc-500 hover:text-zinc-900 active:scale-95 transition-all duration-200 text-left"
             >
-              <Info size={18} />
+              <Info size={16} />
               <span>Về chúng tôi</span>
             </button>
           </nav>
 
-          <div className="p-3 border-t border-line">
+          {/* Emergency Contact Widget */}
+          <div className="px-5 py-3.5 m-3 rounded-2xl bg-rose-50/40 border border-rose-100/60 text-left select-none">
+            <span className="text-[9px] font-bold text-rose-500 uppercase tracking-widest flex items-center gap-1">
+              <PhoneCall size={10} /> Liên hệ khẩn cấp
+            </span>
+            <p className="text-[11px] text-zinc-600 font-extrabold mt-1.5 leading-snug">Ban quản lý tòa nhà</p>
+            <p className="text-xs text-rose-600 font-extrabold mt-0.5 leading-none">0901.234.567</p>
+          </div>
+
+          <div className="p-3 border-t border-zinc-100">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-danger hover:bg-danger/5 apple-press transition-apple duration-200 text-left"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold text-zinc-500 hover:bg-red-50 hover:text-danger active:scale-95 transition-all duration-200"
             >
-              <LogOut size={18} />
+              <LogOut size={16} />
               <span>Đăng xuất</span>
             </button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      <header className="sticky lg:fixed top-0 lg:left-[240px] right-0 h-14 lg:h-16 bg-surface border-b border-line z-30 flex items-center justify-between px-4 lg:px-6">
-        <button className="p-2 -ml-2 text-ink-muted lg:hidden" onClick={() => setIsDrawerOpen(true)}>
+      {/* Floating Header */}
+      <header className="sticky lg:fixed top-4 left-4 right-4 lg:left-[272px] h-14 lg:h-16 bg-white/80 backdrop-blur-md border border-zinc-200/50 z-30 flex items-center justify-between px-6 rounded-3xl shadow-sm select-none">
+        <button className="p-2 -ml-2 text-zinc-500 lg:hidden hover:bg-zinc-50 rounded-xl transition-colors active:scale-95" onClick={() => setIsDrawerOpen(true)}>
           <Menu size={20} />
         </button>
-        <div className="text-sm font-semibold text-ink lg:text-base lg:font-bold">
+        <div className="text-xs font-extrabold text-zinc-900 uppercase tracking-widest">
           <span className="lg:hidden">BoardingHouse</span>
-          <span className="hidden lg:inline text-ink-muted">Cổng thông tin khách thuê</span>
+          <span className="hidden lg:inline text-zinc-400">Cổng thông tin khách thuê</span>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="p-2 text-ink-muted relative hover:bg-gray-100 rounded-lg transition-colors" onClick={() => navigate('/tenant/notifications')}>
-            <Bell size={20} />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-danger rounded-full" />
+        <div className="flex items-center gap-3">
+          <button className="p-2 text-zinc-500 relative hover:bg-zinc-50 rounded-xl transition-colors active:scale-95" onClick={() => navigate('/tenant/notifications')}>
+            <Bell size={18} />
+            <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 bg-danger rounded-full" />
           </button>
-          <div className="hidden lg:flex items-center gap-2 pl-3 ml-2 border-l border-line">
-            <Avatar name={user?.fullName || 'Tenant'} size="sm" />
-            <div className="text-left text-sm">
-              <div className="font-medium text-ink leading-tight">{user?.fullName || 'Khách thuê'}</div>
-              <div className="text-xs text-ink-muted">Phòng r-301 · An Phú Q1</div>
+          <div className="hidden lg:flex items-center gap-2.5 pl-3 ml-2 border-l border-zinc-200/60 select-none">
+            <Avatar name={user?.fullName || 'Tenant'} size="sm" className="rounded-lg" />
+            <div className="text-left text-xs">
+              <div className="font-bold text-zinc-900 leading-tight">{user?.fullName || 'Khách thuê'}</div>
+              <div className="text-[10px] text-zinc-400 font-bold mt-0.5">Phòng 301 · An Phú Q1</div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 pb-20 lg:pb-6 px-4 lg:px-6 py-4 lg:py-6 lg:ml-[240px] lg:mt-16">
-        <div className="max-w-container-max mx-auto">
+      {/* Main Content Area */}
+      <main className="flex-1 pb-24 lg:pb-12 px-4 lg:px-8 pt-6 lg:pt-24 lg:ml-[272px]">
+        <div className="max-w-container-max mx-auto animate-[fadeIn_0.5s_ease-out]">
           <Outlet />
         </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-line max-w-screen-sm mx-auto z-30 lg:hidden">
-        <div ref={bottomNavRef} className="grid grid-cols-4 h-full relative">
+      {/* Bottom Nav for Mobile */}
+      <nav className="fixed bottom-4 left-4 right-4 h-16 bg-white/90 backdrop-blur-md border border-zinc-200/50 rounded-2xl shadow-lg z-30 lg:hidden overflow-hidden">
+        <div ref={bottomNavRef} className="grid grid-cols-4 h-full relative select-none">
           <div
-            className="absolute top-0 h-[2px] bg-primary transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none z-0 [will-change:transform,opacity]"
+            className="absolute bottom-0 h-[3px] bg-primary transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none z-0 [will-change:transform,opacity]"
             style={{
               transform: `translate3d(${bottomIndicatorStyle.left}px, 0, 0)`,
               width: `${bottomIndicatorStyle.width}px`,
@@ -233,13 +252,13 @@ export default function TenantLayout() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  'flex flex-col items-center justify-center gap-0.5 text-xs font-medium relative z-10 transition-colors duration-200',
-                  isActive ? 'active text-primary' : 'text-ink-muted'
+                  'flex flex-col items-center justify-center gap-0.5 text-[10px] font-bold relative z-10 transition-colors duration-200',
+                  isActive ? 'active text-primary' : 'text-zinc-400'
                 )
               }
             >
-              <item.icon size={20} />
-              {item.label}
+              <item.icon size={18} />
+              <span className="scale-95">{item.label}</span>
             </NavLink>
           ))}
         </div>

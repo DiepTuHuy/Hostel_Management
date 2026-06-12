@@ -184,7 +184,7 @@ export default function RegisterPage() {
         style={{ backgroundImage: "url('/premium_minimal_room.png')" }}
       >
         {/* Dark overlay for text contrast */}
-        <div className="absolute inset-0 bg-zinc-950/85 z-0 pointer-events-none" />
+        <div className="absolute inset-0 bg-zinc-950/50 z-0 pointer-events-none" />
 
         <div className="z-10">
           <Link to="/" className="flex items-center gap-3 active:scale-95 transition-transform duration-200 w-fit">

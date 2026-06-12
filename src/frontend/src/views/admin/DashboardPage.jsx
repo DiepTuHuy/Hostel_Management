@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, DoorOpen, AlertTriangle, Wrench, Plus, Calendar, X, Mail, Phone, MapPin } from 'lucide-react';
+import { Wallet, DoorOpen, AlertTriangle, Wrench, Plus, Calendar, X, Mail, Phone, ArrowUpRight, TrendingUp, TrendingDown, Building2, Layers } from 'lucide-react';
 import {
-  ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, Legend
 } from 'recharts';
-import { Button, PageHeader, StatCard, Card, CardHeader, Badge, Table, Toast } from '../../components/common';
+import { Button, PageHeader, Badge, Table, Toast } from '../../components/common';
 import { useProperties } from '../../controllers/useProperties.js';
 import { useInvoices } from '../../controllers/useInvoices.js';
 import { reportService, propertyService } from '../../services/index.js';
@@ -47,127 +47,133 @@ function AddPropertyModal({ onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
-      <div className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden animate-[fadeInScale_0.3s_ease-out]">
-        <div className="flex items-center justify-between p-5 border-b border-line">
+      <div className="absolute inset-0 bg-zinc-950/40 backdrop-blur-md animate-[fadeIn_0.2s_ease-out]" onClick={onClose} />
+      <div className="relative bg-white border border-zinc-200/80 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden animate-[fadeInScale_0.3s_ease-out]">
+        <div className="flex items-center justify-between p-6 border-b border-zinc-100">
           <div>
-            <h2 className="text-lg font-bold text-ink">Thêm nhà trọ mới</h2>
-            <p className="text-sm text-ink-muted mt-0.5">Nhập thông tin chi nhánh mới</p>
+            <h2 className="text-base font-extrabold text-zinc-950">Thêm nhà trọ mới</h2>
+            <p className="text-xs text-zinc-400 mt-0.5">Nhập thông tin chi nhánh mới vào hệ thống</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl text-ink-muted transition-colors">
-            <X size={18} />
+          <button onClick={onClose} className="p-2 hover:bg-zinc-50 rounded-xl text-zinc-400 hover:text-zinc-600 transition-colors">
+            <X size={16} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto max-h-[calc(90vh-10rem)]">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-10rem)]">
           {validationError && (
-            <div className="p-3 bg-red-50 text-danger text-sm rounded-xl font-medium animate-[fadeIn_0.2s_ease-out]">
+            <div className="p-3 bg-red-50 text-danger text-xs rounded-xl font-bold animate-[fadeIn_0.2s_ease-out]">
               {validationError}
             </div>
           )}
+          
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Tên nhà trọ <span className="text-danger">*</span></label>
+            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Tên nhà trọ <span className="text-danger">*</span></label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+              className="w-full h-10 px-3.5 bg-zinc-50 border border-zinc-200/60 rounded-xl text-xs focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all"
               placeholder="VD: Nhà trọ Sunrise"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Địa chỉ <span className="text-danger">*</span></label>
+            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Địa chỉ <span className="text-danger">*</span></label>
             <input
               type="text"
               value={formData.address}
               onChange={(e) => handleChange('address', e.target.value)}
-              className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+              className="w-full h-10 px-3.5 bg-zinc-50 border border-zinc-200/60 rounded-xl text-xs focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all"
               placeholder="VD: 123 Đường Láng, P. ABC"
               required
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Quận / Huyện <span className="text-danger">*</span></label>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Quận / Huyện <span className="text-danger">*</span></label>
               <input
                 type="text"
                 value={formData.district}
                 onChange={(e) => handleChange('district', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3.5 bg-zinc-50 border border-zinc-200/60 rounded-xl text-xs focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all"
                 placeholder="VD: Đống Đa"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Thành phố</label>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Thành phố</label>
               <input
                 type="text"
                 value={formData.city}
                 onChange={(e) => handleChange('city', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3.5 bg-zinc-50 border border-zinc-200/60 rounded-xl text-xs focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Số lượng phòng <span className="text-danger">*</span></label>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Số lượng phòng <span className="text-danger">*</span></label>
               <input
                 type="number"
                 min="1"
                 value={formData.totalRooms}
                 onChange={(e) => handleChange('totalRooms', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3.5 bg-zinc-50 border border-zinc-200/60 rounded-xl text-xs focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all"
                 placeholder="VD: 24"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5">Quản lý phụ trách</label>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Quản lý phụ trách</label>
               <input
                 type="text"
                 value={formData.managerName}
                 onChange={(e) => handleChange('managerName', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3.5 bg-zinc-50 border border-zinc-200/60 rounded-xl text-xs focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all"
                 placeholder="Họ tên quản lý"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5 flex items-center gap-1"><Phone size={14} /> Số điện thoại</label>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><Phone size={12} /> Số điện thoại</label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => handleChange('phone', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3.5 bg-zinc-50 border border-zinc-200/60 rounded-xl text-xs focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all"
                 placeholder="0912345678"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ink mb-1.5 flex items-center gap-1"><Mail size={14} /> Email</label>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><Mail size={12} /> Email</label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange('email', e.target.value)}
-                className="w-full h-10 px-3.5 bg-gray-50 border border-line rounded-xl text-sm focus:outline-none focus:border-primary focus:bg-white transition-colors"
+                className="w-full h-10 px-3.5 bg-zinc-50 border border-zinc-200/60 rounded-xl text-xs focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all"
                 placeholder="email@example.com"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-3 pt-3 border-t border-line">
-            <Button type="submit" className="flex-1" icon={<Plus size={16} />}>Thêm nhà trọ</Button>
+          <div className="flex items-center gap-3 pt-4 border-t border-zinc-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl border border-line text-sm font-medium text-ink-muted hover:bg-gray-50 transition-colors"
+              className="flex-1 h-10 rounded-xl border border-zinc-200 text-xs font-bold text-zinc-500 hover:bg-zinc-50 transition-colors active:scale-95"
             >
               Huỷ
+            </button>
+            <button
+              type="submit"
+              className="flex-1 h-10 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+            >
+              <Plus size={14} /> Thêm nhà trọ
             </button>
           </div>
         </form>
@@ -278,10 +284,11 @@ export default function DashboardPage() {
   const revenueValue = dashboardStats.totalRevenue;
   const totalRooms = dashboardStats.totalRooms;
   const occupiedRooms = dashboardStats.occupiedRooms;
+  const emptyRooms = dashboardStats.emptyRooms;
+  const depositRooms = dashboardStats.depositRooms;
   const occRate = dashboardStats.occupancyRate;
   const debts = dashboardStats.totalDebt;
   const multiplier = 1.0;
-  const mappedRevenue = revenueData;
 
   return (
     <>
@@ -299,28 +306,28 @@ export default function DashboardPage() {
                 {currentMonth}
               </Button>
               {showMonthDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-surface border border-line rounded-2xl shadow-xl z-50 overflow-hidden animate-[fadeInScale_0.2s_ease-out]">
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-zinc-200/60 rounded-2xl shadow-xl z-50 overflow-hidden animate-[fadeInScale_0.2s_ease-out]">
                   <ul className="py-1">
                     <li>
                       <button 
-                        onClick={() => handleSelectMonth('Tháng 05/2026', 1.0)}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${currentMonth === 'Tháng 05/2026' ? 'font-bold text-primary' : 'text-ink'}`}
+                        onClick={() => handleSelectMonth('Tháng 05/2026')}
+                        className={`w-full text-left px-4 py-2.5 text-xs hover:bg-zinc-50 transition-colors ${currentMonth === 'Tháng 05/2026' ? 'font-bold text-primary bg-zinc-50/50' : 'text-zinc-700'}`}
                       >
                         Tháng 05/2026
                       </button>
                     </li>
                     <li>
                       <button 
-                        onClick={() => handleSelectMonth('Tháng 04/2026', 0.92)}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${currentMonth === 'Tháng 04/2026' ? 'font-bold text-primary' : 'text-ink'}`}
+                        onClick={() => handleSelectMonth('Tháng 04/2026')}
+                        className={`w-full text-left px-4 py-2.5 text-xs hover:bg-zinc-50 transition-colors ${currentMonth === 'Tháng 04/2026' ? 'font-bold text-primary bg-zinc-50/50' : 'text-zinc-700'}`}
                       >
                         Tháng 04/2026
                       </button>
                     </li>
                     <li>
                       <button 
-                        onClick={() => handleSelectMonth('Tháng 03/2026', 0.85)}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${currentMonth === 'Tháng 03/2026' ? 'font-bold text-primary' : 'text-ink'}`}
+                        onClick={() => handleSelectMonth('Tháng 03/2026')}
+                        className={`w-full text-left px-4 py-2.5 text-xs hover:bg-zinc-50 transition-colors ${currentMonth === 'Tháng 03/2026' ? 'font-bold text-primary bg-zinc-50/50' : 'text-zinc-700'}`}
                       >
                         Tháng 03/2026
                       </button>
@@ -334,110 +341,328 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-gutter">
-        <StatCard label="Doanh thu tháng" value={formatCurrency(revenueValue, { compact: true })} delta={multiplier >= 1 ? 12.5 : multiplier === 0.92 ? 8.2 : -3.1} icon={Wallet} accent="primary" onClick={() => navigate('/admin/reports')} />
-        <StatCard label="Tỉ lệ lấp đầy" value={`${occRate}%`} icon={DoorOpen} accent="info" onClick={() => navigate('/admin/branches')}
-          extra={
-            <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden mt-2">
-              <div className="bg-primary h-full transition-all duration-500" style={{ width: `${occRate}%` }} />
+      {/* Bento Grid Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 mb-8">
+        
+        {/* Doanh thu tháng */}
+        <div 
+          onClick={() => navigate('/admin/reports')}
+          className="lg:col-span-6 md:col-span-6 col-span-1 bg-white border border-zinc-200/50 rounded-3xl p-6 flex flex-col justify-between hover:shadow-md cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 group relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full pointer-events-none transition-transform duration-500 group-hover:scale-110" />
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Doanh thu tháng này</span>
+              <div className="p-2.5 bg-primary/5 text-primary rounded-xl transition-colors group-hover:bg-primary group-hover:text-white">
+                <Wallet size={16} />
+              </div>
             </div>
-          }
-        />
-        <StatCard label="Công nợ chưa thu" value={formatCurrency(debts, { compact: true })} icon={AlertTriangle} accent="danger" onClick={() => navigate('/admin/debts')}
-          extra={<div className="text-xs text-danger">Từ {invoices.filter((i) => i.status === 'overdue').length} khách hàng</div>}
-        />
-        <StatCard label="Chi phí vận hành" value={formatCurrency(85000000 * multiplier, { compact: true })} icon={Wrench} accent="warning" onClick={() => navigate('/admin/services')}
-          extra={<div className="text-xs text-ink-muted">Đã thanh toán 80%</div>}
-        />
+            <div className="flex items-baseline gap-2">
+              <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900">
+                {formatCurrency(revenueValue, { compact: false })}
+              </h2>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-zinc-100">
+            <span className="text-[11px] text-zinc-400 flex items-center gap-1 font-semibold">
+              <TrendingUp size={12} className="text-emerald-500" />
+              <span className="text-emerald-600 font-bold">+12.5%</span> so với tháng trước
+            </span>
+            <span className="text-xs font-semibold text-primary inline-flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              Chi tiết <ArrowUpRight size={14} />
+            </span>
+          </div>
+        </div>
+
+        {/* Tỉ lệ lấp đầy */}
+        <div 
+          onClick={() => navigate('/admin/branches')}
+          className="lg:col-span-6 md:col-span-6 col-span-1 bg-white border border-zinc-200/50 rounded-3xl p-6 flex flex-col justify-between hover:shadow-md cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 group"
+        >
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Tỷ lệ lấp đầy</span>
+              <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl transition-colors group-hover:bg-blue-600 group-hover:text-white">
+                <DoorOpen size={16} />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-3">
+              <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900">
+                {occRate}%
+              </h2>
+              <span className="text-xs font-bold text-zinc-500">
+                {occupiedRooms}/{totalRooms} Phòng đã thuê
+              </span>
+            </div>
+            {/* Elegant Gradient Progress Bar */}
+            <div className="w-full bg-zinc-100 h-2 rounded-full overflow-hidden mt-4">
+              <div 
+                className="bg-gradient-to-r from-blue-500 to-primary h-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" 
+                style={{ width: `${occRate}%` }} 
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-zinc-100 text-center text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+            <div>
+              <div className="text-xs text-zinc-800 font-extrabold">{emptyRooms}</div>
+              Phòng trống
+            </div>
+            <div className="border-l border-zinc-100">
+              <div className="text-xs text-zinc-800 font-extrabold">{occupiedRooms}</div>
+              Đang thuê
+            </div>
+            <div className="border-l border-zinc-100">
+              <div className="text-xs text-zinc-800 font-extrabold">{depositRooms}</div>
+              Đặt cọc
+            </div>
+          </div>
+        </div>
+
+        {/* Công nợ chưa thu */}
+        <div 
+          onClick={() => navigate('/admin/debts')}
+          className="lg:col-span-4 md:col-span-2 col-span-1 bg-white border border-zinc-200/50 rounded-3xl p-6 flex flex-col justify-between hover:shadow-md cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 group"
+        >
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Công nợ chưa thu</span>
+              <div className="p-2.5 bg-red-50 text-red-500 rounded-xl transition-colors group-hover:bg-red-500 group-hover:text-white">
+                <AlertTriangle size={16} />
+              </div>
+            </div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900">
+              {formatCurrency(debts)}
+            </h2>
+          </div>
+          <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-zinc-500">
+            <span className="text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold">
+              {invoices.filter((i) => i.status === 'overdue').length} Quá hạn
+            </span>
+            <span className="text-zinc-400">Nhấp để thu hồi</span>
+          </div>
+        </div>
+
+        {/* Chi phí vận hành */}
+        <div 
+          onClick={() => navigate('/admin/services')}
+          className="lg:col-span-4 md:col-span-2 col-span-1 bg-white border border-zinc-200/50 rounded-3xl p-6 flex flex-col justify-between hover:shadow-md cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 group"
+        >
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Chi phí vận hành</span>
+              <div className="p-2.5 bg-amber-50 text-amber-500 rounded-xl transition-colors group-hover:bg-amber-500 group-hover:text-white">
+                <Wrench size={16} />
+              </div>
+            </div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900">
+              {formatCurrency(85000000 * multiplier)}
+            </h2>
+          </div>
+          <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-zinc-500">
+            <span className="text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold">
+              Đã trả 80%
+            </span>
+            <span className="text-zinc-400">Quản lý định mức</span>
+          </div>
+        </div>
+
+        {/* Quy mô vận hành */}
+        <div 
+          onClick={() => navigate('/admin/branches')}
+          className="lg:col-span-4 md:col-span-2 col-span-1 bg-white border border-zinc-200/50 rounded-3xl p-6 flex flex-col justify-between hover:shadow-md cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 group"
+        >
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Quy mô quản lý</span>
+              <div className="p-2.5 bg-emerald-50 text-emerald-500 rounded-xl transition-colors group-hover:bg-emerald-500 group-hover:text-white">
+                <Building2 size={16} />
+              </div>
+            </div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900">
+              {localProperties.length} Chi nhánh
+            </h2>
+          </div>
+          <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs font-semibold text-zinc-500">
+            <span className="text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold">
+              {totalRooms} Phòng trọ
+            </span>
+            <span className="text-zinc-400">Quản lý chi nhánh</span>
+          </div>
+        </div>
+
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-gutter">
-        <Card className="lg:col-span-2">
-          <CardHeader title="Biểu đồ Doanh thu 12 tháng" subtitle="Top 5 cơ sở doanh thu cao nhất" />
-          <div className="h-80">
+      {/* Charts & Activities Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        
+        {/* Doanh thu 12 tháng Area Chart */}
+        <div className="lg:col-span-2 bg-white border border-zinc-200/50 rounded-3xl p-6">
+          <div className="mb-6">
+            <h3 className="text-sm font-extrabold text-zinc-950">Biểu đồ doanh thu 12 tháng</h3>
+            <p className="text-xs text-zinc-400 mt-0.5">Thống kê chi tiết doanh thu thực tế của top 5 cơ sở</p>
+          </div>
+          
+          <div className="h-80 w-full">
             <ResponsiveContainer>
-              <LineChart data={mappedRevenue}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F1F2F6" />
-                <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
-                <YAxis tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}M`} stroke="#6B7280" fontSize={12} />
-                <Tooltip formatter={(v) => formatCurrency(v)} />
-                <Legend />
+              <AreaChart data={revenueData}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15}/>
+                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
+                <XAxis dataKey="month" stroke="#a1a1aa" fontSize={11} tickLine={false} axisLine={false} dy={10} />
+                <YAxis 
+                  tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}M`} 
+                  stroke="#a1a1aa" 
+                  fontSize={11} 
+                  tickLine={false} 
+                  axisLine={false}
+                  dx={-10}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid #e4e4e7',
+                    borderRadius: '16px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
+                    padding: '12px'
+                  }}
+                  itemStyle={{ fontSize: '11px', fontWeight: 'bold' }}
+                  labelStyle={{ fontSize: '11px', fontWeight: 'extrabold', marginBottom: '4px', color: '#09090b' }}
+                  formatter={(v) => formatCurrency(v)} 
+                />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '15px' }} />
                 {localProperties.slice(0, 5).map((prop, idx) => {
                   const colors = [
-                    '#3A5BC7', // primary / blue
-                    '#16A34A', // green
-                    '#F59E0B', // amber / yellow
-                    '#DC2626', // red
-                    '#06B6D4', // cyan
-                    '#8B5CF6', // purple
-                    '#EC4899', // pink
+                    '#2563eb', // Cobalt Blue
+                    '#4f46e5', // Indigo
+                    '#0d9488', // Teal
+                    '#7c3aed', // Purple
+                    '#0891b2', // Cyan
                   ];
                   const color = colors[idx % colors.length];
                   return (
-                    <Line
+                    <Area
                       key={prop.id}
                       type="monotone"
                       dataKey={prop.id}
                       name={prop.name}
                       stroke={color}
-                      strokeWidth={2}
-                      dot={false}
+                      strokeWidth={2.5}
+                      fillOpacity={1}
+                      fill={idx === 0 ? "url(#colorRevenue)" : "transparent"}
                     />
                   );
                 })}
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
-        </Card>
+        </div>
 
-        <Card>
-          <CardHeader title="Hoạt động gần đây" subtitle="Hệ thống & cảnh báo" />
-          <ul className="space-y-3">
-            {NOTIFICATIONS.map((n) => {
-              const dotColors = {
-                warning: 'bg-amber-500',
-                danger: 'bg-red-500',
-                success: 'bg-green-500',
-                info: 'bg-sky-500',
-              };
-              const dotColorClass = dotColors[n.color] || 'bg-gray-500';
-              return (
-                <li key={n.id} className="flex gap-3 p-2 hover:bg-gray-50 rounded-lg -mx-2 transition-colors">
-                  <span className={`mt-1 h-2 w-2 rounded-full ${dotColorClass} shrink-0`} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <Badge color={n.color}>{n.type}</Badge>
+        {/* Hoạt động gần đây */}
+        <div className="bg-white border border-zinc-200/50 rounded-3xl p-6 flex flex-col">
+          <div className="mb-6">
+            <h3 className="text-sm font-extrabold text-zinc-950">Hoạt động gần đây</h3>
+            <p className="text-xs text-zinc-400 mt-0.5">Nhật ký hệ thống & cảnh báo quan trọng</p>
+          </div>
+
+          <div className="flex-1 overflow-y-auto max-h-[320px] pr-1">
+            <ul className="divide-y divide-zinc-100">
+              {NOTIFICATIONS.map((n) => {
+                const badgeColors = {
+                  warning: 'bg-amber-50 text-amber-700 border-amber-100',
+                  danger: 'bg-red-50 text-red-700 border-red-100',
+                  success: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                  info: 'bg-blue-50 text-blue-700 border-blue-100',
+                };
+                const badgeColorClass = badgeColors[n.color] || 'bg-zinc-50 text-zinc-700 border-zinc-150';
+                return (
+                  <li key={n.id} className="py-3.5 flex gap-3.5 items-start hover:bg-zinc-50/50 -mx-2 px-2 rounded-xl transition-all">
+                    <span className={`px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded-full border ${badgeColorClass} shrink-0 mt-0.5`}>
+                      {n.type}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-zinc-800 leading-normal">{n.text}</p>
+                      <p className="text-[10px] text-zinc-400 font-semibold mt-1">{formatRelative(n.time)}</p>
                     </div>
-                    <p className="text-sm text-ink mt-1">{n.text}</p>
-                    <p className="text-xs text-ink-muted mt-0.5">{formatRelative(n.time)}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </Card>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+
       </div>
 
-      <Card>
-        <CardHeader title="Top cơ sở theo doanh thu" subtitle={currentMonth} />
-        <Table
-          columns={[
-            { key: 'name',    header: 'Cơ sở',         render: (r) => <span className="font-medium text-ink">{r.name}</span> },
-            { key: 'address', header: 'Địa chỉ',       render: (r) => <span className="text-ink-muted">{r.district}</span> },
-            { key: 'occ',     header: 'Lấp đầy',       render: (r) => `${r.occupancyRate || 0}%` },
-            { key: 'revenue', header: 'Doanh thu',     className: 'text-right font-semibold',
-              render: (r) => {
-                const val = revenueData.reduce((sum, row) => sum + (row[r.id] || 0), 0);
-                return formatCurrency(val, { compact: true });
-              }
-            },
-            { key: 'status',  header: 'Trạng thái',
-              render: () => <Badge color="success">Hoạt động</Badge> },
-          ]}
-          data={loading ? [] : localProperties}
-          emptyText="Chưa có nhà trọ"
-        />
-      </Card>
+      {/* Top Properties Table */}
+      <div className="bg-white border border-zinc-200/50 rounded-3xl p-6">
+        <div className="mb-6 flex justify-between items-center">
+          <div>
+            <h3 className="text-sm font-extrabold text-zinc-950">Top chi nhánh theo doanh thu</h3>
+            <p className="text-xs text-zinc-400 mt-0.5">Bảng thống kê tỷ lệ lấp đầy và tổng doanh thu tích lũy</p>
+          </div>
+          <span className="text-xs font-bold text-zinc-500 bg-zinc-50 px-3 py-1 rounded-full border border-zinc-200/50">
+            Kỳ báo cáo: {currentMonth}
+          </span>
+        </div>
+
+        <div className="overflow-hidden">
+          <Table
+            columns={[
+              { 
+                key: 'name',    
+                header: 'Chi nhánh',         
+                render: (r) => (
+                  <div className="flex flex-col">
+                    <span className="font-extrabold text-zinc-900 text-xs">{r.name}</span>
+                    <span className="text-[10px] text-zinc-400 font-semibold mt-0.5">{r.address}</span>
+                  </div>
+                ) 
+              },
+              { 
+                key: 'address', 
+                header: 'Khu vực',       
+                render: (r) => <span className="text-zinc-500 text-xs font-bold">{r.district}</span> 
+              },
+              { 
+                key: 'occ',     
+                header: 'Tỷ lệ lấp đầy',       
+                render: (r) => (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-zinc-800">{r.occupancyRate || 0}%</span>
+                    <div className="w-16 bg-zinc-100 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-primary h-full" style={{ width: `${r.occupancyRate || 0}%` }} />
+                    </div>
+                  </div>
+                ) 
+              },
+              { 
+                key: 'revenue', 
+                header: 'Doanh thu tích lũy',     
+                className: 'text-right font-extrabold text-xs text-zinc-950',
+                render: (r) => {
+                  const val = revenueData.reduce((sum, row) => sum + (row[r.id] || 0), 0);
+                  return formatCurrency(val, { compact: false });
+                }
+              },
+              { 
+                key: 'status',  
+                header: 'Trạng thái',
+                render: () => (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
+                    <span className="w-1 h-1 bg-emerald-500 rounded-full animate-ping" /> Hoạt động
+                  </span>
+                ) 
+              },
+            ]}
+            data={loading ? [] : localProperties}
+            emptyText="Chưa có nhà trọ nào được thêm"
+          />
+        </div>
+      </div>
 
       {showAddModal && (
         <AddPropertyModal 
