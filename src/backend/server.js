@@ -63,7 +63,7 @@ app.use('/', expenseRoutes);
 app.use('/', roomTypeRoutes);
 app.use('/', chatRoutes);
 
-// TỰ ĐỘNG HÓA SINH HÓA ĐƠN ĐỊNH KỲ HÀNG THÁNG (UC26)
+// TỰ ĐỘNG HÓA SINH HÓA ĐƠN ĐỊNH KỲ HÀNG THÁNG (UC25)
 async function autoGenerateInvoicesForActiveContracts() {
   try {
     const today = new Date();
@@ -114,13 +114,13 @@ async function autoGenerateInvoicesForActiveContracts() {
   }
 }
 
-// TỰ ĐỘNG KHỞI TẠO CHI PHÍ MẪU CHO BÁO CÁO (UC35)
+// TỰ ĐỘNG KHỞI TẠO CHI PHÍ MẪU CHO BÁO CÁO (UC34)
 async function autoSeedExpenses() {
   try {
     const count = await Expense.countDocuments();
     if (count > 0) return;
     
-    console.log("[Database] Khởi tạo dữ liệu chi phí mẫu cho báo cáo (UC35)...");
+    console.log("[Database] Khởi tạo dữ liệu chi phí mẫu cho báo cáo (UC34)...");
     const firstProperty = await Property.findOne();
     if (!firstProperty) {
       console.log("[Database] Không tìm thấy nhà trọ nào để liên kết chi phí.");

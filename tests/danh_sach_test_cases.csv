@@ -143,14 +143,14 @@ TC01_UC20,Chấm dứt hợp đồng / trả phòng - UC20,"1. Đăng nhập tà
 6. Click 'Hoàn tất thanh lý hợp đồng'","Ngày trả phòng: 31/05/2027
 Khấu trừ tài sản hỏng: 500.000 VNĐ (làm hỏng cửa tủ quần áo)
 Số tiền cọc hoàn lại: 3.000.000 VNĐ",Trạng thái hợp đồng chuyển thành 'Đã chấm dứt'. Phòng 301 được chuyển về trạng thái 'Trống'. Số dư cọc được hoàn trả theo biên bản thanh lý.
-TC01_UC22,Cấu hình đơn giá dịch vụ - UC22,"1. Đăng nhập tài khoản Admin
+TC01_UC21,Cấu hình đơn giá dịch vụ - UC21,"1. Đăng nhập tài khoản Admin
 2. Truy cập trang 'Cấu hình & Dịch vụ'
 3. Thiết lập đơn giá dịch vụ: Điện (chọn biểu giá lũy tiến 6 bậc EVN), Nước (20.000đ/m3), Internet (100.000đ/phòng)
 4. Click nút 'Lưu cấu hình dịch vụ'","Bậc 1 Điện (0-50kWh): 1.806đ/kWh
 Bậc 2 Điện (51-100kWh): 1.866đ/kWh
 Bậc 3 Điện (101-200kWh): 2.167đ/kWh
 Nước: 20.000 VNĐ/m3",Hệ thống lưu cấu hình đơn giá mới thành công và áp dụng cho các hóa đơn sinh ra ở các tháng tiếp theo.
-TC01_UC23,Ghi chỉ số điện nước - UC23,"1. Đăng nhập tài khoản Manager
+TC01_UC22,Ghi chỉ số điện nước - UC22,"1. Đăng nhập tài khoản Manager
 2. Truy cập trang 'Ghi số điện nước' (/meters)
 3. Chọn nhà trọ, chọn kỳ hóa đơn (Tháng 5/2026)
 4. Nhập chỉ số điện mới và chỉ số nước mới của phòng 301
@@ -159,22 +159,22 @@ TC01_UC23,Ghi chỉ số điện nước - UC23,"1. Đăng nhập tài khoản M
 Kỳ: Tháng 5/2026
 Chỉ số điện cũ: 1050 - Chỉ số điện mới: 1250 (Tiêu thụ 200 kWh)
 Chỉ số nước cũ: 240 - Chỉ số nước mới: 248 (Tiêu thụ 8 m3)","Hệ thống lưu chỉ số mới ghi nhận thành công, chuyển trạng thái ghi số của phòng thành 'Đã ghi nhận'."
-TC01_UC24,Tính tiền dịch vụ - UC24,"1. Hệ thống tự động kích hoạt tính toán ngay sau khi chỉ số điện nước mới được cập nhật
+TC01_UC23,Tính tiền dịch vụ - UC23,"1. Hệ thống tự động kích hoạt tính toán ngay sau khi chỉ số điện nước mới được cập nhật
 2. Đối chiếu số lượng tiêu thụ điện nước với cấu hình đơn giá
 3. Kiểm tra kết quả tính toán điện theo bậc lũy tiến EVN: 50 * 1806 + 50 * 1866 + 100 * 2167 = 400.300 VNĐ (chưa VAT)
 4. Kiểm tra kết quả tính tiền nước: 8m3 * 20000 = 160.000 VNĐ","Tiêu thụ: 200 kWh điện, 8 m3 nước
 Đơn giá: Cấu hình bậc thang EVN và nước 20k/m3",Hệ thống tính toán chính xác chi phí từng dịch vụ và lưu vào bảng kê chi tiết hóa đơn.
-TC01_UC25,Tạo hoá đơn - UC25,"1. Đăng nhập tài khoản Manager hoặc Admin
+TC01_UC24,Tạo hoá đơn - UC24,"1. Đăng nhập tài khoản Manager hoặc Admin
 2. Truy cập trang 'Quản lý hóa đơn'
 3. Chọn phòng 301, click 'Tạo hóa đơn tháng'
 4. Kiểm tra thông tin các khoản tiền phòng (3.500.000), tiền điện (400.300), tiền nước (160.000) và các dịch vụ khác
 5. Click nút 'Tạo hóa đơn'","Kỳ thanh toán: Tháng 05/2026
 Tổng số tiền: 4.160.300 VNĐ (Tiền phòng + Tiền điện + Tiền nước)",Hóa đơn được tạo thành công dưới dạng bản nháp và gán mã hóa đơn duy nhất (ví dụ: HD-202605-301).
-TC01_UC26,Tự sinh hoá đơn - UC26,"1. Trình chạy ngầm tự động quét hợp đồng ở trạng thái active
+TC01_UC25,Tự sinh hoá đơn - UC25,"1. Trình chạy ngầm tự động quét hợp đồng ở trạng thái active
 2. Kiểm tra xem phòng đã được sinh hóa đơn cho kỳ hiện tại chưa
 3. Nếu chưa, tự động tạo hóa đơn nháp pending với tiền phòng và dịch vụ chốt điện nước","Kỳ thanh toán: Tháng hiện tại (YYYY-MM)
 Trạng thái hợp đồng: active",Hệ thống tự động quét và sinh hóa đơn cho kỳ mới của toàn bộ các phòng đang có hợp đồng hoạt động mà chưa được tạo hóa đơn.
-TC01_UC27,Thanh toán online - UC27,"1. Đăng nhập tài khoản Khách thuê (Trần Thị C)
+TC01_UC26,Thanh toán online - UC26,"1. Đăng nhập tài khoản Khách thuê (Trần Thị C)
 2. Truy cập trang 'Hóa đơn của tôi'
 3. Chọn hóa đơn HD-202605-301 đang 'Chờ thanh toán'
 4. Click nút 'Thanh toán trực tuyến (VNPay)'
@@ -182,7 +182,7 @@ TC01_UC27,Thanh toán online - UC27,"1. Đăng nhập tài khoản Khách thuê 
 6. Click 'Thanh toán' và đợi chuyển hướng trở lại hệ thống","Thẻ test VNPay: 97041985261377022 (Ngân hàng NCB)
 Tên chủ thẻ: NGUYEN VAN A
 Mã OTP: 123456",Thanh toán thành công. Hóa đơn HD-202605-301 tự động chuyển sang trạng thái 'Đã thanh toán (Online VNPay)' và hệ thống tự động sinh biên lai điện tử.
-TC01_UC28,Xác nhận thu tiền mặt - UC28,"1. Đăng nhập tài khoản Manager
+TC01_UC27,Xác nhận thu tiền mặt - UC27,"1. Đăng nhập tài khoản Manager
 2. Truy cập trang 'Quản lý thu chi / Phiếu thu'
 3. Tìm kiếm hóa đơn của khách thuê trả tiền mặt (ví dụ: HD-202605-302)
 4. Click nút 'Xác nhận thu tiền mặt'
@@ -190,45 +190,45 @@ TC01_UC28,Xác nhận thu tiền mặt - UC28,"1. Đăng nhập tài khoản Man
 6. Click 'Tạo phiếu thu'","Mã hóa đơn: HD-202605-302
 Số tiền nhận: 4.160.300 VNĐ
 Người nộp: Trần Thị C","Hệ thống ghi nhận trạng thái hóa đơn là 'Đã thanh toán (Tiền mặt)', sinh phiếu thu tiền mặt và cập nhật vào quỹ tiền mặt của chi nhánh."
-TC01_UC29,Tra cứu lịch sử hoá đơn - UC29,"1. Đăng nhập tài khoản Khách thuê
+TC01_UC28,Tra cứu lịch sử hoá đơn - UC28,"1. Đăng nhập tài khoản Khách thuê
 2. Truy cập trang 'Lịch sử hóa đơn'
 3. Chọn khoảng thời gian cần tra cứu (ví dụ: từ 01/01/2026 đến nay)
 4. Xem danh sách hóa đơn và click vào hóa đơn HD-202605-301 để xem chi tiết",Bộ lọc thời gian: 01/01/2026 - 31/12/2026,Hệ thống hiển thị danh sách tất cả các hóa đơn đã phát hành kèm trạng thái và chi tiết thanh toán của từng kỳ.
-TC01_UC30,Quản lý công nợ - UC30,"1. Đăng nhập tài khoản Admin
+TC01_UC29,Quản lý công nợ - UC29,"1. Đăng nhập tài khoản Admin
 2. Truy cập trang 'Quản lý công nợ' (/debts)
 3. Xem danh sách phòng nợ quá hạn thanh toán
 4. Chọn phòng nợ lâu nhất và click nút 'Gửi cảnh báo công nợ'","Bộ lọc: Hóa đơn quá hạn > 10 ngày
 Phòng chọn: Phòng 102 (Nợ 5.200.000 VNĐ)",Hệ thống tổng hợp số tiền nợ và gửi cảnh báo nợ tự động qua Telegram/Email tới khách thuê phòng 102.
-TC01_UC31,Dashboard tổng quan - UC31,"1. Đăng nhập tài khoản Admin hoặc Manager
+TC01_UC30,Dashboard tổng quan - UC30,"1. Đăng nhập tài khoản Admin hoặc Manager
 2. Xem trang Dashboard chính
 3. Kiểm tra sự thay đổi của các biểu đồ đường doanh thu, tỷ lệ phòng trống và số lượng khách thuê thực tế",Quyền truy cập: Admin,"Dashboard tải dữ liệu thành công, hiển thị các biểu đồ trực quan, số liệu thực tế được cập nhật theo thời gian thực từ cơ sở dữ liệu."
-TC01_UC32,Báo cáo doanh thu - UC32,"1. Đăng nhập tài khoản Admin
+TC01_UC31,Báo cáo doanh thu - UC31,"1. Đăng nhập tài khoản Admin
 2. Truy cập trang 'Báo cáo & Thống kê' -> chọn tab 'Doanh thu'
 3. Lọc theo năm 2026 và chọn so sánh giữa các chi nhánh nhà trọ
 4. Xem biểu đồ doanh thu cột","Bộ lọc: Năm 2026, tất cả chi nhánh","Hệ thống hiển thị tổng doanh thu từ tiền phòng, dịch vụ và biểu đồ so sánh chi tiết giữa các nhà trọ trong chuỗi."
-TC01_UC33,Báo cáo tỉ lệ lấp đầy - UC33,"1. Đăng nhập tài khoản Admin hoặc Manager
+TC01_UC32,Báo cáo tỉ lệ lấp đầy - UC32,"1. Đăng nhập tài khoản Admin hoặc Manager
 2. Truy cập trang 'Báo cáo & Thống kê' -> chọn tab 'Tỷ lệ lấp đầy'
 3. Lọc theo tháng hiện tại",Bộ lọc: Tháng 05/2026,Hiển thị tỷ lệ phần trăm phòng đã thuê (ví dụ: 85%) và số phòng còn trống trên tổng số phòng đang vận hành.
-TC01_UC34,Báo cáo công nợ - UC34,"1. Đăng nhập tài khoản Admin
+TC01_UC33,Báo cáo công nợ - UC33,"1. Đăng nhập tài khoản Admin
 2. Truy cập trang 'Báo cáo & Thống kê' -> chọn tab 'Báo cáo công nợ'
 3. Lọc danh sách khách nợ theo từng chi nhánh",Chi nhánh: Cơ sở Quận Đống Đa,Hiển thị tổng nợ chưa thu của chi nhánh Đống Đa và danh sách chi tiết số tiền nợ phân theo từng phòng trọ.
-TC01_UC35,Báo cáo chi phí vận hành - UC35,"1. Đăng nhập tài khoản Admin
+TC01_UC34,Báo cáo chi phí vận hành - UC34,"1. Đăng nhập tài khoản Admin
 2. Truy cập trang 'Báo cáo & Thống kê' -> chọn tab 'Báo cáo chi phí'
 3. Kiểm tra số tiền chi cho bảo trì thiết bị và lương nhân viên",Kỳ báo cáo: Quý I/2026,Hệ thống xuất bảng tổng hợp chi phí đầu vào và tính ra lợi nhuận ròng sau khi trừ chi phí vận hành.
-TC01_UC36,Xuất Excel/PDF - UC36,"1. Tại trang Báo cáo doanh thu hoặc hóa đơn bất kỳ
+TC01_UC35,Xuất Excel/PDF - UC35,"1. Tại trang Báo cáo doanh thu hoặc hóa đơn bất kỳ
 2. Click nút 'Xuất báo cáo Excel' hoặc 'Xuất PDF'
 3. Tải file về thiết bị và mở kiểm tra cấu trúc dữ liệu",Nội dung: Báo cáo Doanh thu năm 2026,"Hệ thống kết xuất file Excel/PDF đúng định dạng mẫu, dữ liệu hiển thị chính xác không bị lỗi font chữ tiếng Việt."
-TC01_UC37,Gửi thông báo tự động - UC37,"1. Đăng nhập tài khoản Manager
+TC01_UC36,Gửi thông báo tự động - UC36,"1. Đăng nhập tài khoản Manager
 2. Vào trang 'Quản lý thông báo' -> click 'Tạo thông báo mới'
 3. Nhập tiêu đề, nội dung và chọn đối tượng nhận là 'Toàn bộ khách thuê tòa nhà A'
 4. Click nút 'Gửi thông báo'","Tiêu đề: Bảo trì hệ thống điện ngày 25/05
 Nội dung: Cúp điện từ 9h00 đến 11h00",Hệ thống tự động phát đi thông báo qua hệ thống đẩy trên web/app và email cho toàn bộ cư dân trong tòa nhà A.
-TC01_UC38,Tìm kiếm phòng - UC38,"1. Truy cập trang chủ dưới vai trò Khách vãng lai (không cần đăng nhập)
+TC01_UC37,Tìm kiếm phòng - UC37,"1. Truy cập trang chủ dưới vai trò Khách vãng lai (không cần đăng nhập)
 2. Vào trang 'Tìm kiếm phòng'
 3. Nhập từ khóa khu vực (Đống Đa), khoảng giá (2 - 4 triệu) và diện tích mong muốn
 4. Click nút 'Tìm kiếm'","Khu vực: Đống Đa
 Giá thuê: 2.000.000 VNĐ - 4.000.000 VNĐ",Hệ thống lọc và hiển thị danh sách các phòng trống thỏa mãn điều kiện lọc kèm hình ảnh và thông tin chi tiết.
-TC01_UC39,Đặt cọc giữ phòng online - UC39,"1. Tại trang chi tiết phòng trống cần thuê
+TC01_UC38,Đặt cọc giữ phòng online - UC38,"1. Tại trang chi tiết phòng trống cần thuê
 2. Click nút 'Đặt cọc giữ phòng trực tuyến'
 3. Điền thông tin cá nhân và nhập số tiền cọc mong muốn (tối thiểu bằng 1 tháng tiền phòng)
 4. Click 'Xác nhận và Thanh toán qua VNPay'","Phòng đặt cọc: Phòng 301

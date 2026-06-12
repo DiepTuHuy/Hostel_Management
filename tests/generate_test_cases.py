@@ -2,7 +2,7 @@ import csv
 import os
 
 def generate_csv():
-    # Define test cases for all 40 Use Cases (UC01 - UC40)
+    # Define test cases for all 39 Use Cases (UC01 - UC39)
     test_cases = [
         # UC01
         {
@@ -185,146 +185,146 @@ def generate_csv():
             "Input Data": "Ngày trả phòng: 31/05/2027\nKhấu trừ tài sản hỏng: 500.000 VNĐ (làm hỏng cửa tủ quần áo)\nSố tiền cọc hoàn lại: 3.000.000 VNĐ",
             "Expected Result": "Trạng thái hợp đồng chuyển thành 'Đã chấm dứt'. Phòng 301 được chuyển về trạng thái 'Trống'. Số dư cọc được hoàn trả theo biên bản thanh lý."
         },
-        # UC22
+        # UC21
         {
-            "Test Case ID": "TC01_UC22",
-            "Function": "Cấu hình đơn giá dịch vụ - UC22",
+            "Test Case ID": "TC01_UC21",
+            "Function": "Cấu hình đơn giá dịch vụ - UC21",
             "Test Steps": "1. Đăng nhập tài khoản Admin\n2. Truy cập trang 'Cấu hình & Dịch vụ'\n3. Thiết lập đơn giá dịch vụ: Điện (chọn biểu giá lũy tiến 6 bậc EVN), Nước (20.000đ/m3), Internet (100.000đ/phòng)\n4. Click nút 'Lưu cấu hình dịch vụ'",
             "Input Data": "Bậc 1 Điện (0-50kWh): 1.806đ/kWh\nBậc 2 Điện (51-100kWh): 1.866đ/kWh\nBậc 3 Điện (101-200kWh): 2.167đ/kWh\nNước: 20.000 VNĐ/m3",
             "Expected Result": "Hệ thống lưu cấu hình đơn giá mới thành công và áp dụng cho các hóa đơn sinh ra ở các tháng tiếp theo."
         },
-        # UC23
+        # UC22
         {
-            "Test Case ID": "TC01_UC23",
-            "Function": "Ghi chỉ số điện nước - UC23",
+            "Test Case ID": "TC01_UC22",
+            "Function": "Ghi chỉ số điện nước - UC22",
             "Test Steps": "1. Đăng nhập tài khoản Manager\n2. Truy cập trang 'Ghi số điện nước' (/meters)\n3. Chọn nhà trọ, chọn kỳ hóa đơn (Tháng 5/2026)\n4. Nhập chỉ số điện mới và chỉ số nước mới của phòng 301\n5. Tải lên hình ảnh đồng hồ điện/nước làm đối chứng\n6. Click nút 'Lưu và Gửi phê duyệt'",
             "Input Data": "Phòng: 301\nKỳ: Tháng 5/2026\nChỉ số điện cũ: 1050 - Chỉ số điện mới: 1250 (Tiêu thụ 200 kWh)\nChỉ số nước cũ: 240 - Chỉ số nước mới: 248 (Tiêu thụ 8 m3)",
             "Expected Result": "Hệ thống lưu chỉ số mới ghi nhận thành công, chuyển trạng thái ghi số của phòng thành 'Đã ghi nhận'."
         },
-        # UC24
+        # UC23
         {
-            "Test Case ID": "TC01_UC24",
-            "Function": "Tính tiền dịch vụ - UC24",
+            "Test Case ID": "TC01_UC23",
+            "Function": "Tính tiền dịch vụ - UC23",
             "Test Steps": "1. Hệ thống tự động kích hoạt tính toán ngay sau khi chỉ số điện nước mới được cập nhật\n2. Đối chiếu số lượng tiêu thụ điện nước với cấu hình đơn giá\n3. Kiểm tra kết quả tính toán điện theo bậc lũy tiến EVN: 50 * 1806 + 50 * 1866 + 100 * 2167 = 400.300 VNĐ (chưa VAT)\n4. Kiểm tra kết quả tính tiền nước: 8m3 * 20000 = 160.000 VNĐ",
             "Input Data": "Tiêu thụ: 200 kWh điện, 8 m3 nước\nĐơn giá: Cấu hình bậc thang EVN và nước 20k/m3",
             "Expected Result": "Hệ thống tính toán chính xác chi phí từng dịch vụ và lưu vào bảng kê chi tiết hóa đơn."
         },
-        # UC25
+        # UC24
         {
-            "Test Case ID": "TC01_UC25",
-            "Function": "Tạo hoá đơn - UC25",
+            "Test Case ID": "TC01_UC24",
+            "Function": "Tạo hoá đơn - UC24",
             "Test Steps": "1. Đăng nhập tài khoản Manager hoặc Admin\n2. Truy cập trang 'Quản lý hóa đơn'\n3. Chọn phòng 301, click 'Tạo hóa đơn tháng'\n4. Kiểm tra thông tin các khoản tiền phòng (3.500.000), tiền điện (400.300), tiền nước (160.000) và các dịch vụ khác\n5. Click nút 'Tạo hóa đơn'",
             "Input Data": "Kỳ thanh toán: Tháng 05/2026\nTổng số tiền: 4.160.300 VNĐ (Tiền phòng + Tiền điện + Tiền nước)",
             "Expected Result": "Hóa đơn được tạo thành công dưới dạng bản nháp và gán mã hóa đơn duy nhất (ví dụ: HD-202605-301)."
         },
-        # UC26
+        # UC25
         {
-            "Test Case ID": "TC01_UC26",
-            "Function": "Tự sinh hoá đơn - UC26",
+            "Test Case ID": "TC01_UC25",
+            "Function": "Tự sinh hoá đơn - UC25",
             "Test Steps": "1. Trình chạy ngầm tự động quét hợp đồng ở trạng thái active\n2. Kiểm tra xem phòng đã được sinh hóa đơn cho kỳ hiện tại chưa\n3. Nếu chưa, tự động tạo hóa đơn nháp pending với tiền phòng và dịch vụ chốt điện nước",
             "Input Data": "Kỳ thanh toán: Tháng hiện tại (YYYY-MM)\nTrạng thái hợp đồng: active",
             "Expected Result": "Hệ thống tự động quét và sinh hóa đơn cho kỳ mới của toàn bộ các phòng đang có hợp đồng hoạt động mà chưa được tạo hóa đơn."
         },
-        # UC27
+        # UC26
         {
-            "Test Case ID": "TC01_UC27",
-            "Function": "Thanh toán online - UC27",
+            "Test Case ID": "TC01_UC26",
+            "Function": "Thanh toán online - UC26",
             "Test Steps": "1. Đăng nhập tài khoản Khách thuê (Trần Thị C)\n2. Truy cập trang 'Hóa đơn của tôi'\n3. Chọn hóa đơn HD-202605-301 đang 'Chờ thanh toán'\n4. Click nút 'Thanh toán trực tuyến (VNPay)'\n5. Tại trang giả lập VNPay, chọn ngân hàng test, nhập mã thẻ và OTP giả lập\n6. Click 'Thanh toán' và đợi chuyển hướng trở lại hệ thống",
             "Input Data": "Thẻ test VNPay: 97041985261377022 (Ngân hàng NCB)\nTên chủ thẻ: NGUYEN VAN A\nMã OTP: 123456",
             "Expected Result": "Thanh toán thành công. Hóa đơn HD-202605-301 tự động chuyển sang trạng thái 'Đã thanh toán (Online VNPay)' và hệ thống tự động sinh biên lai điện tử."
         },
-        # UC28
+        # UC27
         {
-            "Test Case ID": "TC01_UC28",
-            "Function": "Xác nhận thu tiền mặt - UC28",
+            "Test Case ID": "TC01_UC27",
+            "Function": "Xác nhận thu tiền mặt - UC27",
             "Test Steps": "1. Đăng nhập tài khoản Manager\n2. Truy cập trang 'Quản lý thu chi / Phiếu thu'\n3. Tìm kiếm hóa đơn của khách thuê trả tiền mặt (ví dụ: HD-202605-302)\n4. Click nút 'Xác nhận thu tiền mặt'\n5. Nhập số tiền thực tế nhận được và ghi chú\n6. Click 'Tạo phiếu thu'",
             "Input Data": "Mã hóa đơn: HD-202605-302\nSố tiền nhận: 4.160.300 VNĐ\nNgười nộp: Trần Thị C",
             "Expected Result": "Hệ thống ghi nhận trạng thái hóa đơn là 'Đã thanh toán (Tiền mặt)', sinh phiếu thu tiền mặt và cập nhật vào quỹ tiền mặt của chi nhánh."
         },
-        # UC29
+        # UC28
         {
-            "Test Case ID": "TC01_UC29",
-            "Function": "Tra cứu lịch sử hoá đơn - UC29",
+            "Test Case ID": "TC01_UC28",
+            "Function": "Tra cứu lịch sử hoá đơn - UC28",
             "Test Steps": "1. Đăng nhập tài khoản Khách thuê\n2. Truy cập trang 'Lịch sử hóa đơn'\n3. Chọn khoảng thời gian cần tra cứu (ví dụ: từ 01/01/2026 đến nay)\n4. Xem danh sách hóa đơn và click vào hóa đơn HD-202605-301 để xem chi tiết",
             "Input Data": "Bộ lọc thời gian: 01/01/2026 - 31/12/2026",
             "Expected Result": "Hệ thống hiển thị danh sách tất cả các hóa đơn đã phát hành kèm trạng thái và chi tiết thanh toán của từng kỳ."
         },
-        # UC30
+        # UC29
         {
-            "Test Case ID": "TC01_UC30",
-            "Function": "Quản lý công nợ - UC30",
+            "Test Case ID": "TC01_UC29",
+            "Function": "Quản lý công nợ - UC29",
             "Test Steps": "1. Đăng nhập tài khoản Admin\n2. Truy cập trang 'Quản lý công nợ' (/debts)\n3. Xem danh sách phòng nợ quá hạn thanh toán\n4. Chọn phòng nợ lâu nhất và click nút 'Gửi cảnh báo công nợ'",
             "Input Data": "Bộ lọc: Hóa đơn quá hạn > 10 ngày\nPhòng chọn: Phòng 102 (Nợ 5.200.000 VNĐ)",
             "Expected Result": "Hệ thống tổng hợp số tiền nợ và gửi cảnh báo nợ tự động qua Telegram/Email tới khách thuê phòng 102."
         },
-        # UC31
+        # UC30
         {
-            "Test Case ID": "TC01_UC31",
-            "Function": "Dashboard tổng quan - UC31",
+            "Test Case ID": "TC01_UC30",
+            "Function": "Dashboard tổng quan - UC30",
             "Test Steps": "1. Đăng nhập tài khoản Admin hoặc Manager\n2. Xem trang Dashboard chính\n3. Kiểm tra sự thay đổi của các biểu đồ đường doanh thu, tỷ lệ phòng trống và số lượng khách thuê thực tế",
             "Input Data": "Quyền truy cập: Admin",
             "Expected Result": "Dashboard tải dữ liệu thành công, hiển thị các biểu đồ trực quan, số liệu thực tế được cập nhật theo thời gian thực từ cơ sở dữ liệu."
         },
-        # UC32
+        # UC31
         {
-            "Test Case ID": "TC01_UC32",
-            "Function": "Báo cáo doanh thu - UC32",
+            "Test Case ID": "TC01_UC31",
+            "Function": "Báo cáo doanh thu - UC31",
             "Test Steps": "1. Đăng nhập tài khoản Admin\n2. Truy cập trang 'Báo cáo & Thống kê' -> chọn tab 'Doanh thu'\n3. Lọc theo năm 2026 và chọn so sánh giữa các chi nhánh nhà trọ\n4. Xem biểu đồ doanh thu cột",
             "Input Data": "Bộ lọc: Năm 2026, tất cả chi nhánh",
             "Expected Result": "Hệ thống hiển thị tổng doanh thu từ tiền phòng, dịch vụ và biểu đồ so sánh chi tiết giữa các nhà trọ trong chuỗi."
         },
-        # UC33
+        # UC32
         {
-            "Test Case ID": "TC01_UC33",
-            "Function": "Báo cáo tỉ lệ lấp đầy - UC33",
+            "Test Case ID": "TC01_UC32",
+            "Function": "Báo cáo tỉ lệ lấp đầy - UC32",
             "Test Steps": "1. Đăng nhập tài khoản Admin hoặc Manager\n2. Truy cập trang 'Báo cáo & Thống kê' -> chọn tab 'Tỷ lệ lấp đầy'\n3. Lọc theo tháng hiện tại",
             "Input Data": "Bộ lọc: Tháng 05/2026",
             "Expected Result": "Hiển thị tỷ lệ phần trăm phòng đã thuê (ví dụ: 85%) và số phòng còn trống trên tổng số phòng đang vận hành."
         },
-        # UC34
+        # UC33
         {
-            "Test Case ID": "TC01_UC34",
-            "Function": "Báo cáo công nợ - UC34",
+            "Test Case ID": "TC01_UC33",
+            "Function": "Báo cáo công nợ - UC33",
             "Test Steps": "1. Đăng nhập tài khoản Admin\n2. Truy cập trang 'Báo cáo & Thống kê' -> chọn tab 'Báo cáo công nợ'\n3. Lọc danh sách khách nợ theo từng chi nhánh",
             "Input Data": "Chi nhánh: Cơ sở Quận Đống Đa",
             "Expected Result": "Hiển thị tổng nợ chưa thu của chi nhánh Đống Đa và danh sách chi tiết số tiền nợ phân theo từng phòng trọ."
         },
-        # UC35
+        # UC34
         {
-            "Test Case ID": "TC01_UC35",
-            "Function": "Báo cáo chi phí vận hành - UC35",
+            "Test Case ID": "TC01_UC34",
+            "Function": "Báo cáo chi phí vận hành - UC34",
             "Test Steps": "1. Đăng nhập tài khoản Admin\n2. Truy cập trang 'Báo cáo & Thống kê' -> chọn tab 'Báo cáo chi phí'\n3. Kiểm tra số tiền chi cho bảo trì thiết bị và lương nhân viên",
             "Input Data": "Kỳ báo cáo: Quý I/2026",
             "Expected Result": "Hệ thống xuất bảng tổng hợp chi phí đầu vào và tính ra lợi nhuận ròng sau khi trừ chi phí vận hành."
         },
-        # UC36
+        # UC35
         {
-            "Test Case ID": "TC01_UC36",
-            "Function": "Xuất Excel/PDF - UC36",
+            "Test Case ID": "TC01_UC35",
+            "Function": "Xuất Excel/PDF - UC35",
             "Test Steps": "1. Tại trang Báo cáo doanh thu hoặc hóa đơn bất kỳ\n2. Click nút 'Xuất báo cáo Excel' hoặc 'Xuất PDF'\n3. Tải file về thiết bị và mở kiểm tra cấu trúc dữ liệu",
             "Input Data": "Nội dung: Báo cáo Doanh thu năm 2026",
             "Expected Result": "Hệ thống kết xuất file Excel/PDF đúng định dạng mẫu, dữ liệu hiển thị chính xác không bị lỗi font chữ tiếng Việt."
         },
-        # UC37
+        # UC36
         {
-            "Test Case ID": "TC01_UC37",
-            "Function": "Gửi thông báo tự động - UC37",
+            "Test Case ID": "TC01_UC36",
+            "Function": "Gửi thông báo tự động - UC36",
             "Test Steps": "1. Đăng nhập tài khoản Manager\n2. Vào trang 'Quản lý thông báo' -> click 'Tạo thông báo mới'\n3. Nhập tiêu đề, nội dung và chọn đối tượng nhận là 'Toàn bộ khách thuê tòa nhà A'\n4. Click nút 'Gửi thông báo'",
             "Input Data": "Tiêu đề: Bảo trì hệ thống điện ngày 25/05\nNội dung: Cúp điện từ 9h00 đến 11h00",
             "Expected Result": "Hệ thống tự động phát đi thông báo qua hệ thống đẩy trên web/app và email cho toàn bộ cư dân trong tòa nhà A."
         },
-        # UC38
+        # UC37
         {
-            "Test Case ID": "TC01_UC38",
-            "Function": "Tìm kiếm phòng - UC38",
+            "Test Case ID": "TC01_UC37",
+            "Function": "Tìm kiếm phòng - UC37",
             "Test Steps": "1. Truy cập trang chủ dưới vai trò Khách vãng lai (không cần đăng nhập)\n2. Vào trang 'Tìm kiếm phòng'\n3. Nhập từ khóa khu vực (Đống Đa), khoảng giá (2 - 4 triệu) và diện tích mong muốn\n4. Click nút 'Tìm kiếm'",
             "Input Data": "Khu vực: Đống Đa\nGiá thuê: 2.000.000 VNĐ - 4.000.000 VNĐ",
             "Expected Result": "Hệ thống lọc và hiển thị danh sách các phòng trống thỏa mãn điều kiện lọc kèm hình ảnh và thông tin chi tiết."
         },
-        # UC39
+        # UC38
         {
-            "Test Case ID": "TC01_UC39",
-            "Function": "Đặt cọc giữ phòng online - UC39",
+            "Test Case ID": "TC01_UC38",
+            "Function": "Đặt cọc giữ phòng online - UC38",
             "Test Steps": "1. Tại trang chi tiết phòng trống cần thuê\n2. Click nút 'Đặt cọc giữ phòng trực tuyến'\n3. Điền thông tin cá nhân và nhập số tiền cọc mong muốn (tối thiểu bằng 1 tháng tiền phòng)\n4. Click 'Xác nhận và Thanh toán qua VNPay'",
             "Input Data": "Phòng đặt cọc: Phòng 301\nSố tiền cọc: 3.500.000 VNĐ\nHọ tên khách: Nguyễn Văn E",
             "Expected Result": "Giao dịch VNPay thành công. Trạng thái phòng 301 tự động chuyển sang 'Đã đặt cọc' và hệ thống gửi biên lai cọc qua email cho khách hàng."

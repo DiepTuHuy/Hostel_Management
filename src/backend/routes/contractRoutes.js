@@ -253,7 +253,7 @@ router.put('/api/contracts/:id', verifyToken, requireRole('admin', 'manager'), a
   }
 });
 
-// NHẮC NỢ QUA EMAIL THẬT (UC37)
+// NHẮC NỢ QUA EMAIL THẬT (UC36)
 
 router.get('/api/contracts/:id/pdf', verifyToken, async (req, res) => {
   try {

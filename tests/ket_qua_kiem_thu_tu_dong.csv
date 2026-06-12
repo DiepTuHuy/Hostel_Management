@@ -39,39 +39,39 @@ AUTO_TEST_UC19_MODIFY_CONTRACT,Sửa đổi hợp đồng - UC19,"1. Gọi hàm 
 2. So sánh kết quả thực tế với giá trị mong đợi",Nội dung: Thêm thành viên ở ghép Nguyễn Văn D,Tạo dự thảo phụ lục sửa đổi hợp đồng thành công | Kết quả kiểm thử: ĐẠT (PASSED)
 AUTO_TEST_UC20_TERMINATE_CONTRACT,Chấm dứt hợp đồng / trả phòng - UC20,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Ngày trả: 31/05/2027, Phạt hỏng đồ: 500.000đ, Hoàn cọc: 3.000.000đ","Chấm dứt hợp đồng thành công, phòng chuyển về Trống | Kết quả kiểm thử: ĐẠT (PASSED)"
-AUTO_TEST_UC22_CONFIGURE_SERVICES,Cấu hình đơn giá dịch vụ - UC22,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC22_CONFIGURE_SERVICES,Cấu hình đơn giá dịch vụ - UC21,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Điện: Lũy tiến EVN, Nước: 20.000đ/m3, Internet: 100.000đ/phòng",Cấu hình dịch vụ lưu thành công và áp dụng cho các kỳ sau | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC23_RECORD_METERS,Ghi chỉ số điện nước - UC23,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC23_RECORD_METERS,Ghi chỉ số điện nước - UC22,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Phòng: 301, Kỳ: 5/2026, Điện mới: 1250, Nước mới: 248","Lưu chỉ số mới thành công, chuyển trạng thái Đã ghi nhận | Kết quả kiểm thử: ĐẠT (PASSED)"
-AUTO_TEST_UC24_CALCULATE_BILL,Tính tiền dịch vụ - UC24,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC24_CALCULATE_BILL,Tính tiền dịch vụ - UC23,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Tiêu thụ: 200 kWh điện, 8 m3 nước","Điện: 400.300đ (EVN bậc thang), Nước: 160.000đ. Tính toán chính xác | Kết quả kiểm thử: ĐẠT (PASSED)"
-AUTO_TEST_UC25_CREATE_INVOICE,Tạo hoá đơn - UC25,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC25_CREATE_INVOICE,Tạo hoá đơn - UC24,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Kỳ: 5/2026, Tiền phòng: 3.500.000đ, Điện nước: 560.300đ",Tạo thành công hóa đơn bản nháp HD-202605-301 | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC26_SEND_INVOICE,Tự sinh hoá đơn - UC26,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC26_SEND_INVOICE,Tự sinh hoá đơn - UC25,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Trạng thái hợp đồng: active, Kỳ thanh toán: YYYY-MM",Tự động sinh hóa đơn dịch vụ hàng tháng cho các phòng có hợp đồng active | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC27_PAY_ONLINE,Thanh toán online - UC27,"1. Gọi hàm nghiệp vụ tương ứng
-2. So sánh kết quả thực tế với giá trị mong đợi","Thẻ VNPay NCB: 97041985261377022, OTP giao dịch: 123456","Thanh toán online thành công, sinh biên lai điện tử | Kết quả kiểm thử: ĐẠT (PASSED)"
-AUTO_TEST_UC28_RECORD_CASH,Xác nhận thu tiền mặt - UC28,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC27_PAY_ONLINE,Thanh toán online - UC26,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi","Thẻ VNPay NCB: 97041985261377022, OTP giao dịch: 123456","Thanh toán online thành công, sinh biên lai điện tử | Kết quả kiểm thử: LỖI HỆ THỐNG (ERROR) (Lỗi: All nameservers failed to answer the query _mongodb._tcp.cluster0.dfn1bnl.mongodb.net. IN SRV: Server Do53:172.16.10.1@53 answered [Errno 101] Network is unreachable)"
+AUTO_TEST_UC28_RECORD_CASH,Xác nhận thu tiền mặt - UC27,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Mã hóa đơn: HD-202605-302, Số tiền nhận: 4.160.300 VNĐ","Cập nhật hóa đơn thành Đã thanh toán (Tiền mặt), sinh phiếu thu | Kết quả kiểm thử: ĐẠT (PASSED)"
-AUTO_TEST_UC29_INVOICE_HISTORY,Tra cứu lịch sử hoá đơn - UC29,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC29_INVOICE_HISTORY,Tra cứu lịch sử hoá đơn - UC28,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Tài khoản khách thuê, Khoảng thời gian: 01/01/2026 - nay",Hiển thị đầy đủ danh sách hóa đơn đã phát hành và trạng thái | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC30_MANAGE_DEBTS,Quản lý công nợ - UC30,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC30_MANAGE_DEBTS,Quản lý công nợ - UC29,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi",Bộ lọc: Nợ > 10 ngày. Phòng chọn: 102 (Nợ 5.200.000 VNĐ),"Tìm kiếm nợ quá hạn thành công, gửi cảnh báo nợ qua Telegram | Kết quả kiểm thử: ĐẠT (PASSED)"
-AUTO_TEST_UC31_GENERAL_DASHBOARD,Dashboard tổng quan - UC31,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC31_GENERAL_DASHBOARD,Dashboard tổng quan - UC30,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi",Quyền truy cập: Admin,"Dashboard tải dữ liệu thành công, hiển thị các chỉ số KPIs | Kết quả kiểm thử: ĐẠT (PASSED)"
-AUTO_TEST_UC32_REVENUE_REPORT,Báo cáo doanh thu - UC32,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC32_REVENUE_REPORT,Báo cáo doanh thu - UC31,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Bộ lọc: Năm 2026, tất cả chi nhánh",Hiển thị tổng doanh thu và biểu đồ cột so sánh chi tiết | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC33_OCCUPANCY_REPORT,Báo cáo tỉ lệ lấp đầy - UC33,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC33_OCCUPANCY_REPORT,Báo cáo tỉ lệ lấp đầy - UC32,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi",Bộ lọc: Tháng 05/2026,Hiển thị tỷ lệ phòng đã thuê và số phòng trống chính xác | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC34_DEBTS_REPORT,Báo cáo công nợ - UC34,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC34_DEBTS_REPORT,Báo cáo công nợ - UC33,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi",Chi nhánh: Cơ sở Quận Đống Đa,Hiển thị tổng công nợ chưa thu và chi tiết theo phòng trọ | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC35_COSTS_REPORT,Báo cáo chi phí vận hành - UC35,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC35_COSTS_REPORT,Báo cáo chi phí vận hành - UC34,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi",Kỳ báo cáo: Quý I/2026,Hiển thị tổng hợp chi phí đầu vào và tính ra lợi nhuận ròng | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC36_EXPORT_REPORT,Xuất Excel/PDF - UC36,"1. Gọi hàm nghiệp vụ tương ứng
-2. So sánh kết quả thực tế với giá trị mong đợi",Nội dung: Báo cáo Doanh thu năm 2026,"Xuất file Excel/PDF đúng định dạng mẫu, không lỗi font | Kết quả kiểm thử: ĐẠT (PASSED)"
-AUTO_TEST_UC37_AUTOMATED_NOTIFICATION,Gửi thông báo tự động - UC37,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC36_EXPORT_REPORT,Xuất Excel/PDF - UC35,"1. Gọi hàm nghiệp vụ tương ứng
+2. So sánh kết quả thực tế với giá trị mong đợi",Nội dung: Báo cáo Doanh thu năm 2026,"Xuất file Excel/PDF đúng định dạng mẫu, không lỗi font | Kết quả kiểm thử: LỖI HỆ THỐNG (ERROR) (Lỗi: All nameservers failed to answer the query _mongodb._tcp.cluster0.dfn1bnl.mongodb.net. IN SRV: Server Do53:172.16.10.1@53 answered [Errno 101] Network is unreachable)"
+AUTO_TEST_UC37_AUTOMATED_NOTIFICATION,Gửi thông báo tự động - UC36,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Tiêu đề: Bảo trì hệ thống điện, Gửi đến: Tòa nhà A",Hệ thống tự động phát đi thông báo qua email/web/app cư dân | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC38_SEARCH_ROOMS,Tìm kiếm phòng - UC38,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC38_SEARCH_ROOMS,Tìm kiếm phòng - UC37,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Khu vực: Đống Đa, Giá thuê: 2.000.000đ - 4.000.000đ",Lọc và hiển thị danh sách phòng trống thỏa mãn điều kiện | Kết quả kiểm thử: ĐẠT (PASSED)
-AUTO_TEST_UC39_BOOK_DEPOSIT,Đặt cọc giữ phòng online - UC39,"1. Gọi hàm nghiệp vụ tương ứng
+AUTO_TEST_UC39_BOOK_DEPOSIT,Đặt cọc giữ phòng online - UC38,"1. Gọi hàm nghiệp vụ tương ứng
 2. So sánh kết quả thực tế với giá trị mong đợi","Phòng: 301, Số tiền cọc: 3.500.000đ, Khách: Nguyễn Văn E",Đặt cọc giữ phòng trực tuyến thành công và gửi biên lai | Kết quả kiểm thử: ĐẠT (PASSED)

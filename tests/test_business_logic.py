@@ -24,7 +24,7 @@ def calculate_vnpay_signature_python(params, secret_key):
 
 
 # ==============================================================================
-# MOCK SYSTEM IMPLEMENTATION TO BE TESTED FOR ALL 40 USE CASES (UC01 - UC40)
+# MOCK SYSTEM IMPLEMENTATION TO BE TESTED FOR ALL 39 USE CASES (UC01 - UC39)
 # ==============================================================================
 
 class UserValidation:
@@ -315,7 +315,7 @@ class RoomSearch:
 
 
 # ==============================================================================
-# UNIT TESTS SYSTEMATICALLY COVERING ALL 40 USE CASES (UC01 - UC40)
+# UNIT TESTS SYSTEMATICALLY COVERING ALL 39 USE CASES (UC01 - UC39)
 # ==============================================================================
 
 class TestSystemBusinessLogic(unittest.TestCase):
@@ -448,12 +448,12 @@ class TestSystemBusinessLogic(unittest.TestCase):
         self.assertEqual(res, "CONTRACT_TERMINATED_ROOM_VACANT")
 
 
-    # UC22 - Cấu hình đơn giá dịch vụ
+    # UC21 - Cấu hình đơn giá dịch vụ
     def test_uc22_configure_services(self):
         res = BillingManagement.configure_services("EVN_6_TIERS", 20000, 100000)
         self.assertEqual(res, "SERVICE_CONFIG_SAVED")
 
-    # UC23 - Ghi chỉ số điện nước
+    # UC22 - Ghi chỉ số điện nước
     def test_uc23_record_meters(self):
         res = BillingManagement.record_meters("301", 1050, 1250, 240, 248)
         self.assertEqual(res, "METERS_RECORDED")
@@ -461,7 +461,7 @@ class TestSystemBusinessLogic(unittest.TestCase):
         err = BillingManagement.record_meters("301", 1050, 1000, 240, 248)
         self.assertEqual(err, "Chỉ số mới không được nhỏ hơn chỉ số cũ")
 
-    # UC24 - Tính tiền dịch vụ
+    # UC23 - Tính tiền dịch vụ
     def test_uc24_calculate_bill(self):
         kwh = 200
         expected = 50 * 1806 + 50 * 1866 + 100 * 2167
@@ -471,18 +471,18 @@ class TestSystemBusinessLogic(unittest.TestCase):
         with self.assertRaises(ValueError):
             EVNElectricityCalculator.calculate_bill(-10)
 
-    # UC25 - Tạo hoá đơn
+    # UC24 - Tạo hoá đơn
     def test_uc25_create_invoice(self):
         inv = BillingManagement.create_invoice("301", "2026/05", 3500000, 200, 8)
         self.assertEqual(inv["invoice_id"], "HD-202605-301")
         self.assertEqual(inv["status"], "DRAFT")
 
-    # UC26 - Gửi hoá đơn & nhắc thanh toán
+    # UC25 - Gửi hoá đơn & nhắc thanh toán
     def test_uc26_send_invoice(self):
         res = BillingManagement.send_invoice("HD-202605-301", "tranthic@gmail.com")
         self.assertEqual(res, "INVOICE_SENT_PENDING_PAYMENT")
 
-    # UC27 - Thanh toán online
+    # UC26 - Thanh toán online
     def test_uc27_pay_online(self):
         env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src/backend/.env")
         dotenv.load_dotenv(env_path)
@@ -562,22 +562,22 @@ class TestSystemBusinessLogic(unittest.TestCase):
         except Exception as e:
             self.fail(f"Failed to test real online payment and signature verification: {str(e)}")
 
-    # UC28 - Xác nhận thu tiền mặt
+    # UC27 - Xác nhận thu tiền mặt
     def test_uc28_record_cash(self):
         res = BillingManagement.record_cash_payment("HD-202605-302", 4160300)
         self.assertEqual(res, "PAID_CASH_RECEIPT_GENERATED")
 
-    # UC29 - Tra cứu lịch sử hoá đơn
+    # UC28 - Tra cứu lịch sử hoá đơn
     def test_uc29_invoice_history(self):
         res = BillingManagement.query_invoice_history("tenant_C", "2026-01-01", "2026-12-31")
         self.assertIn("HD-202605-301", res)
 
-    # UC30 - Quản lý công nợ
+    # UC29 - Quản lý công nợ
     def test_uc30_manage_debts(self):
         res = BillingManagement.manage_debts(12)
         self.assertEqual(res, "WARNING_SENT_TELEGRAM")
 
-    # UC31 - Dashboard tổng quan
+    # UC30 - Dashboard tổng quan
     def test_uc31_general_dashboard(self):
         res = ReportsManagement.general_dashboard("ADMIN")
         self.assertEqual(res, "DASHBOARD_KPIs_LOADED")
@@ -585,27 +585,27 @@ class TestSystemBusinessLogic(unittest.TestCase):
         err = ReportsManagement.general_dashboard("TENANT")
         self.assertEqual(err, "ACCESS_DENIED")
 
-    # UC32 - Báo cáo doanh thu
+    # UC31 - Báo cáo doanh thu
     def test_uc32_revenue_report(self):
         res = ReportsManagement.revenue_report(2026)
         self.assertEqual(res, "REVENUE_DATA_LOADED")
 
-    # UC33 - Báo cáo tỉ lệ lấp đầy
+    # UC32 - Báo cáo tỉ lệ lấp đầy
     def test_uc33_occupancy_report(self):
         res = ReportsManagement.occupancy_report("2026-05")
         self.assertEqual(res, "OCCUPANCY_RATE_85")
 
-    # UC34 - Báo cáo công nợ
+    # UC33 - Báo cáo công nợ
     def test_uc34_debts_report(self):
         res = ReportsManagement.debts_report("dong_da_branch")
         self.assertEqual(res, "DEBTS_LIST_LOADED")
 
-    # UC35 - Báo cáo chi phí vận hành
+    # UC34 - Báo cáo chi phí vận hành
     def test_uc35_costs_report(self):
         res = ReportsManagement.costs_report("Q1_2026")
         self.assertEqual(res, "OPERATING_COSTS_LOADED")
 
-    # UC36 - Xuất Excel/PDF
+    # UC35 - Xuất Excel/PDF
     def test_uc36_export_report(self):
         env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src/backend/.env")
         dotenv.load_dotenv(env_path)
@@ -673,18 +673,18 @@ class TestSystemBusinessLogic(unittest.TestCase):
         except Exception as e:
             self.fail(f"Failed to download invoice PDF: {str(e)}")
 
-    # UC37 - Gửi thông báo tự động
+    # UC36 - Gửi thông báo tự động
     def test_uc37_automated_notification(self):
         res = NotificationManagement.send_automated_notification("Bảo trì điện", "Cúp điện 9h-11h", "tòa nhà A")
         self.assertEqual(res, "BROADCAST_SUCCESS")
 
-    # UC38 - Tìm kiếm phòng
+    # UC37 - Tìm kiếm phòng
     def test_uc38_search_rooms(self):
         rooms = RoomSearch.search("Đống Đa", 2000000, 4000000)
         self.assertEqual(len(rooms), 1)
         self.assertEqual(rooms[0]["room_code"], "301")
 
-    # UC39 - Đặt cọc giữ phòng online
+    # UC38 - Đặt cọc giữ phòng online
     def test_uc39_book_deposit(self):
         res = RoomSearch.book_deposit("301", 3500000, "Nguyễn Văn E")
         self.assertEqual(res, "RESERVED_SUCCESS_RECEIPT_SENT")
@@ -806,92 +806,92 @@ class CSVTestResult(unittest.TestResult):
                 "expected": "Chấm dứt hợp đồng thành công, phòng chuyển về Trống"
             },
             "uc22": {
-                "func": "Cấu hình đơn giá dịch vụ - UC22",
+                "func": "Cấu hình đơn giá dịch vụ - UC21",
                 "inputs": "Điện: Lũy tiến EVN, Nước: 20.000đ/m3, Internet: 100.000đ/phòng",
                 "expected": "Cấu hình dịch vụ lưu thành công và áp dụng cho các kỳ sau"
             },
             "uc23": {
-                "func": "Ghi chỉ số điện nước - UC23",
+                "func": "Ghi chỉ số điện nước - UC22",
                 "inputs": "Phòng: 301, Kỳ: 5/2026, Điện mới: 1250, Nước mới: 248",
                 "expected": "Lưu chỉ số mới thành công, chuyển trạng thái Đã ghi nhận"
             },
             "uc24": {
-                "func": "Tính tiền dịch vụ - UC24",
+                "func": "Tính tiền dịch vụ - UC23",
                 "inputs": "Tiêu thụ: 200 kWh điện, 8 m3 nước",
                 "expected": "Điện: 400.300đ (EVN bậc thang), Nước: 160.000đ. Tính toán chính xác"
             },
             "uc25": {
-                "func": "Tạo hoá đơn - UC25",
+                "func": "Tạo hoá đơn - UC24",
                 "inputs": "Kỳ: 5/2026, Tiền phòng: 3.500.000đ, Điện nước: 560.300đ",
                 "expected": "Tạo thành công hóa đơn bản nháp HD-202605-301"
             },
             "uc26": {
-                "func": "Tự sinh hoá đơn - UC26",
+                "func": "Tự sinh hoá đơn - UC25",
                 "inputs": "Trạng thái hợp đồng: active, Kỳ thanh toán: YYYY-MM",
                 "expected": "Tự động sinh hóa đơn dịch vụ hàng tháng cho các phòng có hợp đồng active"
             },
             "uc27": {
-                "func": "Thanh toán online - UC27",
+                "func": "Thanh toán online - UC26",
                 "inputs": "Thẻ VNPay NCB: 97041985261377022, OTP giao dịch: 123456",
                 "expected": "Thanh toán online thành công, sinh biên lai điện tử"
             },
             "uc28": {
-                "func": "Xác nhận thu tiền mặt - UC28",
+                "func": "Xác nhận thu tiền mặt - UC27",
                 "inputs": "Mã hóa đơn: HD-202605-302, Số tiền nhận: 4.160.300 VNĐ",
                 "expected": "Cập nhật hóa đơn thành Đã thanh toán (Tiền mặt), sinh phiếu thu"
             },
             "uc29": {
-                "func": "Tra cứu lịch sử hoá đơn - UC29",
+                "func": "Tra cứu lịch sử hoá đơn - UC28",
                 "inputs": "Tài khoản khách thuê, Khoảng thời gian: 01/01/2026 - nay",
                 "expected": "Hiển thị đầy đủ danh sách hóa đơn đã phát hành và trạng thái"
             },
             "uc30": {
-                "func": "Quản lý công nợ - UC30",
+                "func": "Quản lý công nợ - UC29",
                 "inputs": "Bộ lọc: Nợ > 10 ngày. Phòng chọn: 102 (Nợ 5.200.000 VNĐ)",
                 "expected": "Tìm kiếm nợ quá hạn thành công, gửi cảnh báo nợ qua Telegram"
             },
             "uc31": {
-                "func": "Dashboard tổng quan - UC31",
+                "func": "Dashboard tổng quan - UC30",
                 "inputs": "Quyền truy cập: Admin",
                 "expected": "Dashboard tải dữ liệu thành công, hiển thị các chỉ số KPIs"
             },
             "uc32": {
-                "func": "Báo cáo doanh thu - UC32",
+                "func": "Báo cáo doanh thu - UC31",
                 "inputs": "Bộ lọc: Năm 2026, tất cả chi nhánh",
                 "expected": "Hiển thị tổng doanh thu và biểu đồ cột so sánh chi tiết"
             },
             "uc33": {
-                "func": "Báo cáo tỉ lệ lấp đầy - UC33",
+                "func": "Báo cáo tỉ lệ lấp đầy - UC32",
                 "inputs": "Bộ lọc: Tháng 05/2026",
                 "expected": "Hiển thị tỷ lệ phòng đã thuê và số phòng trống chính xác"
             },
             "uc34": {
-                "func": "Báo cáo công nợ - UC34",
+                "func": "Báo cáo công nợ - UC33",
                 "inputs": "Chi nhánh: Cơ sở Quận Đống Đa",
                 "expected": "Hiển thị tổng công nợ chưa thu và chi tiết theo phòng trọ"
             },
             "uc35": {
-                "func": "Báo cáo chi phí vận hành - UC35",
+                "func": "Báo cáo chi phí vận hành - UC34",
                 "inputs": "Kỳ báo cáo: Quý I/2026",
                 "expected": "Hiển thị tổng hợp chi phí đầu vào và tính ra lợi nhuận ròng"
             },
             "uc36": {
-                "func": "Xuất Excel/PDF - UC36",
+                "func": "Xuất Excel/PDF - UC35",
                 "inputs": "Nội dung: Báo cáo Doanh thu năm 2026",
                 "expected": "Xuất file Excel/PDF đúng định dạng mẫu, không lỗi font"
             },
             "uc37": {
-                "func": "Gửi thông báo tự động - UC37",
+                "func": "Gửi thông báo tự động - UC36",
                 "inputs": "Tiêu đề: Bảo trì hệ thống điện, Gửi đến: Tòa nhà A",
                 "expected": "Hệ thống tự động phát đi thông báo qua email/web/app cư dân"
             },
             "uc38": {
-                "func": "Tìm kiếm phòng - UC38",
+                "func": "Tìm kiếm phòng - UC37",
                 "inputs": "Khu vực: Đống Đa, Giá thuê: 2.000.000đ - 4.000.000đ",
                 "expected": "Lọc và hiển thị danh sách phòng trống thỏa mãn điều kiện"
             },
             "uc39": {
-                "func": "Đặt cọc giữ phòng online - UC39",
+                "func": "Đặt cọc giữ phòng online - UC38",
                 "inputs": "Phòng: 301, Số tiền cọc: 3.500.000đ, Khách: Nguyễn Văn E",
                 "expected": "Đặt cọc giữ phòng trực tuyến thành công và gửi biên lai"
             }

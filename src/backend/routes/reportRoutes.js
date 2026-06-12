@@ -122,7 +122,7 @@ router.get('/api/reports/revenue', verifyToken, requireRole('admin'), async (req
   }
 });
 
-// H.2b Báo cáo chi phí vận hành (UC35)
+// H.2b Báo cáo chi phí vận hành (UC34)
 router.get('/api/reports/expenses', verifyToken, requireRole('admin'), async (req, res) => {
   try {
     const { propertyId, year = 2026 } = req.query;
@@ -152,7 +152,7 @@ router.get('/api/reports/expenses', verifyToken, requireRole('admin'), async (re
   }
 });
 
-// CRUD API Chi phí vận hành (UC35)
+// CRUD API Chi phí vận hành (UC34)
 
 router.get('/api/reports/occupancy', verifyToken, requireRole('admin', 'manager'), async (req, res) => {
   try {
