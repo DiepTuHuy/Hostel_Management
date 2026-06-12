@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../controllers/useAuth.jsx';
 import { Button, Input } from '../../components/common';
-import { Building2, ShieldCheck, Mail, ArrowLeft, RotateCcw } from 'lucide-react';
+import { Compass, ShieldCheck, ArrowLeft, RotateCcw, UserPlus } from 'lucide-react';
+import { cn } from '../../utils/cn.js';
 
 export default function RegisterPage() {
   const { register, verifyOtp, resendOtp, loading, error } = useAuth();
@@ -64,21 +65,18 @@ export default function RegisterPage() {
 
   // Keyboard navigation & digit changes
   const handleDigitChange = (index, value) => {
-    // Only accept numeric inputs
     if (value && !/^\d$/.test(value)) return;
 
     const newDigits = [...otpDigits];
     newDigits[index] = value;
     setOtpDigits(newDigits);
 
-    // Auto-focus next input if digit entered
     if (value && index < 5) {
       inputRefs[index + 1].current.focus();
     }
   };
 
   const handleKeyDown = (index, e) => {
-    // Backspace handling
     if (e.key === 'Backspace') {
       if (!otpDigits[index] && index > 0) {
         const newDigits = [...otpDigits];
@@ -100,7 +98,6 @@ export default function RegisterPage() {
 
     const digits = pastedData.split('');
     setOtpDigits(digits);
-    // Focus last input box
     if (inputRefs[5].current) {
       inputRefs[5].current.focus();
     }
@@ -121,8 +118,8 @@ export default function RegisterPage() {
       const data = await register(fullName, email, phone, password, 'tenant');
       setLocalSuccess(data?.message || 'Tạo tài khoản thành công! Mã OTP kích hoạt đã được gửi.');
       setIsOtpStep(true);
-      setCountdown(300); // 5 minutes countdown
-      setOtpDigits(['', '', '', '', '', '']); // Reset digits
+      setCountdown(300);
+      setOtpDigits(['', '', '', '', '', '']);
     } catch (err) {
       setLocalError(err.response?.data?.message || err.message || 'Đăng ký thất bại');
     }
@@ -158,10 +155,9 @@ export default function RegisterPage() {
 
     try {
       const data = await resendOtp(email);
-      setCountdown(300); // Reset timer
-      setOtpDigits(['', '', '', '', '', '']); // Reset digits
+      setCountdown(300);
+      setOtpDigits(['', '', '', '', '', '']);
       setLocalSuccess(data?.message || 'Mã OTP mới đã được gửi thành công!');
-      // Focus first input
       setTimeout(() => {
         if (inputRefs[0].current) {
           inputRefs[0].current.focus();
@@ -173,197 +169,231 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col justify-between p-6">
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-md animate-apple-pop">
-          {/* Logo Brand Header */}
-          <div className="flex flex-col items-center mb-8">
-            <Link to="/" className="flex items-center gap-2 mb-2">
-              <div className="h-10 w-10 bg-primary-soft rounded-xl flex items-center justify-center text-primary">
-                <Building2 size={22} />
-              </div>
-              <div className="text-left">
-                <div className="font-bold text-lg text-ink">BoardingHouse Pro</div>
-                <div className="text-[10px] text-ink-muted leading-none font-medium">Quản lý chuỗi nhà trọ</div>
-              </div>
-            </Link>
-          </div>
+    <div className="min-h-screen bg-canvas-light flex flex-col lg:flex-row font-sans select-none antialiased">
+      {/* Back to Home Button */}
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 bg-white/80 border border-zinc-200/50 px-3 py-2 rounded-full backdrop-blur-sm active:scale-95 transition-transform"
+      >
+        <ArrowLeft size={14} /> Quay về Trang chủ
+      </Link>
 
+      {/* Left Panel: Dark Brand Showcase */}
+      <div className="hidden lg:flex lg:w-1/2 bg-zinc-950 text-white flex-col justify-between p-16 relative overflow-hidden select-none">
+        <div className="z-10">
+          <Link to="/" className="flex items-center gap-3 active:scale-95 transition-transform duration-200 w-fit">
+            <div className="h-9 w-9 bg-primary rounded-lg flex items-center justify-center text-white font-extrabold">B</div>
+            <div>
+              <div className="font-extrabold text-white leading-tight tracking-tight text-sm">BoardingHouse Pro</div>
+              <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest leading-none mt-0.5">Premium Living</div>
+            </div>
+          </Link>
+        </div>
+
+        <div className="z-10">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest bg-zinc-800 text-zinc-300 mb-6 border border-zinc-700/50">
+            <Compass size={10} /> Trở thành cư dân
+          </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tighter leading-tight text-white max-w-[20ch]">
+            Khởi đầu phong cách sống hiện đại và minh bạch.
+          </h2>
+          <p className="mt-4 text-zinc-400 text-xs leading-relaxed max-w-[45ch]">
+            Trực tiếp xem thông tin phòng trống, ký hợp đồng điện tử tiện lợi và giao tiếp trực tiếp với quản lý cơ sở mọi lúc mọi nơi.
+          </p>
+        </div>
+
+        <div className="z-10 text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+          © 2026 BoardingHouse Pro. Mọi quyền được bảo lưu.
+        </div>
+
+        {/* Ambient glow overlays */}
+        <div className="absolute top-1/4 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-10 w-80 h-80 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+      </div>
+
+      {/* Right Panel: Form Card */}
+      <div className="flex-1 flex items-center justify-center p-6 md:p-12 overflow-y-auto">
+        <div className="w-full max-w-[440px]">
+          
           {!isOtpStep ? (
             /* STEP 1: Registration Form Details */
-            <form onSubmit={submitDetails} className="bg-surface border border-line p-8 rounded-3xl shadow-card w-full">
-              <div className="text-center mb-6">
-                <h1 className="text-2xl font-bold text-ink">Đăng ký tài khoản</h1>
-                <p className="text-xs text-ink-muted mt-1">Đăng ký tài khoản khách thuê phòng trọ</p>
-              </div>
-
-              <div className="space-y-4">
-                <Input
-                  label="Họ và tên"
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Nguyễn Văn A"
-                />
-                <Input
-                  label="Email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
-                />
-                <Input
-                  label="Số điện thoại"
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="090xxxxxxx"
-                />
-                <Input
-                  label="Mật khẩu"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                />
-                <Input
-                  label="Nhập lại mật khẩu"
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                />
-              </div>
-
-              {(localError || error) && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-150 rounded-xl text-center">
-                  <p className="text-xs text-danger font-semibold">{localError || error}</p>
+            <div className="bg-white border border-zinc-200/50 p-8 rounded-3xl shadow-sm w-full">
+              <form onSubmit={submitDetails}>
+                <div className="text-center mb-8">
+                  <h1 className="text-2xl font-extrabold text-zinc-950 tracking-tight">Đăng ký tài khoản</h1>
+                  <p className="text-xs text-zinc-400 font-medium mt-1.5">Trở thành khách thuê trên hệ thống</p>
                 </div>
-              )}
 
-              <Button type="submit" size="lg" loading={loading} className="w-full mt-6 rounded-2xl h-11 apple-press">
-                Đăng ký
-              </Button>
-
-              <div className="mt-6 text-center text-xs text-ink-muted">
-                Đã có tài khoản?{' '}
-                <Link to="/login" className="text-primary font-semibold hover:underline">
-                  Đăng nhập ngay
-                </Link>
-              </div>
-            </form>
-          ) : (
-            /* STEP 2: OTP Verification */
-            <form onSubmit={handleVerify} className="bg-surface border border-line p-8 rounded-3xl shadow-card w-full">
-              {/* Process indicator steps */}
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-success text-white flex items-center justify-center text-[10px] font-bold">✓</span>
-                  <span className="text-xs font-semibold text-ink-muted">Thông tin</span>
-                </div>
-                <div className="w-10 h-0.5 bg-line" />
-                <div className="flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold">2</span>
-                  <span className="text-xs font-bold text-ink">Kích hoạt</span>
-                </div>
-              </div>
-
-              <div className="text-center mb-6">
-                <div className="mx-auto w-12 h-12 bg-primary-soft text-primary rounded-2xl flex items-center justify-center mb-4">
-                  <ShieldCheck size={26} className="animate-pulse" />
-                </div>
-                <h1 className="text-2xl font-bold text-ink">Xác thực tài khoản</h1>
-                <p className="text-xs text-ink-muted mt-2 text-center max-w-sm mx-auto leading-relaxed">
-                  Mã xác thực 6 chữ số đã được gửi tới email <span className="font-semibold text-ink break-all">{email}</span>. Vui lòng kiểm tra hộp thư của bạn.
-                </p>
-              </div>
-
-              {/* 6 OTP Inputs block */}
-              <div className="flex justify-center gap-2 md:gap-3 my-6" onPaste={handlePaste}>
-                {otpDigits.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={inputRefs[index]}
+                <div className="space-y-4">
+                  <Input
+                    label="Họ và tên"
                     type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleDigitChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    onFocus={(e) => e.target.select()}
-                    className="w-12 h-12 md:w-14 md:h-14 text-center text-xl font-bold font-mono rounded-xl border border-line bg-surface text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all transition-apple"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Nguyễn Văn A"
+                    className="rounded-xl border-zinc-200/60"
                   />
-                ))}
-              </div>
-
-              <div className="text-center my-4 text-xs text-ink-muted">
-                Thời gian hiệu lực của mã còn:{' '}
-                <span className={`font-semibold ${countdown < 60 ? 'text-danger animate-pulse font-bold' : 'text-primary font-bold'}`}>
-                  {formatTime(countdown)}
-                </span>
-              </div>
-
-              {(localError || error) && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-150 rounded-xl text-center animate-apple-pop">
-                  <p className="text-xs text-danger font-semibold">{localError || error}</p>
+                  <Input
+                    label="Email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email@example.com"
+                    className="rounded-xl border-zinc-200/60"
+                  />
+                  <Input
+                    label="Số điện thoại"
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="090xxxxxxx"
+                    className="rounded-xl border-zinc-200/60"
+                  />
+                  <Input
+                    label="Mật khẩu"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="rounded-xl border-zinc-200/60"
+                  />
+                  <Input
+                    label="Nhập lại mật khẩu"
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="rounded-xl border-zinc-200/60"
+                  />
                 </div>
-              )}
 
-              {localSuccess && (
-                <div className="mt-4 p-3 bg-green-50 border border-green-150 rounded-xl text-center animate-apple-pop">
-                  <p className="text-xs text-success font-semibold">{localSuccess}</p>
-                </div>
-              )}
-
-              <Button type="submit" size="lg" loading={loading} className="w-full mt-6 rounded-2xl h-11 apple-press">
-                Xác thực & Kích hoạt
-              </Button>
-
-              <div className="text-center mt-6 text-xs text-ink-muted flex flex-col items-center gap-3">
-                {countdown === 0 ? (
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    className="inline-flex items-center gap-1.5 text-primary font-bold hover:underline bg-transparent border-0 cursor-pointer focus:outline-none apple-press"
-                    disabled={loading}
-                  >
-                    <RotateCcw size={14} /> Gửi lại mã OTP
-                  </button>
-                ) : (
-                  <div className="text-ink-muted font-medium inline-flex items-center gap-1.5">
-                    <RotateCcw size={14} className="opacity-50" />
-                    Gửi lại mã sau <span className="font-semibold text-ink">{formatTime(countdown)}</span>
+                {(localError || error) && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl text-center">
+                    <p className="text-xs text-danger font-bold">{localError || error}</p>
                   </div>
                 )}
 
-                <div className="w-full border-t border-line my-1" />
+                <Button type="submit" size="lg" loading={loading} className="w-full mt-6 rounded-full h-11 btn-primary">
+                  <UserPlus size={15} /> Đăng ký
+                </Button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOtpStep(false);
-                    setLocalError('');
-                    setLocalSuccess('');
-                  }}
-                  className="inline-flex items-center justify-center gap-1 text-ink-muted hover:text-ink transition-colors bg-transparent border-0 cursor-pointer focus:outline-none"
-                >
-                  <ArrowLeft size={14} /> Quay lại trang đăng ký
-                </button>
-              </div>
-            </form>
+                <div className="mt-6 text-center text-xs text-zinc-400 font-medium">
+                  Đã có tài khoản?{' '}
+                  <Link to="/login" className="text-primary font-bold hover:underline">
+                    Đăng nhập ngay
+                  </Link>
+                </div>
+              </form>
+            </div>
+          ) : (
+            /* STEP 2: OTP Verification */
+            <div className="bg-white border border-zinc-200/50 p-8 rounded-3xl shadow-sm w-full">
+              <form onSubmit={handleVerify}>
+                {/* Process indicator steps */}
+                <div className="flex items-center justify-center gap-4 mb-6 select-none">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[9px] font-bold">✓</span>
+                    <span className="text-xs font-bold text-zinc-400">Thông tin</span>
+                  </div>
+                  <div className="w-10 h-0.5 bg-zinc-200" />
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center text-[9px] font-bold">2</span>
+                    <span className="text-xs font-bold text-zinc-850">Xác thực</span>
+                  </div>
+                </div>
+
+                <div className="text-center mb-8">
+                  <div className="mx-auto w-12 h-12 bg-primary-soft text-primary rounded-2xl flex items-center justify-center mb-4 border border-primary/5 shadow-sm">
+                    <ShieldCheck size={24} className="animate-pulse" />
+                  </div>
+                  <h1 className="text-2xl font-extrabold text-zinc-950 tracking-tight">Kích hoạt tài khoản</h1>
+                  <p className="text-xs text-zinc-400 font-medium mt-2 leading-relaxed max-w-[32ch] mx-auto">
+                    Mã kích hoạt OTP đã được gửi đến email <span className="font-bold text-zinc-800 break-all">{email}</span>. Vui lòng kiểm tra hộp thư.
+                  </p>
+                </div>
+
+                {/* 6 OTP Inputs */}
+                <div className="flex justify-center gap-2 md:gap-3 my-6" onPaste={handlePaste}>
+                  {otpDigits.map((digit, index) => (
+                    <input
+                      key={index}
+                      ref={inputRefs[index]}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleDigitChange(index, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(index, e)}
+                      onFocus={(e) => e.target.select()}
+                      className="w-12 h-12 md:w-13 md:h-13 text-center text-lg font-bold font-mono rounded-xl border border-zinc-200/60 bg-white text-zinc-900 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all duration-200"
+                    />
+                  ))}
+                </div>
+
+                <div className="text-center my-4 text-xs text-zinc-400 font-medium">
+                  Hiệu lực còn lại:{' '}
+                  <span className={cn("font-extrabold", countdown < 60 ? "text-danger animate-pulse" : "text-primary")}>
+                    {formatTime(countdown)}
+                  </span>
+                </div>
+
+                {(localError || error) && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl text-center">
+                    <p className="text-xs text-danger font-bold">{localError || error}</p>
+                  </div>
+                )}
+
+                {localSuccess && (
+                  <div className="mt-4 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-center">
+                    <p className="text-xs text-emerald-700 font-bold">{localSuccess}</p>
+                  </div>
+                )}
+
+                <Button type="submit" size="lg" loading={loading} className="w-full mt-6 rounded-full h-11 btn-primary">
+                  Xác thực & Kích hoạt
+                </Button>
+
+                <div className="text-center mt-6 text-xs text-zinc-400 font-medium flex flex-col items-center gap-3">
+                  {countdown === 0 ? (
+                    <button
+                      type="button"
+                      onClick={handleResend}
+                      className="inline-flex items-center gap-1.5 text-primary font-bold hover:underline bg-transparent border-0 cursor-pointer focus:outline-none"
+                      disabled={loading}
+                    >
+                      <RotateCcw size={13} /> Gửi lại mã OTP
+                    </button>
+                  ) : (
+                    <div className="text-zinc-400 font-bold inline-flex items-center gap-1.5">
+                      <RotateCcw size={13} className="opacity-50" />
+                      Gửi lại mã sau <span className="font-extrabold text-zinc-800">{formatTime(countdown)}</span>
+                    </div>
+                  )}
+
+                  <div className="w-full border-t border-zinc-200/50 my-1" />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOtpStep(false);
+                      setLocalError('');
+                      setLocalSuccess('');
+                    }}
+                    className="inline-flex items-center justify-center gap-1 text-zinc-400 font-bold hover:text-zinc-800 transition-colors bg-transparent border-0 cursor-pointer focus:outline-none"
+                  >
+                    <ArrowLeft size={13} /> Quay lại trang điền thông tin
+                  </button>
+                </div>
+              </form>
+            </div>
           )}
         </div>
-      </div>
-
-      <div className="text-center text-xs text-ink-muted">
-        © 2026 BoardingHouse Pro · Vận hành chuỗi nhà trọ đơn giản, hiệu quả.
       </div>
     </div>
   );
 }
-

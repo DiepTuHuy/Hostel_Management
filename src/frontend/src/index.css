@@ -1,33 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --color-primary: #3a5bc7;
-  --color-primary-dark: #2a4fbd;
-  --color-primary-soft: #e8eef9;
-  --color-bg: #f5f7fb;
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-primary-soft: #eff6ff;
+  --color-bg: #fafafa;
   --color-surface: #ffffff;
-  --color-text: #1a1f36;
-  --color-text-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --color-success: #16a34a;
+  --color-text: #09090b;
+  --color-text-muted: #71717a;
+  --color-border: #e4e4e7;
+  --color-success: #10b981;
   --color-warning: #f59e0b;
-  --color-danger: #dc2626;
-  --color-info: #0ea5e9;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
 }
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-family: 'Geist', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
   }
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
   }
   *:focus-visible {
     outline: 2px solid var(--color-primary);
@@ -36,130 +39,81 @@
 }
 
 @layer components {
+  /* Premium Minimalist Buttons */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .btn-sm { @apply h-8 px-3 text-sm; }
-  .btn-md { @apply h-10 px-4 text-sm; }
-  .btn-lg { @apply h-12 px-6 text-base; }
-  .btn-primary { @apply bg-primary text-white hover:bg-primary-dark; }
-  .btn-secondary { @apply bg-white text-ink border border-line hover:bg-gray-50; }
-  .btn-ghost { @apply bg-transparent text-ink hover:bg-gray-100; }
-  .btn-danger { @apply bg-danger text-white hover:bg-red-700; }
+  .btn-sm { @apply h-9 px-4 text-xs rounded-full; }
+  .btn-md { @apply h-11 px-6 text-sm rounded-full; }
+  .btn-lg { @apply h-12 px-8 text-base rounded-full; }
+  
+  .btn-primary { 
+    @apply bg-primary text-white shadow-sm hover:bg-primary-dark active:scale-[0.98];
+  }
+  .btn-secondary { 
+    @apply bg-white text-ink border border-line hover:bg-zinc-50 active:scale-[0.98] shadow-sm;
+  }
+  .btn-ghost { 
+    @apply bg-transparent text-ink hover:bg-zinc-100 active:scale-[0.98];
+  }
+  .btn-danger { 
+    @apply bg-danger text-white shadow-sm hover:bg-red-600 active:scale-[0.98];
+  }
 
+  /* Form Inputs */
   .input {
-    @apply w-full h-10 px-3 rounded-lg border border-line bg-white text-ink placeholder:text-ink-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm;
+    @apply w-full h-11 px-4 rounded-xl border border-line bg-white text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all duration-300 text-sm;
   }
   .label {
-    @apply block text-sm font-medium text-ink mb-1.5;
+    @apply block text-sm font-semibold text-ink mb-1.5;
   }
   .helper {
-    @apply text-xs text-ink-muted mt-1;
+    @apply text-xs text-ink-muted mt-1.5;
   }
   .error-text {
-    @apply text-xs text-danger mt-1;
+    @apply text-xs text-danger mt-1.5 font-medium;
   }
 
+  /* Card-less & Card styles */
   .card {
-    @apply bg-surface border border-line rounded-card shadow-card;
+    @apply bg-surface border border-line rounded-2xl shadow-sm;
   }
   .card-padded {
-    @apply card p-6;
+    @apply card p-8;
   }
 
   .badge {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
   }
-  .badge-success { @apply bg-green-50 text-green-700; }
-  .badge-warning { @apply bg-amber-50 text-amber-700; }
-  .badge-danger  { @apply bg-red-50 text-red-700; }
-  .badge-info    { @apply bg-sky-50 text-sky-700; }
-  .badge-neutral { @apply bg-gray-100 text-gray-700; }
-  .badge-primary { @apply bg-primary-soft text-primary-700; }
+  .badge-success { @apply bg-emerald-50 text-emerald-700 border border-emerald-100; }
+  .badge-warning { @apply bg-amber-50 text-amber-700 border border-amber-100; }
+  .badge-danger  { @apply bg-red-50 text-red-700 border border-red-100; }
+  .badge-info    { @apply bg-blue-50 text-blue-700 border border-blue-100; }
+  .badge-neutral { @apply bg-zinc-100 text-zinc-700 border border-zinc-200; }
+  .badge-primary { @apply bg-primary-soft text-primary border border-primary/10; }
 
+  /* Table Styles */
   .table-base {
-    @apply w-full text-sm;
+    @apply w-full text-sm border-collapse;
   }
   .table-base thead th {
-    @apply text-left text-xs font-semibold uppercase tracking-wide text-ink-muted px-4 py-3 border-b border-line bg-gray-50;
+    @apply text-left text-xs font-bold uppercase tracking-wider text-ink-muted px-6 py-4 border-b border-line bg-zinc-50;
   }
   .table-base tbody td {
-    @apply px-4 py-3 border-b border-line text-ink;
+    @apply px-6 py-4 border-b border-line text-ink font-medium;
   }
   .table-base tbody tr:hover {
-    @apply bg-gray-50;
+    @apply bg-zinc-50/50;
   }
 }
 
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
+/* Custom Springs & Transitions */
 :root {
-  --ease-apple-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-apple-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-apple-press: cubic-bezier(0.25, 1, 0.5, 1);
-  --ease-apple-in-out: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@layer utilities {
-  .transition-apple {
-    transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .transition-apple-bouncy {
-    transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .apple-press {
-    transition: transform 120ms cubic-bezier(0.25, 1, 0.5, 1), opacity 120ms ease;
-  }
-  .apple-press:active {
-    transform: scale(0.96) !important;
-    opacity: 0.9;
-  }
-  .apple-card-hover {
-    transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .apple-card-hover:hover {
-    transform: translateY(-6px) scale(1.025);
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
-  }
+.transition-spring {
+  transition: all 450ms var(--ease-spring);
 }
-
-@keyframes applePop {
-  0% {
-    opacity: 0;
-    transform: scale(0.85) translateY(12px);
-  }
-  70% {
-    transform: scale(1.02) translateY(-2px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.animate-apple-pop {
-  animation: applePop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes appleSlideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-.animate-apple-slide-in-left {
-  animation: appleSlideInLeft 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
