@@ -33,7 +33,7 @@ export default function HomePage() {
     }).catch(err => console.error("Error loading properties:", err));
   }, []);
 
-  // GSAP Entrance Animations
+  // GSAP Entrance Animations for Static Elements (Hero & Benefits)
   useEffect(() => {
     const ctx = gsap.context(() => {
       // Hero Entrance
@@ -44,23 +44,6 @@ export default function HomePage() {
       gsap.fromTo('.hero-image', 
         { opacity: 0, scale: 0.95 },
         { opacity: 1, scale: 1, duration: 1.2, ease: 'power4.out', delay: 0.2 }
-      );
-
-      // Featured Rooms Scroll Reveal
-      gsap.fromTo('.room-card-reveal',
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: roomsRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none none'
-          }
-        }
       );
 
       // Benefits Scroll Reveal
@@ -74,6 +57,31 @@ export default function HomePage() {
           ease: 'power3.out',
           scrollTrigger: {
             trigger: benefitsRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none none'
+          }
+        }
+      );
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // GSAP Scroll Reveal for Dynamic Featured Rooms (only run when featured rooms are loaded)
+  useEffect(() => {
+    if (featured.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo('.room-card-reveal',
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: roomsRef.current,
             start: 'top 80%',
             toggleActions: 'play none none none'
           }
