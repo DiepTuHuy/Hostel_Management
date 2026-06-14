@@ -3,7 +3,11 @@ import { User } from '../models/User.js';
 
 export async function verifyToken(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
+    let authHeader = req.headers.authorization;
+    if (!authHeader && req.query.token) {
+      authHeader = req.query.token;
+    }
+
     if (!authHeader) {
       return res.status(401).json({ message: "Không tìm thấy token xác thực." });
     }

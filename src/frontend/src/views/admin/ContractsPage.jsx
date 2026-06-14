@@ -544,7 +544,8 @@ export default function ContractsPage() {
 
   // Handle real PDF download from backend API
   const handleDownloadPdf = (contract) => {
-    const url = `${API_HOST}/api/contracts/${contract.id}/pdf`;
+    const token = localStorage.getItem('bhpro_token') || '';
+    const url = `${API_HOST}/api/contracts/${contract.id}/pdf?token=${encodeURIComponent(token)}`;
     window.open(url, '_blank');
 
     setToast({

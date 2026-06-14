@@ -124,7 +124,8 @@ export default function ReportsPage() {
     setExportingPdf(true);
     try {
       const year = period === '2025' ? 2025 : 2026;
-      const url = `${API_HOST}/api/reports/pdf?type=${tab}&branch=${branch}&period=${year}`;
+      const token = localStorage.getItem('bhpro_token') || '';
+      const url = `${API_HOST}/api/reports/pdf?type=${tab}&branch=${branch}&period=${year}&token=${encodeURIComponent(token)}`;
       window.open(url, '_blank');
       setToast({ message: 'Đang tải báo cáo PDF...', type: 'success' });
     } catch (err) {

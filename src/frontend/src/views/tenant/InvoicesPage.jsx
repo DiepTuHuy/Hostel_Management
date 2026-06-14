@@ -243,7 +243,7 @@ export default function InvoicesPage() {
                 ) : (
                   <div className="flex gap-2">
                     <a
-                      href={`${API_HOST}/api/invoices/${selectedInvoice.id}/pdf`}
+                      href={`${API_HOST}/api/invoices/${selectedInvoice.id}/pdf?token=${encodeURIComponent(localStorage.getItem('bhpro_token') || '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-secondary btn-md rounded-xl font-bold px-4 py-2 flex items-center justify-center gap-1.5 hover:bg-gray-100 transition-colors border border-line text-ink"

@@ -92,7 +92,7 @@ export default function PaymentReturnPage() {
                 </Button>
                 {invoiceId && (
                   <a
-                    href={`${API_HOST}/api/invoices/${invoiceId}/pdf`}
+                    href={`${API_HOST}/api/invoices/${invoiceId}/pdf?token=${encodeURIComponent(localStorage.getItem('bhpro_token') || '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 bg-gray-50 hover:bg-gray-100 border border-line rounded-xl font-bold flex items-center justify-center gap-1.5 text-xs text-ink transition-colors h-11"
