@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Filter, SlidersHorizontal, Check, RefreshCw, Grid, List as ListIcon } from 'lucide-react';
+import { Filter, SlidersHorizontal, Check, RefreshCw, Grid, List as ListIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { roomService } from '../../services/roomService.js';
 import { propertyService } from '../../services/propertyService.js';
 import { formatCurrency } from '../../utils/format.js';
@@ -14,6 +14,7 @@ export default function RoomSearchPage() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid');
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   
   const [district, setDistrict] = useState(searchParams.get('district') || '');
   const [priceMin, setPriceMin] = useState(searchParams.get('priceMin') || '');
@@ -112,15 +113,28 @@ export default function RoomSearchPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="bg-white rounded-2xl border border-line p-6 shadow-card h-fit space-y-6 sticky top-24 self-start">
-            <div className="flex items-center justify-between border-b border-line pb-4">
+          <div className="bg-white rounded-2xl border border-line p-6 shadow-card h-fit space-y-4 lg:space-y-6 lg:sticky lg:top-24 self-start">
+            <div 
+              onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+              className="flex items-center justify-between border-b border-line pb-4 cursor-pointer lg:cursor-default select-none"
+            >
               <span className="font-bold text-ink flex items-center gap-2">
                 <SlidersHorizontal size={16} /> Bộ lọc nâng cao
               </span>
-              <button onClick={handleReset} className="text-xs text-primary font-semibold flex items-center gap-1 hover:underline">
-                <RefreshCw size={12} /> Thiết lập lại
-              </button>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleReset(); }} 
+                  className="text-xs text-primary font-semibold flex items-center gap-1 hover:underline"
+                >
+                  <RefreshCw size={12} /> Thiết lập lại
+                </button>
+                <span className="lg:hidden text-ink-muted">
+                  {isFilterExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </span>
+              </div>
             </div>
+
+            <div className={`space-y-6 lg:block ${isFilterExpanded ? 'block' : 'hidden'}`}>
 
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-ink-muted block mb-3">Khu vực</label>
@@ -195,6 +209,7 @@ export default function RoomSearchPage() {
               </div>
             </div>
           </div>
+        </div>
 
           <div className="lg:col-span-3">
             {loading ? (
