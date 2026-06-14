@@ -10,6 +10,10 @@ export default function RoleSwitcher() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
+  if (!import.meta.env.DEV) {
+    return null;
+  }
+
   const switchRole = (role) => {
     if (role === 'visitor') {
       localStorage.removeItem('bhpro_token');
