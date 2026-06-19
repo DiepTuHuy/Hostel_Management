@@ -52,6 +52,7 @@ export default function DepositPage() {
   const [payConfirmStep, setPayConfirmStep] = useState(1);
   const [copiedText, setCopiedText] = useState('');
   const [showLargeQR, setShowLargeQR] = useState(false);
+  const [receiptCode] = useState(() => Math.floor(10000 + Math.random() * 90000));
 
   const handleCopy = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -785,7 +786,7 @@ export default function DepositPage() {
               <div className="space-y-2">
                 <h2 className="text-2xl font-extrabold text-ink">Đặt cọc giữ chỗ thành công!</h2>
                 <p className="text-sm text-ink-muted max-w-sm mx-auto">
-                  Biên lai cọc mã <span className="font-bold text-ink">#REC-{Math.floor(Math.random() * 90000) + 10000}</span> của phòng {room?.code} đã được phê duyệt.
+                  Biên lai cọc mã <span className="font-bold text-ink">#REC-{receiptCode}</span> của phòng {room?.code} đã được phê duyệt.
                 </p>
               </div>
 
