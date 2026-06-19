@@ -16,7 +16,7 @@ import { Expense } from './models/Expense.js';
 // Import các Router đã tách lẻ
 import authRoutes from './routes/authRoutes.js';
 import propertyRoutes from './routes/propertyRoutes.js';
-import roomRoutes from './routes/roomRoutes.js';
+import roomRoutes, { releaseExpiredDeposits } from './routes/roomRoutes.js';
 import contractRoutes from './routes/contractRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
@@ -159,12 +159,17 @@ async function autoSeedExpenses() {
   }
 }
 
-// Chạy quét khi server khởi động và lặp lại sau mỗi 24 giờ
+// Chạy quét khi server khởi động và lặp lại sau mỗi 24 giờ / 10 phút
 setTimeout(async () => {
   await autoSeedExpenses();
   autoGenerateInvoicesForActiveContracts();
+  await releaseExpiredDeposits().catch(err => console.error(err));
 }, 5000); // Sau 5 giây
 setInterval(autoGenerateInvoicesForActiveContracts, 24 * 60 * 60 * 1000); // Lặp lại mỗi 24 giờ
+setInterval(() => {
+  releaseExpiredDeposits().catch(err => console.error(err));
+}, 10 * 60 * 1000); // Mỗi 10 phút quét 1 lần
+
 
 // Khởi chạy Server
 const server = app.listen(PORT, () => {

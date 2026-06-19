@@ -16,7 +16,8 @@ const roomSchema = new mongoose.Schema({
     tenTaiSan: { type: String, required: true },
     giaTri: { type: Number, default: 0 },
     tinhTrang: { type: String, default: 'Tốt' }
-  }]
+  }],
+  depositAt: { type: Date }
 }, { timestamps: true });
 
 export const Room = mongoose.model('Room', roomSchema);

@@ -45,6 +45,7 @@ export function mapRoom(roomDoc) {
     price: room.giaThue || room.giaThueHienTai || roomType.giaCoBan || 0,
     amenities: roomType.tienNghi || [],
     status: room.trangThai,
+    depositAt: room.depositAt ? room.depositAt.toISOString() : null,
     currentTenantId: room.currentTenantId ? room.currentTenantId.toString() : null,
     photos: room.hinhAnh || [
       'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=500',

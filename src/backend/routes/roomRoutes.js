@@ -22,9 +22,35 @@ import pdfReportService from '../services/pdfReportService.js';
 import { mapDocument, mapRoom, mapContract, mapInvoice, mapNotification, mapUser } from '../utils/mappers.js';
 import { verifyToken, requireRole } from '../middlewares/auth.js';
 
+// Hàm tự động giải phóng phòng đặt cọc quá hạn 24 giờ
+export async function releaseExpiredDeposits() {
+  try {
+    const expiryTime = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const result = await Room.updateMany(
+      {
+        trangThai: 'deposit',
+        $or: [
+          { depositAt: { $lte: expiryTime } },
+          { depositAt: { $exists: false }, updatedAt: { $lte: expiryTime } }
+        ]
+      },
+      {
+        $set: { trangThai: 'empty' },
+        $unset: { depositAt: "" }
+      }
+    );
+    if (result.modifiedCount > 0) {
+      console.log(`[Deposit Expiry] Đã tự động giải phóng ${result.modifiedCount} phòng đặt cọc quá hạn 24 giờ.`);
+    }
+  } catch (error) {
+    console.error("[Deposit Expiry Error] Lỗi giải phóng phòng quá hạn:", error.message);
+  }
+}
+
 const router = express.Router();
 router.get('/api/rooms', async (req, res) => {
   try {
+    await releaseExpiredDeposits();
     const { propertyId, status } = req.query;
     const filter = {};
     if (propertyId) {
@@ -52,6 +78,7 @@ router.get('/api/rooms', async (req, res) => {
 // 4.1. Tìm kiếm phòng nâng cao (cho visitor)
 router.get('/api/rooms/search', async (req, res) => {
   try {
+    await releaseExpiredDeposits();
     const { keyword, priceMin, priceMax, district, amenities } = req.query;
     const filter = {};
 
@@ -118,6 +145,7 @@ router.get('/api/rooms/search', async (req, res) => {
 // 4.2. Lấy chi tiết một phòng
 router.get('/api/rooms/:id', async (req, res) => {
   try {
+    await releaseExpiredDeposits();
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Không tìm thấy phòng." });
     }
@@ -254,6 +282,7 @@ router.patch('/api/rooms/:id/status', verifyToken, requireRole('admin', 'manager
 // C.5 Đặt cọc phòng (Cho Visitor — không yêu cầu đăng nhập nhưng kiểm tra dữ liệu chặt chẽ)
 router.post('/api/rooms/:id/deposit', async (req, res) => {
   try {
+    await releaseExpiredDeposits();
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Không tìm thấy phòng." });
     }
@@ -280,6 +309,7 @@ router.post('/api/rooms/:id/deposit', async (req, res) => {
     }
 
     room.trangThai = 'deposit';
+    room.depositAt = new Date();
     await room.save();
 
     // Bản ghi Payment gắn với phòng + thông tin người cọc để đối soát (không còn bản ghi 'mồ côi')
