@@ -1,15 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Info, Calendar, ShieldCheck, CreditCard, Sparkles, Copy, Check, QrCode, X } from 'lucide-react';
+import { ChevronLeft, Info, Calendar, ShieldCheck, CreditCard, Sparkles, Copy, Check, QrCode, X, LogIn, UserPlus, ShieldAlert, KeyRound, Mail, Phone, User } from 'lucide-react';
 import { roomService } from '../../services/roomService.js';
 import { propertyService } from '../../services/propertyService.js';
 import { formatCurrency } from '../../utils/format.js';
+import { useAuth } from '../../controllers/useAuth.jsx';
+import { authService } from '../../services/authService.js';
 
 export default function DepositPage() {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const { login, register, verifyOtp, resendOtp } = useAuth();
+  const [currentUser, setCurrentUser] = useState(authService.getCurrentUser());
+  const [authTab, setAuthTab] = useState('login'); // 'login' or 'register'
+
+  // Auth Form inputs
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authConfirmPassword, setAuthConfirmPassword] = useState('');
+  const [authPhone, setAuthPhone] = useState('');
+  const [authFullName, setAuthFullName] = useState('');
+
+  // OTP States
+  const [isAuthOtpStep, setIsAuthOtpStep] = useState(false);
+  const [authOtpDigits, setAuthOtpDigits] = useState(['', '', '', '', '', '']);
+  const [authCountdown, setAuthCountdown] = useState(300);
+  const [authError, setAuthError] = useState('');
+  const [authSuccess, setAuthSuccess] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const otpRefs = [
+    useRef(null),
+    useRef(null),
+    useRef(null),
+    useRef(null),
+    useRef(null),
+    useRef(null)
+  ];
 
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
@@ -27,6 +57,134 @@ export default function DepositPage() {
     navigator.clipboard.writeText(text);
     setCopiedText(label);
     setTimeout(() => setCopiedText(''), 2000);
+  };
+
+  // Auto prefill Step 1 if logged in
+  useEffect(() => {
+    if (currentUser) {
+      setFullName(currentUser.fullName || currentUser.hoTen || '');
+      setPhone(currentUser.phone || currentUser.sdt || '');
+      setEmail(currentUser.email || '');
+      if (currentUser.thongTinKhachThue?.cccd) {
+        setCccd(currentUser.thongTinKhachThue.cccd);
+      }
+    }
+  }, [currentUser]);
+
+  // Countdown timer for OTP
+  useEffect(() => {
+    let timer;
+    if (isAuthOtpStep && authCountdown > 0) {
+      timer = setInterval(() => {
+        setAuthCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [isAuthOtpStep, authCountdown]);
+
+  const formatOtpTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleDigitChange = (index, value) => {
+    if (value && !/^\d$/.test(value)) return;
+    const newDigits = [...authOtpDigits];
+    newDigits[index] = value;
+    setAuthOtpDigits(newDigits);
+    if (value && index < 5) {
+      otpRefs[index + 1].current.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace') {
+      if (!authOtpDigits[index] && index > 0) {
+        const newDigits = [...authOtpDigits];
+        newDigits[index - 1] = '';
+        setAuthOtpDigits(newDigits);
+        otpRefs[index - 1].current.focus();
+      } else {
+        const newDigits = [...authOtpDigits];
+        newDigits[index] = '';
+        setAuthOtpDigits(newDigits);
+      }
+    }
+  };
+
+  const handleAuthLoginSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthSuccess('');
+    setAuthLoading(true);
+    try {
+      const u = await login(authEmail, authPassword);
+      setCurrentUser(u);
+      setAuthSuccess('Đăng nhập thành công!');
+    } catch (err) {
+      setAuthError(err.response?.data?.message || err.message || 'Đăng nhập thất bại');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleAuthRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthSuccess('');
+    if (authPassword !== authConfirmPassword) {
+      setAuthError('Mật khẩu nhập lại không khớp');
+      return;
+    }
+    setAuthLoading(true);
+    try {
+      const data = await register(authFullName, authEmail, authPhone, authPassword, 'tenant');
+      setAuthSuccess(data?.message || 'Tạo tài khoản thành công! Mã OTP đã gửi.');
+      setIsAuthOtpStep(true);
+      setAuthCountdown(300);
+    } catch (err) {
+      setAuthError(err.response?.data?.message || err.message || 'Đăng ký thất bại');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleAuthVerifyOtpSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthSuccess('');
+    const otpCode = authOtpDigits.join('');
+    if (otpCode.length !== 6) {
+      setAuthError('Vui lòng nhập đủ 6 số OTP');
+      return;
+    }
+    setAuthLoading(true);
+    try {
+      const u = await verifyOtp(authEmail, otpCode);
+      setCurrentUser(u);
+      setAuthSuccess('Kích hoạt tài khoản thành công!');
+    } catch (err) {
+      setAuthError(err.response?.data?.message || err.message || 'OTP không chính xác');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleAuthResendOtp = async () => {
+    setAuthError('');
+    setAuthSuccess('');
+    setAuthLoading(true);
+    try {
+      await resendOtp(authEmail);
+      setAuthCountdown(300);
+      setAuthOtpDigits(['', '', '', '', '', '']);
+      setAuthSuccess('Mã OTP mới đã được gửi!');
+    } catch (err) {
+      setAuthError(err.response?.data?.message || err.message || 'Không thể gửi lại OTP');
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -113,7 +271,237 @@ export default function DepositPage() {
         )}
 
         <div className="p-6 md:p-8">
-          {step === 1 && (
+          {!currentUser ? (
+            <div className="space-y-6">
+              <div className="text-center max-w-md mx-auto space-y-2">
+                <div className="w-12 h-12 bg-primary-soft text-primary rounded-full flex items-center justify-center mx-auto mb-2">
+                  <ShieldAlert size={24} />
+                </div>
+                <h2 className="text-xl font-bold text-ink">Yêu cầu đăng ký / đăng nhập</h2>
+                <p className="text-xs text-ink-muted">
+                  Để đặt cọc giữ phòng, quý khách vui lòng đăng nhập hoặc đăng ký tài khoản mới trên hệ thống.
+                </p>
+              </div>
+
+              {/* Tabs header */}
+              {!isAuthOtpStep && (
+                <div className="flex border-b border-line">
+                  <button
+                    onClick={() => { setAuthTab('login'); setAuthError(''); setAuthSuccess(''); }}
+                    className={`flex-1 py-3 text-sm font-bold border-b-2 text-center transition-colors ${authTab === 'login' ? 'border-primary text-primary' : 'border-transparent text-ink-muted hover:text-ink'}`}
+                  >
+                    Đăng nhập
+                  </button>
+                  <button
+                    onClick={() => { setAuthTab('register'); setAuthError(''); setAuthSuccess(''); }}
+                    className={`flex-1 py-3 text-sm font-bold border-b-2 text-center transition-colors ${authTab === 'register' ? 'border-primary text-primary' : 'border-transparent text-ink-muted hover:text-ink'}`}
+                  >
+                    Đăng ký tài khoản
+                  </button>
+                </div>
+              )}
+
+              {/* Messages */}
+              {authError && (
+                <div className="p-3.5 bg-red-50 border border-red-100 rounded-xl text-center animate-[fadeIn_0.2s_ease-out]">
+                  <p className="text-xs text-danger font-bold">{authError}</p>
+                </div>
+              )}
+              {authSuccess && (
+                <div className="p-3.5 bg-green-50 border border-green-100 rounded-xl text-center animate-[fadeIn_0.2s_ease-out]">
+                  <p className="text-xs text-green-700 font-bold">{authSuccess}</p>
+                </div>
+              )}
+
+              {/* Login Form */}
+              {!isAuthOtpStep && authTab === 'login' && (
+                <form onSubmit={handleAuthLoginSubmit} className="space-y-4">
+                  <div>
+                    <label className="label">Địa chỉ Email</label>
+                    <input
+                      required
+                      type="email"
+                      value={authEmail}
+                      onChange={e => setAuthEmail(e.target.value)}
+                      className="input"
+                      placeholder="email@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Mật khẩu</label>
+                    <input
+                      required
+                      type="password"
+                      value={authPassword}
+                      onChange={e => setAuthPassword(e.target.value)}
+                      className="input"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className="btn btn-primary h-12 w-full rounded-xl font-bold flex items-center justify-center shadow-md disabled:opacity-50"
+                  >
+                    {authLoading ? (
+                      <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <LogIn size={16} className="mr-1.5" /> Đăng nhập ngay
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+
+              {/* Register Form */}
+              {!isAuthOtpStep && authTab === 'register' && (
+                <form onSubmit={handleAuthRegisterSubmit} className="space-y-4">
+                  <div>
+                    <label className="label">Họ và tên</label>
+                    <input
+                      required
+                      type="text"
+                      value={authFullName}
+                      onChange={e => setAuthFullName(e.target.value)}
+                      className="input"
+                      placeholder="Nguyễn Văn A"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Địa chỉ Email</label>
+                    <input
+                      required
+                      type="email"
+                      value={authEmail}
+                      onChange={e => setAuthEmail(e.target.value)}
+                      className="input"
+                      placeholder="email@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Số điện thoại</label>
+                    <input
+                      required
+                      type="tel"
+                      value={authPhone}
+                      onChange={e => setAuthPhone(e.target.value)}
+                      className="input"
+                      placeholder="0901234567"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Mật khẩu</label>
+                    <input
+                      required
+                      type="password"
+                      value={authPassword}
+                      onChange={e => setAuthPassword(e.target.value)}
+                      className="input"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Nhập lại mật khẩu</label>
+                    <input
+                      required
+                      type="password"
+                      value={authConfirmPassword}
+                      onChange={e => setAuthConfirmPassword(e.target.value)}
+                      className="input"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className="btn btn-primary h-12 w-full rounded-xl font-bold flex items-center justify-center shadow-md disabled:opacity-50"
+                  >
+                    {authLoading ? (
+                      <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <UserPlus size={16} className="mr-1.5" /> Đăng ký tài khoản mới
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+
+              {/* OTP Form */}
+              {isAuthOtpStep && (
+                <form onSubmit={handleAuthVerifyOtpSubmit} className="space-y-6">
+                  <div className="text-center space-y-1">
+                    <p className="text-xs text-ink-muted leading-relaxed">
+                      Mã kích hoạt OTP đã được gửi đến email <span className="font-bold text-zinc-800 break-all">{authEmail}</span>. Vui lòng nhập mã để kích hoạt tài khoản.
+                    </p>
+                  </div>
+
+                  <div className="flex justify-center gap-2.5">
+                    {authOtpDigits.map((digit, index) => (
+                      <input
+                        key={index}
+                        ref={otpRefs[index]}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleDigitChange(index, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(index, e)}
+                        className="w-11 h-11 text-center text-lg font-bold rounded-xl border border-line focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      />
+                    ))}
+                  </div>
+
+                  <div className="text-center text-xs text-ink-muted">
+                    Hiệu lực còn lại:{' '}
+                    <span className={`font-bold ${authCountdown < 60 ? "text-danger animate-pulse" : "text-primary"}`}>
+                      {formatOtpTime(authCountdown)}
+                    </span>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={authLoading}
+                    className="btn btn-primary h-12 w-full rounded-xl font-bold flex items-center justify-center shadow-md disabled:opacity-50"
+                  >
+                    {authLoading ? (
+                      <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      'Xác thực & Kích hoạt tài khoản'
+                    )}
+                  </button>
+
+                  <div className="text-center text-xs text-ink-muted flex flex-col items-center gap-2">
+                    {authCountdown === 0 ? (
+                      <button
+                        type="button"
+                        onClick={handleAuthResendOtp}
+                        className="text-primary font-bold hover:underline"
+                        disabled={authLoading}
+                      >
+                        Gửi lại mã OTP
+                      </button>
+                    ) : (
+                      <div>Gửi lại mã sau <span className="font-bold">{formatOtpTime(authCountdown)}</span></div>
+                    )}
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAuthOtpStep(false);
+                        setAuthError('');
+                        setAuthSuccess('');
+                      }}
+                      className="text-ink-muted hover:text-ink font-semibold flex items-center gap-1 mt-2 bg-transparent border-0 cursor-pointer"
+                    >
+                      <ChevronLeft size={14} /> Quay lại
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          ) : step === 1 && (
             <form onSubmit={handleNext} className="space-y-6">
               <div>
                 <h2 className="text-xl font-bold text-ink">Thông tin người đặt cọc</h2>

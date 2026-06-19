@@ -57,7 +57,28 @@ def main():
         "dienTich": 25.0,
         "trangThai": "empty"
     })
-    print(f"-> Đã tạo phòng trống thử nghiệm ID: {room_id}")
+    # 2b. Tìm hoặc tạo một user active để tạo mock token
+    user = db.users.find_one({"trangThai": "active"})
+    temp_user_created = False
+    if not user:
+        user_id = ObjectId()
+        db.users.insert_one({
+            "_id": user_id,
+            "hoTen": "User Test",
+            "email": "test.deposit@boardinghouse.vn",
+            "matKhau": "hash",
+            "sdt": "0987654321",
+            "vaiTro": "tenant",
+            "trangThai": "active"
+        })
+        temp_user_created = True
+        print(f"-> Đã tạo user tạm thời ID: {user_id}")
+    else:
+        user_id = user["_id"]
+        print(f"-> Sử dụng user hiện có ID: {user_id}")
+        
+    token = f"jwt.{user_id}.123456789"
+    headers = {"Authorization": f"Bearer {token}"}
 
     try:
         # 3. Gửi yêu cầu đặt cọc lần 1 (Thành công)
@@ -69,7 +90,7 @@ def main():
             "cccd": "123456789012",
             "depositAmount": 1000000
         }
-        res1 = requests.post(url, json=payload)
+        res1 = requests.post(url, json=payload, headers=headers)
         print(f"Status code: {res1.status_code}")
         print(f"Response: {res1.text}")
         assert res1.status_code == 200, "Đặt cọc lần 1 thất bại!"
@@ -89,7 +110,7 @@ def main():
             "cccd": "987654321098",
             "depositAmount": 1000000
         }
-        res2 = requests.post(url, json=payload2)
+        res2 = requests.post(url, json=payload2, headers=headers)
         print(f"Status code (kỳ vọng 409): {res2.status_code}")
         print(f"Response: {res2.text}")
         assert res2.status_code == 409, "Đặt cọc lần 2 đáng lẽ phải bị chặn (409 Conflict)!"
@@ -102,7 +123,7 @@ def main():
         # 6. Gửi truy vấn lấy chi tiết phòng để trigger giải phóng hết hạn (Lazy Evaluation)
         print("\n5. Gửi GET request lấy chi tiết phòng để kích hoạt tự động giải phóng...")
         get_url = f"{BACKEND_URL}/api/rooms/{room_id}"
-        res3 = requests.get(get_url)
+        res3 = requests.get(get_url, headers=headers)
         print(f"Status code: {res3.status_code}")
         room_data = res3.json()
         print(f"Phòng lấy từ API có trạng thái: {room_data.get('status')}")
@@ -116,7 +137,7 @@ def main():
         
         # 7. Đặt cọc lại sau khi đã giải phóng (Thành công)
         print("\n6. Đặt cọc lại sau khi phòng được tự động giải phóng...")
-        res4 = requests.post(url, json=payload)
+        res4 = requests.post(url, json=payload, headers=headers)
         print(f"Status code: {res4.status_code}")
         assert res4.status_code == 200, "Đặt cọc lại thất bại!"
         
@@ -129,6 +150,9 @@ def main():
         db.roomtypes.delete_one({"_id": rt_id})
         db.properties.delete_one({"_id": prop_id})
         db.payments.delete_many({"maPhongId": room_id})
+        if temp_user_created:
+            db.users.delete_one({"_id": user_id})
+            print("-> Đã xóa user tạm thời.")
         print("-> Đã xóa sạch dữ liệu test.")
 
 if __name__ == "__main__":

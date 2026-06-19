@@ -279,20 +279,31 @@ router.patch('/api/rooms/:id/status', verifyToken, requireRole('admin', 'manager
   }
 });
 
-// C.5 Đặt cọc phòng (Cho Visitor — không yêu cầu đăng nhập nhưng kiểm tra dữ liệu chặt chẽ)
-router.post('/api/rooms/:id/deposit', async (req, res) => {
+// C.5 Đặt cọc phòng (Yêu cầu đăng nhập, tự động lấy thông tin tài khoản nếu thiếu)
+router.post('/api/rooms/:id/deposit', verifyToken, async (req, res) => {
   try {
     await releaseExpiredDeposits();
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Không tìm thấy phòng." });
     }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại." });
+    }
+
     const { fullName, phone, cccd, depositAmount } = req.body;
 
-    // Validate dữ liệu khách vãng lai bắt buộc
-    if (!fullName || !String(fullName).trim()) {
-      return res.status(400).json({ message: "Vui lòng nhập họ tên người đặt cọc." });
+    // Lấy thông tin từ body hoặc fallback về thông tin tài khoản đã đăng nhập
+    const finalFullName = fullName || user.hoTen;
+    const finalPhone = phone || user.sdt;
+    const finalCccd = cccd || user.thongTinKhachThue?.cccd;
+
+    // Validate dữ liệu bắt buộc
+    if (!finalFullName || !String(finalFullName).trim()) {
+      return res.status(400).json({ message: "Vui lòng nhập hoặc bổ sung họ tên người đặt cọc." });
     }
-    if (!phone || !/^(0|\+84)\d{8,10}$/.test(String(phone).replace(/[\s.-]/g, ''))) {
+    if (!finalPhone || !/^(0|\+84)\d{8,10}$/.test(String(finalPhone).replace(/[\s.-]/g, ''))) {
       return res.status(400).json({ message: "Số điện thoại không hợp lệ." });
     }
     const amount = Number(depositAmount);
@@ -318,7 +329,7 @@ router.post('/api/rooms/:id/deposit', async (req, res) => {
       phuongThuc: 'bank_transfer',
       soTien: amount || room.giaThueHienTai || 1000000,
       trangThai: 'success',
-      ghiChu: `Đặt cọc giữ phòng ${room.soPhong || ''} — ${String(fullName).trim()} (SĐT: ${phone}${cccd ? `, CCCD: ${cccd}` : ''})`
+      ghiChu: `Đặt cọc giữ phòng ${room.soPhong || ''} — ${String(finalFullName).trim()} (SĐT: ${finalPhone}${finalCccd ? `, CCCD: ${finalCccd}` : ''})`
     });
 
     const populatedRoom = await Room.findById(room._id).populate('maLoaiPhongId');
