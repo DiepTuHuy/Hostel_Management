@@ -220,7 +220,7 @@ export default function HomePage() {
                 <img
                   src={r.photos[0]}
                   alt={`Phòng ${r.code}`}
-                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <span className={`absolute top-4 left-4 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-widest rounded-full flex items-center gap-1.5 ${r.statusBgClass}`}>
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
