@@ -24,7 +24,9 @@ export default function HomePage() {
 
   useEffect(() => {
     roomService.list().then(res => {
-      setFeatured(res.filter(r => r.photos.length > 0).slice(0, 3));
+      const withPhotos = res.filter(r => r.photos.length > 0);
+      const shuffled = [...withPhotos].sort(() => 0.5 - Math.random());
+      setFeatured(shuffled.slice(0, 3));
     });
     propertyService.list().then(res => {
       setProperties(res);
@@ -211,7 +213,7 @@ export default function HomePage() {
           {featured.map(r => (
             <div
               key={r.id}
-              className="room-card-reveal group flex flex-col bg-white border border-zinc-200/50 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer active:scale-[0.98]"
+              className="room-card-reveal group flex flex-col bg-white border border-zinc-200/50 rounded-2xl overflow-hidden hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 cursor-pointer active:scale-[0.98]"
               onClick={() => navigate(`/rooms/${r.id}`)}
             >
               <div className="h-56 bg-zinc-100 overflow-hidden relative">
