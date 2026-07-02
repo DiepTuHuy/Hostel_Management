@@ -329,7 +329,7 @@ Bạn có thể hỏi nhanh về dữ liệu hệ thống trúng đích như:
 }
 
 // 9. API Chatbot AI kết nối MongoDB
-router.post('/api/chat', verifyToken, async (req, res) => {
+router.post('/api/chat', async (req, res) => {
   const { message, history = [] } = req.body;
   if (!message) {
     return res.status(400).json({ message: "Vui lòng nhập tin nhắn." });
