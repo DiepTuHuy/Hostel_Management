@@ -204,10 +204,11 @@ router.patch('/api/contracts/:id/sign', verifyToken, requireRole('tenant'), asyn
     contract.trangThai = 'active';
     await contract.save();
     
-    // Tự động đổi trạng thái phòng tương ứng sang rented (đang thuê) và gán khách thuê
+    // Tự động đổi trạng thái phòng tương ứng sang rented (đang thuê).
+    // Khách thuê hiện tại được truy vết qua hợp đồng hiệu lực (Contract.maKhachThueIds),
+    // không lưu trùng lặp trong Room (trường currentTenantId không tồn tại trong schema Room).
     await Room.findByIdAndUpdate(contract.maPhongId, {
-      trangThai: 'rented',
-      currentTenantId: contract.maKhachThueIds?.[0]
+      trangThai: 'rented'
     });
 
     // Tăng số lượng phòng đã thuê

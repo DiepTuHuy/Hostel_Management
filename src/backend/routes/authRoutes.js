@@ -119,7 +119,10 @@ router.get('/api/diagnose', async (req, res) => {
 // 1. Đăng ký tài khoản (Trực tiếp lưu tài khoản mới vào database MongoDB Atlas)
 router.post('/api/auth/register', async (req, res) => {
   try {
-    const { fullName, email, password, phone, role, tenantProfile } = req.body;
+    // Bảo mật: Đăng ký công khai LUÔN tạo tài khoản với vai trò 'tenant'.
+    // Không nhận 'role' từ phía client để tránh lỗ hổng tự cấp quyền admin/manager.
+    // Tài khoản admin/manager chỉ được tạo qua seed hệ thống hoặc bởi quản trị viên.
+    const { fullName, email, password, phone, tenantProfile } = req.body;
 
     if (!fullName || !email || !password || !phone) {
       return res.status(400).json({ message: "Vui lòng nhập đầy đủ các thông tin bắt buộc (họ tên, email, mật khẩu, số điện thoại)." });
@@ -146,12 +149,12 @@ router.post('/api/auth/register', async (req, res) => {
       existingUser.hoTen = fullName;
       existingUser.matKhau = hashedPassword;
       existingUser.sdt = phone;
-      existingUser.vaiTro = role || 'tenant';
-      existingUser.thongTinKhachThue = role === 'tenant' ? {
+      existingUser.vaiTro = 'tenant';
+      existingUser.thongTinKhachThue = {
         cccd: tenantProfile?.cccd,
         ngheNghiep: tenantProfile?.occupation,
         diaChiThuongTru: tenantProfile?.permanentAddress
-      } : undefined;
+      };
       existingUser.otp = { maOtp: otpCode, hanSuDung: otpExpires };
       
       await existingUser.save();
@@ -184,13 +187,13 @@ router.post('/api/auth/register', async (req, res) => {
       email: emailLower,
       matKhau: hashedPassword,
       sdt: phone,
-      vaiTro: role || 'tenant',
+      vaiTro: 'tenant',
       trangThai: 'pending',
-      thongTinKhachThue: role === 'tenant' ? {
+      thongTinKhachThue: {
         cccd: tenantProfile?.cccd,
         ngheNghiep: tenantProfile?.occupation,
         diaChiThuongTru: tenantProfile?.permanentAddress
-      } : undefined,
+      },
       otp: { maOtp: otpCode, hanSuDung: otpExpires }
     });
 
