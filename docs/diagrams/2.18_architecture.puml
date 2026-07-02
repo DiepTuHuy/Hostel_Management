@@ -27,25 +27,25 @@ skinparam database {
 actor "Người dùng\n(Admin · Manager · Tenant · Visitor)" as User
 
 node "Tầng Giao diện — Trình duyệt" as N1 {
-  component "React 18 SPA  ·  Vite (port 5173)\n4 phân hệ dashboard · AIChatbot widget\nReact Router · Tailwind · Recharts" as FE
+  component "React 18 SPA  ·  Vite (port 5173)\n4 phân hệ dashboard · widget Trợ lý ảo\nReact Router · Tailwind · Recharts" as FE
 }
 
 node "Tầng API — Node.js" as N2 {
-  component "Express Server (port 5001)\n58+ REST endpoints · JWT middleware\nMongoose ODM · pdfkit · Fallback Engine" as BE
+  component "Express Server (port 5001)\n66 REST endpoints · JWT middleware\nMongoose ODM · pdfkit · Bộ trả lời ngoại tuyến" as BE
 }
 
 database "MongoDB Atlas\nboardinghouse_db\n11 collections" as DB
 
 cloud "Google Gemini\n2.5 Flash API" as GEM
-cloud "Gmail SMTP\nsmtp.gmail.com:587" as SMTP
+cloud "Gmail SMTP\nsmtp.gmail.com:587\n(+ Brevo API dự phòng)" as SMTP
 cloud "VNPay Gateway\n(Sandbox · HMAC-SHA512)" as VNP
 
 User --> FE : HTTPS
 FE --> BE : REST API (axios)
 BE --> DB : Mongoose driver\n(DNS 8.8.8.8 — bypass IPv6 SRV)
-BE --> GEM : POST generateContent\n(3 lần retry · backoff 600ms)
-BE --> SMTP : 4 luồng email\n(OTP đăng ký/quên MK · hợp đồng · nhắc nợ)
-BE <--> VNP : paymentUrl ký HMAC\ncallback vnpay-return · IPN vnpay-ipn
+BE --> GEM : Gọi sinh câu trả lời\n(3 lần thử · chờ 600ms giữa các lần)
+BE --> SMTP : 4 luồng email\n(OTP đăng ký · OTP quên mật khẩu\n· thông báo hợp đồng · nhắc nợ)
+BE <--> VNP : Liên kết thanh toán ký HMAC\ncallback kết quả + thông báo ngầm IPN
 
 note bottom of N2
   Khởi chạy 2 tiến trình:

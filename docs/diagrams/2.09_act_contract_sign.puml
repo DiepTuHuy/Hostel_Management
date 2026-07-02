@@ -1,5 +1,5 @@
 @startuml Act_Contract_Sign
-title Hình 2.9 — Hoạt động: Lập hợp đồng & Ký số (giả lập)
+title Hình 2.9 — Lập hợp đồng & Ký xác nhận (giả lập)
 
 skinparam dpi 150
 skinparam shadowing false
@@ -15,45 +15,43 @@ skinparam activity {
   EndColor #AD1457
 }
 
-|#ECF7EF|Quản lý|
+|#ECF7EF|Quản lý / Chủ trọ|
 start
-:Vào /manager/contracts → "Tạo hợp đồng";
-:Chọn phòng trống (trangThai='empty');
+:Vào trang Hợp đồng → "Tạo hợp đồng";
+:Chọn phòng đang trống;
 
-|#EAF1FB|Frontend|
+|#EAF1FB|Giao diện|
 if (Khách đã có hồ sơ?) then (có)
   :Chọn từ danh sách khách thuê;
 else (chưa)
-  :Nhập khách mới\n(họ tên, email, SĐT, CCCD);
+  :Nhập thông tin khách mới\n(họ tên, email, SĐT, CCCD);
 endif
-:Nhập điều khoản\n(ngày bắt đầu/kết thúc, cọc, giá, dịch vụ);
+:Nhập điều khoản\n(ngày bắt đầu / kết thúc, tiền cọc, giá thuê);
 :Nhấn "Tạo hợp đồng";
 
-|#EAF1FB|Backend Express|
-:POST /api/contracts;
-if (Khách chưa có User?) then (có)
-  :Tạo User mới\n(mật khẩu mặc định "123456");
+|#EAF1FB|Hệ thống|
+if (Khách chưa có tài khoản?) then (đúng)
+  :Tự tạo tài khoản khách thuê\nvới mật khẩu mặc định;
 endif
-:Tạo Contract (trangThai="active",\nduongDanPdf = URL PDF);
-:Room.trangThai="rented"\n+ currentTenantId;
-:Property.soPhongDaThue +1;
-:Gửi email thông báo hợp đồng\n(sendContractNotificationEmail);
+:Tạo hợp đồng ở trạng thái **Nháp**,\nsinh mã hợp đồng + lưu đường dẫn bản PDF;
+note right
+  Khi tạo hợp đồng, phòng **chưa** đổi
+  trạng thái — chờ khách ký xác nhận.
+end note
+:Gửi email thông báo hợp đồng\ntới khách thuê;
 
 |#ECF7EF|Khách thuê|
-:Đăng nhập /tenant/contract;
-:Xem PDF + điều khoản;
+:Đăng nhập cổng khách thuê;
+:Xem bản PDF + điều khoản hợp đồng;
 if (Đồng ý?) then (có)
-  :Nhấn "Ký số";
-  :PATCH /api/contracts/:id/sign;
-  |#EAF1FB|Backend Express|
-  :Contract.trangThai = "active"\n(v1: chỉ đổi trạng thái,\nKHÔNG yêu cầu OTP);
-  note right
-    v2 (định hướng): nhúng chữ ký
-    vẽ tay / CA vào file PDF.
-  end note
+  :Nhấn "Ký xác nhận";
+  |#EAF1FB|Hệ thống|
+  :Hợp đồng chuyển sang **Hiệu lực**\n(v1: giả lập — chỉ đổi trạng thái,\nkhông yêu cầu OTP);
+  :Phòng chuyển sang "Đang thuê";
+  :Tăng số phòng đang thuê của cơ sở;
   stop
-else (từ chối)
-  :Contract → "cancelled"\nRoom → "empty";
+else (chưa đồng ý)
+  :Hợp đồng giữ nguyên trạng thái **Nháp**;
   stop
 endif
 

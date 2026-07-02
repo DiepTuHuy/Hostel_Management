@@ -1,5 +1,5 @@
 @startuml UC_Billing
-title Hình 2.5 — Use Case nhóm D: Dịch vụ, ghi chỉ số, hoá đơn & thanh toán
+title Hình 2.5 — Dịch vụ, ghi chỉ số, hoá đơn & thanh toán
 
 skinparam dpi 150
 skinparam shadowing false
@@ -8,8 +8,8 @@ skinparam defaultFontSize 13
 skinparam packageStyle rectangle
 skinparam ArrowColor #34507A
 skinparam usecase {
-  BackgroundColor #FBE6F1
-  BorderColor #AD1457
+  BackgroundColor #EEF3FC
+  BorderColor #3A5BC7
 }
 skinparam actor {
   BackgroundColor #FFFFFF
@@ -21,28 +21,35 @@ actor "Chủ trọ"     as Owner
 actor "Quản lý"     as Manager
 actor "Khách thuê"  as Tenant
 
-rectangle "D. Dịch vụ, ghi chỉ số, hoá đơn & thanh toán" {
-  usecase "UC21 — Cấu hình đơn giá\ndịch vụ"      as B1
-  usecase "UC22 — Ghi chỉ số\nđiện nước"          as B2
-  usecase "UC23 — Tính tiền dịch vụ\n(tự động)"   as B3
-  usecase "UC24 — Tạo hoá đơn"                    as B4
-  usecase "UC25 — Gửi hoá đơn\n& nhắc thanh toán" as B5
-  usecase "UC26 — Thanh toán online\n(VNPay Sandbox + VietQR)" as B6
-  usecase "UC27 — Xác nhận\nthu tiền mặt"         as B7
-  usecase "UC28 — Tra cứu\nlịch sử hoá đơn"       as B8
-  usecase "UC29 — Quản lý công nợ"                as B9
+rectangle "Dịch vụ, ghi chỉ số, hoá đơn & thanh toán" {
+  usecase "Cấu hình đơn giá\ndịch vụ"      as B1
+  usecase "Ghi chỉ số\nđiện nước"          as B2
+  usecase "Tính tiền dịch vụ\n(tự động)"   as B3
+  usecase "Tạo hoá đơn"                    as B4
+  usecase "Gửi hoá đơn\n& nhắc thanh toán" as B5
+  usecase "Thanh toán online\n(VNPay Sandbox + VietQR)" as B6
+  usecase "Xác nhận thu tiền mặt\n/ đối soát chuyển khoản" as B7
+  usecase "Tra cứu\nlịch sử hoá đơn"       as B8
+  usecase "Quản lý công nợ"                as B9
 }
 
-Owner   -- B1
+' Kế thừa: Chủ trọ có toàn bộ chức năng của Quản lý,
+' thêm 2 quyền riêng: Tạo hoá đơn (B4) và Quản lý công nợ (B9)
+Owner --|> Manager
 Owner   -- B4
 Owner   -- B9
+' Quản lý: dịch vụ, ghi chỉ số, nhắc nợ, xác nhận thu tiền
+Manager -- B1
 Manager -- B2
+Manager -- B5
 Manager -- B7
+' Khách thuê: thanh toán & tra cứu
 Tenant  -- B6
 Tenant  -- B8
 
-B2 ..> B3 : <<include>>
-B3 ..> B4 : <<include>>
-B4 ..> B5 : <<extend>>
+' Khi tạo hoá đơn, hệ thống tự tính tiền dịch vụ bên trong
+B4 ..> B3 : <<include>>
+' Nhắc thanh toán là bước mở rộng (tuỳ chọn) sau khi đã có hoá đơn
+B5 ..> B4 : <<extend>>
 
 @enduml

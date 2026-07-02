@@ -1,0 +1,32 @@
+\chuongkhongso{TÓM TẮT ĐỒ ÁN}
+
+Đồ án "Phân tích và thiết kế hệ thống quản lý chuỗi nhà trọ" được thực
+hiện nhằm xây dựng một nền tảng quản trị tập trung cho các chủ trọ sở
+hữu nhiều khu trọ cùng lúc tại các thành phố lớn ở Việt Nam. Trong bối
+cảnh quá trình đô thị hoá diễn ra mạnh mẽ, nhu cầu thuê trọ tăng cao,
+nhưng đa số chủ trọ vẫn quản lý bằng sổ sách thủ công hoặc các bảng
+Excel riêng lẻ cho từng cơ sở. Hệ quả là dữ liệu phân mảnh, sai sót
+trong tính toán, khó tổng hợp doanh thu - công nợ và không có kênh tương
+tác minh bạch với khách thuê.
+
+Hệ thống được đề xuất giải quyết các vấn đề trên thông qua một kiến trúc
+đa người dùng (multi-tenant) cho phép một chủ trọ (kiêm vai trò quản trị
+viên hệ thống và kế toán) quản lý nhiều nhà trọ, mỗi nhà trọ có thể phân
+công cho một hoặc nhiều quản lý vận hành riêng. Khách thuê và khách vãng
+lai có cổng truy cập riêng để tra cứu hoá đơn, tìm phòng và thanh toán
+online (qua cổng VNPay Sandbox tích hợp thật hoặc mã VietQR động; định
+hướng MoMo ở v2). Toàn bộ luồng nghiệp vụ từ ký hợp đồng, ghi chỉ số
+điện nước, xuất hoá đơn cho đến báo cáo doanh thu đều được số hoá và tự
+động hoá tối đa.
+
+Đồ án áp dụng phương pháp phân tích thiết kế hệ thống hướng đối tượng,
+sử dụng ngôn ngữ mô hình hoá UML với các biểu đồ: Use Case, Activity,
+Class và Sequence để mô hình hoá bài toán một cách trực quan và chi
+tiết. Báo cáo xác định 4 tác nhân và hơn 30 ca sử dụng được tổ chức
+thành 6 nhóm chức năng chính. Sản phẩm cuối cùng đã được hiện thực hoá
+thành một hệ thống đầy đủ chạy trên nền tảng Web Single-Page Application
+(ReactJS 18 + Vite 5) với backend Node.js Express + MongoDB Atlas
+(NoSQL), tích hợp trợ lý ảo AI Google Gemini và OTP qua Gmail SMTP. Hệ
+thống hỗ trợ đầy đủ các luồng nghiệp vụ từ đăng ký, ký hợp đồng, ghi chỉ
+số điện nước, sinh hoá đơn, thanh toán đến báo cáo doanh thu và công nợ.
+

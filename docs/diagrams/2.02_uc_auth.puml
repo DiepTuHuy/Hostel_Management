@@ -18,32 +18,33 @@ skinparam actor {
 left to right direction
 
 actor "Người dùng" as User
+actor "Khách thuê" as Tenant
 actor "Chủ trọ"    as Owner
 
-rectangle "A. Xác thực & Tài khoản" {
-  usecase "UC01 — Đăng ký tài khoản"            as U1
-  usecase "UC02 — Đăng nhập\n(email + mật khẩu)" as U2
-  usecase "UC03 — Đăng xuất"                     as U3
-  usecase "UC04 — Quên mật khẩu"                 as U4
-  usecase "UC05 — Đặt lại mật khẩu"              as U5
-  usecase "UC06 — Cập nhật hồ sơ"                as U6
-  usecase "UC07 — Khoá / Mở khoá\ntài khoản"     as U7
-  usecase "UC08 — Phân quyền vai trò"            as U8
+rectangle "Xác thực & Tài khoản" {
+  usecase "Đăng ký tài khoản"            as U1
+  usecase "Đăng nhập\n(email + mật khẩu)" as U2
+  usecase "Đăng xuất"                     as U3
+  usecase "Quên mật khẩu"                 as U4
+  usecase "Đặt lại mật khẩu"              as U5
+  usecase "Cập nhật hồ sơ"                as U6
+  usecase "Khoá / Mở khoá\ntài khoản"     as U7
+  usecase "Phân quyền vai trò"            as U8
   usecase "Xác thực OTP qua Email\n(kích hoạt / khôi phục)" as OTP
 }
+
+' Kế thừa: Khách thuê và Chủ trọ đều là Người dùng
+' (dùng chung Đăng ký / Đăng nhập / Đăng xuất / Cập nhật hồ sơ)
+Tenant --|> User
+Owner  --|> User
 
 User -- U1
 User -- U2
 User -- U3
-User -- U4
 User -- U6
+Tenant -- U4
 Owner -- U7
 Owner -- U8
-
-note bottom of OTP
-  OTP chỉ dùng khi **Đăng ký** và **Quên mật khẩu**.
-  Đăng nhập (UC02) KHÔNG dùng OTP — chỉ email + mật khẩu.
-end note
 
 U1 ..> OTP : <<include>>
 U4 ..> OTP : <<include>>

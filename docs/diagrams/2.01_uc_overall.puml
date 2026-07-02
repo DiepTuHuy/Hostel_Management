@@ -1,6 +1,5 @@
 @startuml UC_Overall
-title Hình 2.1 — Sơ đồ Use Case tổng quát: Hệ thống Quản lý chuỗi Nhà trọ
-
+title Hình 2.1 — Sơ đồ Use Case tổng quát
 skinparam dpi 150
 skinparam shadowing false
 skinparam defaultFontName "Segoe UI"
@@ -54,29 +53,33 @@ rectangle "HỆ THỐNG QUẢN LÝ CHUỖI NHÀ TRỌ" {
   }
 }
 
-Owner   -- UC_Auth
+' ── Kế thừa: Chủ trọ có TOÀN BỘ chức năng của Quản lý + quyền quản trị riêng
+Owner --|> Manager
 Owner   -- UC_Sys
 Owner   -- UC_Branch
-Owner   -- UC_Service
-Owner   -- UC_Invoice
-Owner   -- UC_Report
-Owner   -- UC_Chat
 
+' ── Quản lý (Manager): vận hành các cơ sở được phân công
 Manager -- UC_Auth
 Manager -- UC_Room
 Manager -- UC_Contract
+Manager -- UC_Service
 Manager -- UC_Meter
+Manager -- UC_Invoice
 Manager -- UC_Notify
+Manager -- UC_Report
 Manager -- UC_Chat
 
-UC_Invoice -- Tenant
-UC_Payment -- Tenant
+' ── Khách thuê (Tenant)
+UC_Auth     -- Tenant
+UC_Invoice  -- Tenant
+UC_Payment  -- Tenant
 UC_Contract -- Tenant
-UC_Notify  -- Tenant
-UC_Chat    -- Tenant
+UC_Notify   -- Tenant
+UC_Search   -- Tenant
+UC_Chat     -- Tenant
 
+' ── Khách vãng lai (Visitor): tìm phòng, đặt cọc và đăng ký tài khoản
 UC_Search -- Visitor
 UC_Auth   -- Visitor
-UC_Chat   -- Visitor
 
 @enduml

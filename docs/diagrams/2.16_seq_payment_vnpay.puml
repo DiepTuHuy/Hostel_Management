@@ -1,5 +1,5 @@
 @startuml Seq_Payment_Online
-title Hình 2.16 — Tuần tự: UC26 Thanh toán hoá đơn online (VNPay Sandbox thật / VietQR chuyển khoản)
+title Hình 2.16 — Thanh toán hoá đơn online (VNPay Sandbox / VietQR / Tiền mặt)
 
 skinparam dpi 150
 skinparam shadowing false
@@ -11,36 +11,39 @@ skinparam ParticipantBorderColor #00695C
 skinparam ActorBackgroundColor #FFFFFF
 skinparam ActorBorderColor #3A5BC7
 
-actor    "Khách thuê"  as Tenant
-boundary "InvoicesPage" as UI
-control  "PaymentCtrl\n(invoice/paymentRoutes)" as Pay
-entity   "MongoDB"     as DB
-boundary "VNPay Gateway\n(Sandbox)" as VNP
+actor    "Khách thuê"        as Tenant
+boundary "Trang Hoá đơn"     as UI
+control  "Hệ thống thanh toán" as Pay
+entity   "CSDL"              as DB
+boundary "Cổng VNPay\n(Sandbox)" as VNP
+actor    "Quản lý"           as Mgr
 
-Tenant -> UI : Chọn hoá đơn pending → "Thanh toán"
+Tenant -> UI : Chọn hoá đơn chờ thanh toán → "Thanh toán"
 
-alt Ví VNPay — đã tích hợp thật (Sandbox)
-  UI -> Pay : POST /api/invoices/:id/pay {method:'vnpay'}
-  Pay -> Pay : vnpayService.createPaymentUrl\n(ký HMAC-SHA512: orderId, amount, orderInfo)
-  Pay --> UI : 200 {paymentUrl}
+alt Ví VNPay — tích hợp thật (Sandbox)
+  UI -> Pay : Yêu cầu thanh toán qua VNPay
+  Pay -> Pay : Tạo liên kết thanh toán\ncó chữ ký bảo mật (số tiền, mã hoá đơn)
+  Pay --> UI : Liên kết thanh toán
   UI --> Tenant : Chuyển hướng sang cổng VNPay
   Tenant -> VNP : Quét QR / nhập thẻ + OTP ngân hàng
-  VNP -> Pay : GET /api/payments/vnpay-return\n(+ IPN /api/payments/vnpay-ipn)
-  Pay -> Pay : verifyCallback — kiểm chữ ký HMAC
-  Pay -> DB : Invoice='paid' + Payment.create\n(phuongThuc:'vnpay', trangThai:'success')
-  Pay --> Tenant : Redirect PaymentReturnPage\n(biên lai điện tử, đối soát kết quả)
-else Chuyển khoản — VietQR động
-  UI -> Tenant : Hiển thị VietQR động (số tiền + nội dung CK)
-  Tenant -> UI : Quét QR app ngân hàng → Xác nhận đã CK
-  UI -> Pay : POST /api/invoices/:id/pay {method:'bank_transfer'}
-  Pay -> DB : Invoice='paid' + Payment.create\n(phuongThuc:'bank_transfer')
-  Pay --> UI : 200 {success:true}
-  UI --> Tenant : Toast "Thanh toán thành công"
+  VNP -> Pay : Trả kết quả giao dịch\n(kèm thông báo ngầm IPN đối soát)
+  Pay -> Pay : Kiểm tra chữ ký bảo mật hợp lệ
+  Pay -> DB : Hoá đơn → "Đã thanh toán"\n+ ghi nhận giao dịch VNPay thành công
+  Pay --> Tenant : Chuyển về trang biên lai điện tử
+else Chuyển khoản — VietQR động (đối soát 2 bước)
+  UI -> Tenant : Hiển thị mã VietQR động\n(đúng số tiền + nội dung chuyển khoản)
+  Tenant -> UI : Quét mã, chuyển khoản qua app ngân hàng\n→ bấm "Đã chuyển khoản"
+  UI -> Pay : Báo đã chuyển khoản
+  Pay -> DB : Hoá đơn → **"Chờ xác nhận"**\n(ghi nhận kênh chuyển khoản,\nCHƯA tạo giao dịch)
+  Pay --> UI : "Chờ Quản lý đối soát sao kê"
+  Mgr -> Pay : Đối soát sao kê → "Xác nhận"
+  Pay -> DB : Hoá đơn → "Đã thanh toán"\n+ ghi nhận giao dịch chuyển khoản
 else Tiền mặt — chờ Quản lý xác nhận
-  UI -> Pay : POST /api/invoices/:id/pay {method:'cash'}
-  Pay -> DB : Invoice.update(trangThai:'pending_cash')
+  UI -> Pay : Báo chọn thanh toán tiền mặt
+  Pay -> DB : Hoá đơn → **"Chờ xác nhận"**
   Pay --> UI : "Đang chờ Quản lý xác nhận"
-  note over Pay, DB : Quản lý xác nhận tại /manager/cash-receipts\nPOST /api/invoices/:id/pay-cash → 'paid'\n(hoặc reject-cash → trả về 'pending')
+  Mgr -> Pay : Xác nhận đã thu tiền
+  Pay -> DB : Hoá đơn → "Đã thanh toán"\n+ ghi nhận giao dịch tiền mặt
 end
 
 @enduml

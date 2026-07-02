@@ -1,0 +1,160 @@
+% ============================================================
+% BÁO CÁO ĐỒ ÁN: HỆ THỐNG QUẢN LÝ CHUỖI NHÀ TRỌ
+% Biên dịch bằng: xelatex main.tex  (chạy 2 lần để có mục lục)
+% ============================================================
+\documentclass[a4paper,oneside]{report}
+\usepackage[fontsize=13pt]{fontsize}   % cỡ chữ 13pt đúng như bản Word
+
+% ---------- Font & tiếng Việt ----------
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{vietnamese}
+\setmainfont{TeX Gyre Termes}        % font kiểu Times New Roman
+\usepackage{setspace}
+\onehalfspacing
+
+% ---------- Trang & lề (chuẩn đồ án: trái 3cm) ----------
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm]{geometry}
+
+% ---------- Gói tiện ích ----------
+\usepackage{graphicx}
+\usepackage{longtable,booktabs,array,tabularx,multirow}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+\usepackage{float}
+\usepackage[dvipsnames,table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage[hidelinks,unicode]{hyperref}
+\usepackage{xurl}                    % cho phép ngắt dòng URL
+\emergencystretch=1.5em              % nới lỏng để tránh tràn lề chữ dài
+\usepackage{caption}
+\usepackage{calc}
+\usepackage{ragged2e}
+
+% pandoc helpers
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\pandocbounded}[1]{#1}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+% ---------- Định dạng chương / mục ----------
+\titleformat{\chapter}[block]
+  {\centering\bfseries\fontsize{16}{20}\selectfont}
+  {CHƯƠNG \thechapter:}{0.5em}{\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{-10pt}{18pt}
+\titleformat{\section}{\bfseries\fontsize{14}{18}\selectfont}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\bfseries\fontsize{13}{17}\selectfont}{\thesubsection}{0.5em}{}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% Chương không đánh số (Tóm tắt, Tài liệu tham khảo…) — tiêu đề truyền vào đã viết hoa sẵn
+\newcommand{\chuongkhongso}[1]{%
+  \chapter*{#1}%
+  \addcontentsline{toc}{chapter}{#1}}
+
+% ---------- Đầu / chân trang ----------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% ---------- Hình: giữ đúng số hiệu như bản Word (kể cả 2.6b) ----------
+% \hinh{<ảnh>}{<độ rộng>}{<số hiệu>}{<chú thích>}
+\newcommand{\hinh}[4]{%
+  \begin{figure}[H]\centering
+    \includegraphics[width=#2\linewidth,keepaspectratio,max height=0.86\textheight]{#1}\\[2pt]
+    {\itshape Hình #3. #4}%
+    \addcontentsline{lof}{figure}{Hình #3~~#4}%
+  \end{figure}}
+% max height helper (graphicx không có sẵn) — dùng adjustbox
+\usepackage[export]{adjustbox}
+
+% ---------- Mục lục ----------
+\renewcommand{\cfttoctitlefont}{\hfill\bfseries\fontsize{16}{20}\selectfont}
+\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftloftitlefont}{\hfill\bfseries\fontsize{16}{20}\selectfont}
+\renewcommand{\cftafterloftitle}{\hfill}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\setlength{\cftbeforechapskip}{4pt}
+
+% ============================================================
+% >>> THÔNG TIN TRANG BÌA — SỬA TẠI ĐÂY <<<
+% ============================================================
+\newcommand{\TenTruong}{TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI TP. HỒ CHÍ MINH}
+\newcommand{\TenVien}{VIỆN CÔNG NGHỆ THÔNG TIN VÀ ĐIỆN, ĐIỆN TỬ}
+\newcommand{\TenHocPhan}{PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG}
+\newcommand{\TenDeTai}{HỆ THỐNG QUẢN LÝ\\CHUỖI NHÀ TRỌ}
+\newcommand{\TenDeTaiEn}{(BOARDING HOUSE CHAIN MANAGEMENT SYSTEM)}
+\newcommand{\GVHD}{Lê Huỳnh Long}                 % <-- sửa tên giảng viên
+\newcommand{\SVTHmot}{Diệp Tú Huy}                % <-- sửa nếu sai dấu
+\newcommand{\MSSVmot}{..............................}% <-- điền MSSV
+\newcommand{\TenLop}{..............................}% <-- điền lớp
+\newcommand{\NgayThang}{Thành phố Hồ Chí Minh, năm 2026}
+
+\begin{document}
+
+% ============================================================
+% TRANG BÌA (thiết kế theo mẫu: khung viền hoa văn + logo)
+% ============================================================
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \node at (current page.center)
+    {\includegraphics[width=\paperwidth,height=\paperheight]{images/cover/border.png}};
+\end{tikzpicture}
+\begin{center}
+\vspace*{6mm}
+{\fontsize{14}{18}\selectfont\bfseries \TenTruong\\[2mm]}
+{\fontsize{14}{18}\selectfont\bfseries \TenVien\\}
+\vspace{8mm}
+\includegraphics[width=62mm]{images/cover/logo.png}\\
+\vspace{14mm}
+{\fontsize{20}{24}\selectfont\bfseries ĐỒ ÁN MÔN HỌC\\[4mm]}
+{\fontsize{16}{20}\selectfont\bfseries \TenHocPhan\\}
+\vspace{12mm}
+{\fontsize{14}{18}\selectfont\bfseries TÊN ĐỀ TÀI\\[4mm]}
+{\fontsize{22}{28}\selectfont\bfseries\color{blue!50!black} \TenDeTai\\[3mm]}
+{\fontsize{12}{15}\selectfont\itshape \TenDeTaiEn\\}
+\vfill
+\begin{flushleft}\hspace{18mm}
+\begin{tabular}{@{}p{52mm}l@{}}
+\textbf{GVHD:}  & \GVHD \\[1.5mm]
+\textbf{SVTH:}  & \SVTHmot \\[1.5mm]
+\textbf{MSSV:}  & \MSSVmot \\[1.5mm]
+\textbf{Lớp:}   & \TenLop \\
+\end{tabular}
+\end{flushleft}
+\vspace{10mm}
+{\fontsize{13}{16}\selectfont\itshape \NgayThang}
+\vspace*{10mm}
+\end{center}
+\end{titlepage}
+
+% ============================================================
+% PHẦN ĐẦU
+% ============================================================
+\pagenumbering{roman}
+\input{chapters/0_tomtat}
+\input{chapters/0_vietTat}
+
+\clearpage
+\tableofcontents
+\clearpage
+\renewcommand{\listfigurename}{DANH MỤC CÁC HÌNH VẼ}
+\listoffigures
+\clearpage
+
+% ============================================================
+% NỘI DUNG CHÍNH
+% ============================================================
+\pagenumbering{arabic}
+\input{chapters/1_khaosat}
+\input{chapters/2_phantich}
+\input{chapters/3_thietke}
+\input{chapters/4_tongket}
+\input{chapters/5_tailieu}
+
+\end{document}

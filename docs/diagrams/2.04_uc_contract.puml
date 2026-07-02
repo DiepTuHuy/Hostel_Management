@@ -1,5 +1,5 @@
 @startuml UC_Contract
-title Hình 2.4 — Use Case nhóm C: Quản lý hợp đồng & khách thuê
+title Hình 2.4 — Quản lý hợp đồng & khách thuê
 
 skinparam dpi 150
 skinparam shadowing false
@@ -17,19 +17,22 @@ skinparam actor {
 }
 left to right direction
 
+actor "Chủ trọ"     as Owner
 actor "Quản lý"     as Manager
 actor "Khách thuê"  as Tenant
 
-rectangle "C. Hợp đồng & Khách thuê" {
-  usecase "UC15 — Thêm hồ sơ khách"            as C1
-  usecase "UC16 — Lập hợp đồng thuê"           as C2
-  usecase "UC17 — Ký số / Xác nhận hợp đồng\n(giả lập — đổi trạng thái)" as C3
-  usecase "UC18 — Gia hạn hợp đồng"            as C4
-  usecase "UC19 — Sửa đổi hợp đồng"            as C5
-  usecase "UC20 — Chấm dứt hợp đồng\n/ Trả phòng" as C6
+rectangle "Hợp đồng & Khách thuê" {
+  usecase "Thêm hồ sơ khách"            as C1
+  usecase "Lập hợp đồng thuê"           as C2
+  usecase "Ký số / Xác nhận hợp đồng\n(giả lập — đổi trạng thái)" as C3
+  usecase "Gia hạn hợp đồng"            as C4
+  usecase "Sửa đổi hợp đồng"            as C5
+  usecase "Chấm dứt hợp đồng\n/ Trả phòng" as C6
   usecase "Xem hợp đồng\nđang hiệu lực"        as C7
 }
 
+' Kế thừa: Chủ trọ dùng chung toàn bộ chức năng hợp đồng với Quản lý
+Owner --|> Manager
 Manager -- C1
 Manager -- C2
 Manager -- C4
@@ -37,7 +40,5 @@ Manager -- C5
 Manager -- C6
 Tenant  -- C3
 Tenant  -- C7
-
-C2 ..> C3 : <<include>>
 
 @enduml

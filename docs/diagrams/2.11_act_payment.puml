@@ -1,5 +1,5 @@
 @startuml Act_Payment
-title Hình 2.11 — Hoạt động: Thanh toán hoá đơn (VNPay Sandbox / Chuyển khoản VietQR / Tiền mặt)
+title Hình 2.11 — Thanh toán hoá đơn (VNPay / Chuyển khoản VietQR / Tiền mặt)
 
 skinparam dpi 150
 skinparam shadowing false
@@ -17,47 +17,42 @@ skinparam activity {
 
 |#E8F6F5|Khách thuê|
 start
-:Đăng nhập /tenant/invoices;
+:Đăng nhập, vào trang Hoá đơn;
 :Chọn hoá đơn cần thanh toán;
-:Mở modal "Chọn phương thức";
+:Mở cửa sổ "Chọn phương thức";
 
 switch (Phương thức?)
-case (Ví VNPay — Sandbox thật)
-  |#EAF1FB|Frontend|
-  :POST /api/invoices/:id/pay\n{method:'vnpay'};
-  |#E6F2F1|Backend Express|
-  :vnpayService.createPaymentUrl\n(ký HMAC-SHA512) → paymentUrl;
+case (Ví VNPay)
+  |#E6F2F1|Hệ thống|
+  :Tạo liên kết thanh toán VNPay\n(có chữ ký bảo mật);
   |#E8F6F5|Khách thuê|
-  :Chuyển hướng sang cổng VNPay,\nquét QR / nhập thẻ + OTP ngân hàng;
-  |#E6F2F1|Backend Express|
-  :GET /api/payments/vnpay-return\n(verify chữ ký HMAC);
-  :Invoice = 'paid'\n+ Payment {phuongThuc:'vnpay'};
-  note right
-    Đã tích hợp thật (VNPay Sandbox):
-    sinh URL ký HMAC-SHA512, callback
-    vnpay-return + vnpay-ipn đối soát,
-    trang kết quả PaymentReturnPage.
-  end note
+  :Chuyển sang cổng VNPay,\nquét QR / nhập thẻ + OTP ngân hàng;
+  |#E6F2F1|Hệ thống|
+  :Nhận kết quả từ VNPay,\nkiểm tra chữ ký bảo mật;
+  :Hoá đơn → "Đã thanh toán"\n+ ghi nhận giao dịch VNPay;
 case (Chuyển khoản — VietQR)
-  |#EAF1FB|Frontend|
-  :Hiển thị VietQR động\n(số tiền + nội dung CK);
+  |#EAF1FB|Giao diện|
+  :Hiển thị mã VietQR động\n(đúng số tiền + nội dung chuyển khoản);
   |#E8F6F5|Khách thuê|
-  :Quét VietQR, chuyển khoản\nqua app ngân hàng;
-  |#E6F2F1|Backend Express|
-  :POST /api/invoices/:id/pay\n{method:'bank_transfer'}\n→ 'paid' + Payment;
-case (Tiền mặt)
-  |#E6F2F1|Backend Express|
-  :POST /api/invoices/:id/pay\n{method:'cash'}\n→ Invoice = 'pending_cash';
+  :Quét mã, chuyển khoản qua app ngân hàng,\nbấm "Đã chuyển khoản";
+  |#E6F2F1|Hệ thống|
+  :Hoá đơn → **"Chờ xác nhận"**\n(chưa ghi nhận thanh toán ngay);
   |#FFF9EC|Quản lý|
-  :Vào /manager/cash-receipts;
-  :Chọn hoá đơn → "Xác nhận thu"\n(hoặc "Từ chối");
-  |#E6F2F1|Backend Express|
-  :POST /api/invoices/:id/pay-cash;
-  :Invoice = 'paid'\n+ Payment {phuongThuc:'cash'};
+  :Vào trang Xác nhận thu tiền,\nđối soát sao kê → "Xác nhận"\n(hoặc "Từ chối" → trả về chờ thanh toán);
+  |#E6F2F1|Hệ thống|
+  :Hoá đơn → "Đã thanh toán"\n+ ghi nhận giao dịch chuyển khoản;
+case (Tiền mặt)
+  |#E6F2F1|Hệ thống|
+  :Hoá đơn → **"Chờ xác nhận"**;
+  |#FFF9EC|Quản lý|
+  :Vào trang Xác nhận thu tiền;
+  :Chọn hoá đơn → "Xác nhận thu"\n(hoặc "Từ chối" → trả về chờ thanh toán);
+  |#E6F2F1|Hệ thống|
+  :Hoá đơn → "Đã thanh toán"\n+ ghi nhận giao dịch tiền mặt;
 endswitch
 
-|#EAF1FB|Frontend|
-:Hiển thị Toast + biên lai điện tử;
+|#EAF1FB|Giao diện|
+:Hiển thị thông báo + biên lai điện tử;
 stop
 
 @enduml

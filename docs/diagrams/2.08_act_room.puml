@@ -1,5 +1,5 @@
 @startuml Act_Room
-title Hình 2.8 — Hoạt động: Quản lý phòng (Thêm / Sửa / Trạng thái / Tài sản / Xoá)
+title Hình 2.8 — Quản lý phòng (Thêm / Sửa / Trạng thái / Tài sản / Xoá)
 
 skinparam dpi 150
 skinparam shadowing false
@@ -15,48 +15,48 @@ skinparam activity {
   EndColor #AD1457
 }
 
-|#FFF9EC|Quản lý|
+|#FFF9EC|Quản lý / Chủ trọ|
 start
-:Đăng nhập /manager;
-:Chọn cơ sở từ dropdown\n(Branch Switcher);
+:Đăng nhập trang quản lý;
+:Chọn cơ sở nhà trọ\ntừ danh sách được phân công;
 
-|#EAF1FB|Frontend React|
-:Lưu propertyId vào localStorage;
-:GET /api/rooms?propertyId=...;
-:Hiển thị sơ đồ phòng theo tầng\n(thẻ KPI + lưới phòng);
+|#EAF1FB|Giao diện|
+:Ghi nhớ cơ sở đang chọn;
+:Tải danh sách phòng của cơ sở;
+:Hiển thị sơ đồ phòng theo tầng\n(thẻ thống kê + lưới phòng);
 
-|Quản lý|
+|Quản lý / Chủ trọ|
 :Chọn thao tác;
 switch (Loại thao tác?)
 case (Thêm phòng)
   :Nhập số phòng, tầng,\nloại phòng, giá thuê;
-  :POST /api/rooms;
+  :Gửi yêu cầu thêm phòng;
 case (Sửa phòng)
   :Chỉnh thông tin phòng;
-  :PUT /api/rooms/:id;
+  :Gửi yêu cầu cập nhật;
 case (Đổi trạng thái)
-  :Chọn trạng thái mới\n(empty/rented/deposit/maintenance);
-  :PATCH /api/rooms/:id/status;
+  :Chọn trạng thái mới\n(Trống / Đang thuê / Đã cọc / Bảo trì);
+  :Gửi yêu cầu đổi trạng thái;
 case (Quản lý tài sản)
-  :Thêm/sửa taiSan[] (embedded);
-  :PUT /api/rooms/:id;
+  :Thêm / sửa danh mục tài sản\ngắn liền với phòng;
+  :Gửi yêu cầu cập nhật;
 case (Xoá phòng)
   :Xác nhận xoá;
-  :DELETE /api/rooms/:id;
+  :Gửi yêu cầu xoá phòng;
 endswitch
 
-|#EAF1FB|Backend Express|
+|#EAF1FB|Hệ thống|
 if (Dữ liệu hợp lệ?) then (có)
-  :Cập nhật MongoDB;
-  :Cập nhật Property.tongSoPhong\n/ soPhongDaThue nếu cần;
-  :Trả Room đã mapRoom();
+  :Lưu thay đổi vào cơ sở dữ liệu;
+  :Cập nhật lại tổng số phòng /\nsố phòng đang thuê của cơ sở (nếu cần);
+  :Trả về thông tin phòng đã chuẩn hoá;
 else (không)
-  :Trả lỗi 400 + thông báo;
+  :Trả lỗi kèm thông báo nguyên nhân;
 endif
 
-|Frontend React|
-:Hiển thị Toast;
-:Reload danh sách phòng;
+|Giao diện|
+:Hiển thị thông báo kết quả;
+:Tải lại danh sách phòng;
 stop
 
 @enduml

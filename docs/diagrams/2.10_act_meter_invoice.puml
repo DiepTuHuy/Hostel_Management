@@ -1,5 +1,5 @@
 @startuml Act_Meter_Invoice
-title Hình 2.10 — Hoạt động: Ghi chỉ số & Tạo hoá đơn theo lô
+title Hình 2.10 — Ghi chỉ số & Phát hành hoá đơn theo lô
 
 skinparam dpi 150
 skinparam shadowing false
@@ -17,53 +17,43 @@ skinparam activity {
 
 |#FCEEF5|Quản lý|
 start
-:Đến kỳ chốt số → vào /manager/meters;
-:Chọn cơ sở (Branch Switcher);
+:Đến kỳ chốt số → vào trang Ghi chỉ số;
+:Chọn cơ sở nhà trọ;
 
-|#EAF1FB|Frontend|
-:GET /api/rooms?propertyId&status=rented;
-:GET /api/readings?period=YYYY-MM (kỳ trước);
-:Hiển thị bảng nhập chỉ số\n(điện/nước cũ · mới · tiêu thụ · tạm tính);
+|#EAF1FB|Giao diện|
+:Tải danh sách phòng đang thuê\nvà chỉ số điện nước kỳ trước;
+:Hiển thị bảng nhập chỉ số\n(điện / nước: cũ · mới · tiêu thụ · tạm tính);
 
 |Quản lý|
 :Nhập chỉ số mới từng phòng;
 
-|#EAF1FB|Frontend|
-:Tự tính tiêu thụ = mới − cũ;
-if (Chỉ số mới < cũ?) then (có)
-  :Cảnh báo số liệu bất thường;
-else (không)
-  if (Tiêu thụ > 200% kỳ trước?) then (có)
-    :Cảnh báo "có thể rò rỉ";
-  endif
+|#EAF1FB|Giao diện|
+:Tự tính lượng tiêu thụ = số mới − số cũ\n(kết quả âm được chặn về 0);
+if (Tiêu thụ điện vượt 250 kWh?) then (có)
+  :Đánh dấu cảnh báo\n"tiêu thụ bất thường" cho phòng đó;
 endif
 
 |Quản lý|
 :Nhấn "Lưu chỉ số";
-|#EAF1FB|Backend Express|
-:POST /api/readings (batch insert);
+|#EAF1FB|Hệ thống|
+:Lưu toàn bộ chỉ số của kỳ\n(từng phòng, từng dịch vụ);
 
-|Quản lý|
-:Nhấn "Phát hành hoá đơn lô";
-|#EAF1FB|Backend Express|
-:POST /api/invoices/generate?propertyId&period;
+|#FFF3E0|Chủ trọ|
+:Nhấn "Phát hành hoá đơn lô"\ncho cơ sở + kỳ thanh toán;
+|#EAF1FB|Hệ thống|
 repeat
-  :Lấy 1 phòng có hợp đồng active;
-  :Tiền phòng + Σ(tiêu thụ × đơn giá)\n+ Σ phí cố định  (đơn giá phẳng);
-  :Insert Invoice + chiTiet[] (pending);
+  :Lấy 1 phòng đang thuê\ncó hợp đồng hiệu lực;
+  :Tính tiền = tiền phòng\n+ Σ(tiêu thụ × đơn giá dịch vụ)\n+ Σ phí cố định (đơn giá phẳng);
+  :Xoá hoá đơn cũ trùng kỳ (nếu có),\ntạo hoá đơn mới "Chờ thanh toán"\nkèm bảng chi tiết, hạn nộp 5 ngày;
 repeat while (còn phòng?) is (có)
 ->không;
-:Trả {success, count};
+:Báo số lượng hoá đơn đã phát hành;
 
 |Quản lý|
-:(Tuỳ chọn) Nhấn "Nhắc nợ" trên hoá đơn quá hạn\n→ POST /api/reports/debts/:id/remind\n→ gửi email nhắc nợ (Gmail SMTP);
-note right
-  v2 (định hướng): cron 8h sáng tự động
-  nhắc nợ + kênh Telegram, đơn giá bậc thang EVN.
-end note
+:(Tuỳ chọn) Nhấn "Nhắc nợ" trên hoá đơn quá hạn\n→ hệ thống gửi email nhắc nợ tới khách thuê;
 
-|Frontend|
-:Toast "Đã phát hành N hoá đơn";
+|Giao diện|
+:Thông báo "Đã phát hành N hoá đơn";
 stop
 
 @enduml

@@ -1,5 +1,5 @@
 @startuml Act_Register_OTP
-title Hình 2.7 — Hoạt động: Đăng ký tài khoản & Kích hoạt OTP qua Email
+title Hình 2.7 — Đăng ký tài khoản & Kích hoạt OTP qua Email
 
 skinparam dpi 150
 skinparam shadowing false
@@ -17,36 +17,38 @@ skinparam activity {
 
 |#F4F8FF|Người dùng|
 start
-:Truy cập trang Đăng ký (/register);
-:Nhập họ tên, email, SĐT,\nmật khẩu, nhập lại mật khẩu;
+:Truy cập trang Đăng ký;
+:Nhập họ tên, email, số điện thoại,\nmật khẩu, nhập lại mật khẩu;
 :Nhấn "Đăng ký";
 
-|#EAF1FB|Backend Express|
-:Kiểm tra email / SĐT chưa tồn tại;
-if (Hợp lệ?) then (đúng)
-  :Mã hoá mật khẩu (bcryptjs);
-  :Sinh OTP 6 chữ số\n(hiệu lực 5 phút);
-  :Tạo User trạng thái "pending"\nkèm OTP;
-  :Gửi email OTP\n(Nodemailer · Gmail SMTP);
-else (lỗi)
-  :Trả lỗi xác thực;
+|#EAF1FB|Hệ thống|
+:Kiểm tra email đã được\nđăng ký hay chưa;
+if (Email đã có tài khoản?) then (đã kích hoạt)
+  :Báo lỗi "Email đã tồn tại";
   stop
+elseif (đang chờ kích hoạt?) then (có)
+  :Cập nhật thông tin, sinh mã OTP mới\nvà gửi lại qua email;
+else (chưa có)
+  :Mã hoá mật khẩu trước khi lưu;
+  :Sinh mã OTP 6 chữ số\n(hiệu lực 5 phút);
+  :Tạo tài khoản ở trạng thái\n"Chờ kích hoạt" kèm mã OTP;
+  :Gửi email chứa mã OTP\n(qua Gmail);
 endif
 
 |Người dùng|
 :Nhận email, nhập 6 ô OTP;
 :Nhấn "Xác nhận";
 
-|Backend Express|
+|Hệ thống|
 if (OTP đúng và còn hạn?) then (có)
-  :User.trangThai = "active";
-  :Xoá OTP khỏi DB;
-  :Cấp JWT phiên làm việc;
+  :Chuyển tài khoản sang "Hoạt động";
+  :Xoá mã OTP đã dùng;
+  :Cấp phiên đăng nhập;
   |Người dùng|
-  :Tự động đăng nhập\n→ dashboard theo vai trò;
+  :Tự động đăng nhập\n→ vào trang chính theo vai trò;
   stop
 else (sai / hết hạn)
-  :Cho phép gửi lại OTP\n(POST /api/auth/resend-otp);
+  :Báo lỗi, cho phép yêu cầu\ngửi lại mã OTP mới;
   stop
 endif
 

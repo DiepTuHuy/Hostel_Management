@@ -1,5 +1,5 @@
 @startuml Seq_Register_OTP
-title Hình 2.13 — Tuần tự: UC01 Đăng ký + Kích hoạt OTP qua Email
+title Hình 2.13 — Đăng ký + Kích hoạt OTP qua Email
 
 skinparam dpi 150
 skinparam shadowing false
@@ -12,38 +12,38 @@ skinparam ActorBackgroundColor #FFFFFF
 skinparam ActorBorderColor #2E7D32
 
 actor    "Người dùng"        as User
-boundary "RegisterPage.jsx"  as UI
-control  "AuthController\n(server.js)" as Auth
-entity   "MongoDB · User"    as DB
-control  "EmailService\n(Nodemailer · Gmail)" as Mail
+boundary "Trang Đăng ký"     as UI
+control  "Hệ thống xác thực" as Auth
+entity   "CSDL Người dùng"   as DB
+control  "Dịch vụ Email\n(Gmail)" as Mail
 
 == Bước 1 · Đăng ký ==
 User -> UI : Nhập họ tên, email, SĐT, mật khẩu
-UI -> Auth : POST /api/auth/register
-Auth -> DB : findOne({email})
-DB --> Auth : null (chưa tồn tại)
-Auth -> Auth : bcrypt.hash(matKhau)\n+ OTP 6 số · hết hạn sau 5'
-Auth -> DB : User.create(trangThai:'pending',\notp:{maOtp, hanSuDung})
-DB --> Auth : User._id
-Auth -> Mail : sendOtpEmail(email, hoTen, otp)
+UI -> Auth : Gửi yêu cầu đăng ký
+Auth -> DB : Tìm tài khoản theo email
+DB --> Auth : Chưa tồn tại
+Auth -> Auth : Mã hoá mật khẩu\n+ sinh OTP 6 số (hiệu lực 5 phút)
+Auth -> DB : Lưu tài khoản mới ở trạng thái\n"Chờ kích hoạt" kèm mã OTP
+DB --> Auth : Đã lưu
+Auth -> Mail : Yêu cầu gửi email chứa mã OTP
 Mail --> User : Email "Mã OTP: ••••••"
-Auth --> UI : 201 {status:'pending', email}
+Auth --> UI : Đăng ký thành công — chờ xác thực
 UI --> User : Hiển thị ô nhập OTP
 
 == Bước 2 · Xác thực & Kích hoạt ==
 User -> UI : Nhập 6 chữ số OTP
-UI -> Auth : POST /api/auth/verify-otp {email, otp}
-Auth -> DB : findOne({email})
-DB --> Auth : User (pending)
+UI -> Auth : Gửi mã OTP để xác thực
+Auth -> DB : Lấy tài khoản + mã OTP đang chờ
+DB --> Auth : Tài khoản (chờ kích hoạt)
 alt OTP đúng & còn hạn
-  Auth -> DB : update {trangThai:'active', otp:null}
-  Auth -> Auth : Sinh JWT token
-  Auth --> UI : 200 {token, user}
-  UI -> UI : Lưu localStorage (token, user)
-  UI --> User : Vào dashboard theo vai trò
+  Auth -> DB : Chuyển trạng thái "Hoạt động",\nxoá mã OTP đã dùng
+  Auth -> Auth : Tạo phiên đăng nhập
+  Auth --> UI : Thành công (kèm phiên đăng nhập)
+  UI -> UI : Ghi nhớ phiên đăng nhập
+  UI --> User : Vào trang chính theo vai trò
 else OTP sai / hết hạn
-  Auth --> UI : 400 {message:"OTP không hợp lệ"}
-  UI --> User : Báo lỗi + nút "Gửi lại OTP"
+  Auth --> UI : Báo "OTP không hợp lệ"
+  UI --> User : Hiện lỗi + nút "Gửi lại OTP"
 end
 
 @enduml

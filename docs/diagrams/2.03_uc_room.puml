@@ -1,5 +1,5 @@
 @startuml UC_Room
-title Hình 2.3 — Use Case nhóm B: Quản lý nhà trọ, chi nhánh & phòng
+title Hình 2.3 — Quản lý nhà trọ, chi nhánh & phòng
 
 skinparam dpi 150
 skinparam shadowing false
@@ -20,29 +20,27 @@ left to right direction
 actor "Chủ trọ"  as Owner
 actor "Quản lý"  as Manager
 
-rectangle "B. Nhà trọ, chi nhánh & phòng" {
+rectangle "Nhà trọ, chi nhánh & phòng" {
   package "Cấp Nhà trọ" {
-    usecase "UC09 — Thêm / Sửa / Ngừng\nnhà trọ"      as R1
-    usecase "UC10 — Phân công quản lý\ncho cơ sở"     as R2
-    usecase "UC11 — Quản lý loại phòng\n& tiện nghi"  as R3
+    usecase "Thêm / Sửa / Ngừng\nnhà trọ"      as R1
+    usecase "Phân công quản lý\ncho cơ sở"     as R2
+    usecase "Quản lý loại phòng\n& tiện nghi"  as R3
   }
   package "Cấp Phòng" {
-    usecase "UC12 — Thêm / Sửa / Xoá phòng"           as R4
-    usecase "UC13 — Cập nhật trạng thái phòng"        as R5
-    usecase "UC14 — Quản lý tài sản\ntrong phòng"     as R6
+    usecase "Thêm / Sửa / Xoá phòng"           as R4
+    usecase "Cập nhật trạng thái phòng"        as R5
+    usecase "Quản lý tài sản\ntrong phòng"     as R6
   }
 }
 
+' Kế thừa: Chủ trọ có toàn bộ chức năng của Quản lý,
+' thêm quyền riêng ở cấp Nhà trọ (thêm/ngừng cơ sở, phân công)
+Owner --|> Manager
 Owner -- R1
 Owner -- R2
-Owner -- R3
 Manager -- R3
 Manager -- R4
 Manager -- R5
 Manager -- R6
-
-note bottom of R5
-  Trạng thái phòng: empty · rented · deposit · maintenance
-end note
 
 @enduml

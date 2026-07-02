@@ -1,5 +1,5 @@
 @startuml UC_Utilities
-title Hình 2.6b — Use Case nhóm F: Tiện ích bổ trợ (Nhắc nợ, Tìm kiếm, Đặt cọc & AI Chatbot)
+title Hình 2.6b — Tiện ích bổ trợ (Nhắc nợ, Tìm kiếm, Đặt cọc & AI Chatbot)
 
 skinparam dpi 150
 skinparam shadowing false
@@ -23,32 +23,32 @@ actor "Khách thuê"     as Tenant
 actor "Khách vãng lai" as Visitor
 actor "Google Gemini API" as Gemini
 
-rectangle "F. Tiện ích bổ trợ" {
-  usecase "UC36 — Gửi thông báo tự động\n(email Gmail SMTP + in-app)" as F1
+rectangle "Tiện ích bổ trợ" {
+  usecase "UC36 — Gửi thông báo tự động\n(email + thông báo trong app)" as F1
   usecase "UC37 — Tìm kiếm phòng\n(dạng danh sách)"  as F2
   usecase "UC38 — Đặt cọc giữ phòng\ntrực tuyến"     as F3
   usecase "UC39 — Trợ lý ảo AI Chatbot\n(BoardingHouse AI)" as F4
+  usecase "Đăng nhập / Đăng ký\ntài khoản"           as FA
   usecase "Tra cứu trực tuyến\n(Gemini 2.5 Flash)"   as F5
-  usecase "Tra cứu ngoại tuyến\n(offline fallback)"  as F6
+  usecase "Tra cứu ngoại tuyến\n(dự phòng khi mất kết nối AI)" as F6
 }
 
-Owner   -- F1
-Owner   -- F4
+' Kế thừa: Chủ trọ dùng chung các tiện ích với Quản lý
+Owner --|> Manager
 Manager -- F1
 Manager -- F4
 Tenant  -- F4
 F2 -- Tenant
 F2 -- Visitor
 F3 -- Visitor
-F4 -- Visitor
 
-F4 ..> F5 : <<extend>>
-F4 ..> F6 : <<extend>>
+' Đặt cọc và Chatbot đều bắt buộc có tài khoản đã đăng nhập
+F3 ..> FA : <<include>>
+F4 ..> FA : <<include>>
+
+' Hai chế độ tra cứu là phần mở rộng của Chatbot
+F5 ..> F4 : <<extend>>
+F6 ..> F4 : <<extend>>
 F5 -- Gemini
-
-note bottom of F6
-  Tự động kích hoạt khi Gemini API lỗi / rate-limit:
-  đọc trực tiếp MongoDB trả lời theo bộ luật từ khoá.
-end note
 
 @enduml

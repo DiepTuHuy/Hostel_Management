@@ -12,6 +12,7 @@
 !/src/
 !/tests/
 !/docs/
+!/latex_report/
 
 # ==========================================================
 # Rules for files inside allowed directories
@@ -49,5 +50,15 @@ src/frontend/strip-comments.js
 
 # Backup directories
 docs/backup_original_*/
+
+# LaTeX build artifacts (giữ nguồn .tex + ảnh + main.pdf, bỏ file trung gian)
+latex_report/*.aux
+latex_report/*.toc
+latex_report/*.out
+latex_report/*.lof
+latex_report/*.lot
+latex_report/*.synctex.gz
+latex_report/*.fls
+latex_report/*.fdb_latexmk
 
 

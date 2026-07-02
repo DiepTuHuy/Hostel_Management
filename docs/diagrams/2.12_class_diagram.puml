@@ -1,5 +1,5 @@
 @startuml ClassDiagram
-title Sơ đồ lớp (NoSQL — MongoDB Atlas): 11 collection + 4 lớp nhúng
+title Hình 2.12 — Sơ đồ lớp (NoSQL — MongoDB Atlas): 11 collection + 4 lớp nhúng
 
 skinparam dpi 150
 skinparam shadowing false
@@ -26,7 +26,7 @@ package "1 · Người dùng & Vai trò" {
     +sdt : String
     +vaiTro : {admin, manager, tenant}
     +trangThai : {active, inactive, locked, pending}
-    +maNhaTroIds : ObjectId[] <<N–N Property>>
+    +maNhaTroIds : ObjectId[]
     --
     +register()
     +login()
@@ -55,15 +55,16 @@ package "2 · Nhà trọ & Phòng" {
     +maNhaTro : String <<unique>>
     +tenNhaTro : String
     +diaChi, quanHuyen, thanhPho : String
+    +hinhAnh : String
     +qrCodeUrl : String
     +tongSoPhong, soPhongDaThue : Number
-    +maQuanLyIds : ObjectId[] <<N–N User>>
+    +maQuanLyIds : ObjectId[]
     +maChuTroId : ObjectId
     +trangThai : {active, inactive}
     --
     +createProperty()
     +updateProperty()
-    +deleteProperty()
+    +deactivateProperty()
     +assignManager()
   }
   class RoomType {
@@ -80,27 +81,30 @@ package "2 · Nhà trọ & Phòng" {
   class Room {
     +_id : ObjectId
     +maNhaTroId, maLoaiPhongId : ObjectId
-    +soPhong : String
+    +soPhong, maPhong : String
     +tang : Number
-    +giaThueHienTai : Number
+    +giaThueHienTai, giaThue, dienTich : Number
     +trangThai : {empty, rented, deposit, maintenance}
-    +currentTenantId : ObjectId
+    +hinhAnh : String[]
+    +moTa : String
+    +depositAt : Date
     --
     +createRoom()
     +updateRoom()
     +deleteRoom()
     +updateStatus()
     +addDeposit()
+    +searchRooms()
   }
   class TaiSan <<Embedded>> {
     +tenTaiSan : String
     +giaTri : Number
     +tinhTrang : String
   }
-  Property *-- "*" Room
-  Property o-- "*" RoomType
-  RoomType o-- "*" Room
-  Room *-- "*" TaiSan
+  Property "1" o-- "0..*" RoomType
+  Property "1" o-- "0..*" Room
+  RoomType "1" o-- "0..*" Room
+  Room *-- "0..*" TaiSan
 }
 
 package "3 · Hợp đồng" {
@@ -120,7 +124,7 @@ package "3 · Hợp đồng" {
     +esign()
     +exportPDF()
   }
-  Contract o-- "1" Room
+  Room "1" o-- "0..*" Contract
 }
 
 package "4 · Dịch vụ & Hoá đơn" {
@@ -150,7 +154,8 @@ package "4 · Dịch vụ & Hoá đơn" {
     +kyThanhToan : String
     +tongTien : Number
     +hanThanhToan : Date
-    +trangThai : {pending, paid, overdue, cancelled}
+    +trangThai : {pending, pending_cash, paid, overdue, cancelled}
+    +paymentMethod : {vnpay, cash, bank_transfer}
     --
     +generateInvoices()
     +pay()
@@ -159,15 +164,19 @@ package "4 · Dịch vụ & Hoá đơn" {
     +exportPDF()
   }
   class ChiTietHoaDon <<Embedded>> {
+    +maDichVuId : ObjectId
     +tenDichVu : String
     +soLuong, donGia, thanhTien : Number
   }
   class Payment {
     +_id : ObjectId
-    +maHoaDonId : ObjectId
+    +maHoaDonId : ObjectId <<0..1>>
+    +maPhongId : ObjectId <<0..1>>
     +phuongThuc : {vnpay, momo, cash, bank_transfer}
     +soTien : Number
+    +ngayGiaoDich : Date
     +trangThai : {pending, success, failed}
+    +ghiChu : String
     --
     +createPaymentUrl()
     +verifyCallback()
@@ -185,13 +194,16 @@ package "4 · Dịch vụ & Hoá đơn" {
     +deleteExpense()
     +getExpenses()
   }
-  Property o-- "*" Service
-  Property o-- "*" Expense
-  Room o-- "*" Reading
-  Reading o-- "1" Service
-  Contract o-- "*" Invoice
-  Invoice *-- "*" ChiTietHoaDon
-  Invoice o-- "*" Payment
+  Property "1" o-- "0..*" Service
+  Property "1" o-- "0..*" Expense
+  Room "1" o-- "0..*" Reading
+  Service "1" o-- "0..*" Reading
+  Contract "1" o-- "0..*" Invoice
+  Room "1" -- "0..*" Invoice
+  Invoice *-- "1..*" ChiTietHoaDon
+  ChiTietHoaDon "0..*" -- "0..1" Service : dịch vụ tham chiếu
+  Invoice "0..1" o-- "0..*" Payment
+  Room "0..1" -- "0..*" Payment : đặt cọc giữ phòng
 }
 
 package "5 · Thông báo" {
@@ -205,12 +217,12 @@ package "5 · Thông báo" {
     +sendNotification()
     +markAsRead()
   }
-  User o-- "*" Notification
+  User "1" o-- "0..*" Notification
 }
 
-note bottom of Notification
-  v1 dùng kênh **email** (Gmail SMTP) và **in-app** (push = thông báo trong app);
-  giá trị enum 'telegram' để dành cho v2.
-end note
+' ══ Quan hệ liên gói với Người dùng ══
+Contract "0..*" -- "1..*" User : khách thuê đứng tên >
+User "0..1" -- "0..*" Property : chủ sở hữu >
+User "0..*" -- "0..*" Property : được phân công quản lý >
 
 @enduml

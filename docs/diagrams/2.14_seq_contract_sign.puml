@@ -1,5 +1,5 @@
 @startuml Seq_Contract_Sign
-title Hình 2.14 — Tuần tự: UC16 + UC17 Tạo & Ký số hợp đồng (giả lập)
+title Hình 2.14 — Tạo & Ký xác nhận hợp đồng (giả lập)
 
 skinparam dpi 150
 skinparam shadowing false
@@ -11,44 +11,38 @@ skinparam ParticipantBorderColor #2E7D32
 skinparam ActorBackgroundColor #FFFFFF
 skinparam ActorBorderColor #3A5BC7
 
-actor    "Quản lý"        as Mgr
-boundary "ContractsPage"  as UI
-control  "ContractCtrl\n(server.js)" as Ctrl
-entity   "MongoDB"        as DB
-control  "EmailService"   as Mail
-actor    "Khách thuê"     as Tenant
-boundary "Tenant Portal"  as TUI
+actor    "Quản lý / Chủ trọ" as Mgr
+boundary "Trang Hợp đồng"    as UI
+control  "Hệ thống hợp đồng" as Ctrl
+entity   "CSDL"              as DB
+control  "Dịch vụ Email"     as Mail
+actor    "Khách thuê"        as Tenant
+boundary "Cổng Khách thuê"   as TUI
 
 == Tạo hợp đồng (UC16) ==
 Mgr -> UI : Chọn phòng trống + khách + điều khoản
-UI -> Ctrl : POST /api/contracts
-alt Khách chưa có User
-  Ctrl -> DB : User.create(mật khẩu mặc định "123456")
+UI -> Ctrl : Gửi yêu cầu tạo hợp đồng
+alt Khách chưa có tài khoản
+  Ctrl -> DB : Tự tạo tài khoản khách thuê\n(mật khẩu mặc định)
 end
-Ctrl -> DB : Contract.create(trangThai:'active',\nduongDanPdf:URL)
-Ctrl -> DB : Room.update(trangThai:'rented', currentTenantId)
-Ctrl -> DB : Property.$inc soPhongDaThue
-Ctrl -> Mail : sendContractNotificationEmail()
-Mail --> Tenant : Email "Hợp đồng HD-xxxxxx" + link
-Ctrl --> UI : 201 mapContract()
-UI --> Mgr : Toast "Đã tạo hợp đồng"
+Ctrl -> DB : Lưu hợp đồng mới ở trạng thái **Nháp**,\nsinh mã hợp đồng + đường dẫn bản PDF
+Ctrl -> Mail : Gửi email thông báo hợp đồng
+Mail --> Tenant : Email "Hợp đồng HD-xxxxxx" + liên kết
+Ctrl --> UI : Tạo thành công (hợp đồng Nháp)
+UI --> Mgr : Thông báo "Đã tạo hợp đồng"
 
-== Ký số (UC17) ==
-Tenant -> TUI : Đăng nhập + xem hợp đồng
-TUI -> Ctrl : GET /api/contracts/:id
-Ctrl -> DB : findById + populate
-DB --> Ctrl : Contract (duongDanPdf)
+== Ký xác nhận (UC17) ==
+Tenant -> TUI : Đăng nhập, mở hợp đồng
+TUI -> Ctrl : Lấy chi tiết hợp đồng
+Ctrl -> DB : Đọc hợp đồng + thông tin liên quan
+DB --> Ctrl : Hợp đồng (kèm bản PDF)
 Ctrl --> TUI : Hiển thị PDF + điều khoản
-Tenant -> TUI : Nhấn "Ký số / Đồng ý"
-TUI -> Ctrl : PATCH /api/contracts/:id/sign
-note right of Ctrl
-  v1 (giả lập): chỉ đổi trạng thái,
-  KHÔNG yêu cầu OTP.
-  v2: nhúng chữ ký vẽ tay / CA vào PDF.
-end note
-Ctrl -> DB : Contract.update(trangThai:'active')
-Ctrl -> DB : Room.update(trangThai:'rented')
-Ctrl --> TUI : 200 mapContract
-TUI --> Tenant : Toast "Đã ký thành công"
+Tenant -> TUI : Nhấn "Ký xác nhận / Đồng ý"
+TUI -> Ctrl : Gửi yêu cầu ký hợp đồng
+Ctrl -> DB : Hợp đồng → **Hiệu lực**
+Ctrl -> DB : Phòng → "Đang thuê"
+Ctrl -> DB : Cộng 1 vào số phòng đang thuê của cơ sở
+Ctrl --> TUI : Ký thành công
+TUI --> Tenant : Thông báo "Đã ký thành công"
 
 @enduml

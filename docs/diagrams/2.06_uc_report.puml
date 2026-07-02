@@ -1,5 +1,5 @@
 @startuml UC_Report
-title Hình 2.6 — Use Case nhóm E: Báo cáo & thống kê vận hành
+title Hình 2.6 — Báo cáo & thống kê vận hành
 
 skinparam dpi 150
 skinparam shadowing false
@@ -18,26 +18,32 @@ skinparam actor {
 left to right direction
 
 actor "Chủ trọ" as Owner
+actor "Quản lý" as Manager
 
-rectangle "E. Báo cáo & thống kê vận hành" {
-  usecase "UC30 — Dashboard tổng quan\n(doanh thu · lấp đầy · công nợ)" as E1
-  usecase "UC31 — Báo cáo doanh thu\n(tháng / quý / năm)"  as E2
-  usecase "UC32 — Báo cáo tỉ lệ lấp đầy" as E3
-  usecase "UC33 — Báo cáo công nợ"        as E4
-  usecase "UC34 — Báo cáo chi phí vận hành" as E5
-  usecase "UC35 — Xuất Excel / PDF\n(CSV UTF-8 + PDF pdfkit)" as E6
+rectangle "Báo cáo & thống kê vận hành" {
+  usecase "Dashboard tổng quan\n(doanh thu · lấp đầy · công nợ)" as E1
+  usecase "Báo cáo doanh thu\n(tháng / quý / năm)"  as E2
+  usecase "Báo cáo tỉ lệ lấp đầy" as E3
+  usecase "Báo cáo công nợ"        as E4
+  usecase "Báo cáo chi phí vận hành" as E5
+  usecase "Xuất Excel / PDF\n(CSV UTF-8 + PDF)" as E6
 }
 
-Owner -- E1
+' Kế thừa: Chủ trọ xem được mọi báo cáo của Quản lý,
+' thêm 4 quyền riêng: doanh thu, công nợ, chi phí, xuất file
+Owner --|> Manager
 Owner -- E2
-Owner -- E3
 Owner -- E4
 Owner -- E5
 Owner -- E6
+' Quản lý chỉ xem Dashboard và tỉ lệ lấp đầy của cơ sở mình phụ trách
+Manager -- E1
+Manager -- E3
 
-E2 ..> E6 : <<extend>>
-E3 ..> E6 : <<extend>>
-E4 ..> E6 : <<extend>>
-E5 ..> E6 : <<extend>>
+' Xuất file là bước mở rộng (tuỳ chọn) của từng báo cáo
+E6 ..> E2 : <<extend>>
+E6 ..> E3 : <<extend>>
+E6 ..> E4 : <<extend>>
+E6 ..> E5 : <<extend>>
 
 @enduml
