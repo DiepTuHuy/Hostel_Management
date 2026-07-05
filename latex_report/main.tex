@@ -88,11 +88,13 @@
 \newcommand{\TenVien}{VIỆN CÔNG NGHỆ THÔNG TIN VÀ ĐIỆN, ĐIỆN TỬ}
 \newcommand{\TenHocPhan}{PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG}
 \newcommand{\TenDeTai}{HỆ THỐNG QUẢN LÝ\\CHUỖI NHÀ TRỌ}
-\newcommand{\TenDeTaiEn}{(BOARDING HOUSE CHAIN MANAGEMENT SYSTEM)}
-\newcommand{\GVHD}{Lê Huỳnh Long}                 % <-- sửa tên giảng viên
-\newcommand{\SVTHmot}{Diệp Từ Huy}                % <-- sửa nếu sai dấu
-\newcommand{\MSSVmot}{..............................}% <-- điền MSSV
-\newcommand{\TenLop}{..............................}% <-- điền lớp
+\newcommand{\GVHD}{Lê Huỳnh Long}
+\newcommand{\SVTHmot}{Nguyễn Thị Ngọc Giao}
+\newcommand{\SVTHhai}{Diệp Từ Huy}
+\newcommand{\SVTHba}{Nguyễn Thanh Huy}
+\newcommand{\SVTHbon}{Lưu Minh Hoà}
+\newcommand{\SVTHnam}{Nguyễn Thanh Hải}
+\newcommand{\MaLop}{012012100811}% <-- điền lớp
 \newcommand{\NgayThang}{Thành phố Hồ Chí Minh, năm 2026}
 
 \begin{document}
@@ -103,28 +105,30 @@
 \begin{titlepage}
 \begin{tikzpicture}[remember picture,overlay]
   \node at (current page.center)
-    {\includegraphics[width=\paperwidth,height=\paperheight]{images/cover/border.png}};
+    {\includegraphics[width=\paperwidth,height=\paperheight]{images/border.png}};
 \end{tikzpicture}
 \begin{center}
 \vspace*{6mm}
-{\fontsize{14}{18}\selectfont\bfseries \TenTruong\\[2mm]}
+{\fontsize{14}{18}\selectfont \TenTruong\\[2mm]}
 {\fontsize{14}{18}\selectfont\bfseries \TenVien\\}
 \vspace{8mm}
-\includegraphics[width=62mm]{images/cover/logo.png}\\
+\includegraphics[width=62mm]{images/logo.png}\\
 \vspace{14mm}
 {\fontsize{20}{24}\selectfont\bfseries ĐỒ ÁN MÔN HỌC\\[4mm]}
 {\fontsize{16}{20}\selectfont\bfseries \TenHocPhan\\}
 \vspace{12mm}
 {\fontsize{14}{18}\selectfont\bfseries TÊN ĐỀ TÀI\\[4mm]}
 {\fontsize{22}{28}\selectfont\bfseries\color{blue!50!black} \TenDeTai\\[3mm]}
-{\fontsize{12}{15}\selectfont\itshape \TenDeTaiEn\\}
 \vfill
 \begin{flushleft}\hspace{18mm}
 \begin{tabular}{@{}p{52mm}l@{}}
 \textbf{GVHD:}  & \GVHD \\[1.5mm]
-\textbf{SVTH:}  & \SVTHmot \\[1.5mm]
-\textbf{MSSV:}  & \MSSVmot \\[1.5mm]
-\textbf{Lớp:}   & \TenLop \\
+\textbf{SVTH:}  & 1.~\SVTHmot \\[0.8mm]
+                & 2.~\SVTHhai \\[0.8mm]
+                & 3.~\SVTHba \\[0.8mm]
+                & 4.~\SVTHbon \\[0.8mm]
+                & 5.~\SVTHnam \\[2mm]
+\textbf{Mã lớp:}   & \MaLop \\
 \end{tabular}
 \end{flushleft}
 \vspace{10mm}
@@ -185,7 +189,7 @@ Nhóm chúng em xin gửi lời cảm ơn chân thành và sâu sắc nhất đ�
 đã tận tình giảng dạy, hướng dẫn và truyền đạt những kiến thức quý báu
 trong suốt quá trình học tập học phần Phân tích và thiết kế hệ thống.
 
-Trong quá trình thực hiện đề tài "Hệ thống quản lý chuỗi nhà trọ", chúng
+Trong quá trình thực hiện đề tài \textbf{Hệ thống quản lý chuỗi nhà trọ}, chúng
 em đã có cơ hội tìm hiểu, nghiên cứu và vận dụng các kiến thức đã học
 vào một bài toán thực tế: từ khảo sát hiện trạng, phân tích yêu cầu, mô
 hình hoá bằng UML cho đến thiết kế và hiện thực hoá hệ thống. Những góp
@@ -343,161 +347,155 @@ nghiệp".
 
 \subsection{Yêu cầu về chức năng}
 
-Hệ thống cần đáp ứng đầy đủ các nhóm chức năng nghiệp vụ được tổng hợp
-từ quá trình khảo sát:
+\begin{itemize}
+    \item 
+    Xác thực tài khoản: Đăng ký, đăng nhập, đăng xuất, quên mật khẩu, cập nhật hồ sơ.
+    \item 
+    Tìm kiếm và đặt cọc phòng: Tìm kiếm phòng theo khu vực, giá, tiện nghi; đặt cọc giữ phòng online.
+    Trợ lý ảo AI chatbot.
+\item 
+Ghi chỉ số và tính tiền: Ghi nhận chỉ số điện nước hàng tháng, tự động tính tiền tiêu thụ và tổng hợp các khoản phí cố định.
+\item 
+Quản lý phòng và tài sản: CRUD loại phòng, CRUD phòng, quản lý tài sản trong phòng và tình trạng tài sản.
+\item 
+Quản lý nhà trọ và chinh nhánh: Thêm/ sửa/ ngừng hoạt động nhà trọ, gán quản lý cho chi nhánh, thiết lập địa chỉ nhà trọ.Thông báo và nhắc nợ.
+\item 
+Quản lý hợp đồng và khách thuê: Tạo hồ sơ khách thuê, ký hợp đồng, xem/ gia hạn/ sửa đổi/ chấm dứt hợp đồng,
+\item 
+Quản lý hóa đơn: Tạo hoá đơn, gửi hoá đơn qua email, nhắc thanh toán tự động, theo dõi trạng thái và lịch sử thanh toán.
+\item 
+Thanh toán hóa đơn: Thanh toán online, thanh toán tiền mặt,
+\item 
+Quản lý tài khoản: Phân quyền tài khoản, tạo/ đình chỉ tài khoản.
+\item 
+Cấu hình dịch vụ và đơn giá.
+\item 
+Báo cáo và thống kê: Dashboard, báo cáo doanh thu, báo cáo tỉ lệ lấp đầy, báo cáo công nợ, báo cáo chi phí vận hành và xuất file.
 
-\begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
-\toprule
-\textbf{Nhóm chức năng} & \textbf{Mô tả chi tiết}\tabularnewline
-\midrule
-\endhead
-Quản lý xác thực \& tài khoản & Đăng ký, đăng nhập (email + mật khẩu),
-đăng xuất, quên/đặt lại mật khẩu, cập nhật hồ sơ, khoá/mở khoá tài
-khoản, phân quyền theo vai trò (Chủ trọ kiêm Admin, Quản lý, Khách thuê,
-Khách vãng lai).\tabularnewline
-Quản lý chuỗi nhà trọ - chi nhánh & Thêm/sửa/ngừng hoạt động nhà trọ;
-gán quản lý; thiết lập địa chỉ, toạ độ, ảnh đại diện, thông tin liên hệ;
-thống kê đa cơ sở.\tabularnewline
-Quản lý phòng \& tài sản & CRUD loại phòng (giá cơ bản, diện tích, tiện
-nghi), CRUD phòng (mã, tầng, giá, trạng thái: trống/đang thuê/đặt cọc),
-quản lý tài sản trong phòng và tình trạng tài sản.\tabularnewline
-Quản lý hợp đồng \& khách thuê & Tạo hồ sơ khách thuê, ký hợp đồng (có
-ký số trực tuyến), gia hạn, sửa đổi, chấm dứt hợp đồng.\tabularnewline
-Dịch vụ \& đơn giá & Cấu hình các dịch vụ tính theo chỉ số (điện, nước),
-tính theo khoán (internet, vệ sinh, gửi xe, an ninh) và áp dụng đơn giá
-bậc thang.\tabularnewline
-Ghi chỉ số \& tính tiền & Ghi nhận chỉ số điện nước hàng tháng, tự động
-tính tiền tiêu thụ và tổng hợp các khoản phí cố định.\tabularnewline
-Quản lý hoá đơn & Tạo hoá đơn (thủ công/tự động), gửi hoá đơn qua email,
-nhắc thanh toán tự động, theo dõi trạng thái và lịch sử thanh
-toán.\tabularnewline
-Thanh toán & Hỗ trợ thanh toán online qua cổng VNPay Sandbox (tích hợp
-thật) và mã VietQR động; xác nhận đã thu tiền mặt (luồng pending\_cash);
-phát hành biên lai điện tử.\tabularnewline
-Báo cáo \& thống kê & Dashboard tổng quan; báo cáo doanh thu theo
-tháng/quý/năm; tỉ lệ lấp đầy; công nợ khách thuê; chi phí vận hành; xuất
-Excel/PDF.\tabularnewline
-Thông báo \& nhắc nhở & Đẩy thông báo qua email và in-app (trong ứng
-dụng) về: hợp đồng sắp hết hạn, hoá đơn đến hạn, trạng thái thay
-đổi.\tabularnewline
-Tìm kiếm \& đặt cọc phòng & Khách vãng lai tìm kiếm phòng theo khu vực,
-giá, tiện nghi; đặt cọc giữ phòng online.\tabularnewline
-\bottomrule
-\end{longtable}
+\end{itemize}
 
 \subsection{Yêu cầu về phi chức năng}
 
-\begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
-\toprule
-\textbf{Tiêu chí} & \textbf{Yêu cầu}\tabularnewline
-\midrule
-\endhead
-Hiệu năng & Thời gian phản hồi trung bình dưới 1.5 giây cho các thao tác
-truy vấn thông thường; hỗ trợ tối thiểu 500 người dùng đồng thời; xử lý
-lô tạo hoá đơn cho 5.000 phòng trong vòng 5 phút.\tabularnewline
-Bảo mật & Mật khẩu lưu dưới dạng bcrypt; xác thực OTP qua email (khi
-đăng ký \& khôi phục mật khẩu); phân quyền theo vai trò (RBAC); ghi nhật
-ký toàn bộ hành động nhạy cảm; tuân thủ Nghị định 13/2023/NĐ-CP về bảo
-vệ dữ liệu cá nhân.\tabularnewline
-Khả dụng & SLA 99.5\%; cơ chế sao lưu dữ liệu hàng ngày; khôi phục thảm
-hoạ dưới 4 giờ (RTO ≤ 4h, RPO ≤ 1h).\tabularnewline
-Tiện dụng & Giao diện đáp ứng (responsive) cho desktop, tablet và
-mobile; thao tác chính hoàn tất trong ≤ 3 bước nhấp chuột; hỗ trợ song
-ngữ Việt - Anh.\tabularnewline
-Khả năng mở rộng & Kiến trúc đa người dùng (multi-tenant); cho phép tích
-hợp module mới (chấm công nhân viên, IoT công tơ điện, AI dự báo lấp
-đầy) thông qua REST API.\tabularnewline
-Tương thích & Tương thích các trình duyệt hiện đại (Chrome 90+, Edge
-90+, Safari 14+); hỗ trợ Android 8+ và iOS 13+ cho ứng dụng di động đi
-kèm.\tabularnewline
-Kiểm thử \& chất lượng & Bao phủ kiểm thử tự động (unit + integration)
-tối thiểu 70\%; quy trình CI/CD tự động trên mỗi pull
-request.\tabularnewline
-Tuân thủ pháp lý & Lưu hoá đơn điện tử theo Nghị định
-123/2020/NĐ-CP.\tabularnewline
-\bottomrule
-\end{longtable}
+\begin{itemize}
+    \item 
+    Hệ thống phải được bảo mật khỏi sự truy cập trái phép. 
+    \item 
+    Hệ thống phải có khả năng xử lý số lượng người dùng cần thiết mà không có bất kỳ sự suy giảm nào về hiệu suất. 
+    \item 
+    Hệ thống phải có thể tăng hoặc giảm quy mô khi cần thiết. 
+    \item 
+    Hệ thống phải sẵn sàng khi cần thiết. 
+    \item 
+    Hệ thống phải dễ bảo trì và cập nhật. 
+    \item 
+    Hệ thống phải có thể chạy trên các nền tảng khác nhau với những thay đổi tối thiểu. 
+    \item 
+    Hệ thống phải đáng tin cậy và đáp ứng các yêu cầu của người sử dụng. 
+    \item 
+    Hệ thống phải dễ sử dụng và dễ hiểu. 
+    \item 
+    Hệ thống phải tương thích với các hệ thống khác. 
+    \item 
+    Hệ thống phải tuân thủ tất cả các luật và quy định hiện hành. 
+
+\end{itemize}
 
 \section{Các biểu mẫu phỏng vấn}
+\subsection{Kế hoạch phỏng vấn tổng quan}
+\begin{longtable}{|c|p{2.5cm}|p{5.5cm}|c|c|}
+\hline
+\multicolumn{5}{|l|}{\textbf{Hệ thống:} Hệ thống quản lý chuỗi nhà trọ} \\ \hline
+\multicolumn{3}{|l|}{\textbf{Người lập:} Diệp Từ Huy} & \multicolumn{2}{c|}{{\textbf{Ngày lập:} 28/05/2026}} \\ \hline
+\textbf{STT} & \centering\textbf{Chủ đề} & \centering\textbf{Yêu cầu} & \textbf{Ngày bắt đầu} & \textbf{Ngày kết thúc} \\ \hline
+\endfirsthead
 
-Quá trình thu thập yêu cầu sử dụng kết hợp ba phương pháp: (i) phỏng vấn
-sâu nhóm chủ trọ và quản lý chi nhánh; (ii) khảo sát online dành cho
-khách thuê; (iii) quan sát thực địa quy trình nghiệp vụ tại 5 cơ sở thí
-điểm. Dưới đây là tổng hợp các nhóm câu hỏi chính:
-
-\begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.20\linewidth}>{\RaggedRight\arraybackslash}p{0.37\linewidth}>{\RaggedRight\arraybackslash}p{0.37\linewidth}@{}}
-\toprule
-\textbf{Đối tượng} & \textbf{Câu hỏi phỏng vấn} & \textbf{Mục
-đích}\tabularnewline
-\midrule
+\hline
+\textbf{STT} & \centering\textbf{Chủ đề} & \centering\textbf{Yêu cầu} & \textbf{Ngày bắt đầu} & \textbf{Ngày kết thúc} \\ \hline
 \endhead
-\begin{minipage}[t]{\linewidth}\raggedright
-Chủ trọ (Admin)\strut
-\end{minipage} & \begin{minipage}[t]{\linewidth}\raggedright
-1. Hiện tại anh/chị đang quản lý bao nhiêu cơ sở và bao nhiêu phòng?
-Bằng công cụ gì?
 
-2. Thách thức lớn nhất khi tổng hợp doanh thu, công nợ và đối soát hoá
-đơn giữa các cơ sở là gì?
+\hline
+\endfoot
+\hline
+\endlastfoot
 
-3. Anh/chị có giao một phần công việc cho quản lý vận hành không? Việc
-giám sát họ ra sao?
+1 & Quy trình quản lý chuỗi nhà trọ và chi nhánh & Làm rõ cách thức chủ trọ quản lý, cấu hình tham số toàn cục và phân công công việc cho các quản lý vận hành tại từng cơ sở & 28/05/2026 & 28/05/2026 \\ \hline
+2 & Quản lý phòng trọ và tài sản & Xác định cách quản lý loại phòng, cập nhật trạng thái phòng (trống, đang thuê, đặt cọc) và kiểm soát danh mục tài sản bên trong & 28/05/2026 & 28/05/2026 \\ \hline
+3 & Quản lý hợp đồng và khách & Tìm hiểu quy trình tạo hồ sơ khách thuê, lập hợp đồng... & 28/05/2026 & 28/05/2026 \\ \hline
+4 & Quản lý chỉ số dịch vụ và tính tiền & Làm rõ phuogn7 thức chốt chỉ số điện, nước hàng tháng; cách áp dụng đơn giá và sinh hoá đơn tự động & 28/05/2026 & 28/05/2026 \\ \hline
+5 & Quy trình thanh toán và quản lý trả nợ & Tìm hiểu luồng thanh toán online hoặc xác nhận tiện mặt; cách hệ thống theo dõi công nợ quá hạn và nhắc nợ & 28/05/2026 & 28/05/2026 \\ \hline
+6 & Quy trình tìm phòng và đặt cọc & Khảo sát hành vi tìm kiếm phòng của khách vãng lai và quy trình đặt cọc giữ phòng trực tuyến & 29/05/2026 & 29/05/2026 \\ \hline
+7 & Báo cáo và thống kê & Xác định nhu cầu về các đồ Dashboard tổng quan, báo cáo doanh thu, tỷ lệ lấp đầy để hỗ trợ chủ trọ ra quyết định & 29/05/2026 & 29/05/2026 \\ \hline
+8 & Nhu cầu có trợ lý ảo AI & Làm rõ các kịch bản khách thuê và quản lý cần Chatbot AI hỗ trợ giải đáp & 29/05/2026 & 29/05/2026 \\ \hline
+9 & Yêu cầu hiệu năng hệ thống và bảo mật & Xác định yêu cầu vệ hiệu năng (tốc độ xử lý tính tiền lô), phân quyền vai trò và bảo mật thông tin cá nhân & 29/05/2026 & 29/05/2026 \\ \hline
 
-4. Tỉ lệ khách thuê thanh toán bằng tiền mặt và chuyển khoản là bao
-nhiêu? Anh/chị có muốn áp dụng cổng thanh toán online không?
-
-5. Anh/chị mong muốn báo cáo dạng nào (Excel, PDF, Dashboard)? Tần suất
-ra sao?\strut
-\end{minipage} & \begin{minipage}[t]{\linewidth}\raggedright
-Xác định pain-point ở quy mô doanh nghiệp; thu thập yêu cầu phân quyền,
-hoá đơn, công nợ, báo cáo.\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{\linewidth}\raggedright
-Quản lý\strut
-\end{minipage} & \begin{minipage}[t]{\linewidth}\raggedright
-1. Anh/chị mất bao nhiêu thời gian/ngày cho việc ghi chỉ số điện nước \&
-tạo hoá đơn?
-
-2. Quy trình xác nhận thu tiền mặt và đối soát với chủ trọ hiện tại như
-thế nào?
-
-3. Anh/chị có cần ứng dụng di động để chốt số ngay tại phòng và xác nhận
-thanh toán không?\strut
-\end{minipage} & \begin{minipage}[t]{\linewidth}\raggedright
-Thu thập yêu cầu thao tác di động, xác nhận thu tiền mặt và quy trình
-vận hành hằng ngày.\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{\linewidth}\raggedright
-Khách thuê\strut
-\end{minipage} & \begin{minipage}[t]{\linewidth}\raggedright
-1. Bạn muốn nhận thông báo hoá đơn qua kênh nào (email, in-app, push)?
-
-2. Bạn có cần xem lại lịch sử thanh toán 6-12 tháng gần nhất không?
-
-3. Bạn sẵn sàng thanh toán online qua VNPay/MoMo/QR Banking không?
-
-4. Bạn có muốn xem hợp đồng đã ký dạng số (PDF) và lưu trữ trực tuyến
-không?\strut
-\end{minipage} & \begin{minipage}[t]{\linewidth}\raggedright
-Xây dựng trải nghiệm khách thuê: tra cứu hợp đồng - hoá đơn và thanh
-toán.\strut
-\end{minipage}\tabularnewline
-\begin{minipage}[t]{\linewidth}\raggedright
-Khách vãng lai\strut
-\end{minipage} & \begin{minipage}[t]{\linewidth}\raggedright
-1. Bạn thường tìm phòng trọ qua kênh nào (Facebook, Chợ Tốt,
-website\ldots)?
-
-2. Bạn quan tâm thông tin gì nhất khi xem một phòng?
-
-3. Bạn sẵn sàng đặt cọc giữ phòng online không?\strut
-\end{minipage} & \begin{minipage}[t]{\linewidth}\raggedright
-Phát triển chức năng tìm kiếm và đặt cọc phòng.\strut
-\end{minipage}\tabularnewline
-\bottomrule
 \end{longtable}
 
+\subsection{Bảng kế hoạch phỏng vấn cụ thể}
 
+% Bảng 1: Lưu Minh Hòa
+\noindent
+\begin{tabularx}{\textwidth}{|p{0.3\textwidth}|X|}
+\hline
+\multicolumn{2}{|c|}{\textbf{Người được phỏng vấn: Lưu Minh Hòa (Chủ trọ) - Ngày 30/05/2026}} \\ \hline
+\multicolumn{1}{|c|}{\textbf{Câu Hỏi}} & \multicolumn{1}{|c|}{\textbf{Ghi nhận}} \\ \hline
+\textbf{\color{red}Câu hỏi 1.} Hiện tại anh đang quản lý bao nhiêu cơ sở và bao nhiêu phòng? Bằng công cụ gì? & \textbf{\color{red}Trả lời:} Tôi quản lý 10 cơ sở, 45 phòng bằng Zalo. \newline
+\textbf{\color{red}Kết quả quan sát:} Có vẻ không hài lòng với cách làm hiện tại. \\ \hline
+\textbf{\color{red}Câu hỏi 2.} Thách thức lớn nhất khi tổng hợp doanh thu, công nợ và đối soát hoá đơn giữa các cơ sở là gì? & \textbf{\color{red}Trả lời:} Tôi dùng cách ghi thủ công hoặc dùng excel, đôi khi dễ bị bỏ sót với nhầm thông tin vài phòng. \newline
+\textbf{\color{red}Kết quả quan sát:} Gặp khó khăn trong việc kiểm soát các phòng. \\ \hline
+\textbf{\color{red}Câu hỏi 3.} Anh có giao một phần công việc cho quản lý vận hành không? Việc giám sát họ ra sao? & \textbf{\color{red}Trả lời:} Không, nhưng tôi có ý định tuyển trong tương lai. \newline
+\textbf{\color{red}Kết quả quan sát:} Quan tâm đến việc có người giúp quản lý dịch vụ với giá phòng. \\ \hline
+\textbf{\color{red}Câu hỏi 4.} Tỉ lệ khách thuê thanh toán bằng tiền mặt và chuyển khoản là bao nhiêu? Anh có muốn áp dụng cổng thanh toán online không? & \textbf{\color{red}Trả lời:} Chuyển khoản gần như là 99\%, rất muốn có cổng thanh toán. \newline
+\textbf{\color{red}Kết quả quan sát:} Đề cao có một cổng thanh toán tích hợp cho hệ thống trọ của mình. \\ \hline
+\textbf{\color{red}Câu hỏi 5.} Anh mong muốn báo cáo dạng nào (Excel, PDF, Dashboard)? Tần suất ra sao? & \textbf{\color{red}Trả lời:} Tôi muốn xem báo cáo bằng dashboard, tháng 1 lần. \newline
+\textbf{\color{red}Kết quả quan sát:} Đánh giá cao thiết kế hiện đại, dễ theo dõi báo cáo. \\ \hline
+\end{tabularx}
+
+\vspace{0.5cm}
+
+% Bảng 2: Nguyễn Thanh Huy
+\noindent
+\begin{tabularx}{\textwidth}{|p{0.3\textwidth}|X|}
+\hline
+\multicolumn{2}{|c|}{\textbf{Người được phỏng vấn: Nguyễn Thanh Huy (Quản lý) - Ngày 31/05/2026}} \\ \hline
+\multicolumn{1}{|c}{\textbf{Câu Hỏi}} & \multicolumn{1}{|c|}{\textbf{Ghi nhận}} \\ \hline
+\textbf{\color{red}Câu hỏi 1.} Anh mất bao nhiêu thời gian/ngày cho việc ghi chỉ số điện nước và tạo hoá đơn? & \textbf{\color{red}Trả lời:} Tôi thường mất 1 tuần để tổng hợp tất cả hóa đơn cho các nhà trọ tôi quản lý. \newline
+\textbf{\color{red}Kết quả quan sát:} Cảm giác chưa hài lòng với cách đang làm. \\ \hline
+\textbf{\color{red}Câu hỏi 2.} Quy trình xác nhận thu tiền mặt và đối soát với chủ trọ hiện tại như thế nào? & \textbf{\color{red}Trả lời:} Tôi thường được chủ trọ nhắc và sẽ đi thu tiền trực tiếp sau đó báo cáo cho chủ trọ sau. \newline
+\textbf{\color{red}Kết quả quan sát:} Mong muốn có một chức năng báo cáo minh bạch để tránh hiểu lầm với chủ trọ. \\ \hline
+\textbf{\color{red}Câu hỏi 3.} Anh thường ghi điện/nước/ dịch vụ như thế nào? Anh nghĩ ra sao nếu có một ứng dụng để chốt số ngay tại phòng và xác nhận thanh toán không? & \textbf{\color{red}Trả lời:} Tôi sẽ kêu khách chụp số điện nước cho tôi rồi tôi tự chốt sổ, mà cũng không đáng tin lắm. Nếu có một app thì sẽ tốt hơn. \newline
+\textbf{\color{red}Kết quả quan sát:} Yêu cầu một ứng dụng đảm bảo tính minh bạch trong số liệu. \\ \hline
+\end{tabularx}
+
+\vspace{0.5cm}
+
+% Bảng 3: Nguyễn Thanh Hải
+\noindent
+\begin{tabularx}{\textwidth}{|p{0.3\textwidth}|X|}
+\hline
+\multicolumn{2}{|c|}{\textbf{Người được phỏng vấn: Nguyễn Thanh Hải (Khách Thuê) - Ngày 01/06/2026}} \\ \hline
+\multicolumn{1}{|c}{\textbf{Câu Hỏi}} & \multicolumn{1}{c|}{\textbf{Ghi nhận}} \\ \hline
+\textbf{\color{red}Câu hỏi 1.} Bạn thường gặp vấn đề gì về thông tin liên quan đến tình trạng phòng và việc nhận thông báo từ chủ trọ? & \textbf{\color{red}Trả lời:} Thông tin phòng thường sai so với thực tế khi nhận phòng, đồng thời việc thông báo bị chậm trễ làm tôi không sắp xếp được công việc.\newline
+\textbf{\color{red}Kết quả quan sát:} Không hài lòng về tính minh bạch và độ chính xác thông tin của trọ. \\ \hline
+\textbf{\color{red}Câu hỏi 2.} Khi có thông báo liên quan tới hợp đồng, hóa đơn, bảo trì khu trọ,…thì bạn muốn nhận thông báo như thế nào? & \textbf{\color{red}Trả lời:} Tôi muốn được thông báo nhanh chóng qua tin nhắn. \newline
+\textbf{\color{red}Kết quả quan sát:} Yêu cầu nhận thông báo nhanh chóng, chính xác. \\ \hline
+\textbf{\color{red}Câu hỏi 3.} Bạn muốn thanh toán hóa đơn như thế nào, qua cổng online hay trả tiền mặt? & \textbf{\color{red}Trả lời:} Tôi nghĩ chuyển khoản sẽ tiện hơn, đỡ tốn công rút tiền. \newline
+\textbf{\color{red}Kết quả quan sát:} Quan tâm đến việc có một cổng thanh toán online. \\ \hline
+\end{tabularx}
+
+\vspace{0.5cm}
+
+% Bảng 4: Nguyễn Thị Ngọc Giao
+\noindent
+\begin{tabularx}{\textwidth}{|p{0.3\textwidth}|X|}
+\hline
+\multicolumn{2}{|c|}{\small\textbf{Người được phỏng vấn: Nguyễn Thị Ngọc Giao (Khách vãng lai) - Ngày 02/06/2026}} \\ \hline
+\multicolumn{1}{|c|}{\textbf{Câu Hỏi}} & \multicolumn{1}{c|}{\textbf{Ghi nhận}} \\ \hline
+\textbf{\color{red}Câu hỏi 1.} Bạn thường tìm phòng trọ qua kênh nào? & \textbf{\color{red}Trả lời:} Tôi thường tìm trọ trong Facebook qua trung gian, nhưng đôi khi gặp trúng lừa đảo. \textbf{\color{red}Kết quả quan sát:} Mong muốn có một kênh chính thống để tìm trọ. \\ \hline
+\textbf{\color{red}Câu hỏi 2.} Bạn quan tâm thông tin gì nhất khi xem một phòng? & \textbf{\color{red}Trả lời:} Tôi muốn tìm trọ gần trường, giá rẻ một xíu. \newline
+\textbf{\color{red}Kết quả quan sát:} Quan tâm đến chức năng tìm kiếm phòng phù hợp với nhu cầu. \\ \hline
+\textbf{\color{red}Câu hỏi 3.} Bạn gặp khó khăn gì khi muốn đặt cọc một phòng ưng ý? & \textbf{\color{red}Trả lời:} Đôi khi phòng đã được người khác cọc rồi mà trung gian không biết, nên tôi lại mất công tìm trọ khác. \newline
+\textbf{\color{red}Kết quả quan sát:} Yêu cầu có thể đặt cọc phòng ngay lập tức khi tìm thấy phòng ưng ý. \\ \hline
+\end{tabularx}
 % ============================================================
 % (Đã gộp từ chapters/2_phantich.tex)
 % ============================================================
@@ -514,8 +512,7 @@ theo phạm vi quyền hạn và mục đích sử dụng:
 \textbf{Tác nhân} & \textbf{Vai trò \& quyền hạn}\tabularnewline
 \midrule
 \endhead
-Chủ trọ (Admin) & Vai trò cao nhất, vừa là chủ sở hữu một hoặc nhiều nhà
-trọ vừa kiêm chức năng quản trị viên hệ thống và kế toán. Có toàn quyền:
+Chủ trọ (Admin) & Vai trò cao nhất, Có toàn quyền:
 tạo/đình chỉ tài khoản người dùng, cấu hình tham số toàn cục, thiết lập
 nhà trọ và đơn giá dịch vụ, phân công quản lý cho từng cơ sở, lập hoá
 đơn, theo dõi công nợ, xem báo cáo tổng hợp toàn chuỗi và xuất
@@ -528,9 +525,8 @@ Khách thuê (Tenant) & Người đang thuê phòng - có hợp đồng hiệu l
 một nhà trọ trong hệ thống. Mỗi cuối tháng được nhận hoá đơn tổng tiền
 phòng (tiền phòng + điện + nước + dịch vụ kèm) qua email và xem trực
 tiếp trên cổng thông tin. Có thể tra cứu hợp đồng, xem lịch sử hoá đơn
-12 tháng gần nhất, thanh toán online qua cổng VNPay Sandbox hoặc mã
-VietQR động, nhận thông báo nhắc thanh toán.\tabularnewline
-Khách vãng lai (Visitor) & Người tìm phòng trọ, chưa thuê phòng nào
+12 tháng gần nhất, thanh toán online qua cổng VNPay, nhận thông báo nhắc thanh toán.\tabularnewline
+Khách vãng lai (Visitor) & Người tìm phòng trọ,
 trong hệ thống. Chỉ truy cập được phần công khai: tìm kiếm phòng theo
 khu vực/giá/tiện nghi, xem chi tiết phòng còn trống và đặt cọc giữ phòng
 online. Không thấy được hoá đơn vì chưa phải là khách
@@ -559,9 +555,7 @@ công quản lý; UC11 Quản lý loại phòng \& tiện nghi; UC12 CRUD phòng
 UC13 Cập nhật trạng thái phòng; UC14 Quản lý tài sản trong
 phòng.\tabularnewline
 UC: Quản lý hợp đồng \& khách thuê & UC15 Thêm hồ sơ khách; UC16 Lập hợp
-đồng thuê; UC17 Ký số / xác nhận hợp đồng (v1 xác nhận ký giả lập ---
-đổi trạng thái; PDF hợp đồng sinh thật bằng pdfkit qua GET
-/api/contracts/:id/pdf; v2 nhúng chữ ký CA); UC18 Gia hạn hợp đồng; UC19
+đồng thuê; UC17 Ký số / xác nhận hợp đồng ; UC18 Gia hạn hợp đồng; UC19
 Sửa đổi hợp đồng; UC20 Chấm dứt hợp đồng / trả phòng.\tabularnewline
 UC: Dịch vụ, hoá đơn \& thanh toán & UC21 Cấu hình đơn giá dịch vụ; UC22
 Ghi chỉ số điện nước; UC23 Tính tiền dịch vụ; UC24 Tạo hoá đơn; UC25 Gửi
@@ -570,13 +564,9 @@ tiền mặt; UC28 Tra cứu lịch sử hoá đơn; UC29 Quản lý công
 nợ.\tabularnewline
 UC: Báo cáo \& thống kê & UC30 Dashboard tổng quan; UC31 Báo cáo doanh
 thu; UC32 Báo cáo tỉ lệ lấp đầy; UC33 Báo cáo công nợ; UC34 Báo cáo chi
-phí vận hành (đã triển khai: collection Expense + biểu đồ chi phí); UC35
-Xuất Excel/PDF (đã triển khai: PDF thật bằng pdfkit qua GET
-/api/reports/pdf + CSV UTF-8 mở bằng Excel; xuất .xlsx bằng exceljs ở
-v2).\tabularnewline
-UC-F: Tiện ích bổ trợ & UC36 Gửi thông báo tự động qua email (v1 hỗ trợ
-kênh email Gmail SMTP với 4 hàm: OTP đăng ký, OTP quên mật khẩu, thông
-báo hợp đồng, nhắc nợ) + thông báo in-app; kênh Telegram dự kiến ở v2;
+phí vận hành; UC35
+Xuất Excel/PDF.\tabularnewline
+UC: Tiện ích bổ trợ & UC36 Gửi thông báo tự động qua email;
 UC37 Tìm kiếm phòng (khách vãng lai); UC38 Đặt cọc giữ phòng online;
 UC39 (mới) Trợ lý ảo AI Chatbot có chế độ Offline Fallback (Google
 Gemini 2.5 Flash + bộ luật cứng đọc trực tiếp MongoDB khi Gemini API gặp
@@ -584,27 +574,21 @@ rate limit).\tabularnewline
 \bottomrule
 \end{longtable}
 
-\section{Sơ đồ Use Case}
+\clearpage \section{Sơ đồ Use Case}
 
 \subsection{Sơ đồ Use Case tổng quát}
-
-Sơ đồ tổng quát thể hiện mối quan hệ giữa 04 tác nhân và các nhóm ca sử
-dụng cấp cao (6 gói).
-
 \begin{figure}[H]\centering
-\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.01_uc_overall.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.85\textheight,keepaspectratio]{images/2.01_uc_overall.png}\\[3pt]
 {\itshape Hình 2.1. Sơ đồ Use Case tổng quát}
 \addcontentsline{lof}{figure}{Hình 2.1.~~Sơ đồ Use Case tổng quát}
 \end{figure}
 
-
-
 \subsection{Sơ đồ Use Case 1: Quản lý xác thực \& tài khoản}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.02_uc_auth.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.02_uc_auth.png}\\[3pt]
 {\itshape Hình 2.2. Sơ đồ Use Case 1: Quản lý xác thực \& tài khoản}
-\addcontentsline{lof}{figure}{Hình 2.2.~~Sơ đồ Use Case 1: Quản lý xác thực \& tài khoản}
+\addcontentsline{lof}{figure}{Hình 2.2.~~Sơ đồ Use Case : Quản lý xác thực \& tài khoản}
 \end{figure}
 
 
@@ -612,7 +596,7 @@ dụng cấp cao (6 gói).
 \subsection{Sơ đồ Use Case 2: Quản lý nhà trọ, chi nhánh \& phòng}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.03_uc_room.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.03_uc_room.png}\\[3pt]
 {\itshape Hình 2.3. Sơ đồ Use Case 2: Quản lý nhà trọ, chi nhánh \& phòng}
 \addcontentsline{lof}{figure}{Hình 2.3.~~Sơ đồ Use Case 2: Quản lý nhà trọ, chi nhánh \& phòng}
 \end{figure}
@@ -622,7 +606,7 @@ dụng cấp cao (6 gói).
 \subsection{Sơ đồ Use Case 3: Quản lý hợp đồng \& khách thuê}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.04_uc_contract.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.04_uc_contract.png}\\[3pt]
 {\itshape Hình 2.4. Sơ đồ Use Case 3: Quản lý hợp đồng \& khách thuê}
 \addcontentsline{lof}{figure}{Hình 2.4.~~Sơ đồ Use Case 3: Quản lý hợp đồng \& khách thuê}
 \end{figure}
@@ -632,7 +616,7 @@ dụng cấp cao (6 gói).
 \subsection{Sơ đồ Use Case 4: Dịch vụ, ghi chỉ số, hoá đơn \& thanh toán}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.05_uc_billing.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.05_uc_billing.png}\\[3pt]
 {\itshape Hình 2.5. Sơ đồ Use Case 4: Dịch vụ, ghi chỉ số, hoá đơn \& thanh toán}
 \addcontentsline{lof}{figure}{Hình 2.5.~~Sơ đồ Use Case 4: Dịch vụ, ghi chỉ số, hoá đơn \& thanh toán}
 \end{figure}
@@ -642,7 +626,7 @@ dụng cấp cao (6 gói).
 \subsection{Sơ đồ Use Case 5: Báo cáo \& thống kê vận hành}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.06_uc_report.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.06_uc_report.png}\\[3pt]
 {\itshape Hình 2.6. Sơ đồ Use Case 5: Báo cáo \& thống kê vận hành}
 \addcontentsline{lof}{figure}{Hình 2.6.~~Sơ đồ Use Case 5: Báo cáo \& thống kê vận hành}
 \end{figure}
@@ -653,7 +637,7 @@ dụng cấp cao (6 gói).
 kiếm, Đặt cọc \& Chatbot AI)}}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.06b_uc_utilities.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.06b_uc_utilities.png}\\[3pt]
 {\itshape Hình 2.6b. Sơ đồ Use Case 6: Tiện ích bổ trợ}
 \addcontentsline{lof}{figure}{Hình 2.6b.~~Sơ đồ Use Case 6: Tiện ích bổ trợ}
 \end{figure}
@@ -665,7 +649,7 @@ kiếm, Đặt cọc \& Chatbot AI)}}
 Phần này mô tả chi tiết một số ca sử dụng quan trọng đại diện cho các
 nhóm chức năng chính. Cấu trúc tuân thủ chuẩn UC Specification của UML.
 
-\subsection{Mô tả Use Case "UC01 - Đăng ký tài khoản"}
+\subsection{Mô tả Use Case - Đăng ký tài khoản}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -678,8 +662,8 @@ nhóm chức năng chính. Cấu trúc tuân thủ chuẩn UC Specification củ
 hệ thống để bắt đầu tìm kiếm phòng và đặt cọc online.\tabularnewline
 \textbf{Tiền điều kiện} & Khách vãng lai chưa có tài khoản trên hệ
 thống.\tabularnewline
-\textbf{Hậu điều kiện} & Tài khoản mới được tạo ở trạng thái hoạt động
-(active), thông tin cơ bản của khách thuê được khởi tạo.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Tài khoản mới được tạo ở trạng thái hoạt động (active), thông tin cơ bản của khách thuê được khởi tạo.\newline
+\textbf{Thất bại:} Không có tài khoản nào được tạo, hệ thống giữ nguyên trạng thái ban đầu.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Khách vãng lai truy
 cập chức năng 'Đăng ký'.\newline 2. Nhập thông tin: Họ tên, email,
 mật khẩu, xác nhận mật khẩu.\newline 3. Hệ thống sinh mã OTP gồm 6
@@ -695,7 +679,7 @@ gửi OTP qua email \textless{} 10 giây.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC02 - Đăng nhập"}
+\subsection{Mô tả Use Case - Đăng nhập}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -709,8 +693,8 @@ thuê)\tabularnewline
 khẩu để cấp quyền truy cập hệ thống.\tabularnewline
 \textbf{Tiền điều kiện} & Tài khoản của người dùng đã tồn tại và đang
 hoạt động.\tabularnewline
-\textbf{Hậu điều kiện} & Hệ thống cấp mã token JWT, lưu phiên làm việc
-và chuyển hướng đến trang chủ tương ứng.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hệ thống cấp mã token JWT, lưu phiên làm việc và chuyển hướng đến trang chủ tương ứng.\newline 
+\textbf{Thất bại:} Từ chối truy cập, không cấp token, hệ thống giữ nguyên trạng thái chưa đăng nhập.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng nhập
 email và mật khẩu tại màn hình Đăng nhập.\newline 2. Hệ thống kiểm
 tra thông tin và so khớp mật khẩu đã băm.\newline 3. Hệ thống lưu
@@ -723,7 +707,7 @@ khóa: thông báo tài khoản bị tạm khóa và liên hệ Admin.\tabularne
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC03 - Đăng xuất"}
+\subsection{Mô tả Use Case - Đăng xuất}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -736,8 +720,8 @@ khóa: thông báo tài khoản bị tạm khóa và liên hệ Admin.\tabularne
 thu hồi quyền truy cập.\tabularnewline
 \textbf{Tiền điều kiện} & Người dùng đang đăng nhập vào hệ
 thống.\tabularnewline
-\textbf{Hậu điều kiện} & JWT token bị xóa khỏi client, người dùng được
-chuyển hướng về trang đăng nhập.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} JWT token bị xóa khỏi client, người dùng được chuyển hướng về trang đăng nhập.\newline 
+\textbf{Thất bại:} Gặp lỗi hệ thống, token chưa được xóa sạch, trạng thái phiên làm việc không đổi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng chọn
 'Đăng xuất' từ giao diện.\newline 2. Hệ thống xóa thông tin token
 tại local client và gọi API hủy phiên làm việc.\newline 3. Chuyển
@@ -748,7 +732,7 @@ giây.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC04 - Quên mật khẩu"}
+\subsection{Mô tả Use Case - Quên mật khẩu}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -761,8 +745,8 @@ giây.\tabularnewline
 không nhớ mật khẩu đăng nhập.\tabularnewline
 \textbf{Tiền điều kiện} & Tài khoản email của người dùng đã tồn tại
 trong CSDL.\tabularnewline
-\textbf{Hậu điều kiện} & Hệ thống tạo mã OTP khôi phục mật khẩu và gửi
-đến email của người dùng.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hệ thống tạo mã OTP khôi phục mật khẩu và gửi đến email của người dùng.\newline 
+\textbf{Thất bại:} Không gửi được OTP, hệ thống hiển thị thông báo lỗi và giữ nguyên trạng thái.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng chọn
 'Quên mật khẩu' tại màn hình đăng nhập.\newline 2. Nhập địa chỉ
 email đăng ký tài khoản.\newline 3. Hệ thống kiểm tra sự tồn tại
@@ -775,7 +759,7 @@ trong 5 phút.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC05 - Đặt lại mật khẩu"}
+\subsection{Mô tả Use Case - Đặt lại mật khẩu}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -788,8 +772,8 @@ trong 5 phút.\tabularnewline
 phục thành công.\tabularnewline
 \textbf{Tiền điều kiện} & Đã có mã OTP gửi đến email của người
 dùng.\tabularnewline
-\textbf{Hậu điều kiện} & Mật khẩu mới được cập nhật vào
-CSDL.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Mật khẩu mới được cập nhật vào CSDL.\newline 
+\textbf{Thất bại:} Mật khẩu mới không được cập nhật, CSDL giữ nguyên mật khẩu cũ.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng nhập mã
 OTP nhận được và nhập mật khẩu mới.\newline 2. Hệ thống kiểm tra
 tính hợp lệ và hạn dùng của OTP.\newline 3. Tiến hành cập nhật mật
@@ -801,7 +785,7 @@ thiểu 6 ký tự.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC06 - Cập nhật hồ sơ cá nhân"}
+\subsection{Mô tả Use Case - Cập nhật hồ sơ cá nhân}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -814,8 +798,7 @@ thiểu 6 ký tự.\tabularnewline
 thông tin định danh cá nhân.\tabularnewline
 \textbf{Tiền điều kiện} & Người dùng đã đăng nhập hệ
 thống.\tabularnewline
-\textbf{Hậu điều kiện} & Thông tin cá nhân mới được lưu trữ thành công
-vào CSDL.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Thông tin cá nhân mới được lưu trữ thành công vào CSDL.\newline \textbf{Thất bại:} Thông tin cá nhân không đổi trong CSDL, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng truy cập
 trang 'Hồ sơ cá nhân'.\newline 2. Cập nhật các trường thông tin: số
 điện thoại, CCCD, nghề nghiệp, địa chỉ thường trú.\newline 3. Nhấn
@@ -828,7 +811,7 @@ thống.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC07 - Khóa/Mở khóa tài khoản"}
+\subsection{Mô tả Use Case - Khóa/Mở khóa tài khoản}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -841,8 +824,8 @@ thống.\tabularnewline
 khóa tài khoản người dùng.\tabularnewline
 \textbf{Tiền điều kiện} & Chủ trọ đã đăng nhập; tài khoản cần tác động
 tồn tại trong CSDL.\tabularnewline
-\textbf{Hậu điều kiện} & Trạng thái tài khoản được cập nhật trong DB;
-người dùng bị khóa sẽ không thể đăng nhập.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Trạng thái tài khoản được cập nhật trong DB; người dùng bị khóa sẽ không thể đăng nhập.\newline 
+\textbf{Thất bại:} Trạng thái tài khoản giữ nguyên, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ mở giao
 diện 'Quản lý người dùng'.\newline 2. Chọn tài khoản cần khóa/mở
 khóa.\newline 3. Click chọn trạng thái mới và xác
@@ -854,7 +837,7 @@ ngay lập tức đối với phiên làm việc hiện tại của user.\tabula
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC08 - Phân quyền vai trò"}
+\subsection{Mô tả Use Case - Phân quyền vai trò}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -868,8 +851,8 @@ Quản lý chi nhánh, Khách thuê) để kiểm soát quyền hạn sử dụn
 năng.\tabularnewline
 \textbf{Tiền điều kiện} & Tài khoản người dùng cần phân vai trò đã tồn
 tại.\tabularnewline
-\textbf{Hậu điều kiện} & Vai trò mới được lưu trữ và áp dụng cho người
-dùng trong DB.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Vai trò mới được lưu trữ và áp dụng cho người dùng trong DB.\newline
+\textbf{Thất bại:} Quyền và vai trò của người dùng không đổi, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ chọn người
 dùng từ danh sách quản trị.\newline 2. Chọn vai trò cần gán (Ví dụ:
 Manager).\newline 3. Hệ thống ghi nhận vai trò mới vào
@@ -880,7 +863,7 @@ API Backend.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC09 - Thêm/sửa/ngừng nhà trọ"}
+\subsection{Mô tả Use Case - Thêm/sửa/ngừng nhà trọ}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -892,8 +875,7 @@ API Backend.\tabularnewline
 \textbf{Mô tả ngắn} & Quản lý danh sách các cơ sở nhà trọ/chi nhánh
 trong chuỗi vận hành.\tabularnewline
 \textbf{Tiền điều kiện} & Chủ trọ đã đăng nhập.\tabularnewline
-\textbf{Hậu điều kiện} & Thông tin cơ sở nhà trọ mới được lưu trữ hoặc
-cập nhật trong CSDL.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Thông tin cơ sở nhà trọ mới được lưu trữ hoặc cập nhật trong CSDL.\newline \textbf{Thất bại:} Thông tin cơ sở nhà trọ không thay đổi, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ mở mục
 'Quản lý cơ sở trọ'.\newline 2. Chọn thêm hoặc sửa thông tin cơ sở:
 Tên, địa chỉ, số tầng, số phòng.\newline 3. Hệ thống lưu trữ thông
@@ -905,7 +887,7 @@ vùng địa lý quận/huyện.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC10 - Phân công quản lý"}
+\subsection{Mô tả Use Case - Phân công quản lý}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -918,8 +900,8 @@ vùng địa lý quận/huyện.\tabularnewline
 lý vận hành một hoặc nhiều cơ sở nhà trọ.\tabularnewline
 \textbf{Tiền điều kiện} & Tài khoản nhân viên đã có vai trò Manager; cơ
 sở nhà trọ đã được tạo.\tabularnewline
-\textbf{Hậu điều kiện} & Mối quan hệ phân công được cập nhật trong
-CSDL.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Mối quan hệ phân công được cập nhật trong CSDL.\newline 
+\textbf{Thất bại:} Phân công không đổi, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ mở trang
 'Phân công quản lý'.\newline 2. Chọn nhân viên quản lý và tích chọn
 các cơ sở trọ giao cho nhân viên đó phụ trách.\newline 3. Hệ thống
@@ -931,7 +913,7 @@ coi nhiều nhà trọ và ngược lại (Nhiều - Nhiều).\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC11 - Quản lý loại phòng \& tiện nghi"}
+\subsection{Mô tả Use Case - Quản lý loại phòng \& tiện nghi}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -943,8 +925,7 @@ coi nhiều nhà trọ và ngược lại (Nhiều - Nhiều).\tabularnewline
 \textbf{Mô tả ngắn} & Thiết lập danh mục loại phòng, diện tích, giá thuê
 cơ bản và các tiện ích đi kèm.\tabularnewline
 \textbf{Tiền điều kiện} & Đã có thông tin nhà trọ.\tabularnewline
-\textbf{Hậu điều kiện} & Loại phòng được cấu hình phục vụ cho việc tạo
-phòng trọ.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Loại phòng được cấu hình phục vụ cho việc tạo phòng trọ.\newline \textbf{Thất bại:} Loại phòng giữ nguyên, không được lưu mới hoặc sửa đổi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng mở trang
 'Quản lý loại phòng'.\newline 2. Nhập tên loại phòng, diện tích,
 giá thuê cơ bản và check chọn các tiện ích (điều hòa, nóng lạnh, ban
@@ -957,7 +938,7 @@ quan cho khách vãng lai khi tìm phòng.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC12 - CRUD phòng trọ"}
+\subsection{Mô tả Use Case - CRUD phòng trọ}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -982,7 +963,7 @@ Excel để đẩy nhanh thiết lập ban đầu.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC13 - Cập nhật trạng thái phòng"}
+\subsection{Mô tả Use Case - Cập nhật trạng thái phòng}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -995,8 +976,8 @@ Excel để đẩy nhanh thiết lập ban đầu.\tabularnewline
 thay đổi thực tế.\tabularnewline
 \textbf{Tiền điều kiện} & Phòng trọ đã tồn tại trên hệ
 thống.\tabularnewline
-\textbf{Hậu điều kiện} & Trạng thái phòng (empty, rented, deposit,
-maintenance) được cập nhật trong DB.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Trạng thái phòng (empty, rented, deposit, maintenance) được cập nhật trong DB.\newline 
+\textbf{Thất bại:} Trạng thái phòng không đổi, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng chọn
 phòng trọ trên sơ đồ phòng.\newline 2. Chọn trạng thái mới từ danh
 sách thả xuống (Ví dụ: Bảo trì).\newline 3. Hệ thống ghi nhận trạng
@@ -1007,7 +988,9 @@ thái mới và đổi màu phòng trọ trên sơ đồ.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC14 - Quản lý tài sản trong phòng"}
+
+
+\subsection{Mô tả Use Case - Quản lý tài sản trong phòng}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1019,8 +1002,8 @@ thái mới và đổi màu phòng trọ trên sơ đồ.\tabularnewline
 \textbf{Mô tả ngắn} & Quản lý danh mục trang thiết bị, tài sản kèm theo
 tình trạng hiện trạng của từng phòng trọ.\tabularnewline
 \textbf{Tiền điều kiện} & Phòng trọ đã được tạo lập.\tabularnewline
-\textbf{Hậu điều kiện} & Thông tin tài sản được cập nhật trực tiếp vào
-document của phòng trọ.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Thông tin tài sản được cập nhật trực tiếp vào document của phòng trọ.\newline 
+\textbf{Thất bại:} Thông tin tài sản trong phòng không thay đổi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng chọn
 phòng và mở tab 'Tài sản'.\newline 2. Thêm hoặc cập nhật tài sản:
 Tên tài sản, số lượng, giá trị, tình trạng (Tốt/Hỏng).\newline 3.
@@ -1032,7 +1015,7 @@ Room.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC15 - Thêm hồ sơ khách"}
+\subsection{Mô tả Use Case - Thêm hồ sơ khách}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1045,8 +1028,7 @@ Room.\tabularnewline
 tạo lập hồ sơ khách thuê của phòng.\tabularnewline
 \textbf{Tiền điều kiện} & Khách thuê đã đăng ký tài khoản trên hệ
 thống.\tabularnewline
-\textbf{Hậu điều kiện} & Hồ sơ khách thuê được thiết lập phục vụ lập hợp
-đồng.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hồ sơ khách thuê được thiết lập phục vụ lập hợp đồng.\newline \textbf{Thất bại:} Không tạo được hồ sơ khách thuê mới, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Quản lý tìm tài
 khoản khách qua email hoặc số điện thoại.\newline 2. Chọn tài khoản
 khách phù hợp để liên kết vào phòng thuê.\newline 3. Hệ thống lấy
@@ -1058,7 +1040,7 @@ thoại trước khi lưu.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC16 - Lập hợp đồng thuê"}
+\subsection{Mô tả Use Case - Lập hợp đồng thuê}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1071,8 +1053,8 @@ thoại trước khi lưu.\tabularnewline
 và phòng trống.\tabularnewline
 \textbf{Tiền điều kiện} & Phòng trọ đang ở trạng thái Trống hoặc Đặt
 cọc; khách thuê đã có hồ sơ.\tabularnewline
-\textbf{Hậu điều kiện} & Hợp đồng mới được tạo ở trạng thái Chờ ký;
-phòng chuyển sang Đang thuê tạm thời.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hợp đồng mới được tạo ở trạng thái Chờ ký; phòng chuyển sang Đang thuê tạm thời.\newline 
+\textbf{Thất bại:} Hợp đồng không được tạo, trạng thái phòng giữ nguyên.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Quản lý chọn chức
 năng 'Lập hợp đồng'.\newline 2. Chọn phòng và liên kết khách
 thuê.\newline 3. Nhập điều khoản: giá thuê, tiền cọc, hạn thuê, các
@@ -1084,7 +1066,7 @@ mẫu chuẩn lưu trữ đường dẫn trên cloud.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC17 - Ký số / xác nhận hợp đồng"}
+\subsection{Mô tả Use Case - Ký số / xác nhận hợp đồng}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1098,8 +1080,8 @@ mẫu chuẩn lưu trữ đường dẫn trên cloud.\tabularnewline
 phòng.\tabularnewline
 \textbf{Tiền điều kiện} & Hợp đồng đang ở trạng thái Chờ ký; khách thuê
 đã đăng nhập tài khoản.\tabularnewline
-\textbf{Hậu điều kiện} & Hợp đồng chuyển sang Hiệu lực (active); phòng
-chuyển sang Đang thuê chính thức.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hợp đồng chuyển sang Hiệu lực (active); phòng chuyển sang Đang thuê chính thức.\newline 
+\textbf{Thất bại:} Hợp đồng giữ nguyên trạng thái cũ (Chờ ký), phòng không đổi trạng thái.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Khách thuê truy cập
 phần 'Hợp đồng của tôi'.\newline 2. Xem chi tiết tệp PDF hợp đồng
 (sinh thời gian thực bằng pdfkit qua GET
@@ -1114,7 +1096,7 @@ giờ kể từ khi lập hợp đồng.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC18 - Gia hạn hợp đồng"}
+\subsection{Mô tả Use Case - Gia hạn hợp đồng}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1126,8 +1108,7 @@ giờ kể từ khi lập hợp đồng.\tabularnewline
 \textbf{Mô tả ngắn} & Thực hiện gia hạn thời hạn thuê khi hợp đồng cũ
 sắp hết hạn và khách muốn tiếp tục ở.\tabularnewline
 \textbf{Tiền điều kiện} & Hợp đồng cũ đang có hiệu lực.\tabularnewline
-\textbf{Hậu điều kiện} & Ngày kết thúc hợp đồng được cập nhật mới trong
-CSDL.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Ngày kết thúc hợp đồng được cập nhật mới trong CSDL.\newline \textbf{Thất bại:} Hợp đồng giữ nguyên ngày hết hạn cũ, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng tìm hợp
 đồng của phòng trọ sắp hết hạn.\newline 2. Chọn chức năng 'Gia hạn'
 và nhập số tháng gia hạn thêm.\newline 3. Hệ thống tính ngày kết
@@ -1138,7 +1119,7 @@ thành công cho khách thuê.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC19 - Sửa đổi hợp đồng"}
+\subsection{Mô tả Use Case - Sửa đổi hợp đồng}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1150,8 +1131,8 @@ thành công cho khách thuê.\tabularnewline
 \textbf{Mô tả ngắn} & Cập nhật, điều chỉnh các thông số và điều khoản
 hợp đồng khi có thỏa thuận mới.\tabularnewline
 \textbf{Tiền điều kiện} & Hợp đồng đang hiệu lực.\tabularnewline
-\textbf{Hậu điều kiện} & Các thông số hợp đồng (tiền phòng, tiền cọc)
-được sửa đổi trong DB.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Các thông số hợp đồng (tiền phòng, tiền cọc) được sửa đổi trong DB.\newline 
+\textbf{Thất bại:} Thông số hợp đồng không thay đổi, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng chọn hợp
 đồng cần điều chỉnh.\newline 2. Nhập các điều khoản mới hoặc thay
 đổi giá thuê.\newline 3. Nhấn lưu để cập nhật thông số hợp đồng
@@ -1162,7 +1143,7 @@ số để phục vụ đối soát.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC20 - Chấm dứt hợp đồng / trả phòng"}
+\subsection{Mô tả Use Case - Chấm dứt hợp đồng / trả phòng}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1174,8 +1155,8 @@ số để phục vụ đối soát.\tabularnewline
 \textbf{Mô tả ngắn} & Kết thúc hợp đồng thuê phòng, thanh lý cọc và giải
 phóng phòng về trạng thái trống.\tabularnewline
 \textbf{Tiền điều kiện} & Hợp đồng đang có hiệu lực.\tabularnewline
-\textbf{Hậu điều kiện} & Hợp đồng chuyển sang Đã thanh lý; phòng chuyển
-sang Trống; khách dời đi.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hợp đồng chuyển sang Đã thanh lý; phòng chuyển sang Trống; khách dời đi.\newline 
+\textbf{Thất bại:} Trạng thái hợp đồng và phòng giữ nguyên, khách chưa thanh lý được.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Quản lý chọn chức
 năng 'Trả phòng / Chấm dứt hợp đồng'.\newline 2. Nhập ngày trả
 phòng thực tế, chốt số điện nước lần cuối.\newline 3. Tính toán
@@ -1188,7 +1169,7 @@ thuê.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC21 - Cấu hình đơn giá dịch vụ"}
+\subsection{Mô tả Use Case - Cấu hình đơn giá dịch vụ}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1201,8 +1182,8 @@ thuê.\tabularnewline
 tiện ích định kỳ cho nhà trọ.\tabularnewline
 \textbf{Tiền điều kiện} & Cơ sở nhà trọ đã được thêm thành
 công.\tabularnewline
-\textbf{Hậu điều kiện} & Đơn giá dịch vụ được ghi nhận trong DB để làm
-căn cứ tính hóa đơn.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Đơn giá dịch vụ được ghi nhận trong DB để làm căn cứ tính hóa đơn.\newline 
+\textbf{Thất bại:} Đơn giá dịch vụ giữ nguyên, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ truy cập
 phần 'Cấu hình đơn giá'.\newline 2. Nhập đơn giá điện (kWh), nước
 (m3), internet (tháng), xe (xe/tháng) của nhà trọ.\newline 3. Hệ
@@ -1214,7 +1195,7 @@ bậc thang hoặc cố định.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC22 - Ghi chỉ số điện nước"}
+\subsection{Mô tả Use Case - Ghi chỉ số điện nước}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1227,8 +1208,8 @@ bậc thang hoặc cố định.\tabularnewline
 trọ theo định kỳ tháng.\tabularnewline
 \textbf{Tiền điều kiện} & Phòng đang có hợp đồng hoạt
 động.\tabularnewline
-\textbf{Hậu điều kiện} & Chỉ số mới được ghi nhận trong
-DB.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Chỉ số mới được ghi nhận trong DB.\newline 
+\textbf{Thất bại:} Chỉ số điện nước cũ giữ nguyên, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Quản lý mở trang
 'Chốt chỉ số điện nước'.\newline 2. Chọn cơ sở, phòng trọ cần ghi
 chỉ số.\newline 3. Nhập số điện và số nước mới thu thập được và lưu
@@ -1240,7 +1221,7 @@ hệ thống báo lỗi yêu cầu xác minh thực tế.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC23 - Tính tiền dịch vụ"}
+\subsection{Mô tả Use Case - Tính tiền dịch vụ}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1253,8 +1234,7 @@ hệ thống báo lỗi yêu cầu xác minh thực tế.\tabularnewline
 dựa trên lượng tiêu thụ và đơn giá cấu hình.\tabularnewline
 \textbf{Tiền điều kiện} & Chỉ số điện nước mới đã được ghi
 nhận.\tabularnewline
-\textbf{Hậu điều kiện} & Tính toán chi tiết tiền dịch vụ được hoàn tất
-và lưu nháp.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Tính toán chi tiết tiền dịch vụ được hoàn tất và lưu nháp.\newline \textbf{Thất bại:} Không hoàn tất tính toán, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Hệ thống lấy lượng
 tiêu thụ điện nước = chỉ số mới - chỉ số cũ.\newline 2. Nhân với
 đơn giá cấu hình dịch vụ của nhà trọ đó.\newline 3. Cộng thêm các
@@ -1266,7 +1246,7 @@ nhánh \textless{} 1 giây.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC24 - Tạo hoá đơn"}
+\subsection{Mô tả Use Case - Tạo hoá đơn}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1279,8 +1259,8 @@ nhánh \textless{} 1 giây.\tabularnewline
 thanh toán hàng tháng.\tabularnewline
 \textbf{Tiền điều kiện} & Hợp đồng thuê đang hoạt động; tiền dịch vụ đã
 được tính toán xong.\tabularnewline
-\textbf{Hậu điều kiện} & Hóa đơn mới được lưu trữ trong DB ở trạng thái
-Chờ thanh toán.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hóa đơn mới được lưu trữ trong DB ở trạng thái Chờ thanh toán.\newline 
+\textbf{Thất bại:} Không tạo được hóa đơn mới, dữ liệu giữ nguyên.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng chọn
 'Tạo hóa đơn tháng'.\newline 2. Hệ thống tổng hợp: Tiền phòng +
 Tiền dịch vụ chốt được.\newline 3. Sinh mã hóa đơn, ghi nhận hạn
@@ -1292,7 +1272,7 @@ dung chuyển khoản gồm mã hóa đơn và số tiền.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC25 - Gửi hoá đơn \& nhắc thanh toán"}
+\subsection{Mô tả Use Case - Gửi hoá đơn \& nhắc thanh toán}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1305,8 +1285,7 @@ dung chuyển khoản gồm mã hóa đơn và số tiền.\tabularnewline
 thuê đóng tiền đúng hạn.\tabularnewline
 \textbf{Tiền điều kiện} & Hóa đơn ở trạng thái Chờ thanh
 toán.\tabularnewline
-\textbf{Hậu điều kiện} & Thông báo nhắc nợ được gửi thành công qua
-email.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Thông báo nhắc nợ được gửi thành công qua email.\newline \textbf{Thất bại:} Gửi thông báo thất bại, hệ thống hiển thị thông báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng mở trang
 hóa đơn, click nút 'Gửi nhắc nợ'.\newline 2. Hệ thống gọi API gửi
 email nhắc nợ kèm link hóa đơn PDF.\newline 3. Khách thuê nhận được
@@ -1318,7 +1297,7 @@ nợ tự động định kỳ hàng loạt.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC26 - Thanh toán hoá đơn online"}
+\subsection{Mô tả Use Case - Thanh toán hoá đơn online}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1332,8 +1311,7 @@ thanh toán VNPay Sandbox (tích hợp thật, ký HMAC-SHA512) hoặc quét mã
 VietQR động chuyển khoản.\tabularnewline
 \textbf{Tiền điều kiện} & Hóa đơn ở trạng thái Chờ thanh
 toán.\tabularnewline
-\textbf{Hậu điều kiện} & Hóa đơn được cập nhật sang Đã thanh toán; cập
-nhật số dư công nợ.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hóa đơn được cập nhật sang Đã thanh toán; cập nhật số dư công nợ.\newline \textbf{Thất bại:} Hóa đơn giữ nguyên trạng thái Chờ thanh toán, số dư công nợ không đổi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Khách thuê mở giao
 diện hóa đơn cá nhân, chọn hóa đơn và phương thức thanh
 toán.\newline 2. VNPay: hệ thống sinh paymentUrl ký HMAC-SHA512 và
@@ -1359,7 +1337,7 @@ giây.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC27 - Xác nhận đã thu tiền mặt"}
+\subsection{Mô tả Use Case - Xác nhận đã thu tiền mặt}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1372,8 +1350,8 @@ giây.\tabularnewline
 nộp trực tiếp cho quản lý.\tabularnewline
 \textbf{Tiền điều kiện} & Hóa đơn đang ở trạng thái Chờ thanh
 toán.\tabularnewline
-\textbf{Hậu điều kiện} & Hóa đơn chuyển sang Đã thanh toán; ghi nhận
-phương thức thu tiền mặt.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Hóa đơn chuyển sang Đã thanh toán; ghi nhận phương thức thu tiền mặt.\newline 
+\textbf{Thất bại:} Hóa đơn giữ nguyên trạng thái Chờ thanh toán, không ghi nhận đã thu tiền.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Khách thuê nộp tiền
 mặt trực tiếp cho quản lý.\newline 2. Quản lý chọn hóa đơn phòng
 trọ, click 'Xác nhận thu tiền mặt'.\newline 3. Hệ thống cập nhật
@@ -1385,7 +1363,7 @@ cho khách thuê để xác minh.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC28 - Tra cứu lịch sử hoá đơn"}
+\subsection{Mô tả Use Case - Xác nhận đã thu tiền mặt}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1398,8 +1376,7 @@ cho khách thuê để xác minh.\tabularnewline
 kiểm tra tiêu dùng điện nước.\tabularnewline
 \textbf{Tiền điều kiện} & Khách thuê đã đăng nhập hệ
 thống.\tabularnewline
-\textbf{Hậu điều kiện} & Danh sách hóa đơn được tải từ CSDL hiển thị
-trên màn hình.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Danh sách hóa đơn được tải từ CSDL hiển thị trên màn hình.\newline \textbf{Thất bại:} Không tải được danh sách hóa đơn, hệ thống hiển thị thông báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Khách thuê chọn mục
 'Hóa đơn của tôi'.\newline 2. Hệ thống truy vấn CSDL lấy danh sách
 hóa đơn theo mã khách thuê.\newline 3. Khách thuê chọn hóa đơn cụ
@@ -1410,7 +1387,31 @@ thể để xem chi tiết các khoản phí.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC29 - Quản lý công nợ"}
+\subsection{Mô tả Use Case - Tra cứu lịch sử hoá đơn}
+
+\begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
+\toprule
+\textbf{Mã Use Case} & UC28\tabularnewline
+\midrule
+\endhead
+\textbf{Tên Use Case} & Tra cứu lịch sử hoá đơn\tabularnewline
+\textbf{Tác nhân chính} & Khách thuê\tabularnewline
+\textbf{Mô tả ngắn} & Khách thuê tra cứu lại danh sách các hóa đơn cũ để
+kiểm tra tiêu dùng điện nước.\tabularnewline
+\textbf{Tiền điều kiện} & Khách thuê đã đăng nhập hệ
+thống.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Danh sách hóa đơn được tải từ CSDL hiển thị trên màn hình.\newline \textbf{Thất bại:} Không tải được danh sách hóa đơn, hệ thống hiển thị thông báo lỗi.\tabularnewline
+\textbf{Luồng sự kiện chính} & 1. Khách thuê chọn mục
+'Hóa đơn của tôi'.\newline 2. Hệ thống truy vấn CSDL lấy danh sách
+hóa đơn theo mã khách thuê.\newline 3. Khách thuê chọn hóa đơn cụ
+thể để xem chi tiết các khoản phí.\tabularnewline
+\textbf{Luồng thay thế} & Không có.\tabularnewline
+\textbf{Yêu cầu phi chức năng} & Thời gian truy vấn hiển thị lịch sử hóa
+đơn \textless{} 1 giây.\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsection{Mô tả Use Case - Quản lý công nợ}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1423,8 +1424,8 @@ thể để xem chi tiết các khoản phí.\tabularnewline
 trọ trong chuỗi.\tabularnewline
 \textbf{Tiền điều kiện} & Đã đăng nhập với vai trò quản
 trị.\tabularnewline
-\textbf{Hậu điều kiện} & Bảng tổng hợp công nợ được hiển thị trên giao
-diện.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Bảng tổng hợp công nợ được hiển thị trên giao diện.\newline 
+\textbf{Thất bại:} Không tải được thông tin công nợ, hiển thị thông báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng mở trang
 'Quản lý công nợ'.\newline 2. Hệ thống tìm kiếm các hóa đơn chưa
 thanh toán có hạn đóng tiền nhỏ hơn ngày hiện tại.\newline 3. Hiển
@@ -1435,7 +1436,7 @@ nhà trọ.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC30 - Dashboard tổng quan"}
+\subsection{Mô tả Use Case - Dashboard tổng quan}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1448,8 +1449,7 @@ nhà trọ.\tabularnewline
 (doanh thu, lấp đầy, công nợ).\tabularnewline
 \textbf{Tiền điều kiện} & Đã đăng nhập tài khoản quản
 trị.\tabularnewline
-\textbf{Hậu điều kiện} & Màn hình hiển thị các biểu đồ thống kê
-KPI.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Màn hình hiển thị các biểu đồ thống kê KPI.\newline \textbf{Thất bại:} Không hiển thị được dữ liệu thống kê, báo lỗi kết nối.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng mở trang
 Dashboard chính.\newline 2. Hệ thống tổng hợp số liệu từ CSDL (tổng
 số phòng trống/rented, doanh thu tháng, nợ chưa thu).\newline 3.
@@ -1460,7 +1460,7 @@ Hiển thị các chỉ số và biểu đồ doanh thu Recharts.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC31 - Báo cáo doanh thu"}
+\subsection{Mô tả Use Case - Báo cáo doanh thu}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1472,8 +1472,7 @@ Hiển thị các chỉ số và biểu đồ doanh thu Recharts.\tabularnewline
 \textbf{Mô tả ngắn} & Báo cáo chi tiết doanh thu thực thu theo tháng,
 năm và theo từng chi nhánh.\tabularnewline
 \textbf{Tiền điều kiện} & Chủ trọ đã đăng nhập.\tabularnewline
-\textbf{Hậu điều kiện} & Biểu đồ cột doanh thu được hiển thị chi
-tiết.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Biểu đồ cột doanh thu được hiển thị chi tiết.\newline \textbf{Thất bại:} Không tải được biểu đồ doanh thu, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ chọn mục
 'Báo cáo doanh thu'.\newline 2. Lọc thông tin theo năm, theo chi
 nhánh cơ sở trọ.\newline 3. Hệ thống truy vấn CSDL các giao dịch
@@ -1484,7 +1483,7 @@ chuột xem số liệu chi tiết.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC32 - Báo cáo tỉ lệ lấp đầy"}
+\subsection{Mô tả Use Case - Báo cáo tỉ lệ lấp đầy}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1496,11 +1495,11 @@ chuột xem số liệu chi tiết.\tabularnewline
 \textbf{Mô tả ngắn} & Đo lường tỷ lệ phần trăm phòng đang cho thuê trên
 tổng số phòng của chuỗi.\tabularnewline
 \textbf{Tiền điều kiện} & Chủ trọ đã đăng nhập.\tabularnewline
-\textbf{Hậu điều kiện} & Biểu đồ tròn phân bố trạng thái phòng được hiển
-thị.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Biểu đồ tròn phân bố trạng thái phòng được hiển thị.\newline 
+\textbf{Thất bại:} Không hiển thị được biểu đồ, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ truy cập
 mục 'Báo cáo tỉ lệ lấp đầy'.\newline 2. Hệ thống đếm số phòng theo
-trạng thái (empty, rented, deposit, maintenance).\newline 3. Vẽ
+trạng thái.\newline 3. Vẽ
 biểu đồ tròn thể hiện tỷ lệ lấp đầy phòng.\tabularnewline
 \textbf{Luồng thay thế} & Không có.\tabularnewline
 \textbf{Yêu cầu phi chức năng} & Cập nhật dữ liệu lấp đầy chính xác thời
@@ -1508,7 +1507,7 @@ gian thực.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC33 - Báo cáo công nợ"}
+\subsection{Mô tả Use Case - Báo cáo công nợ}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1520,8 +1519,7 @@ gian thực.\tabularnewline
 \textbf{Mô tả ngắn} & Báo cáo tổng hợp số tiền nợ chưa thu và tỷ lệ nợ
 xấu của từng nhà trọ.\tabularnewline
 \textbf{Tiền điều kiện} & Chủ trọ đã đăng nhập.\tabularnewline
-\textbf{Hậu điều kiện} & Biểu đồ nợ đọng hiển thị trên màn
-hình.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Biểu đồ nợ đọng hiển thị trên màn hình.\newline \textbf{Thất bại:} Không hiển thị được biểu đồ nợ đọng, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ mở phần
 'Báo cáo công nợ'.\newline 2. Hệ thống tổng hợp các hóa đơn chưa
 đóng tiền của kỳ này và các kỳ trước.\newline 3. Hiển thị tổng số
@@ -1532,7 +1530,7 @@ kỳ về email của Chủ trọ.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC34 - Báo cáo chi phí vận hành"}
+\subsection{Mô tả Use Case - Báo cáo chi phí vận hành}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1545,8 +1543,8 @@ kỳ về email của Chủ trọ.\tabularnewline
 trong quá trình vận hành nhà trọ (sửa chữa, bảo trì, mua sắm tài
 sản).\tabularnewline
 \textbf{Tiền điều kiện} & Chủ trọ đã đăng nhập.\tabularnewline
-\textbf{Hậu điều kiện} & Khoản chi mới được lưu; biểu đồ chi phí được
-cập nhật.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Khoản chi mới được lưu; biểu đồ chi phí được cập nhật.\newline 
+\textbf{Thất bại:} Không lưu được khoản chi, dữ liệu giữ nguyên.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ mở trang
 'Quản lý chi phí'.\newline 2. Thêm khoản chi mới: Số tiền, nội
 dung, danh mục chi, cơ sở nhà trọ, ngày chi.\newline 3. Hệ thống
@@ -1558,7 +1556,7 @@ mục (Bảo trì, điện nước chung, lương nhân viên).\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC35 - Xuất Excel / PDF"}
+\subsection{Mô tả Use Case - Xuất Excel / PDF}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1571,13 +1569,10 @@ mục (Bảo trì, điện nước chung, lương nhân viên).\tabularnewline
 liệu báo cáo thống kê.\tabularnewline
 \textbf{Tiền điều kiện} & Người dùng đang xem trang báo cáo/dashboard
 tương ứng.\tabularnewline
-\textbf{Hậu điều kiện} & Tệp tin báo cáo (CSV hoặc PDF) được tải về máy
-khách.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Tệp tin báo cáo (CSV hoặc PDF) được tải về máy khách.\newline 
+\textbf{Thất bại:} Tải tệp tin thất bại, hiển thị thông báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Chủ trọ click nút
-'Xuất báo cáo'.\newline 2. Chọn xuất Excel (hệ thống sinh file CSV
-chuẩn UTF-8 BOM mở bằng Excel không lỗi font) hoặc Xuất PDF (backend
-sinh PDF thật bằng pdfkit qua GET /api/reports/pdf, nhúng font DejaVu
-Sans hỗ trợ đầy đủ tiếng Việt).\tabularnewline
+'Xuất báo cáo'.\newline 2. Chọn xuất Excel hoặc Xuất PDF.\tabularnewline
 \textbf{Luồng thay thế} & Không có.\tabularnewline
 \textbf{Yêu cầu phi chức năng} & PDF xuất ra có bảng biểu, màu thương
 hiệu và tổng hợp số liệu định dạng chuyên nghiệp, không lỗi font tiếng
@@ -1585,7 +1580,7 @@ Việt.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC36 - Gửi thông báo tự động"}
+\subsection{Mô tả Use Case - Gửi thông báo tự động}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1599,8 +1594,8 @@ nước, thông tin ký hợp đồng qua email (Gmail SMTP) và thông báo in-
 của khách thuê.\tabularnewline
 \textbf{Tiền điều kiện} & Hệ thống có sự kiện chốt số, hóa đơn quá hạn
 hoặc tạo hợp đồng thành công.\tabularnewline
-\textbf{Hậu điều kiện} & Thông báo được gửi thành công đến các kênh đăng
-ký của khách.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Thông báo được gửi thành công đến các kênh đăng ký của khách.\newline 
+\textbf{Thất bại:} Không gửi được thông báo, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Hệ thống phát hiện
 sự kiện kích hoạt.\newline 2. Gọi dịch vụ email Nodemailer gửi
 email và ghi thông báo in-app (collection Notification) cho khách
@@ -1612,7 +1607,7 @@ giây; kênh Telegram dự kiến bổ sung ở v2.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC37 - Tìm kiếm phòng"}
+\subsection{Mô tả Use Case - Tìm kiếm phòng}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1626,8 +1621,8 @@ trí quận/huyện và tiện ích mong muốn dưới dạng danh sách tinh
 tế.\tabularnewline
 \textbf{Tiền điều kiện} & Người dùng truy cập trang chủ tìm
 phòng.\tabularnewline
-\textbf{Hậu điều kiện} & Danh sách phòng trống thỏa mãn bộ lọc được hiển
-thị.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Danh sách phòng trống thỏa mãn bộ lọc được hiển thị.\newline 
+\textbf{Thất bại:} Không tìm thấy phòng hoặc lỗi kết nối, hệ thống báo lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng thiết
 lập bộ lọc: khoảng giá, quận/huyện, các tiện nghi (Wifi, điều hòa, tủ
 lạnh, bếp...).\newline 2. Hệ thống tìm kiếm các phòng ở trạng thái
@@ -1639,7 +1634,7 @@ sách dọc tinh tế kèm ảnh chụp phòng.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC38 - Đặt cọc giữ phòng online"}
+\subsection{Mô tả Use Case - Đặt cọc giữ phòng online}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1652,8 +1647,8 @@ sách dọc tinh tế kèm ảnh chụp phòng.\tabularnewline
 trống trong vòng 24 giờ trước khi ký hợp đồng.\tabularnewline
 \textbf{Tiền điều kiện} & Phòng ở trạng thái trống; khách vãng lai đã
 đăng ký thông tin liên hệ.\tabularnewline
-\textbf{Hậu điều kiện} & Phòng chuyển sang trạng thái cọc giữ (deposit)
-trong DB; gửi email biên nhận cọc.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Phòng chuyển sang trạng thái cọc giữ trong DB; gửi email biên nhận cọc.\newline 
+\textbf{Thất bại:} Trạng thái phòng không đổi, không giữ chỗ, hoàn trả giao dịch cọc nếu có lỗi.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Khách vãng lai xem
 chi tiết phòng trống, chọn 'Đặt cọc giữ phòng'.\newline 2. Nhập họ
 tên, số điện thoại (bắt buộc, hệ thống validate định dạng), CCCD và số
@@ -1672,7 +1667,7 @@ giờ kể từ khi thanh toán thành công.\tabularnewline
 \bottomrule
 \end{longtable}
 
-\subsection{Mô tả Use Case "UC39 - Trợ lý ảo AI Chatbot"}
+\subsection{Mô tả Use Case - Trợ lý ảo AI Chatbot}
 
 \begin{longtable}[]{@{}>{\RaggedRight\arraybackslash}p{0.27\linewidth}>{\RaggedRight\arraybackslash}p{0.68\linewidth}@{}}
 \toprule
@@ -1687,8 +1682,8 @@ trống, hóa đơn thời gian thực nhờ kết nối MongoDB Atlas trực ti
 chế Offline Fallback.\tabularnewline
 \textbf{Tiền điều kiện} & Người dùng mở hộp thoại Chatbot
 AI.\tabularnewline
-\textbf{Hậu điều kiện} & Chatbot AI phản hồi thông tin chính xác theo dữ
-liệu thời gian thực của hệ thống.\tabularnewline
+\textbf{Hậu điều kiện} & \textbf{Thành công:} Chatbot AI phản hồi thông tin chính xác theo dữ liệu thời gian thực của hệ thống.\newline 
+\textbf{Thất bại:} Chatbot không thể trả lời hoặc phản hồi lỗi, chuyển sang trạng thái chờ.\tabularnewline
 \textbf{Luồng sự kiện chính} & 1. Người dùng nhập câu
 hỏi (Ví dụ: 'Có phòng nào dưới 3 triệu ở quận 1
 không?').\newline 2. Hệ thống truy vấn nhanh dữ liệu thô MongoDB
@@ -1706,13 +1701,10 @@ giây.\tabularnewline
 
 \section{Sơ đồ hoạt động}
 
-Sơ đồ hoạt động (Activity Diagram) mô hình hoá luồng nghiệp vụ của từng
-ca sử dụng quan trọng. Hình ảnh sơ đồ tương ứng được trình bày dưới đây.
-
 \subsection{Sơ đồ hoạt động UC Đăng ký tài khoản \& Kích hoạt OTP}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.72\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.07_act_register_otp.png}\\[3pt]
+\includegraphics[width=0.72\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.07_act_register_otp.png}\\[3pt]
 {\itshape Hình 2.7. Sơ đồ hoạt động UC Đăng ký tài khoản \& Kích hoạt OTP qua Email}
 \addcontentsline{lof}{figure}{Hình 2.7.~~Sơ đồ hoạt động UC Đăng ký tài khoản \& Kích hoạt OTP qua Email}
 \end{figure}
@@ -1722,7 +1714,7 @@ ca sử dụng quan trọng. Hình ảnh sơ đồ tương ứng được trình
 \subsection{Sơ đồ hoạt động UC Quản lý phòng}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.8\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.08_act_room.png}\\[3pt]
+\includegraphics[width=0.8\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.08_act_room.png}\\[3pt]
 {\itshape Hình 2.8. Sơ đồ hoạt động UC Quản lý phòng}
 \addcontentsline{lof}{figure}{Hình 2.8.~~Sơ đồ hoạt động UC Quản lý phòng}
 \end{figure}
@@ -1732,7 +1724,7 @@ ca sử dụng quan trọng. Hình ảnh sơ đồ tương ứng được trình
 \subsection{Sơ đồ hoạt động UC Lập hợp đồng \& ký số}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.8\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.09_act_contract_sign.png}\\[3pt]
+\includegraphics[width=0.8\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.09_act_contract_sign.png}\\[3pt]
 {\itshape Hình 2.9. Sơ đồ hoạt động UC Lập hợp đồng \& ký số}
 \addcontentsline{lof}{figure}{Hình 2.9.~~Sơ đồ hoạt động UC Lập hợp đồng \& ký số}
 \end{figure}
@@ -1742,7 +1734,7 @@ ca sử dụng quan trọng. Hình ảnh sơ đồ tương ứng được trình
 \subsection{Sơ đồ hoạt động UC Ghi chỉ số \& tạo hoá đơn}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.72\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.10_act_meter_invoice.png}\\[3pt]
+\includegraphics[width=0.72\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.10_act_meter_invoice.png}\\[3pt]
 {\itshape Hình 2.10. Sơ đồ hoạt động UC Ghi chỉ số \& tạo hoá đơn}
 \addcontentsline{lof}{figure}{Hình 2.10.~~Sơ đồ hoạt động UC Ghi chỉ số \& tạo hoá đơn}
 \end{figure}
@@ -1752,7 +1744,7 @@ ca sử dụng quan trọng. Hình ảnh sơ đồ tương ứng được trình
 \subsection{Sơ đồ hoạt động UC Thanh toán hoá đơn}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.85\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.11_act_payment.png}\\[3pt]
+\includegraphics[width=0.85\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.11_act_payment.png}\\[3pt]
 {\itshape Hình 2.11. Sơ đồ hoạt động UC Thanh toán hoá đơn}
 \addcontentsline{lof}{figure}{Hình 2.11.~~Sơ đồ hoạt động UC Thanh toán hoá đơn}
 \end{figure}
@@ -1761,21 +1753,8 @@ ca sử dụng quan trọng. Hình ảnh sơ đồ tương ứng được trình
 
 \section{Sơ đồ lớp}
 
-Sơ đồ lớp tổng thể mô hình hoá các thực thể nghiệp vụ chính của hệ
-thống. Lưu ý: hệ thống thực tế đã được triển khai trên MongoDB Atlas
-(NoSQL Document Database), do đó cấu trúc lớp đã được tối ưu hoá theo mô
-hình tài liệu nhúng --- gồm 11 collection độc lập (User, Property,
-RoomType, Room, Contract, Service, Reading, Invoice, Payment,
-Notification, Expense) cộng với 4 lớp embedded (ThongTinKhachThue và Otp
-trong User, TaiSan{[}{]} trong Room, ChiTietHoaDon{[}{]} trong Invoice).
-Sơ đồ PlantUML phiên bản NoSQL tương ứng được trình bày tại
-docs/class\_diagram.puml. Phần dưới đây giữ nguyên sơ đồ thiết kế ban
-đầu theo mô hình quan hệ --- gồm 14 lớp được tổ chức theo 5 gói
-(package): Người dùng \& Vai trò, Nhà trọ \& Phòng, Khách thuê \& Hợp
-đồng, Dịch vụ \& Hoá đơn, và Thông báo.
-
 \begin{figure}[H]\centering
-\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.12_class_diagram.png}\\[3pt]
+\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.12_class_diagram.png}\\[3pt]
 {\itshape Hình 2.12. Sơ đồ lớp (Class Diagram) tổng thể của hệ thống}
 \addcontentsline{lof}{figure}{Hình 2.12.~~Sơ đồ lớp (Class Diagram) tổng thể của hệ thống}
 \end{figure}
@@ -1784,14 +1763,10 @@ docs/class\_diagram.puml. Phần dưới đây giữ nguyên sơ đồ thiết k
 
 \section{Sơ đồ tuần tự}
 
-Sơ đồ tuần tự (Sequence Diagram) thể hiện thứ tự gọi thông điệp giữa các
-đối tượng tham gia ca sử dụng. Hình ảnh sơ đồ tương ứng được trình bày
-dưới đây.
-
 \subsection{Sơ đồ tuần tự UC Đăng ký tài khoản \& Kích hoạt OTP}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.13_seq_register_otp.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.13_seq_register_otp.png}\\[3pt]
 {\itshape Hình 2.13. Sơ đồ tuần tự UC Đăng ký tài khoản \& Kích hoạt OTP qua Email}
 \addcontentsline{lof}{figure}{Hình 2.13.~~Sơ đồ tuần tự UC Đăng ký tài khoản \& Kích hoạt OTP qua Email}
 \end{figure}
@@ -1801,7 +1776,7 @@ dưới đây.
 \subsection{Sơ đồ tuần tự UC Tạo hợp đồng \& ký số trực tuyến}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.14_seq_contract_sign.png}\\[3pt]
+\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.14_seq_contract_sign.png}\\[3pt]
 {\itshape Hình 2.14. Sơ đồ tuần tự UC Tạo hợp đồng \& ký số trực tuyến}
 \addcontentsline{lof}{figure}{Hình 2.14.~~Sơ đồ tuần tự UC Tạo hợp đồng \& ký số trực tuyến}
 \end{figure}
@@ -1811,61 +1786,36 @@ dưới đây.
 \subsection{Sơ đồ tuần tự UC Ghi chỉ số \& tạo hoá đơn}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.15_seq_meter_invoice.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.15_seq_meter_invoice.png}\\[3pt]
 {\itshape Hình 2.15. Sơ đồ tuần tự UC Ghi chỉ số \& tạo hoá đơn}
 \addcontentsline{lof}{figure}{Hình 2.15.~~Sơ đồ tuần tự UC Ghi chỉ số \& tạo hoá đơn}
 \end{figure}
 
 
 
-\subsection{Sơ đồ tuần tự UC Thanh toán hoá đơn online (VNPay Sandbox / VietQR)}
+\subsection{Sơ đồ tuần tự UC Thanh toán hoá đơn online}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.16_seq_payment_vnpay.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.16_seq_payment_vnpay.png}\\[3pt]
 {\itshape Hình 2.16. Sơ đồ tuần tự UC Thanh toán hoá đơn online (VNPay Sandbox thật / VietQR chuyển khoản)}
 \addcontentsline{lof}{figure}{Hình 2.16.~~Sơ đồ tuần tự UC Thanh toán hoá đơn online (VNPay Sandbox thật / VietQR chuyển khoản)}
 \end{figure}
 
 
 
-\subsection{Sơ đồ tuần tự UC39 Trợ lý ảo AI Chatbot (Online + Offline Fallback)}
-
-Sơ đồ tuần tự cho UC39 Trợ lý ảo AI Chatbot (bổ sung mới so với đặc tả
-gốc): khi người dùng đặt câu hỏi, frontend AIChatbot.jsx gọi POST
-/api/chat với history. Backend trước hết tải context động (số cơ
-sở/phòng/khách thuê) từ MongoDB, sau đó gọi Google Gemini 2.5 Flash API
-tối đa 3 lần với backoff 600ms. Nếu Gemini trả 200 OK thì trả \{reply,
-isOnline:true\}. Nếu Gemini trả 429 (rate limit) hoặc lỗi mạng, backend
-chạy bộ FallbackEngine getFallbackResponse() --- đọc trực tiếp
-Properties + Rooms + Users + Contracts + Invoices từ MongoDB và trả lời
-theo bộ luật cứng cho các câu hỏi tra cứu phổ biến, đồng thời gắn
-\{isOnline:false\} để frontend hiển thị badge đỏ "Trợ lý Offline -- Dữ
-liệu thực tế".
+\subsection{Sơ đồ tuần tự Trợ lý ảo AI Chatbot}
 
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.17_seq_chatbot_ai.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.17_seq_chatbot_ai.png}\\[3pt]
 {\itshape Hình 2.17. Sơ đồ tuần tự UC39 Trợ lý ảo AI Chatbot (Online + Offline Fallback)}
-\addcontentsline{lof}{figure}{Hình 2.17.~~Sơ đồ tuần tự UC39 Trợ lý ảo AI Chatbot (Online + Offline Fallback)}
+\addcontentsline{lof}{figure}{Hình 2.17.~~Sơ đồ tuần tự Trợ lý ảo AI Chatbot (Online + Offline Fallback)}
 \end{figure}
 
 \section{Sơ đồ kiến trúc triển khai thực tế}
 
-Sơ đồ thành phần (Component Diagram) thể hiện kiến trúc triển khai thực
-tế 3 tầng của hệ thống. Tầng giao diện chạy React 18 SPA trên Vite Dev
-Server (cổng 5173), giao tiếp HTTPS đến tầng API. Tầng API chạy Node.js
-Express 4 (cổng 5001) với hơn 58 endpoint REST, mongoose ODM kết nối
-MongoDB Atlas Cloud (DNS 8.8.8.8 để bypass IPv6 SRV resolution), tích
-hợp Google Gemini 2.5 Flash API cho chatbot, Nodemailer Gmail SMTP cho 4
-luồng email (OTP đăng ký, OTP quên mật khẩu, thông báo hợp đồng, nhắc
-nợ) và cổng thanh toán VNPay Sandbox (sinh URL ký HMAC-SHA512, callback
-vnpay-return + IPN vnpay-ipn). Tầng dữ liệu là MongoDB Atlas với 11
-collection (220 cơ sở mẫu đã seed). Khởi chạy hai tiến trình: npm start
-(Express 5001) và npm run dev (Vite 5173) --- hoặc chạy đồng thời bằng
-./start.sh.
-
 \begin{figure}[H]\centering
-\includegraphics[width=0.9\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.18_architecture.png}\\[3pt]
+\includegraphics[width=0.9\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.18_architecture.png}\\[3pt]
 {\itshape Hình 2.18. Sơ đồ kiến trúc triển khai thực tế 3 tầng}
 \addcontentsline{lof}{figure}{Hình 2.18.~~Sơ đồ kiến trúc triển khai thực tế 3 tầng}
 \end{figure}
@@ -1878,22 +1828,12 @@ collection (220 cơ sở mẫu đã seed). Khởi chạy hai tiến trình: npm 
 
 \section{Thiết kế giao diện trang chủ hệ thống}
 
-Hệ thống quản lý chuỗi nhà trọ phục vụ nhiều vai trò khác nhau, do đó
-được thiết kế đa dashboard (multi-dashboard), mỗi vai trò có giao diện
-tối ưu riêng nhưng chia sẻ chung hệ thống thiết kế (design system).
-
-Hệ thống thiết kế chung sử dụng phong cách tối giản hiện đại (modern
-minimalism) với các nguyên tắc: bố cục lưới 12 cột; bảng màu chủ đạo
-xanh dương trên nền trắng (\#3A5BC7, \#F5F7FB); typography Inter/Roboto
-rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo góc
-8 px cho thẻ và 12 px cho modal.
-
 \subsection{Dashboard cho Chủ trọ (Admin)}
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.1.1. Giao diện Dashboard của Chủ trọ (Admin)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image20.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image21.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image20.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image21.png}
 \addcontentsline{lof}{figure}{Hình 3.1.1.~~Giao diện Dashboard của Chủ trọ (Admin)}
 \end{figure}
 
@@ -1901,8 +1841,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.1.2. Giao diện Dashboard của Quản lý (Manager)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image22.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image23.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image22.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image23.png}
 \addcontentsline{lof}{figure}{Hình 3.1.2.~~Giao diện Dashboard của Quản lý (Manager)}
 \end{figure}
 
@@ -1910,8 +1850,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.1.3. Giao diện Cổng thông tin Khách thuê (Tenant Portal)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image24.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image25.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image24.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image25.png}
 \addcontentsline{lof}{figure}{Hình 3.1.3.~~Giao diện Cổng thông tin Khách thuê (Tenant Portal)}
 \end{figure}
 
@@ -1919,8 +1859,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.1.4. Giao diện Trang tìm phòng công khai (Visitor)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image26.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image27.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image26.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image27.png}
 \addcontentsline{lof}{figure}{Hình 3.1.4.~~Giao diện Trang tìm phòng công khai (Visitor)}
 \end{figure}
 
@@ -1930,8 +1870,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.1. Giao diện Lưới quản lý phòng trọ (Manager)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image28.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image29.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image28.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image29.png}
 \addcontentsline{lof}{figure}{Hình 3.2.1.~~Giao diện Lưới quản lý phòng trọ (Manager)}
 \end{figure}
 
@@ -1939,8 +1879,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.2. Giao diện Ghi chỉ số điện nước \& Hoá đơn}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image30.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image31.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image30.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image31.png}
 \addcontentsline{lof}{figure}{Hình 3.2.2.~~Giao diện Ghi chỉ số điện nước \& Hoá đơn}
 \end{figure}
 
@@ -1948,8 +1888,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.3. Giao diện Xem \& Ký hợp đồng điện tử}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image32.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image33.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image32.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image33.png}
 \addcontentsline{lof}{figure}{Hình 3.2.3.~~Giao diện Xem \& Ký hợp đồng điện tử}
 \end{figure}
 
@@ -1957,8 +1897,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.4. Giao diện Quản lý và Thanh toán hóa đơn (Tenant)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image34.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image35.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image34.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image35.png}
 \addcontentsline{lof}{figure}{Hình 3.2.4.~~Giao diện Quản lý và Thanh toán hóa đơn (Tenant)}
 \end{figure}
 
@@ -1966,8 +1906,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.5. Giao diện Tìm kiếm phòng \& Đặt cọc online (Visitor)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image36.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image37.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image36.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image37.png}
 \addcontentsline{lof}{figure}{Hình 3.2.5.~~Giao diện Tìm kiếm phòng \& Đặt cọc online (Visitor)}
 \end{figure}
 
@@ -1975,8 +1915,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.6. Giao diện Báo cáo thống kê \& Biểu đồ doanh thu (Admin)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image38.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image39.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image38.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image39.png}
 \addcontentsline{lof}{figure}{Hình 3.2.6.~~Giao diện Báo cáo thống kê \& Biểu đồ doanh thu (Admin)}
 \end{figure}
 
@@ -1984,8 +1924,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.7. Giao diện Quản lý người dùng và phân quyền (Chủ trọ)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image40.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image41.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image40.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image41.png}
 \addcontentsline{lof}{figure}{Hình 3.2.7.~~Giao diện Quản lý người dùng và phân quyền (Chủ trọ)}
 \end{figure}
 
@@ -1993,8 +1933,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.8. Giao diện Quản lý loại phòng \& tiện nghi (Chủ trọ / Quản lý)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image42.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image43.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image42.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image43.png}
 \addcontentsline{lof}{figure}{Hình 3.2.8.~~Giao diện Quản lý loại phòng \& tiện nghi (Chủ trọ / Quản lý)}
 \end{figure}
 
@@ -2002,8 +1942,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.9. Giao diện Cấu hình Dịch vụ \& Đơn giá (Chủ trọ)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image44.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image45.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image44.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image45.png}
 \addcontentsline{lof}{figure}{Hình 3.2.9.~~Giao diện Cấu hình Dịch vụ \& Đơn giá (Chủ trọ)}
 \end{figure}
 
@@ -2011,8 +1951,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.10. Giao diện Quản lý Công nợ (Chủ trọ)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image46.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image47.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image46.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image47.png}
 \addcontentsline{lof}{figure}{Hình 3.2.10.~~Giao diện Quản lý Công nợ (Chủ trọ)}
 \end{figure}
 
@@ -2020,8 +1960,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.11. Giao diện Xác nhận thu tiền mặt (Quản lý)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image48.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image49.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image48.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image49.png}
 \addcontentsline{lof}{figure}{Hình 3.2.11.~~Giao diện Xác nhận thu tiền mặt (Quản lý)}
 \end{figure}
 
@@ -2029,8 +1969,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.12. Giao diện Quên mật khẩu (Khách thuê)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image50.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image51.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image50.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image51.png}
 \addcontentsline{lof}{figure}{Hình 3.2.12.~~Giao diện Quên mật khẩu (Khách thuê)}
 \end{figure}
 
@@ -2038,8 +1978,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.13. Giao diện Trợ lý ảo AI Chatbot (Toàn hệ thống)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image52.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image53.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image52.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image53.png}
 \addcontentsline{lof}{figure}{Hình 3.2.13.~~Giao diện Trợ lý ảo AI Chatbot (Toàn hệ thống)}
 \end{figure}
 
@@ -2047,8 +1987,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.1b. Giao diện Sơ đồ phòng theo tầng (Manager)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image28.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image29.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image28.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image29.png}
 \addcontentsline{lof}{figure}{Hình 3.2.1b.~~Giao diện Sơ đồ phòng theo tầng (Manager)}
 \end{figure}
 
@@ -2056,8 +1996,8 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.2b. Giao diện Ghi chỉ số điện nước theo lô (Manager)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image30.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image31.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image30.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image31.png}
 \addcontentsline{lof}{figure}{Hình 3.2.2b.~~Giao diện Ghi chỉ số điện nước theo lô (Manager)}
 \end{figure}
 
@@ -2068,14 +2008,14 @@ rõ ràng; icon kiểu nét liền mạch (line-style); spacing 8pt grid; bo gó
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.14. Giao diện Đăng nhập \& Đăng ký tài khoản}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image54.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image55.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image54.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image55.png}
 \addcontentsline{lof}{figure}{Hình 3.2.14.~~Giao diện Đăng nhập \& Đăng ký tài khoản}
 \end{figure}
 
-\includegraphics[width=2.5in,height=5.41319in]{images/ui/image56.png}
+{\centering\includegraphics[width=2.5in,height=5.41319in]{images/image56.png}\par}
 
-\includegraphics[width=5.8in,height=3.625in]{images/ui/image57.png}
+\includegraphics[width=5.8in,height=3.625in]{images/image57.png}
 
 
 % ============================================================
