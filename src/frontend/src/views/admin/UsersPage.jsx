@@ -398,12 +398,18 @@ export default function UsersPage() {
   };
 
   // Confirm and execute user deletion
-  const handleDeleteConfirm = () => {
-    setToast({
-      message: `Đã xóa tài khoản khỏi hệ thống thành công (chế độ giả lập)!`,
-      type: 'success'
-    });
-    setDeletingUser(null);
+  const handleDeleteConfirm = async () => {
+    try {
+      await userService.delete(deletingUser.id);
+      setToast({
+        message: `Đã xóa tài khoản "${deletingUser.fullName}" khỏi hệ thống thành công!`,
+        type: 'success'
+      });
+      setDeletingUser(null);
+      reload();
+    } catch (err) {
+      setToast({ message: "Lỗi xóa tài khoản: " + err.message, type: 'danger' });
+    }
   };
 
   // Roles Vietnamese mappings

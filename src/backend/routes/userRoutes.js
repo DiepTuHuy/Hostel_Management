@@ -97,6 +97,50 @@ router.patch('/api/users/:id/status', verifyToken, requireRole('admin'), async (
   }
 });
 
+// A.3 Xóa tài khoản người dùng
+router.delete('/api/users/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const userToDelete = await User.findById(req.params.id);
+    if (!userToDelete) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng." });
+    }
+
+    // Ngăn chặn admin tự xóa chính mình
+    if (userToDelete._id.toString() === req.user.id) {
+      return res.status(400).json({ message: "Bạn không thể tự xóa tài khoản của chính mình." });
+    }
+
+    const userId = userToDelete._id;
+
+    // 1. Nếu là quản lý, loại bỏ khỏi danh sách quản lý nhà trọ
+    if (userToDelete.vaiTro === 'manager') {
+      await Property.updateMany(
+        { maQuanLyIds: userId },
+        { $pull: { maQuanLyIds: userId } }
+      );
+    }
+
+    // 2. Nếu là khách thuê, loại bỏ khỏi danh sách khách thuê của hợp đồng
+    if (userToDelete.vaiTro === 'tenant') {
+      await Contract.updateMany(
+        { maKhachThueIds: userId },
+        { $pull: { maKhachThueIds: userId } }
+      );
+    }
+
+    // 3. Xóa các thông báo của người dùng này
+    await Notification.deleteMany({ maNguoiDungId: userId });
+
+    // 4. Thực hiện xóa người dùng
+    await User.findByIdAndDelete(userId);
+
+    res.json({ success: true, message: "Đã xóa tài khoản người dùng thành công." });
+  } catch (error) {
+    console.error("Lỗi xóa người dùng:", error.message);
+    res.status(500).json({ message: "Lỗi hệ thống khi xóa tài khoản." });
+  }
+});
+
 // B. CRUD PROPERTIES (NHÀ TRỌ)
 // B.1 Thêm cơ sở nhà trọ mới
 

@@ -8,8 +8,8 @@ skinparam defaultFontSize 13
 skinparam packageStyle rectangle
 skinparam ArrowColor #34507A
 skinparam usecase {
-  BackgroundColor #E6F5EA
-  BorderColor #2E7D32
+  BackgroundColor #EEF3FC
+  BorderColor #3A5BC7
 }
 skinparam actor {
   BackgroundColor #FFFFFF

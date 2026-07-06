@@ -13,7 +13,9 @@ skinparam activity {
   DiamondBorderColor #3A5BC7
   StartColor #2E7D32
   EndColor #AD1457
-}
+  }
+
+skinparam conditionStyle InsideDiamond
 
 |#FFF9EC|Quản lý / Chủ trọ|
 start

@@ -17,5 +17,9 @@ export const userService = {
   async updateStatus(id, status) {
     const res = await api.patch(`/users/${id}/status`, { status });
     return new User(res.data.user);
+  },
+  async delete(id) {
+    const res = await api.delete(`/users/${id}`);
+    return res.data;
   }
 };

@@ -15,6 +15,8 @@ skinparam activity {
   EndColor #AD1457
 }
 
+skinparam conditionStyle InsideDiamond
+
 |#F4F8FF|Người dùng|
 start
 :Truy cập trang Đăng ký;
@@ -26,13 +28,16 @@ start
 if (Email đã có tài khoản?) then (đã kích hoạt)
   :Báo lỗi "Email đã tồn tại";
   stop
-elseif (đang chờ kích hoạt?) then (có)
-  :Cập nhật thông tin, sinh mã OTP mới\nvà gửi lại qua email;
-else (chưa có)
-  :Mã hoá mật khẩu trước khi lưu;
-  :Sinh mã OTP 6 chữ số\n(hiệu lực 5 phút);
-  :Tạo tài khoản ở trạng thái\n"Chờ kích hoạt" kèm mã OTP;
-  :Gửi email chứa mã OTP\n(qua Gmail);
+else (chưa kích hoạt)
+  ' Tách elseif cũ thành một khối if lồng bên trong nhánh else
+  if (Đang chờ kích hoạt?) then (có)
+    :Cập nhật thông tin, sinh mã OTP mới\nvà gửi lại qua email;
+  else (chưa có)
+    :Mã hoá mật khẩu trước khi lưu;
+    :Sinh mã OTP 6 chữ số\n(hiệu lực 5 phút);
+    :Tạo tài khoản ở trạng thái\n"Chờ kích hoạt" kèm mã OTP;
+    :Gửi email chứa mã OTP\n(qua Gmail);
+  endif
 endif
 
 |Người dùng|
@@ -44,6 +49,7 @@ if (OTP đúng và còn hạn?) then (có)
   :Chuyển tài khoản sang "Hoạt động";
   :Xoá mã OTP đã dùng;
   :Cấp phiên đăng nhập;
+
   |Người dùng|
   :Tự động đăng nhập\n→ vào trang chính theo vai trò;
   stop
