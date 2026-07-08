@@ -24,10 +24,10 @@ actor "Khách vãng lai" as Visitor
 actor "Google Gemini API" as Gemini
 
 rectangle "Tiện ích bổ trợ" {
-  usecase "UC36 — Gửi thông báo tự động\n(email + thông báo trong app)" as F1
-  usecase "UC37 — Tìm kiếm phòng\n(dạng danh sách)"  as F2
-  usecase "UC38 — Đặt cọc giữ phòng\ntrực tuyến"     as F3
-  usecase "UC39 — Trợ lý ảo AI Chatbot\n(BoardingHouse AI)" as F4
+  usecase "Gửi thông báo tự động\n(email + thông báo trong app)" as F1
+  usecase "Tìm kiếm phòng\n(dạng danh sách)"  as F2
+  usecase "Đặt cọc giữ phòng\ntrực tuyến"     as F3
+  usecase "Trợ lý ảo AI Chatbot\n(BoardingHouse AI)" as F4
   usecase "Đăng nhập / Đăng ký\ntài khoản"           as FA
   usecase "Tra cứu trực tuyến\n(Gemini 2.5 Flash)"   as F5
   usecase "Tra cứu ngoại tuyến\n(dự phòng khi mất kết nối AI)" as F6

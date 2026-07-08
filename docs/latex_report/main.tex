@@ -9,7 +9,7 @@
 \usepackage{fontspec}
 \usepackage{polyglossia}
 \setmainlanguage{vietnamese}
-\setmainfont{TeX Gyre Termes}        % font kiểu Times New Roman
+\setmainfont{Times New Roman}        % font kiểu Times New Roman
 \usepackage{setspace}
 \onehalfspacing
 
@@ -105,14 +105,14 @@
 \begin{titlepage}
 \begin{tikzpicture}[remember picture,overlay]
   \node at (current page.center)
-    {\includegraphics[width=\paperwidth,height=\paperheight]{images/border.png}};
+    {\includegraphics[width=\paperwidth,height=\paperheight]{images/cover/border.png}};
 \end{tikzpicture}
 \begin{center}
 \vspace*{6mm}
 {\fontsize{14}{18}\selectfont \TenTruong\\[2mm]}
 {\fontsize{14}{18}\selectfont\bfseries \TenVien\\}
 \vspace{8mm}
-\includegraphics[width=62mm]{images/logo.png}\\
+\includegraphics[width=62mm]{images/cover/logo.png}\\
 \vspace{14mm}
 {\fontsize{20}{24}\selectfont\bfseries ĐỒ ÁN MÔN HỌC\\[4mm]}
 {\fontsize{16}{20}\selectfont\bfseries \TenHocPhan\\}
@@ -578,7 +578,7 @@ rate limit).\tabularnewline
 
 \subsection{Sơ đồ Use Case tổng quát}
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.85\textheight,keepaspectratio]{images/2.01_uc_overall.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.85\textheight,keepaspectratio]{images/diagrams/2.01_uc_overall.png}\\[3pt]
 {\itshape Hình 2.1. Sơ đồ Use Case tổng quát}
 \addcontentsline{lof}{figure}{Hình 2.1.~~Sơ đồ Use Case tổng quát}
 \end{figure}
@@ -586,7 +586,7 @@ rate limit).\tabularnewline
 \subsection{Sơ đồ Use Case 1: Quản lý xác thực \& tài khoản}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.02_uc_auth.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.02_uc_auth.png}\\[3pt]
 {\itshape Hình 2.2. Sơ đồ Use Case 1: Quản lý xác thực \& tài khoản}
 \addcontentsline{lof}{figure}{Hình 2.2.~~Sơ đồ Use Case : Quản lý xác thực \& tài khoản}
 \end{figure}
@@ -596,7 +596,7 @@ rate limit).\tabularnewline
 \subsection{Sơ đồ Use Case 2: Quản lý nhà trọ, chi nhánh \& phòng}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.03_uc_room.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.03_uc_room.png}\\[3pt]
 {\itshape Hình 2.3. Sơ đồ Use Case 2: Quản lý nhà trọ, chi nhánh \& phòng}
 \addcontentsline{lof}{figure}{Hình 2.3.~~Sơ đồ Use Case 2: Quản lý nhà trọ, chi nhánh \& phòng}
 \end{figure}
@@ -606,7 +606,7 @@ rate limit).\tabularnewline
 \subsection{Sơ đồ Use Case 3: Quản lý hợp đồng \& khách thuê}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.04_uc_contract.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.04_uc_contract.png}\\[3pt]
 {\itshape Hình 2.4. Sơ đồ Use Case 3: Quản lý hợp đồng \& khách thuê}
 \addcontentsline{lof}{figure}{Hình 2.4.~~Sơ đồ Use Case 3: Quản lý hợp đồng \& khách thuê}
 \end{figure}
@@ -616,7 +616,7 @@ rate limit).\tabularnewline
 \subsection{Sơ đồ Use Case 4: Dịch vụ, ghi chỉ số, hoá đơn \& thanh toán}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.05_uc_billing.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.05_uc_billing.png}\\[3pt]
 {\itshape Hình 2.5. Sơ đồ Use Case 4: Dịch vụ, ghi chỉ số, hoá đơn \& thanh toán}
 \addcontentsline{lof}{figure}{Hình 2.5.~~Sơ đồ Use Case 4: Dịch vụ, ghi chỉ số, hoá đơn \& thanh toán}
 \end{figure}
@@ -626,7 +626,7 @@ rate limit).\tabularnewline
 \subsection{Sơ đồ Use Case 5: Báo cáo \& thống kê vận hành}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.06_uc_report.png}\\[3pt]
+\includegraphics[width=0.92\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.06_uc_report.png}\\[3pt]
 {\itshape Hình 2.6. Sơ đồ Use Case 5: Báo cáo \& thống kê vận hành}
 \addcontentsline{lof}{figure}{Hình 2.6.~~Sơ đồ Use Case 5: Báo cáo \& thống kê vận hành}
 \end{figure}
@@ -637,7 +637,7 @@ rate limit).\tabularnewline
 kiếm, Đặt cọc \& Chatbot AI)}}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.06b_uc_utilities.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.06b_uc_utilities.png}\\[3pt]
 {\itshape Hình 2.6b. Sơ đồ Use Case 6: Tiện ích bổ trợ}
 \addcontentsline{lof}{figure}{Hình 2.6b.~~Sơ đồ Use Case 6: Tiện ích bổ trợ}
 \end{figure}
@@ -1704,7 +1704,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ hoạt động UC Đăng ký tài khoản \& Kích hoạt OTP}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.72\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.07_act_register_otp.png}\\[3pt]
+\includegraphics[width=0.72\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.07_act_register_otp.png}\\[3pt]
 {\itshape Hình 2.7. Sơ đồ hoạt động UC Đăng ký tài khoản \& Kích hoạt OTP qua Email}
 \addcontentsline{lof}{figure}{Hình 2.7.~~Sơ đồ hoạt động UC Đăng ký tài khoản \& Kích hoạt OTP qua Email}
 \end{figure}
@@ -1714,7 +1714,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ hoạt động UC Quản lý phòng}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.8\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.08_act_room.png}\\[3pt]
+\includegraphics[width=0.8\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.08_act_room.png}\\[3pt]
 {\itshape Hình 2.8. Sơ đồ hoạt động UC Quản lý phòng}
 \addcontentsline{lof}{figure}{Hình 2.8.~~Sơ đồ hoạt động UC Quản lý phòng}
 \end{figure}
@@ -1724,7 +1724,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ hoạt động UC Lập hợp đồng \& ký số}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.8\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.09_act_contract_sign.png}\\[3pt]
+\includegraphics[width=0.8\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.09_act_contract_sign.png}\\[3pt]
 {\itshape Hình 2.9. Sơ đồ hoạt động UC Lập hợp đồng \& ký số}
 \addcontentsline{lof}{figure}{Hình 2.9.~~Sơ đồ hoạt động UC Lập hợp đồng \& ký số}
 \end{figure}
@@ -1734,7 +1734,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ hoạt động UC Ghi chỉ số \& tạo hoá đơn}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.72\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.10_act_meter_invoice.png}\\[3pt]
+\includegraphics[width=0.72\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.10_act_meter_invoice.png}\\[3pt]
 {\itshape Hình 2.10. Sơ đồ hoạt động UC Ghi chỉ số \& tạo hoá đơn}
 \addcontentsline{lof}{figure}{Hình 2.10.~~Sơ đồ hoạt động UC Ghi chỉ số \& tạo hoá đơn}
 \end{figure}
@@ -1744,7 +1744,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ hoạt động UC Thanh toán hoá đơn}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.85\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.11_act_payment.png}\\[3pt]
+\includegraphics[width=0.85\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.11_act_payment.png}\\[3pt]
 {\itshape Hình 2.11. Sơ đồ hoạt động UC Thanh toán hoá đơn}
 \addcontentsline{lof}{figure}{Hình 2.11.~~Sơ đồ hoạt động UC Thanh toán hoá đơn}
 \end{figure}
@@ -1754,7 +1754,7 @@ giây.\tabularnewline
 \section{Sơ đồ lớp}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.12_class_diagram.png}\\[3pt]
+\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.12_class_diagram.png}\\[3pt]
 {\itshape Hình 2.12. Sơ đồ lớp (Class Diagram) tổng thể của hệ thống}
 \addcontentsline{lof}{figure}{Hình 2.12.~~Sơ đồ lớp (Class Diagram) tổng thể của hệ thống}
 \end{figure}
@@ -1766,7 +1766,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ tuần tự UC Đăng ký tài khoản \& Kích hoạt OTP}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.13_seq_register_otp.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.13_seq_register_otp.png}\\[3pt]
 {\itshape Hình 2.13. Sơ đồ tuần tự UC Đăng ký tài khoản \& Kích hoạt OTP qua Email}
 \addcontentsline{lof}{figure}{Hình 2.13.~~Sơ đồ tuần tự UC Đăng ký tài khoản \& Kích hoạt OTP qua Email}
 \end{figure}
@@ -1776,7 +1776,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ tuần tự UC Tạo hợp đồng \& ký số trực tuyến}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.14_seq_contract_sign.png}\\[3pt]
+\includegraphics[width=0.98\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.14_seq_contract_sign.png}\\[3pt]
 {\itshape Hình 2.14. Sơ đồ tuần tự UC Tạo hợp đồng \& ký số trực tuyến}
 \addcontentsline{lof}{figure}{Hình 2.14.~~Sơ đồ tuần tự UC Tạo hợp đồng \& ký số trực tuyến}
 \end{figure}
@@ -1786,7 +1786,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ tuần tự UC Ghi chỉ số \& tạo hoá đơn}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.15_seq_meter_invoice.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.15_seq_meter_invoice.png}\\[3pt]
 {\itshape Hình 2.15. Sơ đồ tuần tự UC Ghi chỉ số \& tạo hoá đơn}
 \addcontentsline{lof}{figure}{Hình 2.15.~~Sơ đồ tuần tự UC Ghi chỉ số \& tạo hoá đơn}
 \end{figure}
@@ -1796,7 +1796,7 @@ giây.\tabularnewline
 \subsection{Sơ đồ tuần tự UC Thanh toán hoá đơn online}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.16_seq_payment_vnpay.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.16_seq_payment_vnpay.png}\\[3pt]
 {\itshape Hình 2.16. Sơ đồ tuần tự UC Thanh toán hoá đơn online (VNPay Sandbox thật / VietQR chuyển khoản)}
 \addcontentsline{lof}{figure}{Hình 2.16.~~Sơ đồ tuần tự UC Thanh toán hoá đơn online (VNPay Sandbox thật / VietQR chuyển khoản)}
 \end{figure}
@@ -1807,7 +1807,7 @@ giây.\tabularnewline
 
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.17_seq_chatbot_ai.png}\\[3pt]
+\includegraphics[width=0.95\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.17_seq_chatbot_ai.png}\\[3pt]
 {\itshape Hình 2.17. Sơ đồ tuần tự UC39 Trợ lý ảo AI Chatbot (Online + Offline Fallback)}
 \addcontentsline{lof}{figure}{Hình 2.17.~~Sơ đồ tuần tự Trợ lý ảo AI Chatbot (Online + Offline Fallback)}
 \end{figure}
@@ -1815,7 +1815,7 @@ giây.\tabularnewline
 \section{Sơ đồ kiến trúc triển khai thực tế}
 
 \begin{figure}[H]\centering
-\includegraphics[width=0.9\linewidth,max height=0.88\textheight,keepaspectratio]{images/2.18_architecture.png}\\[3pt]
+\includegraphics[width=0.9\linewidth,max height=0.88\textheight,keepaspectratio]{images/diagrams/2.18_architecture.png}\\[3pt]
 {\itshape Hình 2.18. Sơ đồ kiến trúc triển khai thực tế 3 tầng}
 \addcontentsline{lof}{figure}{Hình 2.18.~~Sơ đồ kiến trúc triển khai thực tế 3 tầng}
 \end{figure}
@@ -1832,8 +1832,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.1.1. Giao diện Dashboard của Chủ trọ (Admin)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image20.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image21.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image20.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image21.png}
 \addcontentsline{lof}{figure}{Hình 3.1.1.~~Giao diện Dashboard của Chủ trọ (Admin)}
 \end{figure}
 
@@ -1841,8 +1841,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.1.2. Giao diện Dashboard của Quản lý (Manager)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image22.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image23.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image22.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image23.png}
 \addcontentsline{lof}{figure}{Hình 3.1.2.~~Giao diện Dashboard của Quản lý (Manager)}
 \end{figure}
 
@@ -1850,8 +1850,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.1.3. Giao diện Cổng thông tin Khách thuê (Tenant Portal)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image24.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image25.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image24.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image25.png}
 \addcontentsline{lof}{figure}{Hình 3.1.3.~~Giao diện Cổng thông tin Khách thuê (Tenant Portal)}
 \end{figure}
 
@@ -1859,8 +1859,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.1.4. Giao diện Trang tìm phòng công khai (Visitor)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image26.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image27.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image26.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image27.png}
 \addcontentsline{lof}{figure}{Hình 3.1.4.~~Giao diện Trang tìm phòng công khai (Visitor)}
 \end{figure}
 
@@ -1870,8 +1870,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.1. Giao diện Lưới quản lý phòng trọ (Manager)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image28.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image29.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image28.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image29.png}
 \addcontentsline{lof}{figure}{Hình 3.2.1.~~Giao diện Lưới quản lý phòng trọ (Manager)}
 \end{figure}
 
@@ -1879,8 +1879,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.2. Giao diện Ghi chỉ số điện nước \& Hoá đơn}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image30.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image31.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image30.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image31.png}
 \addcontentsline{lof}{figure}{Hình 3.2.2.~~Giao diện Ghi chỉ số điện nước \& Hoá đơn}
 \end{figure}
 
@@ -1888,8 +1888,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.3. Giao diện Xem \& Ký hợp đồng điện tử}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image32.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image33.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image32.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image33.png}
 \addcontentsline{lof}{figure}{Hình 3.2.3.~~Giao diện Xem \& Ký hợp đồng điện tử}
 \end{figure}
 
@@ -1897,8 +1897,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.4. Giao diện Quản lý và Thanh toán hóa đơn (Tenant)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image34.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image35.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image34.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image35.png}
 \addcontentsline{lof}{figure}{Hình 3.2.4.~~Giao diện Quản lý và Thanh toán hóa đơn (Tenant)}
 \end{figure}
 
@@ -1906,8 +1906,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.5. Giao diện Tìm kiếm phòng \& Đặt cọc online (Visitor)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image36.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image37.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image36.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image37.png}
 \addcontentsline{lof}{figure}{Hình 3.2.5.~~Giao diện Tìm kiếm phòng \& Đặt cọc online (Visitor)}
 \end{figure}
 
@@ -1915,8 +1915,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.6. Giao diện Báo cáo thống kê \& Biểu đồ doanh thu (Admin)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image38.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image39.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image38.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image39.png}
 \addcontentsline{lof}{figure}{Hình 3.2.6.~~Giao diện Báo cáo thống kê \& Biểu đồ doanh thu (Admin)}
 \end{figure}
 
@@ -1924,8 +1924,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.7. Giao diện Quản lý người dùng và phân quyền (Chủ trọ)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image40.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image41.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image40.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image41.png}
 \addcontentsline{lof}{figure}{Hình 3.2.7.~~Giao diện Quản lý người dùng và phân quyền (Chủ trọ)}
 \end{figure}
 
@@ -1933,8 +1933,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.8. Giao diện Quản lý loại phòng \& tiện nghi (Chủ trọ / Quản lý)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image42.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image43.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image42.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image43.png}
 \addcontentsline{lof}{figure}{Hình 3.2.8.~~Giao diện Quản lý loại phòng \& tiện nghi (Chủ trọ / Quản lý)}
 \end{figure}
 
@@ -1942,8 +1942,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.9. Giao diện Cấu hình Dịch vụ \& Đơn giá (Chủ trọ)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image44.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image45.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image44.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image45.png}
 \addcontentsline{lof}{figure}{Hình 3.2.9.~~Giao diện Cấu hình Dịch vụ \& Đơn giá (Chủ trọ)}
 \end{figure}
 
@@ -1951,8 +1951,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.10. Giao diện Quản lý Công nợ (Chủ trọ)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image46.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image47.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image46.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image47.png}
 \addcontentsline{lof}{figure}{Hình 3.2.10.~~Giao diện Quản lý Công nợ (Chủ trọ)}
 \end{figure}
 
@@ -1960,8 +1960,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.11. Giao diện Xác nhận thu tiền mặt (Quản lý)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image48.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image49.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image48.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image49.png}
 \addcontentsline{lof}{figure}{Hình 3.2.11.~~Giao diện Xác nhận thu tiền mặt (Quản lý)}
 \end{figure}
 
@@ -1969,8 +1969,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.12. Giao diện Quên mật khẩu (Khách thuê)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image50.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image51.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image50.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image51.png}
 \addcontentsline{lof}{figure}{Hình 3.2.12.~~Giao diện Quên mật khẩu (Khách thuê)}
 \end{figure}
 
@@ -1978,8 +1978,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.13. Giao diện Trợ lý ảo AI Chatbot (Toàn hệ thống)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image52.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image53.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image52.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image53.png}
 \addcontentsline{lof}{figure}{Hình 3.2.13.~~Giao diện Trợ lý ảo AI Chatbot (Toàn hệ thống)}
 \end{figure}
 
@@ -1987,8 +1987,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.1b. Giao diện Sơ đồ phòng theo tầng (Manager)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image28.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image29.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image28.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image29.png}
 \addcontentsline{lof}{figure}{Hình 3.2.1b.~~Giao diện Sơ đồ phòng theo tầng (Manager)}
 \end{figure}
 
@@ -1996,8 +1996,8 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.2b. Giao diện Ghi chỉ số điện nước theo lô (Manager)}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image30.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image31.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image30.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image31.png}
 \addcontentsline{lof}{figure}{Hình 3.2.2b.~~Giao diện Ghi chỉ số điện nước theo lô (Manager)}
 \end{figure}
 
@@ -2008,14 +2008,14 @@ giây.\tabularnewline
 
 \begin{figure}[H]\centering
 {\itshape Hình 3.2.14. Giao diện Đăng nhập \& Đăng ký tài khoản}\\[4pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image54.png}\\[5pt]
-\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/image55.png}
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image54.png}\\[5pt]
+\includegraphics[width=0.92\linewidth,max height=0.4\textheight,keepaspectratio]{images/ui/image55.png}
 \addcontentsline{lof}{figure}{Hình 3.2.14.~~Giao diện Đăng nhập \& Đăng ký tài khoản}
 \end{figure}
 
-{\centering\includegraphics[width=2.5in,height=5.41319in]{images/image56.png}\par}
+{\centering\includegraphics[width=2.5in,height=5.41319in]{images/ui/image56.png}\par}
 
-\includegraphics[width=5.8in,height=3.625in]{images/image57.png}
+\includegraphics[width=5.8in,height=3.625in]{images/ui/image57.png}
 
 
 % ============================================================
